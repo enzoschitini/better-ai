@@ -1,1 +1,1 @@
-# BetterAi Backend-AI homol
+# BetterAi Backend-AI
