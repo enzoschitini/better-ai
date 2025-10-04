@@ -1,0 +1,4 @@
+fastapi
+uvicorn
+flask
+python-multipart
