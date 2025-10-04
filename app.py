@@ -16,7 +16,7 @@ class CiSei(BaseModel):
 
 @app.post("/ci-sei", dependencies=[Depends(get_authorization_betterai_api)])
 def ci_sei(request: CiSei):
-    result = request.valore * 2
+    result = request.valore * 2 + 1
     return {"message": request.message, "result": result}
 
 """
