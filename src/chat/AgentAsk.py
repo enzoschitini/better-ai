@@ -1,4 +1,5 @@
-from chat.chat_streaming import AgentAsk
+from chat_streaming import AgentAsk
+import json
 
 #print("\n🤖 Chat ativo! (digite 'sair' para encerrar)\n")
 
@@ -23,7 +24,8 @@ while True:
         session_id = resposta["session_id"]
 
         # Exibe a resposta formatada
-        print(f"Assistente: {resposta}\n")
+        #print(f"Assistente: {resposta}\n")
+        print(json.dumps(resposta, indent=4, ensure_ascii=False))
 
     except Exception as e:
         print(f"⚠️ Erro: {e}\n")
