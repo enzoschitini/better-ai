@@ -3,7 +3,7 @@ import os
 
 from langchain.prompts import PromptTemplate
 
-def chat_system_prompt(empresa: str, path_json: str = "src/chat/prompts.json") -> str:
+def chat_system_prompt(empresa: str, path_json: str = "src/chat/prompts/prompts.json") -> str:
     """
     Retorna o prompt do sistema correspondente à empresa informada.
 

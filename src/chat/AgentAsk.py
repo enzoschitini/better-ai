@@ -1,4 +1,4 @@
-from chat_streaming import AgentAsk
+from chat import AgentAsk
 import json
 
 #print("\n🤖 Chat ativo! (digite 'sair' para encerrar)\n")

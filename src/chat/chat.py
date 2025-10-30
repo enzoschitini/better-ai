@@ -16,9 +16,9 @@ from langchain.agents.format_scratchpad import format_to_openai_function_message
 from langchain.agents import AgentExecutor
 from langchain.callbacks.base import BaseCallbackHandler
 
-from tools import get_tools_config
-from MongoDB import create_memory, save_chat_history
-from prompt_template import chat_system_prompt
+from tools.tools import get_tools_config
+from buffer_memory import create_memory, save_chat_history
+from prompts.prompt_template import chat_system_prompt
 import warnings
 
 # Ignora todos os warnings
