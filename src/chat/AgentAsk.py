@@ -2,6 +2,8 @@
 # IMPORTS
 # =========================================
 import time
+import uuid
+from datetime import datetime
 from dotenv import load_dotenv
 from langchain_core.runnables import RunnableConfig
 
@@ -10,6 +12,8 @@ from buffer_memory import save_chat_history
 import warnings
 
 from InitializeAgent import initialize_agent
+
+from tokens_calculator.chat_tokens import estimar_tokens_completos
 
 # Ignora todos os warnings
 warnings.filterwarnings("ignore")
@@ -23,27 +27,27 @@ load_dotenv()
 # EXECUÇÃO DO AGENTE (STREAMING + TOOLS + MEMÓRIA)
 # =========================================
 def AgentAsk(input_text: str, session_id: str = None, streaming: bool = False):
-    """Executa o chat com memória, tools e streaming opcional, tratando erros."""
+    """Executa o chat com memória, tools, streaming e salva log detalhado."""
+    inicio = time.time()
+    session_id = session_id or str(uuid.uuid4())
+
     try:
-        start = time.time()
-        # Tool a serem usadas
+        # Tools configuradas
         selected_tools = [
-            "retorna_temperatura_atual"
+            "retorna_temperatura_atual",
             "busca_wikipedia",
             "data_analise",
             "AnswerGeneration",
             "fraciona_salario",
             "contador_de_historias"
         ]
-        
-        # Exemplos de parâmetros para as tools
+
         AnswerGenerationDic = {"filter_search": {"file_id": "file_id_01"}}
         fraciona_salario_dic = {"dataframe": "clienti", "user_id": "C002", "value": 1}
-
         tools, tools_json, tool_run = get_tools_config(selected_tools, fraciona_salario_dic, AnswerGenerationDic)
-        # Vogliamo poter scegliere le funzioni da usare
 
-        agent_executor, memory, session_id, handler = initialize_agent(
+        # Inicializa agente
+        agent_executor, memory, session_id, handler, system_prompt = initialize_agent(
             session_id, tools, tools_json, tool_run, streaming=streaming
         )
 
@@ -57,47 +61,60 @@ def AgentAsk(input_text: str, session_id: str = None, streaming: bool = False):
             }
         )
 
-        # Invoca o agente
+        # Executa o agente
         response = agent_executor.invoke({'input': input_text}, config)
-        exec_time = round(time.time() - start, 2)
-        print("\n")  # quebra de linha para o output
+        tempo_execucao = round(time.time() - inicio, 2)
 
-        # Salva histórico da sessão
         save_chat_history(session_id, memory)
-
-        # Recupera texto completo (streaming ou não)
         final_text = handler.get_response() if streaming else response.get("output", "")
 
-        
+        # Log final
+        log_data = {
+            "session_id": session_id,
+            "input": input_text,
+            "response": final_text,
+            "tempo_execucao_s": tempo_execucao,
+            "status": "success",
+        }
 
-        # Caso tenha usado alguma tool
+        tool_respose = ""
+        tool_tokens_used = 0
+
         if response.get("intermediate_steps"):
-            tool_name = response["intermediate_steps"][0][0].tool
-            tool_output = response["intermediate_steps"][0][1]
+            log_data["tool"] = response["intermediate_steps"][0][0].tool
+            log_data["tool_output"] = str(response["intermediate_steps"][0][1])
+            tool_respose = response["intermediate_steps"][0][1]["response"]
 
-            return {
-                "response": final_text,
-                "tool": tool_name,
-                "tool_output": tool_output,
-                "session_id": session_id,
-                "status": "success",
-                "time": exec_time
-            }
+            if "tokens_used" in response["intermediate_steps"][0][1]:
+                tool_tokens_used += response["intermediate_steps"][0][1]["tokens_used"]
 
-        # Caso não tenha usado nenhuma tool
-        else:
-            return {
-                "response": final_text,
-                "session_id": session_id,
-                "status": "success",
-                "time": exec_time
-            }
+        # Tokens estimados
+        tokens_response = estimar_tokens_completos(
+            system_prompt=system_prompt,
+            chat_history=memory.chat_memory.messages,
+            tools_json=tools_json,
+            tool_response=tool_respose,  # <-- CORRIGIDO AQUI
+            tool_tokens_used=tool_tokens_used
+        )
+
+        log_data["tokens_estimados"] = tokens_response
+
+        #salvar_log_json(log_data)
+
+        return log_data
 
     except Exception as e:
-        # Retorna JSON de erro padronizado
+        erro_log = {
+            "session_id": session_id,
+            "erro": str(e),
+            "status": "error",
+            "data": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        #salvar_log_json(erro_log)
         return {
             "message": "Desculpa! Não foi possivel responder a pergunta. Por favor tente novamente.",
             "session_id": session_id,
-            "erro": e,
-            "status": "error"
+            "erro": str(e),
+            "status": "error",
+            "data": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }

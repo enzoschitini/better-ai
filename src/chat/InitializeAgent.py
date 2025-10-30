@@ -46,8 +46,6 @@ class StreamHandler(BaseCallbackHandler):
 def initialize_agent(session_id, tools, tools_json, tool_run, streaming=False):
     session_id = session_id or str(uuid.uuid4())
     memory = create_memory(session_id)
-
-    # Handler de streaming
     handler = StreamHandler() if streaming else None
 
     chat = ChatOpenAI(
@@ -55,8 +53,10 @@ def initialize_agent(session_id, tools, tools_json, tool_run, streaming=False):
         callbacks=[handler] if streaming else None,
     )
 
+    system_prompt = chat_system_prompt("OutraEmpresa")
+
     prompt = ChatPromptTemplate.from_messages([
-        ('system', chat_system_prompt("OutraEmpresa")), # Dice come deve agire e pensare la chat, poi fornisce la raccolta di tools e come devono essere strutturate le risposte 
+        ('system', system_prompt),
         MessagesPlaceholder(variable_name='chat_history'),
         ('user', '{input}'),
         MessagesPlaceholder(variable_name='agent_scratchpad')
@@ -81,4 +81,4 @@ def initialize_agent(session_id, tools, tools_json, tool_run, streaming=False):
         return_intermediate_steps=True
     )
 
-    return agent_executor, memory, session_id, handler
+    return agent_executor, memory, session_id, handler, system_prompt
