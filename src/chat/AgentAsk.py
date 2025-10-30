@@ -1,31 +1,103 @@
-from chat import AgentAsk
-import json
+# =========================================
+# IMPORTS
+# =========================================
+import time
+from dotenv import load_dotenv
+from langchain_core.runnables import RunnableConfig
 
-#print("\n🤖 Chat ativo! (digite 'sair' para encerrar)\n")
+from tools.tools import get_tools_config
+from buffer_memory import save_chat_history
+import warnings
 
-# Cria uma sessão única para toda a conversa
-session_id = None  
-#session_id = "8a947fc2-f595-428b-876c-869edf1921a2"
-#session_id = "1422232425262728229"
+from InitializeAgent import initialize_agent
 
-while True:
-    user_input = input("Você: ")
+# Ignora todos os warnings
+warnings.filterwarnings("ignore")
 
-    # Sai do loop se o usuário quiser encerrar
-    if user_input.lower() in ["sair", "exit", "quit"]:
-        print("👋 Encerrando o chat...")
-        break
+# Ou apenas warnings específicos de UserWarning
+warnings.filterwarnings("ignore", category=UserWarning)
 
+load_dotenv()
+
+# =========================================
+# EXECUÇÃO DO AGENTE (STREAMING + TOOLS + MEMÓRIA)
+# =========================================
+def AgentAsk(input_text: str, session_id: str = None, streaming: bool = False):
+    """Executa o chat com memória, tools e streaming opcional, tratando erros."""
     try:
-        # Passa o mesmo session_id para manter a memória
-        resposta = AgentAsk(input_text=user_input, session_id=session_id)
+        start = time.time()
+        # Tool a serem usadas
+        selected_tools = [
+            "retorna_temperatura_atual"
+            "busca_wikipedia",
+            "data_analise",
+            "AnswerGeneration",
+            "fraciona_salario",
+            "contador_de_historias"
+        ]
+        
+        # Exemplos de parâmetros para as tools
+        AnswerGenerationDic = {"filter_search": {"file_id": "file_id_01"}}
+        fraciona_salario_dic = {"dataframe": "clienti", "user_id": "C002", "value": 1}
 
-        # Atualiza o session_id (na primeira iteração ele é criado)
-        session_id = resposta["session_id"]
+        tools, tools_json, tool_run = get_tools_config(selected_tools, fraciona_salario_dic, AnswerGenerationDic)
+        # Vogliamo poter scegliere le funzioni da usare
 
-        # Exibe a resposta formatada
-        #print(f"Assistente: {resposta}\n")
-        print(json.dumps(resposta, indent=4, ensure_ascii=False))
+        agent_executor, memory, session_id, handler = initialize_agent(
+            session_id, tools, tools_json, tool_run, streaming=streaming
+        )
+
+        config = RunnableConfig(
+            tags=["pipeline-curiosidade-historia"],
+            metadata={
+                "autor": "Enzo Schitini",
+                "versao_pipeline": "2.0-mongo",
+                "projeto": "Scituffy",
+                "tipo_execucao": "produção"
+            }
+        )
+
+        # Invoca o agente
+        response = agent_executor.invoke({'input': input_text}, config)
+        exec_time = round(time.time() - start, 2)
+        print("\n")  # quebra de linha para o output
+
+        # Salva histórico da sessão
+        save_chat_history(session_id, memory)
+
+        # Recupera texto completo (streaming ou não)
+        final_text = handler.get_response() if streaming else response.get("output", "")
+
+        
+
+        # Caso tenha usado alguma tool
+        if response.get("intermediate_steps"):
+            tool_name = response["intermediate_steps"][0][0].tool
+            tool_output = response["intermediate_steps"][0][1]
+
+            return {
+                "response": final_text,
+                "tool": tool_name,
+                "tool_output": tool_output,
+                "session_id": session_id,
+                "status": "success",
+                "time": exec_time
+            }
+
+        # Caso não tenha usado nenhuma tool
+        else:
+            return {
+                "response": final_text,
+                "session_id": session_id,
+                "status": "success",
+                "time": exec_time
+            }
 
     except Exception as e:
-        print(f"⚠️ Erro: {e}\n")
+        # Retorna JSON de erro padronizado
+        return {
+            "message": "Desculpa! Não foi possivel responder a pergunta. Por favor tente novamente.",
+            "session_id": session_id,
+            "erro": e,
+            "status": "error"
+        }
