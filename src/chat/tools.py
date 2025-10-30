@@ -17,6 +17,8 @@ wikipedia.set_lang('pt')
 import os
 from dotenv import load_dotenv
 
+from chat.retrieval import AnswerGenerationTool
+
 load_dotenv()
 
 def tool_format_output(name: str, response: str, parameters: dict = None):
