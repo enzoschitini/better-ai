@@ -17,8 +17,8 @@ from langchain.agents import AgentExecutor
 from langchain.callbacks.base import BaseCallbackHandler
 
 from chat.tools import get_tools_config
-from MongoDB import create_memory, save_chat_history
-from prompt_template import chat_system_prompt
+from chat.MongoDB import create_memory, save_chat_history
+from chat.prompt_template import chat_system_prompt
 import warnings
 
 # Ignora todos os warnings

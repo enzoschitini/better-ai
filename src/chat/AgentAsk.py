@@ -1,4 +1,4 @@
-from chat_tracing import AgentAsk
+from chat.chat_streaming import AgentAsk
 
 #print("\n🤖 Chat ativo! (digite 'sair' para encerrar)\n")
 
