@@ -1,3 +1,7 @@
-# BetterAi Backend-AI!
+# BetterAi Back-end
 
-[alt text](images/Logo_Text.png)
+![BetterAI Logo](images/Logo_Text.png)
+
+---
+
+Author: Enzo Schitini
