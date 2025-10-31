@@ -13,7 +13,7 @@ import warnings
 
 from InitializeAgent import initialize_agent
 
-from tokens_calculator.chat_tokens import estimar_tokens_completos
+from tokens_calculator.tokens_estimated import estimar_tokens_completos
 
 # Ignora todos os warnings
 warnings.filterwarnings("ignore")
