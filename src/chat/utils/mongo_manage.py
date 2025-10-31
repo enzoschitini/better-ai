@@ -116,18 +116,10 @@ class MongoDBManager:
                 doc["_id"] = str(doc["_id"])
                 documentos.append(doc)
 
-            if filtro:
-                print(f"🔍 Documentos encontrados com filtro {filtro}:")
-                for d in documentos:
-                    print(d)
-            else:
-                print(f"✅ {len(documentos)} documento(s) encontrados em {database_name}.{collection_name}")
-
             return documentos
 
         except Exception as e:
-            print(f"❌ Erro ao buscar documentos: {e}")
-            return []
+            return f"❌ Erro ao buscar documentos: {e}"
         finally:
             self.fechar_conexao()
 
@@ -135,24 +127,36 @@ class MongoDBManager:
     # UPDATE
     # =============================
     def atualizar_documentos(self, database_name: str, collection_name: str, filtro: dict, novos_valores: dict, multi: bool = False):
-        """Atualiza um ou mais documentos em uma coleção."""
+        """Atualiza um ou mais documentos em uma coleção, mantendo o _id."""
         try:
             client = self.conectar()
             db = client[database_name]
             collection = db[collection_name]
+
+            # Remove _id para não tentar atualizar campo imutável
+            novos_valores = novos_valores.copy()  # não altera o original
+            if '_id' in novos_valores:
+                novos_valores.pop('_id')
+
+            # Adiciona timestamp de atualização
             novos_valores["updated_at"] = datetime.utcnow()
+
             update_op = {"$set": novos_valores}
+
             if multi:
                 result = collection.update_many(filtro, update_op)
                 msg = f"✅ {result.modified_count} documento(s) atualizados"
             else:
                 result = collection.update_one(filtro, update_op)
                 msg = f"✅ 1 documento atualizado" if result.modified_count > 0 else "⚠️ Nenhum documento atualizado"
+
             print(msg)
             return {"status": "success", "matched_count": result.matched_count, "modified_count": result.modified_count}
+
         except Exception as e:
             print(f"❌ Erro ao atualizar documentos: {e}")
             return {"status": "error", "message": str(e)}
+
         finally:
             self.fechar_conexao()
 
