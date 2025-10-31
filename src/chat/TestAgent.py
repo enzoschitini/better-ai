@@ -18,7 +18,8 @@ while True:
 
     try:
         # Passa o mesmo session_id para manter a memória
-        resposta = AgentAsk(input_text=user_input, session_id=session_id)
+        business_id = "1234"  # Exemplo de business_id
+        resposta = AgentAsk(input_text=user_input, business_id=business_id, session_id=session_id)
 
         # Atualiza o session_id (na primeira iteração ele é criado)
         session_id = resposta["session_id"]

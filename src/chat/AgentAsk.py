@@ -23,11 +23,57 @@ warnings.filterwarnings("ignore", category=UserWarning)
 
 load_dotenv()
 
+import json
+
+
+class BusinessVerifier:
+    """Classe responsável por verificar se o plano de uma empresa está ativo."""
+
+    def __init__(self, caminho_arquivo: str):
+        self.caminho_arquivo = caminho_arquivo
+        self.dados = self._carregar_dados()
+
+    def _carregar_dados(self):
+        """Carrega os dados do arquivo JSON."""
+        try:
+            with open(self.caminho_arquivo, "r", encoding="utf-8") as arquivo:
+                return json.load(arquivo)
+        except FileNotFoundError:
+            print(f"❌ Arquivo não encontrado: {self.caminho_arquivo}")
+            return []
+        except json.JSONDecodeError:
+            print(f"❌ Erro ao decodificar o JSON em {self.caminho_arquivo}")
+            return []
+
+    def plano_ativo(self, business_id: str) -> bool:
+        """Retorna True se o plano da empresa estiver ativo."""
+        for empresa in self.dados:
+            if empresa["business_id"] == business_id:
+                return empresa["status_plan"].lower() == "activated"  # ✅ corrigido
+        return False  # Caso o ID não exista
+
+    def verificar(self, business_id: str):
+        """Retorna o status textual do plano."""
+        return "activated" if self.plano_ativo(business_id) else "deactivated"
+
+
 # =========================================
 # EXECUÇÃO DO AGENTE (STREAMING + TOOLS + MEMÓRIA)
 # =========================================
-def AgentAsk(input_text: str, session_id: str = None, streaming: bool = False):
+def AgentAsk(input_text: str, business_id: str, session_id: str = None, streaming: bool = False):
     """Executa o chat com memória, tools, streaming e salva log detalhado."""
+
+    verificador = BusinessVerifier("src/chat/business_acess.json")
+    status_plan = verificador.verificar(business_id)
+
+    if status_plan != "activated":
+        return {
+            "message": "Desculpa! O plano da sua empresa não está ativo. Por favor, entre em contato com o suporte para mais informações.",
+            "session_id": session_id,
+            "status": "error",
+            "data": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+
     inicio = time.time()
     session_id = session_id or str(uuid.uuid4())
 

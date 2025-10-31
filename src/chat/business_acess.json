@@ -1,0 +1,10 @@
+[
+    {
+        "business_id": "1234",
+        "status_plan": "activated"
+    },
+    {
+        "business_id": "5678",
+        "status_plan": "deactivated"
+    }
+]
