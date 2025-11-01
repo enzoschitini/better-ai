@@ -1,7 +1,7 @@
 [
     {
-        "business_id": "1234",
-        "status_plan": "activated"
+        "business_id": "0010",
+        "status_plan": "no_activated"
     },
     {
         "business_id": "5678",
