@@ -26,7 +26,7 @@ while True:
 
         # Exibe a resposta formatada
         #print(f"Assistente: {resposta}\n")
-        print(json.dumps(resposta, indent=4, ensure_ascii=False))
+        print(json.dumps(resposta, indent=4, ensure_ascii=False, default=str))
 
     except Exception as e:
-        print(f"⚠️ Erro: {e}\n")
+        print(f"⚠️ TestAgent Erro: {e}\n")

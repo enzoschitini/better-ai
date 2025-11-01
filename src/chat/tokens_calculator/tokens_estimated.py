@@ -94,8 +94,10 @@ def estimar_tokens_completos(
         "total": {
             "caracters": input_caracters + len(last_message),
             "tokens_estimated": total_tokens
-        },
-        "timestamp": timestamp
+        }
+        #"timestamp": timestamp
     }
 
     return response
+
+

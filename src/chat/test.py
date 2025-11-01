@@ -1,16 +1,8 @@
-import json
-import sys
-from pathlib import Path
+from tokens_calculator.main import menage_chat_usage
 
-# Adiciona a pasta "src" ao sys.path
-sys.path.append(str(Path(__file__).resolve().parents[2]))
-
-from chat.utils.mongo_manage import MongoDBManager
-from chat.tokens_calculator.manager import BusinessPlanManager
-
-dic = {
+tokens_response = {
     "session_id": "3b3513af-0750-47fa-a679-5366d96adec5",
-    "business_id": "0010",
+    "businness_id": "0010",
     "input": "Quais arquivos estão na base?",
     "response": "Na base de conhecimento, há um arquivo chamado \"Cittadinanza italiana iure sanguinis\" que é um arquivo no formato PDF. Este arquivo contém informações sobre como obter a cidadania italiana por descendência (iure sanguinis), os requisitos necessários, os documentos a serem apresentados, o processo de naturalização ou falta dela, entre outros detalhes. Caso tenha interesse em mais informações sobre esse arquivo específico, por favor me avise!",
     "metadata": {
@@ -42,29 +34,63 @@ dic = {
             },
             "combined": {
                 "caracters": 8923,
-                "tokens_estimated": 5
+                "tokens_estimated": 2222
             }
         },
         "output": {
             "caracters": 444,
-            "tokens_estimated": 5
+            "tokens_estimated": 87
         },
         "total": {
             "caracters": 9367,
-            "tokens_estimated": 10
+            "tokens_estimated": 2222
         },
         "timestamp": "2025-10-29 17:19:16"
     }
 }
 
-def menage_chat_usage(BUSINESS_ID, MODEL, tokens_response):
-    try:
-        mongo = MongoDBManager()
-        manager = BusinessPlanManager(BUSINESS_ID, MODEL, tokens_response, mongo)
-        resultado = manager.execute()
-    except Exception as e:
-        return {
-            "message": f"Erro ao gerenciar o uso do chat",
-            "status": "error"
+tokens_response = {
+    "session_id": "f7866c53-dcad-46b0-9a3f-dfae77586bd0",
+    "business_id": "0010",
+    "input": "oi",
+    "response": "Olá! Como posso te ajudar hoje?",
+    "tempo_execucao_s": 3.39,
+    "status": "success",
+    "tokens_estimados": {
+        "input": {
+            "parts": {
+                "system": {
+                    "caracters": 780,
+                    "tokens_estimated": 166
+                },
+                "chat_history": {
+                    "caracters": 34,
+                    "tokens_estimated": 10
+                },
+                "tools": {
+                    "caracters": 2677,
+                    "tokens_estimated": 659
+                },
+                "tool_response": {
+                    "caracters": 0,
+                    "tokens_estimated": 0
+                }
+            },
+            "combined": {
+                "caracters": 3493,
+                "tokens_estimated": 835
+            }
+        },
+        "output": {
+            "caracters": 31,
+            "tokens_estimated": 8
+        },
+        "total": {
+            "caracters": 3524,
+            "tokens_estimated": 835
         }
+    }
+}
+
+menage_chat_usage("0010", "gpt-4o-mini", tokens_response)
 

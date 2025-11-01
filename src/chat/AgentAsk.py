@@ -33,6 +33,7 @@ def AgentAsk(input_text: str, business_id: str, session_id: str = None, streamin
     verificador = BusinessVerifier("src/chat/tokens_calculator/business_acess.json")
     status_plan = verificador.verificar(business_id)
 
+    """
     if status_plan != "activated":
         return {
             "message": "Desculpa! O plano da sua empresa não está ativo. Por favor, entre em contato com o suporte para mais informações.",
@@ -40,6 +41,7 @@ def AgentAsk(input_text: str, business_id: str, session_id: str = None, streamin
             "status": "error",
             "data": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
+    """
 
     inicio = time.time()
     session_id = session_id or str(uuid.uuid4())
@@ -84,6 +86,7 @@ def AgentAsk(input_text: str, business_id: str, session_id: str = None, streamin
         # Log final
         log_data = {
             "session_id": session_id,
+            "business_id": "0010",
             "input": input_text,
             "response": final_text,
             "tempo_execucao_s": tempo_execucao,
@@ -111,6 +114,13 @@ def AgentAsk(input_text: str, business_id: str, session_id: str = None, streamin
         )
 
         log_data["tokens_estimados"] = tokens_response
+
+        from tokens_calculator.main import menage_chat_usage
+        import json
+
+        #print(json.dumps(log_data, indent=4, ensure_ascii=False))
+
+        menage_chat_usage(business_id, "gpt-4o-mini", log_data)
 
         #salvar_log_json(log_data)
 

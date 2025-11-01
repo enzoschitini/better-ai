@@ -17,7 +17,7 @@ from langchain.schema import messages_from_dict, messages_to_dict
 # =========================================
 MONGO_URI = os.getenv("MONGO_URI")
 if not MONGO_URI:
-    raise EnvironmentError("⚠️ Variável de ambiente MONGO_URI não configurada.")
+    raise EnvironmentError("⚠️ bm bm Variável de ambiente MONGO_URI não configurada.")
 
 client = MongoClient(MONGO_URI)
 db = client["Chat"]

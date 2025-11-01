@@ -13,7 +13,7 @@ def limpar_pycache(diretorio_raiz="."):
                     print(f"🗑️  Removido: {caminho}")
                     total_removidas += 1
                 except Exception as e:
-                    print(f"⚠️  Erro ao remover {caminho}: {e}")
+                    print(f"⚠️ Clean  Erro ao remover {caminho}: {e}")
     if total_removidas == 0:
         print("✅ Nenhuma pasta __pycache__ encontrada.")
     else:

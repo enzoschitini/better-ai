@@ -51,7 +51,7 @@ class MongoDBManager:
                 try:
                     colecoes = db.list_collection_names()
                 except Exception as e:
-                    print(f"⚠️  Não foi possível listar coleções de '{db_name}': {e}")
+                    print(f"⚠️ MongoMenage  Não foi possível listar coleções de '{db_name}': {e}")
                     resultado[db_name] = {"_erro": "sem permissão para listar coleções"}
                     continue
 
