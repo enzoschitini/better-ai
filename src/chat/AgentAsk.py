@@ -110,10 +110,6 @@ def AgentAsk(input_text: str, business_id: str, session_id: str = None, streamin
             tool_tokens_used=tool_tokens_used
         )
 
-        from tokens_calculator.menage_chat_usage import menage_cost
-
-        #menage_cost(tokens_response)
-
         log_data["tokens_estimados"] = tokens_response
 
         #salvar_log_json(log_data)
