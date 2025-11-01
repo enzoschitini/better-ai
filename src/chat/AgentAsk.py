@@ -30,7 +30,7 @@ load_dotenv()
 def AgentAsk(input_text: str, business_id: str, session_id: str = None, streaming: bool = False):
     """Executa o chat com memória, tools, streaming e salva log detalhado."""
 
-    verificador = BusinessVerifier("src/chat/business_acess.json")
+    verificador = BusinessVerifier("src/chat/tokens_calculator/business_acess.json")
     status_plan = verificador.verificar(business_id)
 
     if status_plan != "activated":
