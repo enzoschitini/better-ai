@@ -24,9 +24,12 @@ class BusinessPlanManager:
         for k in ["input_tokens", "output_tokens", "total_tokens"]:
             plan_data["plan"]["tokens"][k] += new_tokens[k]
 
+        def format_decimal(value: float) -> str:
+            return f"{value:.6f}"
+
         for k in ["input_cost_usd", "output_cost_usd", "total_cost_usd"]:
             plan_data["plan"]["cost"][k] = str(
-                float(plan_data["plan"]["cost"][k]) + float(new_tokens[k])
+                format_decimal(float(plan_data["plan"]["cost"][k]) + float(new_tokens[k]))
             )
 
         plan_status = PlanStatusVerifier.verify(plan_data)

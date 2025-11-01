@@ -42,16 +42,16 @@ dic = {
             },
             "combined": {
                 "caracters": 8923,
-                "tokens_estimated": 80
+                "tokens_estimated": 5
             }
         },
         "output": {
             "caracters": 444,
-            "tokens_estimated": 22
+            "tokens_estimated": 5
         },
         "total": {
             "caracters": 9367,
-            "tokens_estimated": 44
+            "tokens_estimated": 10
         },
         "timestamp": "2025-10-29 17:19:16"
     }
