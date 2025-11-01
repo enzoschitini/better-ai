@@ -92,5 +92,21 @@ tokens_response = {
     }
 }
 
-menage_chat_usage("0010", "gpt-4o-mini", tokens_response)
+def responder_pergunta(pergunta: str):
+    menage_chat_usage("0010", "gpt-4o-mini", tokens_response)
+    return "OK"
 
+import threading
+
+def responder_pergunta(pergunta: str, tokens_response=None):
+    # Executa em segundo plano sem bloquear
+    threading.Thread(
+        target=menage_chat_usage,
+        args=("0010", "gpt-4o-mini", tokens_response),
+        daemon=True
+    ).start()
+    
+    # Retorna imediatamente
+    return "OK"
+
+print(responder_pergunta(pergunta='oi'))

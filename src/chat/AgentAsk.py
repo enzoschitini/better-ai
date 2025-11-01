@@ -117,10 +117,16 @@ def AgentAsk(input_text: str, business_id: str, session_id: str = None, streamin
 
         from tokens_calculator.main import menage_chat_usage
         import json
+        import threading
 
         #print(json.dumps(log_data, indent=4, ensure_ascii=False))
 
-        menage_chat_usage(business_id, "gpt-4o-mini", log_data)
+        # Executa em segundo plano sem bloquear
+        threading.Thread(
+            target=menage_chat_usage,
+            args=(business_id, "gpt-4o-mini", log_data),
+            daemon=True
+        ).start()
 
         #salvar_log_json(log_data)
 

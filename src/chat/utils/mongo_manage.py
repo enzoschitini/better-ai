@@ -90,7 +90,7 @@ class MongoDBManager:
             collection = db[collection_name]
             payload["_created_at"] = datetime.utcnow()
             result = collection.insert_one(payload)
-            print(f"✅ Documento inserido em {database_name}.{collection_name} com ID: {result.inserted_id}")
+            #print(f"✅ Documento inserido em {database_name}.{collection_name} com ID: {result.inserted_id}")
             return {"status": "success", "inserted_id": str(result.inserted_id)}
         except Exception as e:
             print(f"❌ Erro ao salvar no MongoDB: {e}")
@@ -150,7 +150,7 @@ class MongoDBManager:
                 result = collection.update_one(filtro, update_op)
                 msg = f"✅ 1 documento atualizado" if result.modified_count > 0 else "⚠️ Nenhum documento atualizado"
 
-            print(msg)
+            #print(msg)
             return {"status": "success", "matched_count": result.matched_count, "modified_count": result.modified_count}
 
         except Exception as e:
