@@ -12,8 +12,8 @@ from langchain.agents.format_scratchpad import format_to_openai_function_message
 from langchain.agents import AgentExecutor
 from langchain.callbacks.base import BaseCallbackHandler
 
-from buffer_memory import create_memory
-from prompts.prompt_template import chat_system_prompt
+from src.chat.buffer_memory import create_memory
+from src.chat.prompts.prompt_template import chat_system_prompt
 import warnings
 
 # Ignora todos os warnings

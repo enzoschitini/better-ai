@@ -10,7 +10,7 @@ from langchain_openai import ChatOpenAI
 import pandas as pd
 from langchain_core.utils.function_calling import convert_to_openai_function
 
-from tools.retrieval import AnswerGenerationTool
+from src.chat.tools.retrieval import AnswerGenerationTool
 
 import wikipedia
 wikipedia.set_lang('pt')

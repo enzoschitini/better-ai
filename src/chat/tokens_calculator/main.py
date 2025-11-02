@@ -5,8 +5,8 @@ from pathlib import Path
 # Adiciona a pasta "src" ao sys.path
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 
-from chat.utils.mongo_manage import MongoDBManager
-from chat.tokens_calculator.manager import BusinessPlanManager
+from src.chat.utils.mongo_manage import MongoDBManager
+from src.chat.tokens_calculator.manager import BusinessPlanManager
 
 
 def menage_chat_usage(BUSINESS_ID, MODEL, tokens_response):

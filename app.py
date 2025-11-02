@@ -1,5 +1,6 @@
 from fastapi import FastAPI, UploadFile, HTTPException, Request, Form, Depends, Header, File
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from typing import List, Dict, Any, Optional
 import json
 
 from src.chat.AgentAsk import AgentAsk
@@ -21,6 +22,92 @@ def get_authorization_betterai_api(authorization: str = Header(...)):
     if authorization != "Bearer betterai-api-key":
         raise HTTPException(status_code=401, detail="Unauthorized")
     return authorization
+
+
+
+
+
+
+# ======== MODELOS DE ENTRADA ========
+class AgentAskRequest(BaseModel):
+    input_text: str = Field(..., description="Texto de entrada do usuário")
+    business_id: str = Field(..., description="Identificador do negócio")
+    metadata: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Metadados adicionais")
+    user_prompt: Optional[str] = Field(default="Você é um agente de IA", description="Instrução para o modelo")
+    temperature: Optional[float] = Field(default=0.5, description="Temperatura de geração")
+    tool_kit: Optional[List[str]] = Field(default_factory=list, description="Lista de ferramentas disponíveis para o agente")
+    # Aqui aceitamos qualquer chave/valor — flexível para ferramentas variáveis
+    tool_dic: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Dicionário de configuração dinâmico das ferramentas")
+    session_id: Optional[str] = Field(default=None, description="ID da sessão para manter o contexto")
+    streaming: Optional[bool] = Field(default=False, description="Se True, habilita streaming de resposta")
+
+
+# ======== MODELOS DE SAÍDA ========
+class AgentAskResponse(BaseModel):
+    session_id: str
+    response: Dict[str, Any]
+
+
+# ======== ENDPOINT ========
+@app.post("/agentask", response_model=AgentAskResponse)
+def execute_agentask(request: AgentAskRequest):
+    """
+    Executa o agente de IA com os parâmetros fornecidos.
+    tool_dic é livre — aceita qualquer estrutura de dicionário para ferramentas.
+    """
+    try:
+        # chama AgentAsk passando exatamente o dict recebido
+        resposta = AgentAsk(
+            input_text=request.input_text,
+            business_id=request.business_id,
+            metadata=request.metadata,
+            user_prompt=request.user_prompt,
+            temperature=request.temperature,
+            tool_kit=request.tool_kit,
+            tool_dic=request.tool_dic,   # já é um dict flexível
+            session_id=request.session_id,
+            streaming=request.streaming
+        )
+
+        # Validação simples: garantir que session_id exista na resposta
+        #if "session_id" not in resposta:
+            #raise ValueError("AgentAsk retornou resposta sem 'session_id'.")
+
+        return AgentAskResponse(
+            session_id=resposta["session_id"],
+            response=resposta
+        )
+
+    except Exception as e:
+        # Retornamos erro com 500 para facilitar debug do cliente
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

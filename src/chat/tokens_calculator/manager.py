@@ -1,6 +1,6 @@
-from chat.tokens_calculator.cost_calculator import CostCalculator
-from chat.tokens_calculator.plan_verifier import PlanStatusVerifier
-from chat.tokens_calculator.repository import BusinessRepository
+from src.chat.tokens_calculator.cost_calculator import CostCalculator
+from src.chat.tokens_calculator.plan_verifier import PlanStatusVerifier
+from src.chat.tokens_calculator.repository import BusinessRepository
 
 class BusinessPlanManager:
     """Orquestra o cálculo de custos e atualização de plano."""

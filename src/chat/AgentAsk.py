@@ -7,14 +7,14 @@ from datetime import datetime
 from dotenv import load_dotenv
 from langchain_core.runnables import RunnableConfig
 
-from tools.tools import get_tools_config
-from buffer_memory import save_chat_history
+from src.chat.tools.tools import get_tools_config
+from src.chat.buffer_memory import save_chat_history
 import warnings
 
-from InitializeAgent import initialize_agent
+from src.chat.InitializeAgent import initialize_agent
 
-from tokens_calculator.tokens_estimated import estimar_tokens_completos
-from utils.business_verifier import BusinessVerifier
+from src.chat.tokens_calculator.tokens_estimated import estimar_tokens_completos
+from src.chat.utils.business_verifier import BusinessVerifier
 
 # Ignora todos os warnings
 warnings.filterwarnings("ignore")
@@ -110,7 +110,7 @@ def AgentAsk(input_text: str, business_id: str, metadata: dict, user_prompt: str
 
         log_data["tokens_estimados"] = tokens_response
 
-        from tokens_calculator.main import menage_chat_usage
+        from src.chat.tokens_calculator.main import menage_chat_usage
         import json
         import threading
 
