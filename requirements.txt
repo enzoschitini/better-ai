@@ -1,4 +1,11 @@
-fastapi
-uvicorn
-flask
-python-multipart
+dotenv>=0.9.9
+fastapi>=0.120.4
+langchain==0.3.27
+langchain-experimental==0.3.4
+langchain-groq>=0.3.8
+langchain-openai>=0.3.35
+pandas>=2.3.3
+pinecone>=7.3.0
+pymongo>=4.15.3
+requests>=2.32.5
+wikipedia>=1.4.0
