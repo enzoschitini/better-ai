@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, HTTPException, Request, Form, Depends, Header, File
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List, Dict, Any, Optional
 import json
@@ -12,6 +13,14 @@ API para interação com o agente de IA BetterAI 🤖
 Permite o envio de mensagens e manutenção de contexto de sessão entre interações.
     """,
     version="1.0.0"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["POST", "GET"],
+    allow_headers=["*"],
 )
 
 # uvicorn app:app --reload
