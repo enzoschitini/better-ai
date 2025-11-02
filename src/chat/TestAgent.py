@@ -18,8 +18,29 @@ while True:
 
     try:
         # Passa o mesmo session_id para manter a memória
-        business_id = "0010"  # Exemplo de business_id
-        resposta = AgentAsk(input_text=user_input, business_id=business_id, session_id=session_id)
+        business_id = "0011"  # Exemplo de business_id
+        selected_tools = [
+            "retorna_temperatura_atual",
+            "busca_wikipedia",
+            "data_analise",
+            "AnswerGeneration",
+            "fraciona_salario",
+            "contador_de_historias"
+        ]
+
+        tool_dic = {
+            "AnswerGenerationDic": {"filter_search": {"file_id": "file_id_01"}},
+            "fraciona_salario_dic": {"dataframe": "clienti", "user_id": "C002", "value": 1}
+        }
+
+        resposta = AgentAsk(input_text=user_input, business_id=business_id,
+                            metadata={"client_id": "1234"},
+                            user_prompt="Você é um agente de IA",
+                            temperature=0.5,
+                            tool_kit=selected_tools, 
+                            tool_dic=tool_dic, 
+                            session_id=session_id,
+                            streaming=False)
 
         # Atualiza o session_id (na primeira iteração ele é criado)
         session_id = resposta["session_id"]

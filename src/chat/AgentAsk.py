@@ -27,7 +27,10 @@ load_dotenv()
 # =========================================
 # EXECUÇÃO DO AGENTE (STREAMING + TOOLS + MEMÓRIA)
 # =========================================
-def AgentAsk(input_text: str, business_id: str, session_id: str = None, streaming: bool = False):
+def AgentAsk(input_text: str, business_id: str, metadata: dict, user_prompt: str, temperature: float,
+             tool_kit: list, tool_dic: dict,
+             session_id: str = None, streaming: bool = False):
+    
     """Executa o chat com memória, tools, streaming e salva log detalhado."""
 
     verificador = BusinessVerifier("src/chat/tokens_calculator/business_acess.json")
@@ -48,24 +51,14 @@ def AgentAsk(input_text: str, business_id: str, session_id: str = None, streamin
 
     try:
         # Tools configuradas
-        selected_tools = [
-            "retorna_temperatura_atual",
-            "busca_wikipedia",
-            "data_analise",
-            "AnswerGeneration",
-            "fraciona_salario",
-            "contador_de_historias"
-        ]
-
-        AnswerGenerationDic = {"filter_search": {"file_id": "file_id_01"}}
-        fraciona_salario_dic = {"dataframe": "clienti", "user_id": "C002", "value": 1}
-        tools, tools_json, tool_run = get_tools_config(selected_tools, fraciona_salario_dic, AnswerGenerationDic)
+        tools, tools_json, tool_run = get_tools_config(tool_kit, tool_dic)
 
         # Inicializa agente
         agent_executor, memory, session_id, handler, system_prompt = initialize_agent(
-            session_id, tools, tools_json, tool_run, streaming=streaming
+            session_id, user_prompt, temperature, tools, tools_json, tool_run, streaming=streaming
         )
 
+        """
         config = RunnableConfig(
             tags=["pipeline-curiosidade-historia"],
             metadata={
@@ -75,9 +68,10 @@ def AgentAsk(input_text: str, business_id: str, session_id: str = None, streamin
                 "tipo_execucao": "produção"
             }
         )
+        """
 
         # Executa o agente
-        response = agent_executor.invoke({'input': input_text}, config)
+        response = agent_executor.invoke({'input': input_text})
         tempo_execucao = round(time.time() - inicio, 2)
 
         save_chat_history(session_id, memory)
@@ -86,7 +80,8 @@ def AgentAsk(input_text: str, business_id: str, session_id: str = None, streamin
         # Log final
         log_data = {
             "session_id": session_id,
-            "business_id": "0010",
+            "business_id": business_id,
+            "metadata": metadata,
             "input": input_text,
             "response": final_text,
             "tempo_execucao_s": tempo_execucao,
