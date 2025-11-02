@@ -35,9 +35,9 @@ while True:
 
         resposta = AgentAsk(input_text=user_input, business_id=business_id, 
                             tool_kit=selected_tools, 
-                            tool_dic=tool_dic,
-                            model_name="gpt-4o-mini", temperature=0.5, prompt="Você é um agente de IA", system_prompt_type="standard", 
-                            session_id=session_id)
+                            tool_dic=tool_dic, 
+                            session_id=session_id,
+                            streaming=False)
 
         # Atualiza o session_id (na primeira iteração ele é criado)
         session_id = resposta["session_id"]

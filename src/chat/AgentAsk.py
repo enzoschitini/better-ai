@@ -28,7 +28,7 @@ load_dotenv()
 # EXECUÇÃO DO AGENTE (STREAMING + TOOLS + MEMÓRIA)
 # =========================================
 def AgentAsk(input_text: str, business_id: str, 
-             tool_kit: list, tool_dic: dict, model_name: str, temperature: float, prompt: str, system_prompt_type: str, 
+             tool_kit: list, tool_dic: dict,
              session_id: str = None, streaming: bool = False):
     
     """Executa o chat com memória, tools, streaming e salva log detalhado."""
@@ -62,11 +62,11 @@ def AgentAsk(input_text: str, business_id: str,
 
         AnswerGenerationDic = {"filter_search": {"file_id": "file_id_01"}}
         fraciona_salario_dic = {"dataframe": "clienti", "user_id": "C002", "value": 1}
-        tools, tools_json, tool_run = get_tools_config(selected_tools, fraciona_salario_dic, AnswerGenerationDic)
+        tools, tools_json, tool_run = get_tools_config(tool_kit, tool_dic)
 
         # Inicializa agente
         agent_executor, memory, session_id, handler, system_prompt = initialize_agent(
-            session_id, model_name, temperature, system_prompt_type, prompt, tools, tools_json, tool_run, streaming=streaming
+            session_id, tools, tools_json, tool_run, streaming=streaming
         )
 
         """
