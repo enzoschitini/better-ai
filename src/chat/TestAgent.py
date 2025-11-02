@@ -19,7 +19,10 @@ while True:
     try:
         # Passa o mesmo session_id para manter a memória
         business_id = "0010"  # Exemplo de business_id
-        resposta = AgentAsk(input_text=user_input, business_id=business_id, session_id=session_id)
+        resposta = AgentAsk(input_text=user_input, business_id=business_id, 
+                            tool_kit=["AnswerGeneration"], 
+                            model_name="gpt-4o-mini", temperature=0.5, prompt="Você é um agente de IA", system_prompt_type="standard", 
+                            session_id=session_id)
 
         # Atualiza o session_id (na primeira iteração ele é criado)
         session_id = resposta["session_id"]
