@@ -32,7 +32,7 @@ def tool_format_output(name: str, response: str, parameters: dict = None):
 
     return output
 
-def get_tools_config(selected_tools, tool_dic):
+def get_tools_config(selected_tools, fraciona_salario_dic, AnswerGenerationDic):
     class RetornTempArgs(BaseModel):
         latitude: float = Field(description='Latitude da localidade que buscamos a temperatura')
         longitude: float = Field(description='Longitude da localidade que buscamos a temperatura')
@@ -132,7 +132,7 @@ def get_tools_config(selected_tools, tool_dic):
         - Uma string contendo a resposta final gerada pela LLM, com base no contexto recuperado.
         """
 
-        string_response = AnswerGenerationTool(pergunta=pergunta, AnswerGenerationDic=tool_dic.get("AnswerGenerationDic"))
+        string_response = AnswerGenerationTool(pergunta=pergunta, AnswerGenerationDic=AnswerGenerationDic)
 
         return tool_format_output("AnswerGeneration", string_response)
 
@@ -140,9 +140,9 @@ def get_tools_config(selected_tools, tool_dic):
     def fraciona_salario(divisao: int):
         """Executa operações matemáticas no salário"""
 
-        df = pd.read_csv(f"LangChain Chat/ChatModel/{tool_dic.get("fraciona_salario_dic")["dataframe"]}.csv")
-        dic = df[df["ID"] == tool_dic.get("fraciona_salario_dic")["user_id"]].to_dict()
-        cliente = {col: val[tool_dic.get("fraciona_salario_dic")["value"]] for col, val in dic.items()}
+        df = pd.read_csv(f"LangChain Chat/ChatModel/{fraciona_salario_dic["dataframe"]}.csv")
+        dic = df[df["ID"] == fraciona_salario_dic["user_id"]].to_dict()
+        cliente = {col: val[fraciona_salario_dic["value"]] for col, val in dic.items()}
 
         return tool_format_output("fraciona_salario", float(cliente["Saldo"]) / float(divisao), {"user_id": id, "divisao": divisao})
 

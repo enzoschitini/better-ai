@@ -50,7 +50,19 @@ def AgentAsk(input_text: str, business_id: str,
     session_id = session_id or str(uuid.uuid4())
 
     try:
-        tools, tools_json, tool_run = get_tools_config(tool_kit, tool_dic)
+        # Tools configuradas
+        selected_tools = [
+            "retorna_temperatura_atual",
+            "busca_wikipedia",
+            "data_analise",
+            "AnswerGeneration",
+            "fraciona_salario",
+            "contador_de_historias"
+        ]
+
+        AnswerGenerationDic = {"filter_search": {"file_id": "file_id_01"}}
+        fraciona_salario_dic = {"dataframe": "clienti", "user_id": "C002", "value": 1}
+        tools, tools_json, tool_run = get_tools_config(selected_tools, fraciona_salario_dic, AnswerGenerationDic)
 
         # Inicializa agente
         agent_executor, memory, session_id, handler, system_prompt = initialize_agent(
