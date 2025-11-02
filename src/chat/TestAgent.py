@@ -19,8 +19,17 @@ while True:
     try:
         # Passa o mesmo session_id para manter a memória
         business_id = "0010"  # Exemplo de business_id
+        selected_tools = [
+            "retorna_temperatura_atual",
+            "busca_wikipedia",
+            "data_analise",
+            "AnswerGeneration",
+            "fraciona_salario",
+            "contador_de_historias"
+        ]
+
         resposta = AgentAsk(input_text=user_input, business_id=business_id, 
-                            tool_kit=["AnswerGeneration"], 
+                            tool_kit=selected_tools, 
                             model_name="gpt-4o-mini", temperature=0.5, prompt="Você é um agente de IA", system_prompt_type="standard", 
                             session_id=session_id)
 

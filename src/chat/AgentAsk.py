@@ -50,6 +50,8 @@ def AgentAsk(input_text: str, business_id: str,
     session_id = session_id or str(uuid.uuid4())
 
     try:
+        print(f"tool_kit: {tool_kit} #############################################################")
+
         AnswerGenerationDic = {"filter_search": {"file_id": "file_id_01"}}
         fraciona_salario_dic = {"dataframe": "clienti", "user_id": "C002", "value": 1}
         tools, tools_json, tool_run = get_tools_config(tool_kit, fraciona_salario_dic, AnswerGenerationDic)
