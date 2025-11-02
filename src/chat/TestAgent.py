@@ -33,7 +33,10 @@ while True:
             "fraciona_salario_dic": {"dataframe": "clienti", "user_id": "C002", "value": 1}
         }
 
-        resposta = AgentAsk(input_text=user_input, business_id=business_id, 
+        resposta = AgentAsk(input_text=user_input, business_id=business_id,
+                            metadata={"client_id": "1234"},
+                            user_prompt="Você é um agente de IA",
+                            temperature=0.5,
                             tool_kit=selected_tools, 
                             tool_dic=tool_dic, 
                             session_id=session_id,

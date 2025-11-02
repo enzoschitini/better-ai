@@ -27,7 +27,7 @@ load_dotenv()
 # =========================================
 # EXECUÇÃO DO AGENTE (STREAMING + TOOLS + MEMÓRIA)
 # =========================================
-def AgentAsk(input_text: str, business_id: str, 
+def AgentAsk(input_text: str, business_id: str, metadata: dict, user_prompt: str, temperature: float,
              tool_kit: list, tool_dic: dict,
              session_id: str = None, streaming: bool = False):
     
@@ -51,22 +51,11 @@ def AgentAsk(input_text: str, business_id: str,
 
     try:
         # Tools configuradas
-        selected_tools = [
-            "retorna_temperatura_atual",
-            "busca_wikipedia",
-            "data_analise",
-            "AnswerGeneration",
-            "fraciona_salario",
-            "contador_de_historias"
-        ]
-
-        AnswerGenerationDic = {"filter_search": {"file_id": "file_id_01"}}
-        fraciona_salario_dic = {"dataframe": "clienti", "user_id": "C002", "value": 1}
         tools, tools_json, tool_run = get_tools_config(tool_kit, tool_dic)
 
         # Inicializa agente
         agent_executor, memory, session_id, handler, system_prompt = initialize_agent(
-            session_id, tools, tools_json, tool_run, streaming=streaming
+            session_id, user_prompt, temperature, tools, tools_json, tool_run, streaming=streaming
         )
 
         """
@@ -92,6 +81,7 @@ def AgentAsk(input_text: str, business_id: str,
         log_data = {
             "session_id": session_id,
             "business_id": "0010",
+            "metadata": metadata,
             "input": input_text,
             "response": final_text,
             "tempo_execucao_s": tempo_execucao,

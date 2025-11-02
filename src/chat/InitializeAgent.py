@@ -42,18 +42,19 @@ class StreamHandler(BaseCallbackHandler):
 # =========================================
 # INICIALIZAÇÃO DO AGENTE
 # =========================================
-def initialize_agent(session_id, tools, tools_json, tool_run, streaming=False):
+def initialize_agent(session_id, user_prompt, temperature, tools, tools_json, tool_run, streaming=False):
     session_id = session_id or str(uuid.uuid4())
     memory = create_memory(session_id)
     handler = StreamHandler() if streaming else None
     
     chat = ChatOpenAI(
+        temperature=temperature,
         streaming=streaming,
         callbacks=[handler] if streaming else None,
     )
 
     #system_prompt = f"{prompt}\n{chat_system_prompt(system_prompt_type)}"
-    system_prompt = chat_system_prompt("standard")
+    system_prompt = f"{user_prompt}\n{chat_system_prompt("standard")}"
 
     prompt = ChatPromptTemplate.from_messages([
         ('system', system_prompt),
