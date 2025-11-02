@@ -18,7 +18,7 @@ while True:
 
     try:
         # Passa o mesmo session_id para manter a memória
-        business_id = "0010"  # Exemplo de business_id
+        business_id = "0011"  # Exemplo de business_id
         selected_tools = [
             "retorna_temperatura_atual",
             "busca_wikipedia",

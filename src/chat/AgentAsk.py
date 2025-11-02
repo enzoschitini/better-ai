@@ -36,7 +36,7 @@ def AgentAsk(input_text: str, business_id: str, metadata: dict, user_prompt: str
     verificador = BusinessVerifier("src/chat/tokens_calculator/business_acess.json")
     status_plan = verificador.verificar(business_id)
 
-    """
+    #"""
     if status_plan != "activated":
         return {
             "message": "Desculpa! O plano da sua empresa não está ativo. Por favor, entre em contato com o suporte para mais informações.",
@@ -44,7 +44,7 @@ def AgentAsk(input_text: str, business_id: str, metadata: dict, user_prompt: str
             "status": "error",
             "data": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
-    """
+    #"""
 
     inicio = time.time()
     session_id = session_id or str(uuid.uuid4())
@@ -80,7 +80,7 @@ def AgentAsk(input_text: str, business_id: str, metadata: dict, user_prompt: str
         # Log final
         log_data = {
             "session_id": session_id,
-            "business_id": "0010",
+            "business_id": business_id,
             "metadata": metadata,
             "input": input_text,
             "response": final_text,
