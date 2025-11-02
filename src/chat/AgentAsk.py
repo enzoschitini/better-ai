@@ -36,7 +36,7 @@ def AgentAsk(input_text: str, business_id: str, metadata: dict, user_prompt: str
     verificador = BusinessVerifier("src/chat/tokens_calculator/business_acess.json")
     status_plan = verificador.verificar(business_id)
 
-    #"""
+    """
     if status_plan != "activated":
         return {
             "message": "Desculpa! O plano da sua empresa não está ativo. Por favor, entre em contato com o suporte para mais informações.",

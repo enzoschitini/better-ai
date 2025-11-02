@@ -3,8 +3,7 @@ from pydantic import BaseModel, Field
 from typing import List, Dict, Any, Optional
 import json
 
-from src.chat.AgentAsk import AgentAsk
-
+from  src.chat.AgentAsk import AgentAsk
 
 app = FastAPI(
     title="BetterAI Chat API",
@@ -25,191 +24,79 @@ def get_authorization_betterai_api(authorization: str = Header(...)):
 
 
 
-
-
-
-# ======== MODELOS DE ENTRADA ========
-class AgentAskRequest(BaseModel):
-    input_text: str = Field(..., description="Texto de entrada do usuário")
-    business_id: str = Field(..., description="Identificador do negócio")
-    metadata: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Metadados adicionais")
-    user_prompt: Optional[str] = Field(default="Você é um agente de IA", description="Instrução para o modelo")
-    temperature: Optional[float] = Field(default=0.5, description="Temperatura de geração")
+# ========================
+# MODELO DE ENTRADA
+# ========================
+class AgentRunRequest(BaseModel):
+    session_id: Optional[str] = Field(default=None, description="ID da sessão para manter o contexto da conversa")
+    business_id: str = Field(..., description="Identificador único do negócio")
+    metadata: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Metadados adicionais sobre o cliente ou contexto")
+    input_text: str = Field(..., description="Texto de entrada fornecido pelo usuário")
+    user_prompt: Optional[str] = Field(default="Você é um agente de IA", description="Instrução de comportamento para o modelo")
+    temperature: Optional[float] = Field(default=0.5, description="Temperatura de geração do modelo (controle de aleatoriedade)")
     tool_kit: Optional[List[str]] = Field(default_factory=list, description="Lista de ferramentas disponíveis para o agente")
-    # Aqui aceitamos qualquer chave/valor — flexível para ferramentas variáveis
-    tool_dic: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Dicionário de configuração dinâmico das ferramentas")
-    session_id: Optional[str] = Field(default=None, description="ID da sessão para manter o contexto")
-    streaming: Optional[bool] = Field(default=False, description="Se True, habilita streaming de resposta")
+    tool_dic: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Dicionário de configurações dinâmicas das ferramentas")
+    streaming: Optional[bool] = Field(default=False, description="Se True, habilita resposta em streaming")
 
 
-# ======== MODELOS DE SAÍDA ========
-class AgentAskResponse(BaseModel):
-    session_id: str
+# ========================
+# MODELO DE SAÍDA
+# ========================
+class AgentRunResponse(BaseModel):
     response: Dict[str, Any]
 
 
-# ======== ENDPOINT ========
-@app.post("/agentask", response_model=AgentAskResponse)
-def execute_agentask(request: AgentAskRequest):
+# ========================
+# ENDPOINT PRINCIPAL
+# ========================
+@app.post("/run-agent", dependencies=[Depends(get_authorization_betterai_api)], response_model=AgentRunResponse)
+def run_agent(request: AgentRunRequest):
     """
     Executa o agente de IA com os parâmetros fornecidos.
-    tool_dic é livre — aceita qualquer estrutura de dicionário para ferramentas.
+    - `tool_dic` é dinâmico e pode conter qualquer estrutura.
+    - Mantém contexto entre requisições via `session_id`.
     """
     try:
-        # chama AgentAsk passando exatamente o dict recebido
-        resposta = AgentAsk(
+        result = AgentAsk(
             input_text=request.input_text,
             business_id=request.business_id,
             metadata=request.metadata,
             user_prompt=request.user_prompt,
             temperature=request.temperature,
             tool_kit=request.tool_kit,
-            tool_dic=request.tool_dic,   # já é um dict flexível
+            tool_dic=request.tool_dic,
             session_id=request.session_id,
             streaming=request.streaming
         )
 
-        # Validação simples: garantir que session_id exista na resposta
-        #if "session_id" not in resposta:
-            #raise ValueError("AgentAsk retornou resposta sem 'session_id'.")
-
-        return AgentAskResponse(
-            session_id=resposta["session_id"],
-            response=resposta
+        return AgentRunResponse(
+            response=result
         )
 
     except Exception as e:
-        # Retornamos erro com 500 para facilitar debug do cliente
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# ---- MODELOS TIPADOS ----
-class AgentAskInput(BaseModel):
-    input_text: str
-    business_id: str
-    session_id: str | None = None  # opcional — mantém a memória da sessão
-
-class AgentAskOutput(BaseModel):
-    session_id: str
-    response: dict
-
-# ---- ENDPOINT ----
-@app.post("/chat", response_model=AgentAskOutput)
-def chat_with_agent(data: AgentAskInput):
-    """
-    Endpoint para interagir com o agente de IA.
-    Mantém a sessão caso o mesmo session_id seja reutilizado.
-    """
-    try:
-        resposta = AgentAsk(
-            input_text=data.input_text,
-            business_id=data.business_id,
-            session_id=data.session_id
+        raise HTTPException(
+            status_code=500,
+            detail=f"Erro ao executar o agente: {e}"
         )
 
-        # Garante que a resposta é um dict
-        if isinstance(resposta, str):
-            try:
-                resposta = json.loads(resposta)
-            except json.JSONDecodeError:
-                resposta = {"message": resposta}
-
-        return AgentAskOutput(
-            session_id=resposta.get("session_id", data.session_id or "unknown"),
-            response=resposta
-        )
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erro no agente: {str(e)}")
-
 """
-curl -X POST "http://127.0.0.1:8000/chat" \
-     -H "Content-Type: application/json" \
-     -d '{
-           "input_text": "Olá, tudo bem?",
-           "business_id": "0010",
-           "session_id": null
-         }'
-"""
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class CiSei(BaseModel):
-    message: str
-    valore: int
-
-@app.post("/ci-sei", dependencies=[Depends(get_authorization_betterai_api)])
-def ci_sei(request: CiSei):
-    result = request.valore * 2 + 1
-    return {"message": request.message, "result": result}
-
-"""
-curl -X POST "http://127.0.0.1:8000/ci-sei" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer betterai-api-key" \
-  -d '{
-    "message": "Olá, estou aqui!",
-    "valore": 21
+curl --location 'http://127.0.0.1:8000/run-agent' \
+--header 'Content-Type: application/json' \
+--data '{
+    "input_text": "Valeu",
+    "business_id": "0011",
+    "metadata": {"client_id": "1234"},
+    "user_prompt": "Você é um agente de IA",
+    "temperature": 0.5,
+    "tool_kit": ["retorna_temperatura_atual","busca_wikipedia", "AnswerGeneration"],
+    "tool_dic": {
+      "retorna_temperatura_atual": {"city": "São Paulo", "units": "metric"},
+      "AnswerGenerationDic": {"filter_search": {"file_id": "file_id_01"}}
+    },
+    "session_id": null,
+    "streaming": false
   }'
 """
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -239,4 +126,4 @@ def healthy_authorization():
     return {"status": "ok"}
 
 
-
+# Enzo Schitini

@@ -1,5 +1,6 @@
 from AgentAsk import AgentAsk
 import json
+                                                        #src.chat.
 
 #print("\n🤖 Chat ativo! (digite 'sair' para encerrar)\n")
 
