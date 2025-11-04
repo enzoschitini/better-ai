@@ -44,37 +44,37 @@ class MongoDBManager:
             databases = client.list_database_names()
             resultado = {}
 
-            print("📂 Listando bancos, coleções e quantidades:\n")
+            #print("📂 Listando bancos, coleções e quantidades:\n")
 
             for db_name in databases:
                 db = client[db_name]
                 try:
                     colecoes = db.list_collection_names()
                 except Exception as e:
-                    print(f"⚠️ MongoMenage  Não foi possível listar coleções de '{db_name}': {e}")
+                    #print(f"⚠️ MongoMenage  Não foi possível listar coleções de '{db_name}': {e}")
                     resultado[db_name] = {"_erro": "sem permissão para listar coleções"}
                     continue
 
                 resultado[db_name] = {}
-                print(f"🗄️  Banco: {db_name}")
+                #print(f"🗄️  Banco: {db_name}")
 
                 if colecoes:
                     for col in colecoes:
                         try:
                             count = db[col].estimated_document_count()
                             resultado[db_name][col] = count
-                            print(f"   └── 📁 {col} ({count} documento{'s' if count != 1 else ''})")
+                            #print(f"   └── 📁 {col} ({count} documento{'s' if count != 1 else ''})")
                         except Exception:
                             resultado[db_name][col] = "acesso negado"
-                            print(f"   └── 📁 {col} (acesso negado)")
+                            #print(f"   └── 📁 {col} (acesso negado)")
                 else:
-                    print("   └── (sem coleções)")
-
-                print()
+                    #print("   └── (sem coleções)")
+                    pass
+                
             return resultado
 
         except Exception as e:
-            print(f"❌ Erro ao listar bancos e coleções: {e}")
+            #print(f"❌ Erro ao listar bancos e coleções: {e}")
             return {}
         finally:
             self.fechar_conexao()
@@ -90,10 +90,10 @@ class MongoDBManager:
             collection = db[collection_name]
             payload["_created_at"] = datetime.utcnow()
             result = collection.insert_one(payload)
-            #print(f"✅ Documento inserido em {database_name}.{collection_name} com ID: {result.inserted_id}")
+            ##print(f"✅ Documento inserido em {database_name}.{collection_name} com ID: {result.inserted_id}")
             return {"status": "success", "inserted_id": str(result.inserted_id)}
         except Exception as e:
-            print(f"❌ Erro ao salvar no MongoDB: {e}")
+            #print(f"❌ Erro ao salvar no MongoDB: {e}")
             return {"status": "error", "message": str(e)}
         finally:
             self.fechar_conexao()
@@ -150,11 +150,11 @@ class MongoDBManager:
                 result = collection.update_one(filtro, update_op)
                 msg = f"✅ 1 documento atualizado" if result.modified_count > 0 else "⚠️ Nenhum documento atualizado"
 
-            #print(msg)
+            ##print(msg)
             return {"status": "success", "matched_count": result.matched_count, "modified_count": result.modified_count}
 
         except Exception as e:
-            print(f"❌ Erro ao atualizar documentos: {e}")
+            #print(f"❌ Erro ao atualizar documentos: {e}")
             return {"status": "error", "message": str(e)}
 
         finally:
@@ -175,10 +175,10 @@ class MongoDBManager:
             else:
                 result = collection.delete_one(filtro)
                 msg = "✅ 1 documento deletado" if result.deleted_count > 0 else "⚠️ Nenhum documento deletado"
-            print(msg)
+            #print(msg)
             return {"status": "success", "deleted_count": result.deleted_count}
         except Exception as e:
-            print(f"❌ Erro ao deletar documentos: {e}")
+            #print(f"❌ Erro ao deletar documentos: {e}")
             return {"status": "error", "message": str(e)}
         finally:
             self.fechar_conexao()
@@ -194,10 +194,10 @@ class MongoDBManager:
             else:
                 client.drop_database(database_name)
                 msg = f"💥 Banco de dados '{database_name}' deletado completamente"
-            print(msg)
+            #print(msg)
             return {"status": "success", "message": msg}
         except Exception as e:
-            print(f"❌ Erro ao deletar: {e}")
+            #print(f"❌ Erro ao deletar: {e}")
             return {"status": "error", "message": str(e)}
         finally:
             self.fechar_conexao()

@@ -114,7 +114,7 @@ def AgentAsk(input_text: str, business_id: str, metadata: dict, user_prompt: str
         import json
         import threading
 
-        #print(json.dumps(log_data, indent=4, ensure_ascii=False))
+        ##print(json.dumps(log_data, indent=4, ensure_ascii=False))
 
         # Executa em segundo plano sem bloquear
         threading.Thread(

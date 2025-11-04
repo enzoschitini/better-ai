@@ -13,10 +13,10 @@ class BusinessVerifier:
             with open(self.caminho_arquivo, "r", encoding="utf-8") as arquivo:
                 return json.load(arquivo)
         except FileNotFoundError:
-            print(f"❌ Arquivo não encontrado: {self.caminho_arquivo}")
+            #print(f"❌ Arquivo não encontrado: {self.caminho_arquivo}")
             return []
         except json.JSONDecodeError:
-            print(f"❌ Erro ao decodificar o JSON em {self.caminho_arquivo}")
+            #print(f"❌ Erro ao decodificar o JSON em {self.caminho_arquivo}")
             return []
 
     def plano_ativo(self, business_id: str) -> bool:

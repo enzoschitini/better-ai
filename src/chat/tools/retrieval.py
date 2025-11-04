@@ -14,17 +14,17 @@ import pinecone
 
 # ========== CONFIGURAÇÃO ==========
 load_dotenv()
-#pp = pprint.PrettyPrinter(indent=4)
+#pp = p#print.Pretty#printer(indent=4)
 
 # === CREDENCIAIS ===
 openai_key = os.getenv("OPENAI_API_KEY")
-pinecone_key = "pcsk_5rnZy4_EHarGiSErJCaNyHQgtSiJM23eviwVDJjzQk3xWbHQBz1PqUvRDbaapZYxfh7A6o"
+pinecone_key = os.getenv("PINECONE_API_KEY")
 
 # === PINECONE INIT ===
 pc = pinecone.Pinecone(api_key=pinecone_key)
-index_name = "backai-vectorstore"
+index_name = os.getenv("PINECONE_INDEX_NAME")
 index = pc.Index(index_name)
-namespace = "retrieval-operations"
+namespace = os.getenv("PINECONE_NAMESPACE")
 
 # === EMBEDDINGS ===
 embeddings = OpenAIEmbeddings(model="text-embedding-3-large")

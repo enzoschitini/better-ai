@@ -207,4 +207,4 @@ if __name__ == "__main__":
     mongo = MongoDBManager()
     manager = BusinessPlanManager(BUSINESS_ID, MODEL, dic, mongo)
     resultado = manager.execute()
-    print(json.dumps(resultado, indent=4, ensure_ascii=False))
+    #print(json.dumps(resultado, indent=4, ensure_ascii=False))

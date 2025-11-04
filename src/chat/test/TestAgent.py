@@ -2,7 +2,7 @@ from AgentAsk import AgentAsk
 import json
                                                         #src.chat.
 
-#print("\n🤖 Chat ativo! (digite 'sair' para encerrar)\n")
+##print("\n🤖 Chat ativo! (digite 'sair' para encerrar)\n")
 
 # Cria uma sessão única para toda a conversa
 session_id = None  
@@ -14,7 +14,7 @@ while True:
 
     # Sai do loop se o usuário quiser encerrar
     if user_input.lower() in ["sair", "exit", "quit"]:
-        print("👋 Encerrando o chat...")
+        #print("👋 Encerrando o chat...")
         break
 
     try:
@@ -47,8 +47,9 @@ while True:
         session_id = resposta["session_id"]
 
         # Exibe a resposta formatada
-        #print(f"Assistente: {resposta}\n")
-        print(json.dumps(resposta, indent=4, ensure_ascii=False, default=str))
+        ##print(f"Assistente: {resposta}\n")
+        #print(json.dumps(resposta, indent=4, ensure_ascii=False, default=str))
 
     except Exception as e:
-        print(f"⚠️ TestAgent Erro: {e}\n")
+        #print(f"⚠️ TestAgent Erro: {e}\n")
+        pass

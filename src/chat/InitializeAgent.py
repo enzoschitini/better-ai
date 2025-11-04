@@ -33,7 +33,7 @@ class StreamHandler(BaseCallbackHandler):
         self.full_response = ""
 
     def on_llm_new_token(self, token: str, **kwargs):
-        print(token, end="", flush=True)
+        #print(token, end="", flush=True)
         self.full_response += token
 
     def get_response(self):

@@ -79,7 +79,7 @@ if __name__ == "__main__":
     sess_id = "teste_123"
     mem = create_memory(sess_id)
 
-    print(f"Mensagens carregadas ({sess_id}):", len(mem.chat_memory.messages))
+    #print(f"Mensagens carregadas ({sess_id}):", len(mem.chat_memory.messages))
 
     # simulação de adição
     from langchain.schema import HumanMessage
@@ -87,4 +87,4 @@ if __name__ == "__main__":
     save_chat_history(sess_id, mem)
 
     mem2 = create_memory(sess_id)
-    print(f"Mensagens recarregadas: {len(mem2.chat_memory.messages)}")
+    #print(f"Mensagens recarregadas: {len(mem2.chat_memory.messages)}")
