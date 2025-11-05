@@ -1,24 +1,7 @@
-import requests
-import datetime
-
 from langchain_core.utils.function_calling import convert_to_openai_function
 from langchain.agents import tool
-from pydantic import BaseModel, Field #Importação atualizada
-
-from langchain_experimental.agents.agent_toolkits import create_pandas_dataframe_agent
-from langchain_openai import ChatOpenAI
-import pandas as pd
-from langchain_core.utils.function_calling import convert_to_openai_function
 
 from src.chat.tools.retrieval import AnswerGenerationTool
-
-import wikipedia
-wikipedia.set_lang('pt')
-
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
 
 def tool_format_output(name: str, response: str, parameters: dict = None):
     output = {

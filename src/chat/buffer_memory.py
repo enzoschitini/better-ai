@@ -5,8 +5,6 @@ Refatorado segundo SOLID — Single Responsibility e Dependency Inversion.
 """
 
 import os
-import json
-from typing import List
 from pymongo import MongoClient
 from langchain.memory import ConversationBufferMemory
 from langchain.schema import messages_from_dict, messages_to_dict

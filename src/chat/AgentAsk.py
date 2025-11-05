@@ -4,15 +4,19 @@
 import time
 import uuid
 from datetime import datetime
+import json
+import threading
 from dotenv import load_dotenv
+
 from langchain_core.runnables import RunnableConfig
 
-from src.chat.tools.tools import get_tools_config
-from src.chat.buffer_memory import save_chat_history
 import warnings
 
 from src.chat.InitializeAgent import initialize_agent
+from src.chat.tools.tools import get_tools_config
+from src.chat.buffer_memory import save_chat_history
 
+from src.chat.tokens_calculator.main import menage_chat_usage
 from src.chat.tokens_calculator.tokens_estimated import estimar_tokens_completos
 from src.chat.utils.business_verifier import BusinessVerifier
 
@@ -109,11 +113,6 @@ def AgentAsk(input_text: str, business_id: str, metadata: dict, user_prompt: str
         )
 
         log_data["tokens_estimados"] = tokens_response
-
-        from src.chat.tokens_calculator.main import menage_chat_usage
-        import json
-        import threading
-
         ##print(json.dumps(log_data, indent=4, ensure_ascii=False))
 
         # Executa em segundo plano sem bloquear
