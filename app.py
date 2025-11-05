@@ -15,12 +15,20 @@ Permite o envio de mensagens e manutenção de contexto de sessão entre intera�
     version="1.0.0"
 )
 
+# Lista de domínios confiáveis (coloca aqui apenas os que realmente vão acessar a API)
+origins = [
+    "https://better-ai.up.railway.app",
+    "https://better-ai-homol.up.railway.app",
+    "https://better-ai-dev.up.railway.app",
+    "http://127.0.0.1:8000",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["POST", "GET"],
-    allow_headers=["*"],
+    allow_origins=origins,         # apenas origens confiáveis
+    allow_credentials=True,        # habilita envio de cookies/autenticação
+    allow_methods=["GET", "POST"], # apenas os métodos realmente usados
+    allow_headers=["Authorization", "Content-Type"],  # cabeçalhos necessários
 )
 
 # uvicorn app:app --reload

@@ -15,7 +15,7 @@ load_dotenv()
 
 # === CREDENCIAIS ===
 openai_key = os.getenv("OPENAI_API_KEY")
-pinecone_key = os.getenv("PINECONE_API_KEY")
+pinecone_key = "pcsk_5rnZy4_EHarGiSErJCaNyHQgtSiJM23eviwVDJjzQk3xWbHQBz1PqUvRDbaapZYxfh7A6o" #os.getenv("PINECONE_API_KEY")
 
 # === PINECONE INIT ===
 pc = pinecone.Pinecone(api_key=pinecone_key)

@@ -8,6 +8,9 @@ import os
 from pymongo import MongoClient
 from langchain.memory import ConversationBufferMemory
 from langchain.schema import messages_from_dict, messages_to_dict
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 # =========================================
