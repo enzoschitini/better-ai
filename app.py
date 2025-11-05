@@ -19,7 +19,7 @@ Permite o envio de mensagens e manutenção de contexto de sessão entre intera�
 origins = [
     "https://better-ai.up.railway.app",
     "https://better-ai-homol.up.railway.app",
-    "https://better-ai-dev.up.railway.app",
+    "https://better-ai-dev.up.railway.app"
     "http://127.0.0.1:8000",
 ]
 
