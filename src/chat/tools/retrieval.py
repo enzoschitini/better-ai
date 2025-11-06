@@ -105,7 +105,7 @@ def AnswerGenerationTool(pergunta: str, AnswerGenerationDic: dict):
     search_standards = Similarity_Search(
         vectordb=vectordb, 
         query=query_context(pergunta), 
-        k=5, 
+        k=AnswerGenerationDic["K"], 
         filter_search=AnswerGenerationDic["filter_search"]
     )
 
