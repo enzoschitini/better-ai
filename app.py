@@ -123,20 +123,15 @@ curl --location 'http://127.0.0.1:8000/run-agent' \
 
 
 
-
-
+from src.embbeding.document_scraper import FileEmbeddingProcessor
 
 @app.post("/embedding_file")
-async def upload_file(
+async def embedding_file(
     metadata: str = Form(...),
     file: UploadFile = File(...)
 ):
-    """
-    Endpoint that receives a JSON metadata dictionary and a file.
-    The file name and extension are automatically extracted.
-    """
 
-    # Parse metadata JSON string into a Python dictionary
+    # Converter string JSON em dicionário
     try:
         metadata_dict = json.loads(metadata)
     except json.JSONDecodeError:
@@ -145,39 +140,41 @@ async def upload_file(
             content={"error": "The 'metadata' field must contain valid JSON."}
         )
 
-    # Read file content
-    file_content = await file.read()
-
-    # Extract filename and extension
     file_name, file_extension = os.path.splitext(file.filename)
-    file_extension = file_extension.replace('.', '')  # remove the leading dot
+    file_extension = file_extension.replace('.', '')
 
-    # Ensure required structure exists in metadata
     metadata_dict.setdefault("embedding_filter", {})
     metadata_dict.setdefault("embedding_aggregations", {})
 
-    # Generate unique file_id if missing
     if not metadata_dict["embedding_filter"].get("file_id"):
         metadata_dict["embedding_filter"]["file_id"] = str(uuid.uuid4())
 
-    # Update metadata with extracted file information
     metadata_dict["embedding_aggregations"].update({
         "file_name": file_name,
         "file_extension": file_extension
-        # "file_size_bytes": len(file_content),
-        # "mime_type": file.content_type
     })
 
-    # Build response
-    response = {
-        "message": "File uploaded successfully!",
-        "metadata": metadata_dict
-    }
+    # Processar o arquivo e extrair conteúdo
+    processor = FileEmbeddingProcessor(file=file, metadata=metadata_dict["embedding_aggregations"])
+    result = await processor.get_embedding_content()
 
-    return JSONResponse(content=response)
+    #print(result["content"][:500])  # imprime os primeiros caracteres do conteúdo extraído
+
+    return JSONResponse(content={
+        "message": "File processed successfully!",
+        "metadata": metadata_dict,
+        "preview_content": result["content"][:300]  # preview opcional
+    })
+
 
 
 """
+curl --location 'http://127.0.0.1:8000/embedding_file' \
+--header 'accept: application/json' \
+--form 'metadata="{\"embedding_filter\": {\"file_ids\": \"1234\", \"collection_id\": \"22\"}, \"embedding_aggregations\": {\"collection_name\": \"Babbel\"}}"' \
+--form 'file=@"/C:/Users/schit/Downloads/Group 1321314784.png"'
+
+
 {
     "message": "File uploaded successfully!",
     "metadata": {
@@ -194,8 +191,6 @@ async def upload_file(
     }
 }
 """
-
-
 # uvicorn app:app --reload
 # http://127.0.0.1:8000
 
