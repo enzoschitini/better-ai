@@ -9,41 +9,38 @@ class FileEmbeddingProcessor:
     para embeddings junto com metadados.
     """
 
-    def __init__(self, file, metadata: dict):
+    def __init__(self, file, metadata: dict, file_bytes: bytes = None):
         """
         Args:
-            file: UploadFile, BytesIO, ou arquivo local (modo binário).
+            file: Objeto de arquivo (ex.: UploadFile, BytesIO ou file-like).
             metadata (dict): Metadados a associar ao conteúdo.
+            file_bytes (bytes, opcional): Conteúdo em bytes (necessário para UploadFile assíncrono).
         """
         self.file = file
         self.metadata = metadata
+        self.file_bytes = file_bytes
         self.temp_path = None
 
-    async def _save_temp_file(self):
-        """
-        Salva o arquivo temporariamente no disco e retorna o caminho.
-        Compatível com UploadFile do FastAPI.
-        """
-        # Determinar extensão (por segurança)
-        suffix = os.path.splitext(self.file.filename)[1] if hasattr(self.file, "filename") else ".tmp"
+    def _save_temp_file(self):
+        """Salva o arquivo temporariamente no disco e retorna o caminho."""
+        # Se for UploadFile, usamos o nome diretamente
+        suffix = os.path.splitext(self.file.filename if hasattr(self.file, "filename") else self.file.name)[1]
 
-        # Criar arquivo temporário
         temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
-
-        # Se for UploadFile, usar leitura assíncrona
-        if hasattr(self.file, "read"):
-            file_content = await self.file.read()
-            temp_file.write(file_content)
+        
+        # Se já temos bytes do arquivo (como em UploadFile)
+        if self.file_bytes:
+            temp_file.write(self.file_bytes)
         else:
-            # Caso seja um objeto tipo BytesIO ou arquivo aberto
+            # Caso contrário, lemos diretamente (para open() normal)
             temp_file.write(self.file.read())
-
+        
         temp_file.close()
         self.temp_path = temp_file.name
         return self.temp_path
 
     def _load_content(self):
-        """Carrega o conteúdo do arquivo conforme o tipo."""
+        """Carrega conteúdo do arquivo conforme o tipo."""
         ext = os.path.splitext(self.temp_path)[1].lower()
 
         if ext == ".pdf":
@@ -54,15 +51,15 @@ class FileEmbeddingProcessor:
             raise ValueError(f"❌ Tipo de arquivo não suportado: {ext}")
 
         documents = loader.load()
-        text_content = "\n".join([doc.page_content for doc in documents])
+        text_content = "".join([doc.page_content for doc in documents])
         return text_content
 
-    async def get_embedding_content(self):
+    def get_embedding_content(self):
         """
         Retorna um dicionário com metadados e conteúdo pronto para embeddings.
         """
         try:
-            await self._save_temp_file()
+            self._save_temp_file()
             text_content = self._load_content()
 
             embedding_content = self.metadata.copy()
@@ -71,5 +68,17 @@ class FileEmbeddingProcessor:
             return embedding_content
 
         finally:
+            # Remove o arquivo temporário
             if self.temp_path and os.path.exists(self.temp_path):
                 os.remove(self.temp_path)
+
+
+"""
+# Exemplo de uso (com arquivo local)
+with open("src/embbeding/files/example.csv", "rb") as f:
+    metadata = {"author": "Fredric Brown", "category": "sci-fi"}
+    processor = FileEmbeddingProcessor(file=f, metadata=metadata)
+    result = processor.get_embedding_content()
+
+print(result["author"])  # -> dict com metadados + 'content'
+#"""

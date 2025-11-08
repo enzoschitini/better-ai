@@ -124,14 +124,19 @@ curl --location 'http://127.0.0.1:8000/run-agent' \
 
 
 from src.embbeding.document_scraper import FileEmbeddingProcessor
+from src.embbeding.embedding import PineconeCRUD
 
 @app.post("/embedding_file")
-async def embedding_file(
+async def upload_file(
     metadata: str = Form(...),
     file: UploadFile = File(...)
 ):
+    """
+    Endpoint that receives a JSON metadata dictionary and a file.
+    The file name and extension are automatically extracted.
+    """
 
-    # Converter string JSON em dicionário
+    # Parse metadata JSON string into a Python dictionary
     try:
         metadata_dict = json.loads(metadata)
     except json.JSONDecodeError:
@@ -140,31 +145,48 @@ async def embedding_file(
             content={"error": "The 'metadata' field must contain valid JSON."}
         )
 
+    # Read file content asynchronously
+    file_content = await file.read()
+
+    # Extract filename and extension
     file_name, file_extension = os.path.splitext(file.filename)
     file_extension = file_extension.replace('.', '')
 
+    # Ensure required structure exists in metadata
     metadata_dict.setdefault("embedding_filter", {})
     metadata_dict.setdefault("embedding_aggregations", {})
 
+    # Generate unique file_id if missing
     if not metadata_dict["embedding_filter"].get("file_id"):
         metadata_dict["embedding_filter"]["file_id"] = str(uuid.uuid4())
 
+    # Update metadata with extracted file information
     metadata_dict["embedding_aggregations"].update({
         "file_name": file_name,
         "file_extension": file_extension
     })
 
-    # Processar o arquivo e extrair conteúdo
-    processor = FileEmbeddingProcessor(file=file, metadata=metadata_dict["embedding_aggregations"])
-    result = await processor.get_embedding_content()
+    # Processar arquivo para embeddings
+    processor = FileEmbeddingProcessor(file=file, file_bytes=file_content, metadata=metadata_dict)
+    result = str(processor.get_embedding_content())
 
-    #print(result["content"][:500])  # imprime os primeiros caracteres do conteúdo extraído
+    
+    crud = PineconeCRUD(namespace="EMBEDDING")
+    
+    crud.create_from_text(
+        raw_text=result,
+        metadata=metadata_dict["embedding_filter"]
+    )
 
-    return JSONResponse(content={
-        "message": "File processed successfully!",
-        "metadata": metadata_dict,
-        "preview_content": result["content"][:300]  # preview opcional
-    })
+    print(type(result))  # Exemplo: mostra parte do texto
+
+    # Build response
+    response = {
+        "message": "File uploaded successfully!",
+        "metadata": metadata_dict
+    }
+
+    return JSONResponse(content=response)
 
 
 
