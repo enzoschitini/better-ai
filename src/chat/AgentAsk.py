@@ -135,7 +135,7 @@ def AgentAsk(input_text: str, business_id: str, metadata: dict, user_prompt: str
         }
         #salvar_log_json(erro_log)
         return {
-            "message": "Desculpa! Não foi possivel responder a pergunta. Por favor tente novamente.",
+            "response": "Desculpa! Não foi possivel responder a pergunta. Por favor tente novamente.",
             "session_id": session_id,
             "erro": str(e),
             "status": "error",
