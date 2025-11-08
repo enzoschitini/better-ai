@@ -123,8 +123,7 @@ curl --location 'http://127.0.0.1:8000/run-agent' \
 
 
 
-from src.embbeding.document_scraper import FileEmbeddingProcessor
-from src.embbeding.embedding import PineconeCRUD
+from src.embbeding.embedding import embedding_documents
 
 @app.post("/embedding_file")
 async def upload_file(
@@ -147,43 +146,14 @@ async def upload_file(
 
     # Read file content asynchronously
     file_content = await file.read()
-
-    # Extract filename and extension
-    file_name, file_extension = os.path.splitext(file.filename)
-    file_extension = file_extension.replace('.', '')
-
-    # Ensure required structure exists in metadata
-    metadata_dict.setdefault("embedding_filter", {})
-    metadata_dict.setdefault("embedding_aggregations", {})
-
-    # Generate unique file_id if missing
-    if not metadata_dict["embedding_filter"].get("file_id"):
-        metadata_dict["embedding_filter"]["file_id"] = str(uuid.uuid4())
-
-    # Update metadata with extracted file information
-    metadata_dict["embedding_aggregations"].update({
-        "file_name": file_name,
-        "file_extension": file_extension
-    })
-
-    # Processar arquivo para embeddings
-    processor = FileEmbeddingProcessor(file=file, file_bytes=file_content, metadata=metadata_dict)
-    result = str(processor.get_embedding_content())
-
     
-    crud = PineconeCRUD(namespace="EMBEDDING")
-    
-    crud.create_from_text(
-        raw_text=result,
-        metadata=metadata_dict["embedding_filter"]
-    )
-
-    print(type(result))  # Exemplo: mostra parte do texto
+    embedding_result = embedding_documents(metadata_dict, file_content, file)
 
     # Build response
     response = {
         "message": "File uploaded successfully!",
-        "metadata": metadata_dict
+        "metadata": metadata_dict,
+        "embedding_result": embedding_result
     }
 
     return JSONResponse(content=response)
