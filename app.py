@@ -9,6 +9,7 @@ import os
 import uuid
 
 from  src.chat.AgentAsk import AgentAsk
+from src.embbeding.embedding import embedding_documents
 
 app = FastAPI(
     title="BetterAI Chat API",
@@ -123,9 +124,9 @@ curl --location 'http://127.0.0.1:8000/run-agent' \
 
 
 
-from src.embbeding.embedding import embedding_documents
 
-@app.post("/embedding_file")
+
+@app.post("/embedding_file", dependencies=[Depends(get_authorization_betterai_api)], response_model=AgentRunResponse)
 async def upload_file(
     metadata: str = Form(...),
     file: UploadFile = File(...)

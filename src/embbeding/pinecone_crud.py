@@ -56,7 +56,7 @@ class PineconeCRUD:
         ]
 
         ids = self.vectordb.add_documents(documents)
-        print(f"✅ Inseridos {len(ids)} chunks no namespace '{self.namespace}'.")
+        #print(f"✅ Inseridos {len(ids)} chunks no namespace '{self.namespace}'.")
         return ids
 
     # ======================

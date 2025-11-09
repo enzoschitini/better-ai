@@ -5,6 +5,7 @@ langchain==0.3.27
 langchain-experimental==0.3.4
 langchain-groq>=0.3.8
 langchain-openai>=0.3.35
+langchain-pinecone>=0.2.13
 pandas>=2.3.3
 pinecone>=7.3.0
 pymongo>=4.15.3
