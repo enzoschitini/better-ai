@@ -191,6 +191,7 @@ dependencies = [
     { name = "dotenv" },
     { name = "fastapi" },
     { name = "langchain" },
+    { name = "langchain-community" },
     { name = "langchain-experimental" },
     { name = "langchain-groq" },
     { name = "langchain-openai" },
@@ -198,6 +199,7 @@ dependencies = [
     { name = "pandas" },
     { name = "pinecone" },
     { name = "pymongo" },
+    { name = "pypdf" },
     { name = "python-multipart" },
     { name = "requests" },
     { name = "wikipedia" },
@@ -208,6 +210,7 @@ requires-dist = [
     { name = "dotenv", specifier = ">=0.9.9" },
     { name = "fastapi", specifier = ">=0.120.4" },
     { name = "langchain", specifier = "==0.3.27" },
+    { name = "langchain-community", specifier = ">=0.3.31" },
     { name = "langchain-experimental", specifier = "==0.3.4" },
     { name = "langchain-groq", specifier = ">=0.3.8" },
     { name = "langchain-openai", specifier = ">=0.3.35" },
@@ -215,6 +218,7 @@ requires-dist = [
     { name = "pandas", specifier = ">=2.3.3" },
     { name = "pinecone", specifier = ">=7.3.0" },
     { name = "pymongo", specifier = ">=4.15.3" },
+    { name = "pypdf", specifier = ">=6.2.0" },
     { name = "python-multipart", specifier = ">=0.0.20" },
     { name = "requests", specifier = ">=2.32.5" },
     { name = "wikipedia", specifier = ">=1.4.0" },
@@ -1373,6 +1377,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/5b/fe/7a6a6b331d9f2024ab171028ab53d5d9026959b1d713fe170be591a4d9a8/pymongo-4.15.3-cp314-cp314t-win32.whl", hash = "sha256:e7cde58ef6470c0da922b65e885fb1ffe04deef81e526bd5dea429290fa358ca", size = 1043993, upload-time = "2025-10-07T21:57:28.727Z" },
     { url = "https://files.pythonhosted.org/packages/70/c8/bc64321711e19bd48ea3371f0082f10295c433833245d73e7606d3b9afbe/pymongo-4.15.3-cp314-cp314t-win_amd64.whl", hash = "sha256:fae552767d8e5153ed498f1bca92d905d0d46311d831eefb0f06de38f7695c95", size = 1078481, upload-time = "2025-10-07T21:57:30.372Z" },
     { url = "https://files.pythonhosted.org/packages/39/31/2bb2003bb978eb25dfef7b5f98e1c2d4a86e973e63b367cc508a9308d31c/pymongo-4.15.3-cp314-cp314t-win_arm64.whl", hash = "sha256:47ffb068e16ae5e43580d5c4e3b9437f05414ea80c32a1e5cac44a835859c259", size = 1051179, upload-time = "2025-10-07T21:57:31.829Z" },
+]
+
+[[package]]
+name = "pypdf"
+version = "6.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/4e/2b/8795ec0378384000b0a37a2b5e6d67fa3d84802945aa2c612a78a784d7d4/pypdf-6.2.0.tar.gz", hash = "sha256:46b4d8495d68ae9c818e7964853cd9984e6a04c19fe7112760195395992dce48", size = 5272001, upload-time = "2025-11-09T11:10:41.911Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/de/ba/743ddcaf1a8fb439342399645921e2cf2c600464cba5531a11f1cc0822b6/pypdf-6.2.0-py3-none-any.whl", hash = "sha256:4c0f3e62677217a777ab79abe22bf1285442d70efabf552f61c7a03b6f5c569f", size = 326592, upload-time = "2025-11-09T11:10:39.941Z" },
 ]
 
 [[package]]
