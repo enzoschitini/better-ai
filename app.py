@@ -1,8 +1,12 @@
 from fastapi import FastAPI, UploadFile, HTTPException, Request, Form, Depends, Header, File
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+
 from pydantic import BaseModel, Field
 from typing import List, Dict, Any, Optional
 import json
+import os
+import uuid
 
 from  src.chat.AgentAsk import AgentAsk
 
@@ -114,6 +118,73 @@ curl --location 'http://127.0.0.1:8000/run-agent' \
     "streaming": false
   }'
 """
+
+
+
+
+
+from src.embbeding.embedding import embedding_documents
+
+@app.post("/embedding_file")
+async def upload_file(
+    metadata: str = Form(...),
+    file: UploadFile = File(...)
+):
+    """
+    Endpoint that receives a JSON metadata dictionary and a file.
+    The file name and extension are automatically extracted.
+    """
+
+    # Parse metadata JSON string into a Python dictionary
+    try:
+        metadata_dict = json.loads(metadata)
+    except json.JSONDecodeError:
+        return JSONResponse(
+            status_code=400,
+            content={"error": "The 'metadata' field must contain valid JSON."}
+        )
+
+    # Read file content asynchronously
+    file_content = await file.read()
+    
+    embedding_result = embedding_documents(metadata_dict, file_content, file)
+
+    # Build response
+    response = {
+        "message": "File uploaded successfully!",
+        "metadata": metadata_dict,
+        "embedding_result": embedding_result
+    }
+
+    return JSONResponse(content=response)
+
+
+
+"""
+curl --location 'http://127.0.0.1:8000/embedding_file' \
+--header 'accept: application/json' \
+--form 'metadata="{\"embedding_filter\": {\"file_ids\": \"1234\", \"collection_id\": \"22\"}, \"embedding_aggregations\": {\"collection_name\": \"Babbel\"}}"' \
+--form 'file=@"/C:/Users/schit/Downloads/Group 1321314784.png"'
+
+
+{
+    "message": "File uploaded successfully!",
+    "metadata": {
+        "embedding_filter": {
+            "file_ids": "1234",
+            "collection_id": "22",
+            "file_id": "62e8d769-f110-49f0-ab91-3b46f0d2e0f8"
+        },
+        "embedding_aggregations": {
+            "collection_name": "Babbel",
+            "file_name": "Group 1321314784",
+            "file_extension": "png"
+        }
+    }
+}
+"""
+# uvicorn app:app --reload
+# http://127.0.0.1:8000
 
 
 
