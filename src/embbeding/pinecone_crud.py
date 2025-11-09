@@ -12,8 +12,8 @@ load_dotenv()
 class PineconeCRUD:
     def __init__(
         self,
-        index_name: str = "backai-vectorstore",
-        namespace: str = "default_namespace"
+        index_name: str = os.getenv("PINECONE_INDEX_NAME"),
+        namespace: str = os.getenv("PINECONE_NAMESPACE")
     ):
         # 🔹 Conectar ao Pinecone
         self.pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))

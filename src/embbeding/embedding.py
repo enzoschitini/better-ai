@@ -1,5 +1,8 @@
 import os
 import uuid
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from src.embbeding.document_scraper import FileEmbeddingProcessor
 from src.embbeding.pinecone_crud import PineconeCRUD
@@ -27,7 +30,7 @@ def embedding_documents(metadata_dict, file_content, file):
     processor = FileEmbeddingProcessor(file=file, file_bytes=file_content, metadata=metadata_dict)
     result = str(processor.get_embedding_content())
 
-    crud = PineconeCRUD(namespace="betterai-embeddings")
+    crud = PineconeCRUD(namespace=os.getenv("PINECONE_NAMESPACE"))
     
     crud.create_from_text(
         raw_text=result,
