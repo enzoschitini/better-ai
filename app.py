@@ -191,6 +191,21 @@ curl --location 'http://127.0.0.1:8000/embedding_file' \
 
 
 
+@app.get("/generate-id", dependencies=[Depends(get_authorization_betterai_api)])
+def generate_id():
+    """
+    Gera e retorna um UUID v4 como string.
+    """
+    new_id = str(uuid.uuid4())
+    return {"id": new_id}
+
+"""
+curl http://127.0.0.1:8000/generate-id
+"""
+
+
+
+
 
 
 
