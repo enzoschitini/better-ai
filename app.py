@@ -40,7 +40,10 @@ app.add_middleware(
 # http://127.0.0.1:8000
 
 def get_authorization_betterai_api(authorization: str = Header(...)):
-    if authorization != "Bearer betterai-api-key":
+    betterai_api_key = os.getenv("BETTERAI_API_KEY")
+    print(betterai_api_key)
+    #betterai-api-key
+    if authorization != f"Bearer {betterai_api_key}":
         raise HTTPException(status_code=401, detail="Unauthorized")
     return authorization
 
