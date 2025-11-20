@@ -1,0 +1,36 @@
+timestamp,file,line,level,message
+"2025-11-20 17:30:38,437",buffer_memory.py,27,INFO,"Carregando configuração do MongoDB..."
+"2025-11-20 17:30:38,453",buffer_memory.py,38,INFO,"Conexão com MongoDB realizada com sucesso."
+"2025-11-20 17:30:38,665",retrieval.py,22,INFO,"Variáveis de ambiente carregadas."
+"2025-11-20 17:30:38,665",retrieval.py,30,INFO,"Pinecone Index configurado: backai-vectorstore"
+"2025-11-20 17:30:38,665",retrieval.py,31,INFO,"Namespace: betterai-embeddings"
+"2025-11-20 17:30:40,395",business_verifier.py,11,INFO,"Verificando informações da empresa"
+"2025-11-20 17:30:40,511",app.py,21,INFO,"Application started!"
+"2025-11-20 17:30:44,183",AgentAsk.py,44,INFO,"=== Iniciando AgentAsk() ==="
+"2025-11-20 17:30:44,183",AgentAsk.py,45,INFO,"Entrada recebida | empresa=0011 | session_id=None | streaming=False"
+"2025-11-20 17:30:44,183",AgentAsk.py,49,INFO,"Status do plano da empresa (0011): deactivated"
+"2025-11-20 17:30:44,183",AgentAsk.py,57,INFO,"Carregando tools de configuração..."
+"2025-11-20 17:30:44,183",tools.py,27,INFO,"Configurando as tools"
+"2025-11-20 17:30:44,274",tools.py,58,INFO,"Tools configuradas"
+"2025-11-20 17:30:44,274",AgentAsk.py,62,INFO,"Inicializando agente LLM..."
+"2025-11-20 17:30:44,274",InitializeAgent.py,52,INFO,"\U0001f7e2 initialize_agent chamado"
+"2025-11-20 17:30:44,274",InitializeAgent.py,60,INFO,"Utilizando session_id existente: 2969c262-c2ac-4966-b296-993d12acf690"
+"2025-11-20 17:30:44,274",buffer_memory.py,100,INFO,"Inicializando memória para session_id=2969c262-c2ac-4966-b296-993d12acf690"
+"2025-11-20 17:30:44,274",buffer_memory.py,75,INFO,"Iniciando load_chat_history() | session_id=2969c262-c2ac-4966-b296-993d12acf690"
+"2025-11-20 17:30:44,841",buffer_memory.py,87,INFO,"Nenhum histórico encontrado para session_id=2969c262-c2ac-4966-b296-993d12acf690."
+"2025-11-20 17:30:44,841",InitializeAgent.py,65,INFO,"Memória carregada para sessão 2969c262-c2ac-4966-b296-993d12acf690. 0 mensagens restauradas."
+"2025-11-20 17:30:45,748",InitializeAgent.py,82,INFO,"Modelo OpenAI iniciado com temperature=0.5"
+"2025-11-20 17:30:45,748",prompt_template.py,17,INFO,"Iniciando chat_system_prompt() para empresa='standard' com arquivo='src/chat/prompts/prompts.json'"
+"2025-11-20 17:30:45,748",prompt_template.py,42,INFO,"Prompt encontrado para a empresa: standard"
+"2025-11-20 17:30:45,748",InitializeAgent.py,108,INFO,"Agent Chain montado com sucesso."
+"2025-11-20 17:30:45,748",InitializeAgent.py,119,INFO,"Agent Executor criado e pronto para uso."
+"2025-11-20 17:30:45,748",AgentAsk.py,66,INFO,"Agente inicializado com sucesso."
+"2025-11-20 17:30:45,748",AgentAsk.py,69,INFO,"Executando agente para input: 'Olá'"
+"2025-11-20 17:30:46,991",_client.py,1025,INFO,"HTTP Request: POST https://api.openai.com/v1/chat/completions ""HTTP/1.1 200 OK"""
+"2025-11-20 17:30:47,098",AgentAsk.py,72,INFO,"Execução concluída em 2.92s"
+"2025-11-20 17:30:47,098",AgentAsk.py,75,INFO,"Salvando memória da conversa..."
+"2025-11-20 17:30:47,098",buffer_memory.py,51,INFO,"Iniciando save_chat_history() | session_id=2969c262-c2ac-4966-b296-993d12acf690"
+"2025-11-20 17:30:47,216",buffer_memory.py,64,INFO,"Histórico salvo com sucesso para session_id=2969c262-c2ac-4966-b296-993d12acf690"
+"2025-11-20 17:30:47,216",AgentAsk.py,109,INFO,"Calculando tokens estimados da requisição..."
+"2025-11-20 17:30:47,623",AgentAsk.py,122,INFO,"Enviando dados de uso de tokens para gerenciamento em background..."
+"2025-11-20 17:30:47,624",AgentAsk.py,129,INFO,"=== AgentAsk() finalizado com sucesso ==="

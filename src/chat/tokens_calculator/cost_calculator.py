@@ -1,3 +1,11 @@
+import logging
+
+logging.basicConfig(
+    filename='app.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(filename)s - line: %(lineno)d - %(levelname)s - %(message)s'
+)
+
 class CostCalculator:
     """Responsável por calcular e formatar custos de tokens."""
 

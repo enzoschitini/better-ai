@@ -1,6 +1,13 @@
 import json
 import tiktoken
 from datetime import datetime
+import logging
+
+logging.basicConfig(
+    filename='app.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(filename)s - line: %(lineno)d - %(levelname)s - %(message)s'
+)
 
 def estimar_tokens_completos(
     system_prompt=None,

@@ -1,7 +1,15 @@
+import logging
+
 from langchain_core.utils.function_calling import convert_to_openai_function
 from langchain.agents import tool
 
 from src.chat.tools.retrieval import AnswerGenerationTool
+
+logging.basicConfig(
+    filename='app.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(filename)s - line: %(lineno)d - %(levelname)s - %(message)s'
+)
 
 def tool_format_output(name: str, response: str, parameters: dict = None):
     output = {
@@ -16,6 +24,7 @@ def tool_format_output(name: str, response: str, parameters: dict = None):
     return output
 
 def get_tools_config(selected_tools, tool_dic):
+    logging.info("Configurando as tools")
 
     @tool
     def AnswerGeneration(pergunta: str):
@@ -46,6 +55,7 @@ def get_tools_config(selected_tools, tool_dic):
     tools = [locals()[name] for name in selected_tools if name in locals()]
 
     tools_json = [convert_to_openai_function(tool) for tool in tools]
+    logging.info("Tools configuradas")
     tool_run = {tool.name: tool for tool in tools}
 
     return tools, tools_json, tool_run

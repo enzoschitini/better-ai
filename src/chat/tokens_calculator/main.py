@@ -1,5 +1,12 @@
 import sys
 from pathlib import Path
+import logging
+
+logging.basicConfig(
+    filename='app.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(filename)s - line: %(lineno)d - %(levelname)s - %(message)s'
+)
 
 # Adiciona a pasta "src" ao sys.path
 sys.path.append(str(Path(__file__).resolve().parents[2]))
