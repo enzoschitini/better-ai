@@ -1,0 +1,109 @@
+timestamp,file,line,level,message
+"2025-11-20 17:30:38,437",buffer_memory.py,27,INFO,"Carregando configura��o do MongoDB..."
+"2025-11-20 17:30:38,453",buffer_memory.py,38,INFO,"Conex�o com MongoDB realizada com sucesso."
+"2025-11-20 17:30:38,665",retrieval.py,22,INFO,"Vari�veis de ambiente carregadas."
+"2025-11-20 17:30:38,665",retrieval.py,30,INFO,"Pinecone Index configurado: backai-vectorstore"
+"2025-11-20 17:30:38,665",retrieval.py,31,INFO,"Namespace: betterai-embeddings"
+"2025-11-20 17:30:40,395",business_verifier.py,11,INFO,"Verificando informa��es da empresa"
+"2025-11-20 17:30:40,511",app.py,21,INFO,"Application started!"
+"2025-11-20 17:30:44,183",AgentAsk.py,44,INFO,"=== Iniciando AgentAsk() ==="
+"2025-11-20 17:30:44,183",AgentAsk.py,45,INFO,"Entrada recebida | empresa=0011 | session_id=None | streaming=False"
+"2025-11-20 17:30:44,183",AgentAsk.py,49,INFO,"Status do plano da empresa (0011): deactivated"
+"2025-11-20 17:30:44,183",AgentAsk.py,57,INFO,"Carregando tools de configura��o..."
+"2025-11-20 17:30:44,183",tools.py,27,INFO,"Configurando as tools"
+"2025-11-20 17:30:44,274",tools.py,58,INFO,"Tools configuradas"
+"2025-11-20 17:30:44,274",AgentAsk.py,62,INFO,"Inicializando agente LLM..."
+"2025-11-20 17:30:44,274",InitializeAgent.py,52,INFO,"\U0001f7e2 initialize_agent chamado"
+"2025-11-20 17:30:44,274",InitializeAgent.py,60,INFO,"Utilizando session_id existente: 2969c262-c2ac-4966-b296-993d12acf690"
+"2025-11-20 17:30:44,274",buffer_memory.py,100,INFO,"Inicializando mem�ria para session_id=2969c262-c2ac-4966-b296-993d12acf690"
+"2025-11-20 17:30:44,274",buffer_memory.py,75,INFO,"Iniciando load_chat_history() | session_id=2969c262-c2ac-4966-b296-993d12acf690"
+"2025-11-20 17:30:44,841",buffer_memory.py,87,INFO,"Nenhum hist�rico encontrado para session_id=2969c262-c2ac-4966-b296-993d12acf690."
+"2025-11-20 17:30:44,841",InitializeAgent.py,65,INFO,"Mem�ria carregada para sess�o 2969c262-c2ac-4966-b296-993d12acf690. 0 mensagens restauradas."
+"2025-11-20 17:30:45,748",InitializeAgent.py,82,INFO,"Modelo OpenAI iniciado com temperature=0.5"
+"2025-11-20 17:30:45,748",prompt_template.py,17,INFO,"Iniciando chat_system_prompt() para empresa='standard' com arquivo='src/chat/prompts/prompts.json'"
+"2025-11-20 17:30:45,748",prompt_template.py,42,INFO,"Prompt encontrado para a empresa: standard"
+"2025-11-20 17:30:45,748",InitializeAgent.py,108,INFO,"Agent Chain montado com sucesso."
+"2025-11-20 17:30:45,748",InitializeAgent.py,119,INFO,"Agent Executor criado e pronto para uso."
+"2025-11-20 17:30:45,748",AgentAsk.py,66,INFO,"Agente inicializado com sucesso."
+"2025-11-20 17:30:45,748",AgentAsk.py,69,INFO,"Executando agente para input: 'Ol�'"
+"2025-11-20 17:30:46,991",_client.py,1025,INFO,"HTTP Request: POST https://api.openai.com/v1/chat/completions ""HTTP/1.1 200 OK"""
+"2025-11-20 17:30:47,098",AgentAsk.py,72,INFO,"Execu��o conclu�da em 2.92s"
+"2025-11-20 17:30:47,098",AgentAsk.py,75,INFO,"Salvando mem�ria da conversa..."
+"2025-11-20 17:30:47,098",buffer_memory.py,51,INFO,"Iniciando save_chat_history() | session_id=2969c262-c2ac-4966-b296-993d12acf690"
+"2025-11-20 17:30:47,216",buffer_memory.py,64,INFO,"Hist�rico salvo com sucesso para session_id=2969c262-c2ac-4966-b296-993d12acf690"
+"2025-11-20 17:30:47,216",AgentAsk.py,109,INFO,"Calculando tokens estimados da requisi��o..."
+"2025-11-20 17:30:47,623",AgentAsk.py,122,INFO,"Enviando dados de uso de tokens para gerenciamento em background..."
+"2025-11-20 17:30:47,624",AgentAsk.py,129,INFO,"=== AgentAsk() finalizado com sucesso ==="
+"2025-11-20 20:38:45,877",buffer_memory.py,27,INFO,"Carregando configura��o do MongoDB..."
+"2025-11-20 20:38:46,379",buffer_memory.py,38,INFO,"Conex�o com MongoDB realizada com sucesso."
+"2025-11-20 20:38:46,506",retrieval.py,22,INFO,"Vari�veis de ambiente carregadas."
+"2025-11-20 20:38:46,506",retrieval.py,30,INFO,"Pinecone Index configurado: backai-vectorstore"
+"2025-11-20 20:38:46,506",retrieval.py,31,INFO,"Namespace: betterai-embeddings"
+"2025-11-20 20:38:52,038",business_verifier.py,11,INFO,"Verificando informa��es da empresa"
+"2025-11-20 20:38:53,627",app.py,21,INFO,"Application started!"
+"2025-11-20 20:39:09,407",AgentAsk.py,44,INFO,"=== Iniciando AgentAsk() ==="
+"2025-11-20 20:39:09,407",AgentAsk.py,45,INFO,"Entrada recebida | empresa=0011 | session_id=None | streaming=False"
+"2025-11-20 20:39:09,434",AgentAsk.py,49,INFO,"Status do plano da empresa (0011): deactivated"
+"2025-11-20 20:39:09,434",AgentAsk.py,57,INFO,"Carregando tools de configura��o..."
+"2025-11-20 20:39:09,434",tools.py,27,INFO,"Configurando as tools"
+"2025-11-20 20:39:09,641",tools.py,58,INFO,"Tools configuradas"
+"2025-11-20 20:39:09,641",AgentAsk.py,62,INFO,"Inicializando agente LLM..."
+"2025-11-20 20:39:09,641",InitializeAgent.py,52,INFO,"\U0001f7e2 initialize_agent chamado"
+"2025-11-20 20:39:09,641",InitializeAgent.py,60,INFO,"Utilizando session_id existente: eb21848e-0132-48d0-92ab-39f889d594a8"
+"2025-11-20 20:39:09,641",buffer_memory.py,100,INFO,"Inicializando mem�ria para session_id=eb21848e-0132-48d0-92ab-39f889d594a8"
+"2025-11-20 20:39:09,641",buffer_memory.py,75,INFO,"Iniciando load_chat_history() | session_id=eb21848e-0132-48d0-92ab-39f889d594a8"
+"2025-11-20 20:39:10,277",buffer_memory.py,87,INFO,"Nenhum hist�rico encontrado para session_id=eb21848e-0132-48d0-92ab-39f889d594a8."
+"2025-11-20 20:39:10,277",InitializeAgent.py,65,INFO,"Mem�ria carregada para sess�o eb21848e-0132-48d0-92ab-39f889d594a8. 0 mensagens restauradas."
+"2025-11-20 20:39:12,864",InitializeAgent.py,82,INFO,"Modelo OpenAI iniciado com temperature=0.5"
+"2025-11-20 20:39:12,864",prompt_template.py,17,INFO,"Iniciando chat_system_prompt() para empresa='standard' com arquivo='src/chat/prompts/prompts.json'"
+"2025-11-20 20:39:12,888",prompt_template.py,42,INFO,"Prompt encontrado para a empresa: standard"
+"2025-11-20 20:39:12,896",InitializeAgent.py,108,INFO,"Agent Chain montado com sucesso."
+"2025-11-20 20:39:12,904",InitializeAgent.py,119,INFO,"Agent Executor criado e pronto para uso."
+"2025-11-20 20:39:12,904",AgentAsk.py,66,INFO,"Agente inicializado com sucesso."
+"2025-11-20 20:39:12,904",AgentAsk.py,69,INFO,"Executando agente para input: 'Ol�'"
+"2025-11-20 20:39:14,338",_client.py,1025,INFO,"HTTP Request: POST https://api.openai.com/v1/chat/completions ""HTTP/1.1 200 OK"""
+"2025-11-20 20:39:14,417",AgentAsk.py,72,INFO,"Execu��o conclu�da em 4.98s"
+"2025-11-20 20:39:14,417",AgentAsk.py,75,INFO,"Salvando mem�ria da conversa..."
+"2025-11-20 20:39:14,419",buffer_memory.py,51,INFO,"Iniciando save_chat_history() | session_id=eb21848e-0132-48d0-92ab-39f889d594a8"
+"2025-11-20 20:39:14,550",buffer_memory.py,64,INFO,"Hist�rico salvo com sucesso para session_id=eb21848e-0132-48d0-92ab-39f889d594a8"
+"2025-11-20 20:39:14,550",AgentAsk.py,109,INFO,"Calculando tokens estimados da requisi��o..."
+"2025-11-20 20:39:14,550",tokens_estimated.py,25,INFO,"Iniciando estimativa de tokens | model=gpt-4o-mini, tool_tokens_used=0"
+"2025-11-20 20:39:15,637",tokens_estimated.py,32,INFO,"Encoder carregado para modelo gpt-4o-mini"
+"2025-11-20 20:39:15,643",tokens_estimated.py,46,INFO,"chat_history processado a partir de objetos."
+"2025-11-20 20:39:15,643",tokens_estimated.py,77,INFO,"Partes identificadas para c�lculo: ['system', 'chat_history', 'tools', 'tool_response']"
+"2025-11-20 20:39:15,644",tokens_estimated.py,96,INFO,"Tokens totais de input (sem tool extra): 381 | caracteres=1708"
+"2025-11-20 20:39:15,644",tokens_estimated.py,108,INFO,"Output estimado | chars=31 | tokens=8"
+"2025-11-20 20:39:15,644",tokens_estimated.py,140,INFO,"Estimativa conclu�da | total_tokens=381 | timestamp=2025-11-20 20:39:15"
+"2025-11-20 20:39:15,644",AgentAsk.py,122,INFO,"Enviando dados de uso de tokens para gerenciamento em background..."
+"2025-11-20 20:39:15,653",main.py,19,INFO,"[menage_chat_usage] Iniciando controle de uso � BUSINESS_ID=0011, MODEL=gpt-4o-mini"
+"2025-11-20 20:39:15,653",AgentAsk.py,129,INFO,"=== AgentAsk() finalizado com sucesso ==="
+"2025-11-20 20:39:15,653",main.py,30,INFO,"[menage_chat_usage] MongoDBManager instanciado com sucesso."
+"2025-11-20 20:39:15,653",repository.py,18,INFO,"BusinessRepository inicializado com JSON em: src/chat/tokens_calculator/business_acess.json"
+"2025-11-20 20:39:15,653",manager.py,22,INFO,"[BusinessPlanManager] Inicializado � business_id=0011, model=gpt-4o-mini"
+"2025-11-20 20:39:15,653",main.py,33,INFO,"[menage_chat_usage] BusinessPlanManager criado � empresa=0011, modelo=gpt-4o-mini"
+"2025-11-20 20:39:15,653",manager.py,27,INFO,"[BusinessPlanManager] Iniciando processamento de uso � business_id=0011"
+"2025-11-20 20:39:15,653",cost_calculator.py,34,INFO,"CostCalculator inicializado � modelo='gpt-4o-mini', custos={'input': 0.15, 'cached_input': 0.075, 'output': 0.6}"
+"2025-11-20 20:39:15,653",cost_calculator.py,51,INFO,"Tokens estimados � input=381, output=8, modelo='gpt-4o-mini'"
+"2025-11-20 20:39:15,653",cost_calculator.py,70,INFO,"C�lculo conclu�do com sucesso � modelo='gpt-4o-mini', custo_total_usd=0.000062"
+"2025-11-20 20:39:15,653",manager.py,39,INFO,"[BusinessPlanManager] C�lculo de custos conclu�do � result={'modelo': 'gpt-4o-mini', 'input_tokens': 381, 'output_tokens': 8, 'total_tokens': 389, 'input_cost_usd': '0.000057', 'output_cost_usd': '0.000005', 'total_cost_usd': '0.000062'}"
+"2025-11-20 20:39:15,653",repository.py,21,INFO,"Buscando dados para business_id=0011 no MongoDB."
+"2025-11-20 20:39:17,318",repository.py,31,INFO,"Documento encontrado para business_id=0011"
+"2025-11-20 20:39:17,318",manager.py,74,INFO,"[BusinessPlanManager] Atualiza��o de custos conclu�da � valores={'input_cost_usd': '0.067426', 'output_cost_usd': '0.009820', 'total_cost_usd': '0.077236'}"
+"2025-11-20 20:39:17,318",plan_verifier.py,14,INFO,"Iniciando verifica��o de status do plano."
+"2025-11-20 20:39:17,318",plan_verifier.py,17,INFO,"Extraindo dados do plano..."
+"2025-11-20 20:39:17,318",plan_verifier.py,24,INFO,"Tokens usados: input=449561, output=16345, total=465906"
+"2025-11-20 20:39:17,318",plan_verifier.py,28,INFO,"Limites de tokens: input=1000, output=1000, total=1000"
+"2025-11-20 20:39:17,320",plan_verifier.py,40,WARNING,"Limite de tokens excedido."
+"2025-11-20 20:39:17,320",manager.py,82,INFO,"[BusinessPlanManager] Status do plano verificado � status=no_activated"
+"2025-11-20 20:39:17,320",repository.py,41,INFO,"Iniciando atualiza��o do documento MongoDB _id=6907954fcabed79c1eae5e14"
+"2025-11-20 20:39:18,254",repository.py,51,INFO,"Documento _id=6907954fcabed79c1eae5e14 atualizado com sucesso."
+"2025-11-20 20:39:18,254",repository.py,71,INFO,"Atualizando status local para business_id=0011, novo status=no_activated"
+"2025-11-20 20:39:18,254",repository.py,74,INFO,"Lendo arquivo local: src/chat/tokens_calculator/business_acess.json"
+"2025-11-20 20:39:18,254",repository.py,84,INFO,"Status atualizado no JSON para business_id=0011"
+"2025-11-20 20:39:18,254",repository.py,90,INFO,"Salvando altera��es no arquivo src/chat/tokens_calculator/business_acess.json"
+"2025-11-20 20:39:18,254",repository.py,94,INFO,"Arquivo JSON salvo com sucesso."
+"2025-11-20 20:39:18,254",repository.py,57,INFO,"Inserindo registro de uso de tokens em ProcessTokensUsage."
+"2025-11-20 20:39:19,215",repository.py,65,INFO,"Registro inserido com sucesso em ProcessTokensUsage."
+"2025-11-20 20:39:19,215",manager.py,91,INFO,"[BusinessPlanManager] Dados salvos com sucesso no reposit�rio."
+"2025-11-20 20:39:19,215",manager.py,103,INFO,"[BusinessPlanManager] Execu��o finalizada com sucesso � result={'business_id': '0011', 'model': 'gpt-4o-mini', 'status': 'no_activated', 'updated_costs': {'modelo': 'gpt-4o-mini', 'input_tokens': 381, 'output_tokens': 8, 'total_tokens': 389, 'input_cost_usd': '0.000057', 'output_cost_usd': '0.000005', 'total_cost_usd': '0.000062'}}"
+"2025-11-20 20:39:19,215",main.py,38,INFO,"[menage_chat_usage] Gerenciamento de uso conclu�do com sucesso � resultado={'business_id': '0011', 'model': 'gpt-4o-mini', 'status': 'no_activated', 'updated_costs': {'modelo': 'gpt-4o-mini', 'input_tokens': 381, 'output_tokens': 8, 'total_tokens': 389, 'input_cost_usd': '0.000057', 'output_cost_usd': '0.000005', 'total_cost_usd': '0.000062'}}"

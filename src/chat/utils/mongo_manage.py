@@ -6,6 +6,14 @@ from dotenv import load_dotenv
 # Carrega variáveis do .env
 load_dotenv()
 
+import logging
+
+logging.basicConfig(
+    filename='app.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(filename)s - line: %(lineno)d - %(levelname)s - %(message)s'
+)
+
 class MongoDBManager:
     """
     Classe para gerenciar operações com MongoDB.

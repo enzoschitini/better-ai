@@ -10,19 +10,35 @@ from langchain.memory import ConversationBufferMemory
 from langchain.schema import messages_from_dict, messages_to_dict
 from dotenv import load_dotenv
 
+import logging
+
+logging.basicConfig(
+    filename='app.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(filename)s - line: %(lineno)d - %(levelname)s - %(message)s'
+)
+
 load_dotenv()
 
 
 # =========================================
 # CONFIGURAÇÃO DO MONGO
 # =========================================
+logging.info("Carregando configuração do MongoDB...")
+
 MONGO_URI = os.getenv("MONGO_URI")
 if not MONGO_URI:
-    raise EnvironmentError("⚠️ bm bm Variável de ambiente MONGO_URI não configurada.")
+    logging.error("Variável de ambiente MONGO_URI não configurada.")
+    raise EnvironmentError("⚠️ Variável de ambiente MONGO_URI não configurada.")
 
-client = MongoClient(MONGO_URI)
-db = client["Chat"]
-collection = db["ConversationBufferMemory"]
+try:
+    client = MongoClient(MONGO_URI)
+    db = client["Chat"]
+    collection = db["ConversationBufferMemory"]
+    logging.info("Conexão com MongoDB realizada com sucesso.")
+except Exception as e:
+    logging.exception(f"Erro ao conectar ao MongoDB: {e}")
+    raise
 
 
 # =========================================
@@ -32,15 +48,23 @@ def save_chat_history(session_id: str, memory: ConversationBufferMemory) -> None
     """
     Salva o histórico de chat de uma sessão no MongoDB.
     """
+    logging.info(f"Iniciando save_chat_history() | session_id={session_id}")
+
     if not session_id or not memory:
+        logging.error("save_chat_history chamado sem session_id ou memory válidos.")
         raise ValueError("session_id e memory são obrigatórios para salvar o histórico.")
 
-    history_data = messages_to_dict(memory.chat_memory.messages)
-    collection.update_one(
-        {"session_id": session_id},
-        {"$set": {"messages": history_data}},
-        upsert=True
-    )
+    try:
+        history_data = messages_to_dict(memory.chat_memory.messages)
+        collection.update_one(
+            {"session_id": session_id},
+            {"$set": {"messages": history_data}},
+            upsert=True
+        )
+        logging.info(f"Histórico salvo com sucesso para session_id={session_id}")
+    except Exception as e:
+        logging.exception(f"Erro ao salvar histórico da sessão {session_id}: {e}")
+        raise
 
 
 def load_chat_history(session_id: str):
@@ -48,13 +72,24 @@ def load_chat_history(session_id: str):
     Carrega o histórico de chat de uma sessão no MongoDB.
     Retorna uma lista de mensagens.
     """
+    logging.info(f"Iniciando load_chat_history() | session_id={session_id}")
+
     if not session_id:
+        logging.warning("load_chat_history chamado sem session_id. Retornando vazio.")
         return []
 
-    doc = collection.find_one({"session_id": session_id})
-    if doc and "messages" in doc:
-        return messages_from_dict(doc["messages"])
-    return []
+    try:
+        doc = collection.find_one({"session_id": session_id})
+        if doc and "messages" in doc:
+            logging.info(f"Histórico encontrado para session_id={session_id}.")
+            return messages_from_dict(doc["messages"])
+
+        logging.info(f"Nenhum histórico encontrado para session_id={session_id}.")
+        return []
+
+    except Exception as e:
+        logging.exception(f"Erro ao carregar histórico da sessão {session_id}: {e}")
+        raise
 
 
 def create_memory(session_id: str) -> ConversationBufferMemory:
@@ -62,30 +97,47 @@ def create_memory(session_id: str) -> ConversationBufferMemory:
     Cria uma instância de memória persistente associada a uma sessão específica.
     Retorna um objeto ConversationBufferMemory com as mensagens carregadas.
     """
-    loaded_messages = load_chat_history(session_id)
+    logging.info(f"Inicializando memória para session_id={session_id}")
 
-    memory = ConversationBufferMemory(
-        return_messages=True,
-        memory_key="chat_history"
-    )
-    memory.chat_memory.messages = loaded_messages
-    return memory
+    try:
+        loaded_messages = load_chat_history(session_id)
+
+        memory = ConversationBufferMemory(
+            return_messages=True,
+            memory_key="chat_history"
+        )
+        memory.chat_memory.messages = loaded_messages
+
+        logging.debug(
+            f"Memória criada para session_id={session_id} | mensagens_carregadas={len(loaded_messages)}"
+        )
+        return memory
+
+    except Exception as e:
+        logging.exception(f"Erro ao criar memória para session_id={session_id}: {e}")
+        raise
 
 
 # =========================================
 # TESTE LOCAL (opcional)
 # =========================================
 if __name__ == "__main__":
-    # Teste rápido
-    sess_id = "teste_123"
-    mem = create_memory(sess_id)
+    try:
+        sess_id = "teste_123"
+        logging.info(f"=== Teste local iniciado para session_id={sess_id} ===")
 
-    #print(f"Mensagens carregadas ({sess_id}):", len(mem.chat_memory.messages))
+        mem = create_memory(sess_id)
 
-    # simulação de adição
-    from langchain.schema import HumanMessage
-    mem.chat_memory.add_message(HumanMessage(content="Olá!"))
-    save_chat_history(sess_id, mem)
+        from langchain.schema import HumanMessage
+        mem.chat_memory.add_message(HumanMessage(content="Olá!"))
 
-    mem2 = create_memory(sess_id)
-    #print(f"Mensagens recarregadas: {len(mem2.chat_memory.messages)}")
+        save_chat_history(sess_id, mem)
+
+        mem2 = create_memory(sess_id)
+
+        logging.info(
+            f"Teste finalizado | Mensagens carregadas: {len(mem2.chat_memory.messages)}"
+        )
+
+    except Exception as e:
+        logging.exception(f"Erro no teste local: {e}")

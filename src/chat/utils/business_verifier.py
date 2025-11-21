@@ -1,6 +1,14 @@
 import json
+import logging
+
+logging.basicConfig(
+    filename='app.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(filename)s - line: %(lineno)d - %(levelname)s - %(message)s'
+)
 
 class BusinessVerifier:
+    logging.info("Verificando informações da empresa")
     """Classe responsável por verificar se o plano de uma empresa está ativo."""
 
     def __init__(self, caminho_arquivo: str):
