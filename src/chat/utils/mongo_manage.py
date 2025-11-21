@@ -6,6 +6,10 @@ from dotenv import load_dotenv
 # Carrega variáveis do .env
 load_dotenv()
 
+from src.chat.utils.logging_utils import setup_logging
+
+setup_logging()
+
 class MongoDBManager:
     """
     Classe para gerenciar operações com MongoDB.

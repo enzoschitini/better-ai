@@ -7,9 +7,18 @@ from typing import List, Dict, Any, Optional
 import json
 import os
 import uuid
+import logging
 
 from  src.chat.AgentAsk import AgentAsk
 from src.embbeding.embedding import embedding_documents
+
+logging.basicConfig(
+    filename='app.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(filename)s - line: %(lineno)d - %(levelname)s - %(message)s'
+)
+
+logging.info("Application started!")
 
 app = FastAPI(
     title="BetterAI Chat API",
@@ -99,6 +108,7 @@ def run_agent(request: AgentRunRequest):
         )
 
     except Exception as e:
+        logging.error("Erro ao executar o agente: {e}")
         raise HTTPException(
             status_code=500,
             detail=f"Erro ao executar o agente: {e}"
@@ -143,6 +153,8 @@ async def upload_file(
     try:
         metadata_dict = json.loads(metadata)
     except json.JSONDecodeError:
+        logging.error("The 'metadata' field must contain valid JSON.")
+        logging.error("")
         return JSONResponse(
             status_code=400,
             content={"error": "The 'metadata' field must contain valid JSON."}
