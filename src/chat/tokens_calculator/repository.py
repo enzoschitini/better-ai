@@ -1,13 +1,9 @@
 import json
 from bson import ObjectId
 import logging
+from src.chat.utils.logging_utils import setup_logging
 
-logging.basicConfig(
-    filename='app.log',
-    level=logging.INFO,
-    format='%(asctime)s - %(filename)s - line: %(lineno)d - %(levelname)s - %(message)s'
-)
-
+setup_logging()
 
 class BusinessRepository:
     """Abstrai o acesso ao MongoDB e ao arquivo local JSON."""

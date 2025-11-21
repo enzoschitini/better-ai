@@ -4,12 +4,9 @@ from langchain_core.utils.function_calling import convert_to_openai_function
 from langchain.agents import tool
 
 from src.chat.tools.retrieval import AnswerGenerationTool
+from src.chat.utils.logging_utils import setup_logging
 
-logging.basicConfig(
-    filename='app.log',
-    level=logging.INFO,
-    format='%(asctime)s - %(filename)s - line: %(lineno)d - %(levelname)s - %(message)s'
-)
+setup_logging()
 
 def tool_format_output(name: str, response: str, parameters: dict = None):
     output = {

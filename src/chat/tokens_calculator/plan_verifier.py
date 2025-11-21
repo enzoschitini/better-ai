@@ -1,10 +1,7 @@
 import logging
+from src.chat.utils.logging_utils import setup_logging
 
-logging.basicConfig(
-    filename='app.log',
-    level=logging.INFO,
-    format='%(asctime)s - %(filename)s - line: %(lineno)d - %(levelname)s - %(message)s'
-)
+setup_logging()
 
 class PlanStatusVerifier:
     """Verifica se o uso do plano ultrapassou os limites."""

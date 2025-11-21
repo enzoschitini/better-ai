@@ -24,11 +24,9 @@ warnings.filterwarnings("ignore", category=UserWarning)
 
 load_dotenv()
 
-logging.basicConfig(
-    filename='app.log',
-    level=logging.INFO,
-    format='%(asctime)s - %(filename)s - line: %(lineno)d - %(levelname)s - %(message)s'
-)
+from src.chat.utils.logging_utils import setup_logging
+
+setup_logging()
 
 # =========================================
 # STREAM HANDLER

@@ -1,11 +1,7 @@
 import logging
+from src.chat.utils.logging_utils import setup_logging
 
-logging.basicConfig(
-    filename='app.log',
-    level=logging.INFO,
-    format='%(asctime)s - %(filename)s - line: %(lineno)d - %(levelname)s - %(message)s'
-)
-
+setup_logging()
 
 class CostCalculator:
     """Responsável por calcular e formatar custos de tokens, com logging."""
