@@ -1,7 +1,5 @@
-import json
 import os
-
-from langchain.prompts import PromptTemplate
+import yaml
 import logging
 
 logging.basicConfig(
@@ -10,31 +8,31 @@ logging.basicConfig(
     format='%(asctime)s - %(filename)s - line: %(lineno)d - %(levelname)s - %(message)s'
 )
 
-def chat_system_prompt(empresa: str, path_json: str = "src/chat/prompts/prompts.json") -> str:
+def chat_system_prompt(empresa: str, path_yaml: str = "src/chat/prompts/prompts.yaml") -> str:
     """
-    Retorna o prompt do sistema correspondente à empresa informada.
+    Retorna o prompt do sistema correspondente à empresa informada (lendo de YAML).
     """
-    logging.info(f"Iniciando chat_system_prompt() para empresa='{empresa}' com arquivo='{path_json}'")
+    logging.info(f"Iniciando chat_system_prompt() para empresa='{empresa}' com arquivo='{path_yaml}'")
 
-    # Verifica se o JSON existe
-    if not os.path.exists(path_json):
-        logging.error(f"Arquivo JSON não encontrado: {path_json}")
-        raise FileNotFoundError(f"Arquivo JSON não encontrado: {path_json}")
+    # Verifica se o YAML existe
+    if not os.path.exists(path_yaml):
+        logging.error(f"Arquivo YAML não encontrado: {path_yaml}")
+        raise FileNotFoundError(f"Arquivo YAML não encontrado: {path_yaml}")
 
-    logging.debug("Arquivo JSON encontrado, iniciando leitura...")
+    logging.debug("Arquivo YAML encontrado, iniciando leitura...")
 
-    # Lê o JSON
+    # Lê o YAML
     try:
-        with open(path_json, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        logging.debug("JSON carregado com sucesso.")
+        with open(path_yaml, "r", encoding="utf-8") as f:
+            data = yaml.safe_load(f)
+        logging.debug("YAML carregado com sucesso.")
     except Exception as e:
-        logging.exception(f"Erro lendo o arquivo JSON: {e}")
+        logging.exception(f"Erro lendo o arquivo YAML: {e}")
         raise
 
-    # Procura empresa
+    # Procura a empresa
     empresas = data.get("empresas", [])
-    logging.debug(f"Número de empresas encontradas no JSON: {len(empresas)}")
+    logging.debug(f"Número de empresas encontradas no YAML: {len(empresas)}")
 
     for item in empresas:
         nome_emp = item.get("nome", "").lower()
@@ -44,3 +42,5 @@ def chat_system_prompt(empresa: str, path_json: str = "src/chat/prompts/prompts.
 
     logging.warning(f"Nenhum prompt encontrado para a empresa: {empresa}")
     raise ValueError(f"Nenhum prompt encontrado para a empresa: {empresa}")
+
+#print(chat_system_prompt(empresa="standard"))
