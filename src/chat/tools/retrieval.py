@@ -145,3 +145,8 @@ def AnswerGenerationTool(pergunta: str, AnswerGenerationDic: dict):
     logging.info(f"Contexto retornado com {len(search_standards['docs'])} documentos.")
 
     return context
+
+"""
+retrieval = AnswerGenerationTool("Enzo Schitini", {"filter_search": {"collection_id": "22"}, "K": 50})
+print(retrieval)
+#"""
