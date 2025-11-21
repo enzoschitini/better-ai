@@ -20,6 +20,7 @@ from src.chat.buffer_memory import save_chat_history
 from src.chat.tokens_calculator.main import menage_chat_usage
 from src.chat.tokens_calculator.tokens_estimated import estimar_tokens_completos
 from src.chat.utils.business_verifier import BusinessVerifier
+from src.chat.utils.logging_utils import setup_logging
 
 # Ignora todos os warnings
 warnings.filterwarnings("ignore")
@@ -27,11 +28,7 @@ warnings.filterwarnings("ignore", category=UserWarning)
 
 load_dotenv()
 
-logging.basicConfig(
-    filename='app.log',
-    level=logging.INFO,
-    format='%(asctime)s - %(filename)s - line: %(lineno)d - %(levelname)s - %(message)s'
-)
+setup_logging()
 
 
 # =========================================

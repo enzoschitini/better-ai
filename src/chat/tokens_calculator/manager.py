@@ -3,12 +3,9 @@ from src.chat.tokens_calculator.plan_verifier import PlanStatusVerifier
 from src.chat.tokens_calculator.repository import BusinessRepository
 
 import logging
+from src.chat.utils.logging_utils import setup_logging
 
-logging.basicConfig(
-    filename='app.log',
-    level=logging.INFO,
-    format='%(asctime)s - %(filename)s - line: %(lineno)d - %(levelname)s - %(message)s'
-)
+setup_logging()
 
 class BusinessPlanManager:
     """Orquestra o cálculo de custos e atualização de plano."""

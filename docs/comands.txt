@@ -1,17 +1,18 @@
 # Lista de domínios confiáveis (coloca aqui apenas os que realmente vão acessar a API)
-origins = [
-    "https://better-ai.up.railway.app",
-    "https://better-ai-homol.up.railway.app",
-    "https://better-ai-dev.up.railway.app",
-    "http://127.0.0.1:8000",
-]
+
+https://better-ai.up.railway.app
+
+https://better-ai-homol.up.railway.app
+
+https://better-ai-dev.up.railway.app
+
+http://127.0.0.1:8000
 
 uvicorn app:app --reload
 
 git push origin --delete nome-da-branch
 
-
-
+python -m src.main
 
 
 

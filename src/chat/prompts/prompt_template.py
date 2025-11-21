@@ -2,11 +2,9 @@ import os
 import yaml
 import logging
 
-logging.basicConfig(
-    filename='app.log',
-    level=logging.INFO,
-    format='%(asctime)s - %(filename)s - line: %(lineno)d - %(levelname)s - %(message)s'
-)
+from src.chat.utils.logging_utils import setup_logging
+
+setup_logging()
 
 def chat_system_prompt(empresa: str, path_yaml: str = "src/chat/prompts/prompts.yaml") -> str:
     """
