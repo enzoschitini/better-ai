@@ -75,6 +75,7 @@ def initialize_agent(session_id, user_prompt, temperature, tools, tools_json, to
         # ===== OPENAI CHAT MODEL =====
         logging.debug("Inicializando ChatOpenAI...")
         chat = ChatOpenAI(
+            model="gpt-4o-mini",
             temperature=temperature,
             streaming=streaming,
             callbacks=[handler] if streaming else None,
