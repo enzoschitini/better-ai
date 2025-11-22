@@ -224,6 +224,39 @@ curl http://127.0.0.1:8000/generate-id
 
 
 
+from src.image_generation.google_genai import ImageGenerationService, ImagePayload
+import base64
+
+
+@app.post("/generate")
+def generate():
+    payload = ImagePayload(
+        prompt="A futuristic cyberpunk samurai walking in neon Tokyo",
+        number_of_images=2,
+        aspect_ratio="9:16",
+        image_size="1K",
+        model="FAST",
+    )
+
+    service = ImageGenerationService()
+    result = service.create_image(payload)
+
+    response = []
+    for item in result:
+        img_base64 = base64.b64encode(item["image_bytes"]).decode("utf-8")
+
+        response.append({
+            "status": item["status"],
+            "url": item["url"],
+            "image_base64": f'<img src="data:image/jpeg;base64,{img_base64}" />'
+        })
+
+    return response
+
+
+
+
+
 
 
 
