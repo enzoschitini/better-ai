@@ -115,9 +115,8 @@ class ImageGenerator:
     DIP – depende de abstrações, não implementações.
     """
 
-    def __init__(self, gemini_client: ClientGemini, saver: ImageSaverProtocol):
+    def __init__(self, gemini_client: ClientGemini):
         self.client = gemini_client.client
-        self.saver = saver
 
     def generate(self, payload: ImagePayload) -> List[Dict]:
         payload.validate()
@@ -143,14 +142,11 @@ class ImageGenerator:
         for generated in result.generated_images:
             image_bytes = generated.image.image_bytes  # <- Bytes da imagem
 
-            # Salva localmente
-            url = self.saver.save(image_bytes)
-
             # Retorno agora inclui também os bytes
             saved_images.append(
                 {
                     "status": "success",
-                    "url": url,
+                    "nm_image": f"{str(uuid.uuid4())[:8]}.jpeg",
                     "image_bytes": image_bytes,  # <-- ADICIONADO
                 }
             )
@@ -165,8 +161,8 @@ class ImageGenerationService:
 
     def __init__(self, api_key: str | None = None):
         self.client = ClientGemini(api_key=api_key)
-        self.saver = LocalImageSaver()
-        self.generator = ImageGenerator(self.client, self.saver)
+        #self.saver = LocalImageSaver()
+        self.generator = ImageGenerator(self.client)
 
     def create_image(self, payload: ImagePayload) -> List[Dict]:
         return self.generator.generate(payload)
@@ -174,7 +170,7 @@ class ImageGenerationService:
 
 
 
-"""
+
 payload = ImagePayload(
     prompt="A futuristic cyberpunk samurai walking in neon Tokyo",
     # Classe para turbinar prompt
@@ -186,18 +182,16 @@ payload = ImagePayload(
 
 service = ImageGenerationService()
 
-result = service.create_image(payload)
+results = service.create_image(payload)
 
-for idx, item in enumerate(result):
-    image_bytes = item["image_bytes"]
-    filename = f"output_{idx}.jpg"
+for r in results:
+    print(r["nm_image"])
+    path = f"{r['nm_image']}"
 
-    with open(filename, "wb") as f:
-        f.write(image_bytes)
+    with open(path, "wb") as f:
+        f.write(r['image_bytes'])
 
-    print(f"Imagem salva em {filename}")
-
-
+"""
 [
     {
         'status': 'success',
@@ -205,12 +199,6 @@ for idx, item in enumerate(result):
         'image_bytes': b'\xFF\xD8\xFF\xE0\x00\x10JFIF...'
     }
 ]
-
-print(result)
-"""
-
-# Doc: https://ai.google.dev/gemini-api/docs/imagen?hl=it#imagen-4
-
 
 
 results = [
@@ -235,3 +223,10 @@ for x in results:
 
     print(url)
     print(image_bytes)
+print(result)
+"""
+
+# Doc: https://ai.google.dev/gemini-api/docs/imagen?hl=it#imagen-4
+
+
+
