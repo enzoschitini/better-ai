@@ -213,5 +213,25 @@ print(result)
 
 
 
+results = [
+    {
+        'status': 'success',
+        'url': 'generated_images/8ea4e53d-a85f-45ef-8be2-146ef3ac.jpg',
+        'image_bytes': b'\xFF\xD8\xFF\xE0\x00\x10JFIF...'
+    },
+    {
+        'status': 'success',
+        'url': 'generated_images/8ea4e53d-a85f-45ef-8be2-146ef3ac.jpg',
+        'image_bytes': b'\xFF\xD8\xFF\xE0\x00\x10JFIF...'
+    }
+]
 
+for x in results:
+    url = x["url"]
+    image_bytes = x["image_bytes"]
 
+    with open(url, "wb") as f:
+        f.write(image_bytes)
+
+    print(url)
+    print(image_bytes)

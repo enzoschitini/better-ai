@@ -226,6 +226,25 @@ curl http://127.0.0.1:8000/generate-id
 
 from src.image_generation.google_genai import ImageGenerationService, ImagePayload
 import base64
+from pydantic import BaseModel
+from typing import List
+import os
+
+
+
+# --- ENDPOINT QUE SALVA AS IMAGENS ---
+@app.post("/save-images")
+def save_images(results):
+    for x in results:
+        url = x["url"]
+        image_bytes = x["image_bytes"]
+
+        with open(url, "wb") as f:
+            f.write(image_bytes)
+
+    return {
+        "status": "ok"
+    }
 
 
 @app.post("/generate")
