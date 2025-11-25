@@ -232,19 +232,40 @@ import os
 
 
 
-# --- ENDPOINT QUE SALVA AS IMAGENS ---
-@app.post("/save-images")
-def save_images(results):
-    for x in results:
-        url = x["url"]
-        image_bytes = x["image_bytes"]
 
-        with open(url, "wb") as f:
+
+import base64
+
+class ImageResult(BaseModel):
+    nm_image: str
+    image_bytes: str  # base64
+
+class ResultsPayload(BaseModel):
+    results: List[ImageResult]
+
+
+@app.post("/save-images")
+def save_images(payload: ResultsPayload):
+    for r in payload.results:
+        print(r.nm_image)
+        path = f"images/{r.nm_image}"
+
+        image_bytes = base64.b64decode(r.image_bytes)
+
+        with open(path, "wb") as f:
             f.write(image_bytes)
 
-    return {
-        "status": "ok"
-    }
+    return {"status": "successo", "message": "Imagens salvas com sucesso"}
+
+
+
+
+
+
+
+
+
+
 
 
 @app.post("/generate")

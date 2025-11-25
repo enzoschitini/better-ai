@@ -167,8 +167,27 @@ class ImageGenerationService:
     def create_image(self, payload: ImagePayload) -> List[Dict]:
         return self.generator.generate(payload)
 
+import base64
+
+# Exemplo de lista de imagens
+results = [
+    {
+        'status': 'success',
+        'nm_image': '2fbc4034.jpeg',
+        'image_bytes': base64.b64encode(open("generated_images/2fbc4034-dd33-4324-947f-6fc278481ef7.jpg", "rb").read()).decode('utf-8')
+    },
+
+    {
+        'status': 'success',
+        'nm_image': 'f920a151.jpeg',
+        'image_bytes': base64.b64encode(open("generated_images/f920a151-e613-4dbb-ba97-5a8abf3e1d1d.jpg", "rb").read()).decode('utf-8')
+    }
+]
 
 
+"""
+dict_keys(['status', 'nm_image', 'image_bytes'])
+f810513a.jpeg
 
 
 payload = ImagePayload(
@@ -191,11 +210,10 @@ for r in results:
     with open(path, "wb") as f:
         f.write(r['image_bytes'])
 
-"""
 [
     {
         'status': 'success',
-        'url': 'generated_images/8ea4e53d-a85f-45ef-8be2-146ef3ac.jpg',
+        'nm_image': 'f810513a.jpeg',
         'image_bytes': b'\xFF\xD8\xFF\xE0\x00\x10JFIF...'
     }
 ]
