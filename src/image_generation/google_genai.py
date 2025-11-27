@@ -167,22 +167,112 @@ class ImageGenerationService:
     def create_image(self, payload: ImagePayload) -> List[Dict]:
         return self.generator.generate(payload)
 
+
+
 import base64
+import requests
 
-# Exemplo de lista de imagens
-results = [
-    {
-        'status': 'success',
-        'nm_image': '2fbc4034.jpeg',
-        'image_bytes': base64.b64encode(open("generated_images/2fbc4034-dd33-4324-947f-6fc278481ef7.jpg", "rb").read()).decode('utf-8')
-    },
+def save_image(results):
+    url = "https://better-ai-bucket-storage-production.up.railway.app/save-images"
+    base_url = "http://better-ai-bucket-storage-production.up.railway.app/images"
 
-    {
-        'status': 'success',
-        'nm_image': 'f920a151.jpeg',
-        'image_bytes': base64.b64encode(open("generated_images/f920a151-e613-4dbb-ba97-5a8abf3e1d1d.jpg", "rb").read()).decode('utf-8')
+    formatted_results = []
+
+    for image in results:
+        formatted_results.append({
+            "nm_image": image["nm_image"],
+            "image_bytes": base64.b64encode(image["image_bytes"]).decode("utf-8")
+        })
+
+    payload = {
+        "results": formatted_results
     }
-]
+
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    try:
+        response = requests.post(url, json=payload, headers=headers, timeout=30)
+
+        if response.status_code == 200:
+            images_urls = [
+                f"{base_url}/{img['nm_image']}" for img in formatted_results
+            ]
+
+            return {
+                "status": 200,
+                "images": images_urls
+            }
+
+        return {
+            "status": response.status_code,
+            "response": response.text
+        }
+
+    except requests.exceptions.RequestException as e:
+        return {
+            "status": 500,
+            "error": str(e)
+        }
+
+
+def generate(prompt, number_of_images, aspect_ratio, image_size, model):
+    try:
+        payload = ImagePayload(
+            prompt=prompt,
+            number_of_images=number_of_images,
+            aspect_ratio=aspect_ratio,
+            image_size=image_size,
+            model=model,
+        )
+
+        service = ImageGenerationService()
+        results = service.create_image(payload)
+
+    except Exception as e:
+        return {
+            "status": 500,
+            "error": f"Erro ao gerar imagem: {str(e)}"
+        }
+
+    try:
+        r = save_image(results=results)
+        return r
+    
+    except Exception as e:
+        return {
+            "status": 500,
+            "error": f"Erro ao salvar imagem: {str(e)}"
+        }
+
+    # {'status': 200, 'images': ['http://better-ai-bucket-storage-production.up.railway.app/images/d0b1da59.jpeg']}
+
+
+print(generate(prompt="Una foto di una chiesa in Italia", 
+         number_of_images=1, aspect_ratio="9:16", image_size="1K", model="FAST"))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 """
@@ -242,6 +332,19 @@ for x in results:
     print(url)
     print(image_bytes)
 print(result)
+
+resultsx = [
+    {
+        'status': 'success',
+        'nm_image': 'xxxxx3.jpeg',
+        'image_bytes': base64.b64encode(open("generated_images/2fbc4034-dd33-4324-947f-6fc278481ef7.jpg", "rb").read()).decode('utf-8')
+    },
+    {
+        'status': 'success',
+        'nm_image': 'xxxxx4.jpeg',
+        'image_bytes': base64.b64encode(open("generated_images/f920a151-e613-4dbb-ba97-5a8abf3e1d1d.jpg", "rb").read()).decode('utf-8')
+    }
+]
 """
 
 # Doc: https://ai.google.dev/gemini-api/docs/imagen?hl=it#imagen-4
