@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from pydantic import BaseModel, Field
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Literal
 import json
 import os
 import uuid
@@ -217,6 +217,60 @@ def generate_id():
 """
 curl http://127.0.0.1:8000/generate-id
 """
+
+
+
+
+
+
+
+
+
+
+
+
+from src.image_generation.google_genai import
+
+class GenerateRequest(BaseModel):
+    prompt: str
+
+
+class GenerateResponse(BaseModel):
+    prompt: str
+    number_of_images: int
+    aspect_ratio: Literal["9:16"]
+    image_size: Literal["1K"]
+    model: Literal["FAST"]
+    status: str
+
+
+@app.post(
+    "/generate-image",
+    response_model=GenerateResponse,
+    summary="Gera imagens com parâmetros fixos"
+)
+def generate_image(data: GenerateRequest) -> GenerateResponse:
+    return generate(
+        prompt=data.prompt,
+        number_of_images=1,
+        aspect_ratio="9:16",
+        image_size="1K",
+        model="FAST"
+    )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

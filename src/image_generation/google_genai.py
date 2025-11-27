@@ -248,8 +248,11 @@ def generate(prompt, number_of_images, aspect_ratio, image_size, model):
 
     # {'status': 200, 'images': ['http://better-ai-bucket-storage-production.up.railway.app/images/d0b1da59.jpeg']}
 
+prompt = """
+Photorealistic photo of a church in Italy, with a warm golden hour light, dramatic shadows and a cinematic feel. Shot with a 35mm lens to capture the grandeur of the architecture and the surrounding landscape. Color grading: warm tones with a touch of contrast. Ultra-detailed, 4K, professional photo, high dynamic range. Aspect ratio 4:3. Safety: avoid identifiable real person likeness.
+"""
 
-print(generate(prompt="Una foto di una chiesa in Italia", 
+print(generate(prompt=prompt, 
          number_of_images=1, aspect_ratio="9:16", image_size="1K", model="FAST"))
 
 
