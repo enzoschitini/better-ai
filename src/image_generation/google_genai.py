@@ -53,11 +53,11 @@ class ImagePayload:
     """
 
     prompt: str
-    number_of_images: int = 1  # Max 4
-    aspect_ratio: str = "1:1"
-    image_size: str = "1K"
+    number_of_images: int
+    aspect_ratio: str
+    image_size: str
     #person_generation: str = "allow_all"
-    model: str = "FAST"
+    model: str
 
     def validate(self):
         if not self.prompt:
@@ -68,7 +68,7 @@ class ImagePayload:
 
         if self.aspect_ratio not in ["1:1", "9:16", "16:9", "4:3", "3:4"]:
             raise ValueError("Aspect ratio inválido.")
-
+    
         #if self.person_generation not in ["dont_allow", "allow_adult", "allow_all"]:
             """
             dont_allow: Blocca la generazione di immagini di persone.

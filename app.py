@@ -234,9 +234,9 @@ from src.image_generation.google_genai import ImageGenerationService
 class GenerateRequest(BaseModel):
     prompt: str
     number_of_images: int
-    aspect_ratio: Literal["9:16"]
-    image_size: Literal["1K"]
-    model: Literal["FAST"]
+    aspect_ratio: Literal["1:1", "9:16", "16:9", "4:3", "3:4"]
+    image_size: Literal["1K", "2K"]
+    model: Literal["FAST", "BASE", "ULTRA"]
 
 class GenerateResponse(BaseModel):
     status: int
