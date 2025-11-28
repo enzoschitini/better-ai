@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 import uuid
 from dataclasses import dataclass
 from typing import Protocol, List, Dict
+import base64
+import requests
 
 load_dotenv()
 
@@ -167,93 +169,83 @@ class ImageGenerationService:
     def create_image(self, payload: ImagePayload) -> List[Dict]:
         return self.generator.generate(payload)
 
+    def save_image(self, results):
+        url = "https://better-ai-bucket-storage-production.up.railway.app/save-images"
+        base_url = "http://better-ai-bucket-storage-production.up.railway.app/images"
 
+        formatted_results = []
 
-import base64
-import requests
+        for image in results:
+            formatted_results.append({
+                "nm_image": image["nm_image"],
+                "image_bytes": base64.b64encode(image["image_bytes"]).decode("utf-8")
+            })
 
-def save_image(results):
-    url = "https://better-ai-bucket-storage-production.up.railway.app/save-images"
-    base_url = "http://better-ai-bucket-storage-production.up.railway.app/images"
+        payload = {
+            "results": formatted_results
+        }
 
-    formatted_results = []
+        headers = {
+            "Content-Type": "application/json"
+        }
 
-    for image in results:
-        formatted_results.append({
-            "nm_image": image["nm_image"],
-            "image_bytes": base64.b64encode(image["image_bytes"]).decode("utf-8")
-        })
+        try:
+            response = requests.post(url, json=payload, headers=headers, timeout=30)
 
-    payload = {
-        "results": formatted_results
-    }
+            if response.status_code == 200:
+                images_urls = [
+                    f"{base_url}/{img['nm_image']}" for img in formatted_results
+                ]
 
-    headers = {
-        "Content-Type": "application/json"
-    }
-
-    try:
-        response = requests.post(url, json=payload, headers=headers, timeout=30)
-
-        if response.status_code == 200:
-            images_urls = [
-                f"{base_url}/{img['nm_image']}" for img in formatted_results
-            ]
+                return {
+                    "status": 200,
+                    "images": images_urls
+                }
 
             return {
-                "status": 200,
-                "images": images_urls
+                "status": response.status_code,
+                "response": response.text
             }
 
-        return {
-            "status": response.status_code,
-            "response": response.text
-        }
-
-    except requests.exceptions.RequestException as e:
-        return {
-            "status": 500,
-            "error": str(e)
-        }
+        except requests.exceptions.RequestException as e:
+            return {
+                "status": 500,
+                "error": str(e)
+            }
 
 
-def generate(prompt, number_of_images, aspect_ratio, image_size, model):
-    try:
-        payload = ImagePayload(
-            prompt=prompt,
-            number_of_images=number_of_images,
-            aspect_ratio=aspect_ratio,
-            image_size=image_size,
-            model=model,
-        )
+    def generate(self, prompt, number_of_images, aspect_ratio, image_size, model):
+        try:
+            payload = ImagePayload(
+                prompt=prompt,
+                number_of_images=number_of_images,
+                aspect_ratio=aspect_ratio,
+                image_size=image_size,
+                model=model,
+            )
 
-        service = ImageGenerationService()
-        results = service.create_image(payload)
+            service = ImageGenerationService()
+            results = service.create_image(payload)
 
-    except Exception as e:
-        return {
-            "status": 500,
-            "error": f"Erro ao gerar imagem: {str(e)}"
-        }
+        except Exception as e:
+            return {
+                "status": 500,
+                "error": f"Erro ao gerar imagem: {str(e)}"
+            }
 
-    try:
-        r = save_image(results=results)
-        return r
-    
-    except Exception as e:
-        return {
-            "status": 500,
-            "error": f"Erro ao salvar imagem: {str(e)}"
-        }
+        try:
+            r = self.save_image(results=results)
+            return r
+        
+        except Exception as e:
+            return {
+                "status": 500,
+                "error": f"Erro ao salvar imagem: {str(e)}"
+            }
 
-    # {'status': 200, 'images': ['http://better-ai-bucket-storage-production.up.railway.app/images/d0b1da59.jpeg']}
+        # {'status': 200, 'images': ['http://better-ai-bucket-storage-production.up.railway.app/images/d0b1da59.jpeg']}
 
-prompt = """
-Photorealistic photo of a church in Italy, with a warm golden hour light, dramatic shadows and a cinematic feel. Shot with a 35mm lens to capture the grandeur of the architecture and the surrounding landscape. Color grading: warm tones with a touch of contrast. Ultra-detailed, 4K, professional photo, high dynamic range. Aspect ratio 4:3. Safety: avoid identifiable real person likeness.
-"""
 
-print(generate(prompt=prompt, 
-         number_of_images=1, aspect_ratio="9:16", image_size="1K", model="FAST"))
 
 
 

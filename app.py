@@ -229,19 +229,17 @@ curl http://127.0.0.1:8000/generate-id
 
 
 
-from src.image_generation.google_genai import
+from src.image_generation.google_genai import ImageGenerationService
 
 class GenerateRequest(BaseModel):
     prompt: str
 
+class GenerateRequest(BaseModel):
+    prompt: str
 
 class GenerateResponse(BaseModel):
-    prompt: str
-    number_of_images: int
-    aspect_ratio: Literal["9:16"]
-    image_size: Literal["1K"]
-    model: Literal["FAST"]
-    status: str
+    status: int
+    images: List[str]
 
 
 @app.post(
@@ -250,14 +248,17 @@ class GenerateResponse(BaseModel):
     summary="Gera imagens com parâmetros fixos"
 )
 def generate_image(data: GenerateRequest) -> GenerateResponse:
-    return generate(
+    gen = ImageGenerationService()
+
+    return gen.generate(
         prompt=data.prompt,
         number_of_images=1,
         aspect_ratio="9:16",
         image_size="1K",
         model="FAST"
     )
-
+# uvicorn app:app --reload
+# http://127.0.0.1:8000
 
 
 
