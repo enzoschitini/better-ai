@@ -170,8 +170,8 @@ class ImageGenerationService:
         return self.generator.generate(payload)
 
     def save_image(self, results):
-        url = "https://better-ai-bucket-storage-production.up.railway.app/save-images"
-        base_url = "http://better-ai-bucket-storage-production.up.railway.app/images"
+        url = f"{os.getenv("URL_BUCKET")}/save-images"
+        base_url = f"{os.getenv("URL_BUCKET")}/images"
 
         formatted_results = []
 
