@@ -11,6 +11,7 @@ import logging
 
 from  src.chat.AgentAsk import AgentAsk
 from src.embbeding.embedding import embedding_documents
+from src.image_generation.google_genai import ImageGenerationService
 
 logging.basicConfig(
     filename='app.log',
@@ -49,9 +50,8 @@ app.add_middleware(
 # http://127.0.0.1:8000
 
 def get_authorization_betterai_api(authorization: str = Header(...)):
-    betterai_api_key = os.getenv("BETTERAI_API_KEY")
-    print(betterai_api_key)
-    #betterai-api-key
+    betterai_api_key = os.getenv("BETTERAI_API_KEY") # betterai-api-key
+    
     if authorization != f"Bearer {betterai_api_key}":
         raise HTTPException(status_code=401, detail="Unauthorized")
     return authorization
@@ -220,17 +220,6 @@ curl http://127.0.0.1:8000/generate-id
 
 
 
-
-
-
-
-
-
-
-
-
-from src.image_generation.google_genai import ImageGenerationService
-
 class GenerateRequest(BaseModel):
     prompt: str
     number_of_images: int
@@ -243,7 +232,7 @@ class GenerateResponse(BaseModel):
     images: List[str]
 
 @app.post(
-    "/generate-image",
+    "/generate-image", dependencies=[Depends(get_authorization_betterai_api)],
     response_model=GenerateResponse,
     summary="Gera imagens com parâmetros fixos"
 )
@@ -257,8 +246,32 @@ def generate_image(data: GenerateRequest) -> GenerateResponse:
         image_size=data.image_size,
         model=data.model
     )
-# uvicorn app:app --reload
-# http://127.0.0.1:8000
+
+"""
+uvicorn app:app --reload
+http://127.0.0.1:8000
+
+curl --location 'http://localhost:8000/generate-image' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer 2afd6752-2b39-468e-b27b-d67b77fddd3f-3f105e35-a345-4c12-8018-9aebaa3522ed' \
+--data '{
+    "prompt": "A bowl of Italian tomato sauce, of the type of tomato sauce, on a bench of a vibrant cozinha from the 1960s. The bowl must be a focal point, with authentic Italian rolls and a soft shine. On the grill, use vintage cooking utensils, such as a metal egg beater or a cooking knife, and sometimes some fresh ingredients such as tough and tasty tomatoes. The lighting must be bright, with a touch of solar light entering a woman with geometric door curtains characteristic of the era. The style must be photorealistic with meticulous attention to details, textures and cores, capturing the nostalgia and simplicity of the Italian lifestyle of the 60s.",
+    "number_of_images": 2,
+    "aspect_ratio": "9:16",
+    "image_size": "2K",
+    "model": "ULTRA"
+  }'
+
+curl --location --request DELETE 'https://better-ai-bucket-storage-production.up.railway.app/delete-images'
+
+{
+    "status": 200,
+    "images": [
+        "http://better-ai-bucket-storage-production.up.railway.app/images/518369fb.jpeg",
+        "http://better-ai-bucket-storage-production.up.railway.app/images/bb5b1655.jpeg"
+    ]
+}
+"""
 
 
 
