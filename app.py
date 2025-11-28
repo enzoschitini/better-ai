@@ -233,14 +233,14 @@ from src.image_generation.google_genai import ImageGenerationService
 
 class GenerateRequest(BaseModel):
     prompt: str
-
-class GenerateRequest(BaseModel):
-    prompt: str
+    number_of_images: int
+    aspect_ratio: Literal["9:16"]
+    image_size: Literal["1K"]
+    model: Literal["FAST"]
 
 class GenerateResponse(BaseModel):
     status: int
     images: List[str]
-
 
 @app.post(
     "/generate-image",
@@ -252,10 +252,10 @@ def generate_image(data: GenerateRequest) -> GenerateResponse:
 
     return gen.generate(
         prompt=data.prompt,
-        number_of_images=1,
-        aspect_ratio="9:16",
-        image_size="1K",
-        model="FAST"
+        number_of_images=data.number_of_images,
+        aspect_ratio=data.aspect_ratio,
+        image_size=data.image_size,
+        model=data.model
     )
 # uvicorn app:app --reload
 # http://127.0.0.1:8000
