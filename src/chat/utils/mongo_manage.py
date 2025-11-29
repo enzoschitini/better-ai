@@ -206,12 +206,6 @@ class MongoDBManager:
         finally:
             self.fechar_conexao()
 
-    from pymongo import MongoClient
-    from dotenv import load_dotenv
-    import os
-
-    load_dotenv()
-
     def rename_collection(self, database_name: str, old_collection_name: str, new_collection_name: str):
         """Renomeia uma coleção dentro de um banco de dados."""
         try:
