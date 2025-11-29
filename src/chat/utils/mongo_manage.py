@@ -205,3 +205,26 @@ class MongoDBManager:
             return {"status": "error", "message": str(e)}
         finally:
             self.fechar_conexao()
+
+    from pymongo import MongoClient
+    from dotenv import load_dotenv
+    import os
+
+    load_dotenv()
+
+    def rename_collection(self, database_name: str, old_collection_name: str, new_collection_name: str):
+        """Renomeia uma coleção dentro de um banco de dados."""
+        try:
+            client = self.conectar()
+            db = client[database_name]
+            
+            # Renomeia a coleção (o método rename funciona sobre o próprio objeto da collection)
+            db[old_collection_name].rename(new_collection_name)
+
+            return {"status": "success", "message": f"Coleção '{old_collection_name}' renomeada para '{new_collection_name}' com sucesso."}
+        except Exception as e:
+            #print(f"❌ Erro ao renomear: {e}")
+            return {"status": "error", "message": str(e)}
+        finally:
+            self.fechar_conexao()
+
