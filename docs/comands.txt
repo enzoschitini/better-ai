@@ -11,6 +11,7 @@ http://127.0.0.1:8000
 uvicorn app:app --reload
 
 git push origin --delete nome-da-branch
+git branch -D nome_branch
 
 python -m src.main
 
