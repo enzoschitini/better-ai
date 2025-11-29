@@ -6,8 +6,12 @@ from dataclasses import dataclass
 from typing import Protocol, List, Dict
 import base64
 import requests
+import logging
+
+from src.utils.logging_utils import setup_logging
 
 load_dotenv()
+setup_logging(log_file="loggings/google_genai.log")
 
 class ClientGemini:
     """
@@ -19,6 +23,7 @@ class ClientGemini:
         self.api_key = api_key or os.environ.get("GEMINI_API_KEY")
 
         if not self.api_key:
+            logging.error("GEMINI_API_KEY não foi definida no ambiente ou passada como parâmetro.")
             raise ValueError(
                 "GEMINI_API_KEY não foi definida no ambiente ou passada como parâmetro."
             )
@@ -59,15 +64,19 @@ class ImagePayload:
 
     def validate(self):
         if not self.prompt:
+            logging.error("Prompt é obrigatório.")
             raise ValueError("Prompt é obrigatório.")
 
         if not 1 <= self.number_of_images <= 4:
+            logging.error("number_of_images deve ser entre 1 e 4.")
             raise ValueError("number_of_images deve ser entre 1 e 4.")
 
         if self.aspect_ratio not in ["1:1", "9:16", "16:9", "4:3", "3:4"]:
+            logging.error("Aspect ratio inválido.")
             raise ValueError("Aspect ratio inválido.")
 
         if self.image_size not in ["1K", "2K"]:
+            logging.error("Image size inválido.")
             raise ValueError("Image size inválido.")
 
 class ImageGenerator:
@@ -96,6 +105,7 @@ class ImageGenerator:
         )
 
         if not result.generated_images:
+            logging.error("Nenhuma imagem foi gerada pela API.")
             raise RuntimeError("Nenhuma imagem foi gerada.")
 
         saved_images = []
@@ -167,6 +177,7 @@ class ImageGenerationService:
             }
 
         except requests.exceptions.RequestException as e:
+            logging.error(f"Erro ao salvar imagens: {str(e)}")
             return {
                 "status": 500,
                 "error": str(e)
@@ -187,6 +198,7 @@ class ImageGenerationService:
             results = service.create_image(payload)
 
         except Exception as e:
+            logging.error(f"Erro ao gerar imagem: {str(e)}")
             return {
                 "status": 500,
                 "error": f"Erro ao gerar imagem: {str(e)}"
@@ -197,6 +209,7 @@ class ImageGenerationService:
             return r
         
         except Exception as e:
+            logging.error(f"Erro ao salvar imagem: {str(e)}")
             return {
                 "status": 500,
                 "error": f"Erro ao salvar imagem: {str(e)}"
