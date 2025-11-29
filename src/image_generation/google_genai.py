@@ -25,7 +25,6 @@ class ClientGemini:
 
         self.client = genai.Client(api_key=self.api_key)
 
-
 class ModelRegistry:
     """
     Classe responsável por manter um catálogo de modelos.
@@ -56,7 +55,6 @@ class ImagePayload:
     number_of_images: int
     aspect_ratio: str
     image_size: str
-    #person_generation: str = "allow_all"
     model: str
 
     def validate(self):
@@ -68,48 +66,9 @@ class ImagePayload:
 
         if self.aspect_ratio not in ["1:1", "9:16", "16:9", "4:3", "3:4"]:
             raise ValueError("Aspect ratio inválido.")
-    
-        #if self.person_generation not in ["dont_allow", "allow_adult", "allow_all"]:
-            """
-            dont_allow: Blocca la generazione di immagini di persone.
-            allow_adult: Genera immagini di adulti, ma non di bambini. Questa è l'impostazione predefinita.
-            allow_all: Genera immagini che includono adulti e bambini.
-            
-            *Nota: il valore del parametro "allow_all" non è consentito nelle località UE, Regno Unito, Svizzera e MENA.
-            """
-            #raise ValueError("Aspect ratio inválido.")
 
         if self.image_size not in ["1K", "2K"]:
             raise ValueError("Image size inválido.")
-
-
-class ImageSaverProtocol(Protocol):
-    """ Interface de salvamento (LSP + ISP + DIP) """
-    def save(self, image_bytes: bytes) -> str:
-        ...
-
-class LocalImageSaver:
-    """
-    Implementação concreta de salvamento.
-    OCP – novos tipos (S3, GCS, CDN) podem ser adicionados depois.
-    """
-
-    def __init__(self, base_path: str = "generated_images", domain: str | None = None):
-        self.base_path = base_path
-        self.domain = domain or os.environ.get("ENV_DOMINIO", "")
-
-        os.makedirs(self.base_path, exist_ok=True)
-
-    def save(self, image_bytes: bytes) -> str:
-        filename = f"{uuid.uuid4()}.jpg"
-        filepath = os.path.join(self.base_path, filename)
-
-        with open(filepath, "wb") as f:
-            f.write(image_bytes)
-
-        # URL final
-        return f"{self.domain}/{filename}" if self.domain else filepath
-
 
 class ImageGenerator:
     """
@@ -142,14 +101,14 @@ class ImageGenerator:
         saved_images = []
 
         for generated in result.generated_images:
-            image_bytes = generated.image.image_bytes  # <- Bytes da imagem
+            image_bytes = generated.image.image_bytes
 
             # Retorno agora inclui também os bytes
             saved_images.append(
                 {
                     "status": "success",
                     "nm_image": f"{str(uuid.uuid4())[:8]}.jpeg",
-                    "image_bytes": image_bytes,  # <-- ADICIONADO
+                    "image_bytes": image_bytes
                 }
             )
 
@@ -242,8 +201,6 @@ class ImageGenerationService:
                 "status": 500,
                 "error": f"Erro ao salvar imagem: {str(e)}"
             }
-
-        # {'status': 200, 'images': ['http://better-ai-bucket-storage-production.up.railway.app/images/d0b1da59.jpeg']}
 
 
 # Doc: https://ai.google.dev/gemini-api/docs/imagen?hl=it#imagen-4
