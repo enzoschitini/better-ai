@@ -50,17 +50,17 @@ class BusinessRepository:
             raise
 
     def insert_process_tokens_usage(self, tokens_response):
-        logging.info("Inserindo registro de uso de tokens em ProcessTokensUsage.")
+        logging.info("Inserindo registro de uso de tokens em ChatTokensUsage.")
 
         try:
             self.mongo.salvar_payload(
                 "TokensUsage",
-                "ProcessTokensUsage",
+                "ChatTokensUsage",
                 tokens_response
             )
-            logging.info("Registro inserido com sucesso em ProcessTokensUsage.")
+            logging.info("Registro inserido com sucesso em ChatTokensUsage.")
         except Exception:
-            logging.exception("Erro ao inserir registro em ProcessTokensUsage.")
+            logging.exception("Erro ao inserir registro em ChatTokensUsage.")
             raise
 
     def update_local_status(self, business_id: str, new_status: str):
