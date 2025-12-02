@@ -296,16 +296,26 @@ curl --location --request DELETE 'https://better-ai-bucket-storage-production.up
 
 
 def get_authorization_mult_key(
-    authorization: str = Header(..., alias="Authorization"),
-    company_id: str = Header(..., alias="CompanyId")
+    authorization: str = Header(...),
+    company_id: str = Header(..., alias="company-id"),
+    company_key: str = Header(..., alias="company-key")
 ):
+    # Chave master  
     betterai_api_key = os.getenv("BETTERAI_API_KEY")
-    api_key = os.getenv(f"{company_id}_API_KEY")
 
-    if authorization not in (f"Bearer {betterai_api_key}", f"Bearer {api_key}"):
-        raise HTTPException(status_code=401, detail="Unauthorized")
+    # Chave específica da empresa
+    secret_key_env = os.getenv(f"{company_id.upper()}_SECRET_KEY")
 
-    return authorization
+    # Verifica BETTERAI_API_KEY
+    if authorization != f"Bearer {betterai_api_key}":
+        raise HTTPException(status_code=401, detail="Invalid Authorization Key")
+
+    # Verifica SECRET_KEY da empresa
+    if company_key != f"Bearer {secret_key_env}":
+        raise HTTPException(status_code=401, detail="Invalid Company Secret Key")
+
+    return True
+
 
 @app.get("/healthy-authorization", dependencies=[Depends(get_authorization_mult_key)])
 def healthy_authorization():
