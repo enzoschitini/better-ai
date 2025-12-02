@@ -288,12 +288,23 @@ curl --location --request DELETE 'https://better-ai-bucket-storage-production.up
 
 
 
+# TEST AUTHORIZATION
 
 
+# uvicorn app:app --reload
+# http://127.0.0.1:8000
 
+def get_authorization_mult_key(authorization: str = Header(...), company_id: str = Header(...)):
+    betterai_api_key = os.getenv("BETTERAI_API_KEY") # betterai-api-key
+    api_key = os.getenv(f"{company_id}_API_KEY") # company specific key
+        
+    if (authorization != f"Bearer {betterai_api_key}") and (authorization != f"Bearer {api_key}"):
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    return authorization
 
-
-
+@app.get("/healthy-authorization", dependencies=[Depends(get_authorization_mult_key)])
+def healthy_authorization():
+    return {"status": "ok"}
 
 # ✅ Endpoint health check
 """
@@ -307,9 +318,7 @@ curl -X GET "http://127.0.0.1:8000/healthy-authorization" \
 def healthy():
     return {"status": "ok"}
 
-@app.get("/healthy-authorization", dependencies=[Depends(get_authorization_betterai_api)])
-def healthy_authorization():
-    return {"status": "ok"}
+
 
 
 # Enzo Schitini
