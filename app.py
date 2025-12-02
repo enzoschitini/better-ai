@@ -12,6 +12,7 @@ import logging
 from  src.chat.AgentAsk import AgentAsk
 from src.embbeding.embedding import embedding_documents
 from src.image_generation.google_genai import ImageGenerationService
+from auth import Authorization
 
 logging.basicConfig(
     filename='app.log',
@@ -46,16 +47,6 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type"],  # cabeçalhos necessários
 )
 
-# uvicorn app:app --reload
-# http://127.0.0.1:8000
-
-def get_authorization_betterai_api(authorization: str = Header(...)):
-    betterai_api_key = os.getenv("BETTERAI_API_KEY") # betterai-api-key
-    
-    if authorization != f"Bearer {betterai_api_key}":
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    return authorization
-
 
 
 # ========================
@@ -83,7 +74,7 @@ class AgentRunResponse(BaseModel):
 # ========================
 # ENDPOINT PRINCIPAL
 # ========================
-@app.post("/run-agent", dependencies=[Depends(get_authorization_betterai_api)], response_model=AgentRunResponse)
+@app.post("/run-agent", dependencies=[Depends(Authorization.multikey)], response_model=AgentRunResponse)
 def run_agent(request: AgentRunRequest):
     """
     Executa o agente de IA com os parâmetros fornecidos.
@@ -114,109 +105,17 @@ def run_agent(request: AgentRunRequest):
             detail=f"Erro ao executar o agente: {e}"
         )
 
-"""
-curl --location 'http://127.0.0.1:8000/run-agent' \
---header 'Content-Type: application/json' \
---data '{
-    "input_text": "Valeu",
-    "business_id": "0011",
-    "metadata": {"client_id": "1234"},
-    "user_prompt": "Você é um agente de IA",
-    "temperature": 0.5,
-    "tool_kit": ["retorna_temperatura_atual","busca_wikipedia", "AnswerGeneration"],
-    "tool_dic": {
-      "retorna_temperatura_atual": {"city": "São Paulo", "units": "metric"},
-      "AnswerGenerationDic": {"filter_search": {"file_id": "file_id_01"}}
-    },
-    "session_id": null,
-    "streaming": false
-  }'
-"""
 
 
 
 
-
-
-
-@app.post("/embedding_file", dependencies=[Depends(get_authorization_betterai_api)], response_model=AgentRunResponse)
-async def upload_file(
-    metadata: str = Form(...),
-    file: UploadFile = File(...)
-):
-    """
-    Endpoint that receives a JSON metadata dictionary and a file.
-    The file name and extension are automatically extracted.
-    """
-
-    # Parse metadata JSON string into a Python dictionary
-    try:
-        metadata_dict = json.loads(metadata)
-    except json.JSONDecodeError:
-        logging.error("The 'metadata' field must contain valid JSON.")
-        logging.error("")
-        return JSONResponse(
-            status_code=400,
-            content={"error": "The 'metadata' field must contain valid JSON."}
-        )
-
-    # Read file content asynchronously
-    file_content = await file.read()
-    
-    embedding_result = embedding_documents(metadata_dict, file_content, file)
-
-    # Build response
-    response = {
-        "message": "File uploaded successfully!",
-        "metadata": metadata_dict,
-        "embedding_result": embedding_result
-    }
-
-    return JSONResponse(content=response)
-
-
-
-"""
-curl --location 'http://127.0.0.1:8000/embedding_file' \
---header 'accept: application/json' \
---form 'metadata="{\"embedding_filter\": {\"file_ids\": \"1234\", \"collection_id\": \"22\"}, \"embedding_aggregations\": {\"collection_name\": \"Babbel\"}}"' \
---form 'file=@"/C:/Users/schit/Downloads/Group 1321314784.png"'
-
-
-{
-    "message": "File uploaded successfully!",
-    "metadata": {
-        "embedding_filter": {
-            "file_ids": "1234",
-            "collection_id": "22",
-            "file_id": "62e8d769-f110-49f0-ab91-3b46f0d2e0f8"
-        },
-        "embedding_aggregations": {
-            "collection_name": "Babbel",
-            "file_name": "Group 1321314784",
-            "file_extension": "png"
-        }
-    }
-}
-"""
-# uvicorn app:app --reload
-# http://127.0.0.1:8000
-
-
-
-
-
-@app.get("/generate-id", dependencies=[Depends(get_authorization_betterai_api)])
+@app.get("/generate-id", dependencies=[Depends(Authorization.multikey)])
 def generate_id():
     """
     Gera e retorna um UUID v4 como string.
     """
     new_id = str(uuid.uuid4())
     return {"id": new_id}
-
-"""
-curl http://127.0.0.1:8000/generate-id
-"""
 
 
 
@@ -232,7 +131,7 @@ class GenerateResponse(BaseModel):
     images: List[str]
 
 @app.post(
-    "/generate-image", dependencies=[Depends(get_authorization_betterai_api)],
+    "/generate-image", dependencies=[Depends(Authorization.multikey)],
     response_model=GenerateResponse,
     summary="Gera imagens com parâmetros fixos"
 )
@@ -247,31 +146,6 @@ def generate_image(data: GenerateRequest) -> GenerateResponse:
         model=data.model
     )
 
-"""
-uvicorn app:app --reload
-http://127.0.0.1:8000
-
-curl --location 'http://localhost:8000/generate-image' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer 2afd6752-2b39-468e-b27b-d67b77fddd3f-3f105e35-a345-4c12-8018-9aebaa3522ed' \
---data '{
-    "prompt": "A bowl of Italian tomato sauce, of the type of tomato sauce, on a bench of a vibrant cozinha from the 1960s. The bowl must be a focal point, with authentic Italian rolls and a soft shine. On the grill, use vintage cooking utensils, such as a metal egg beater or a cooking knife, and sometimes some fresh ingredients such as tough and tasty tomatoes. The lighting must be bright, with a touch of solar light entering a woman with geometric door curtains characteristic of the era. The style must be photorealistic with meticulous attention to details, textures and cores, capturing the nostalgia and simplicity of the Italian lifestyle of the 60s.",
-    "number_of_images": 2,
-    "aspect_ratio": "9:16",
-    "image_size": "2K",
-    "model": "ULTRA"
-  }'
-
-curl --location --request DELETE 'https://better-ai-bucket-storage-production.up.railway.app/delete-images'
-
-{
-    "status": 200,
-    "images": [
-        "http://better-ai-bucket-storage-production.up.railway.app/images/518369fb.jpeg",
-        "http://better-ai-bucket-storage-production.up.railway.app/images/bb5b1655.jpeg"
-    ]
-}
-"""
 
 
 
@@ -292,24 +166,15 @@ curl --location --request DELETE 'https://better-ai-bucket-storage-production.up
 
 
 
-
-
-
-# ✅ Endpoint health check
-"""
-curl -X GET "http://127.0.0.1:8000/healthy"
-
-curl -X GET "http://127.0.0.1:8000/healthy-authorization" \
-  -H "Authorization: Bearer betterai-api-key"
-"""
+# Endpoint health check:
 
 @app.get("/healthy")
 def healthy():
     return {"status": "ok"}
 
-@app.get("/healthy-authorization", dependencies=[Depends(get_authorization_betterai_api)])
+@app.get("/healthy-authorization", dependencies=[Depends(Authorization.multikey)])
 def healthy_authorization():
     return {"status": "ok"}
 
 
-# Enzo Schitini
+# Author: Enzo Schitini
