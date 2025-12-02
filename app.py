@@ -294,12 +294,17 @@ curl --location --request DELETE 'https://better-ai-bucket-storage-production.up
 # uvicorn app:app --reload
 # http://127.0.0.1:8000
 
-def get_authorization_mult_key(authorization: str = Header(...), company_id: str = Header(...)):
-    betterai_api_key = os.getenv("BETTERAI_API_KEY") # betterai-api-key
-    api_key = os.getenv(f"{company_id}_API_KEY") # company specific key
-        
-    if (authorization != f"Bearer {betterai_api_key}") and (authorization != f"Bearer {api_key}"):
+
+def get_authorization_mult_key(
+    authorization: str = Header(..., alias="Authorization"),
+    company_id: str = Header(..., alias="CompanyId")
+):
+    betterai_api_key = os.getenv("BETTERAI_API_KEY")
+    api_key = os.getenv(f"{company_id}_API_KEY")
+
+    if authorization not in (f"Bearer {betterai_api_key}", f"Bearer {api_key}"):
         raise HTTPException(status_code=401, detail="Unauthorized")
+
     return authorization
 
 @app.get("/healthy-authorization", dependencies=[Depends(get_authorization_mult_key)])
