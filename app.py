@@ -106,42 +106,6 @@ def run_agent(request: AgentRunRequest):
         )
 
 
-@app.post("/embedding_file", dependencies=[Depends(Authorization.multikey)], response_model=AgentRunResponse)
-async def upload_file(
-    metadata: str = Form(...),
-    file: UploadFile = File(...)
-):
-    """
-    Endpoint that receives a JSON metadata dictionary and a file.
-    The file name and extension are automatically extracted.
-    """
-
-    # Parse metadata JSON string into a Python dictionary
-    try:
-        metadata_dict = json.loads(metadata)
-    except json.JSONDecodeError:
-        logging.error("The 'metadata' field must contain valid JSON.")
-        logging.error("")
-        return JSONResponse(
-            status_code=400,
-            content={"error": "The 'metadata' field must contain valid JSON."}
-        )
-
-    # Read file content asynchronously
-    file_content = await file.read()
-    
-    embedding_result = embedding_documents(metadata_dict, file_content, file)
-
-    # Build response
-    response = {
-        "message": "File uploaded successfully!",
-        "metadata": metadata_dict,
-        "embedding_result": embedding_result
-    }
-
-    return JSONResponse(content=response)
-
-
 
 
 
