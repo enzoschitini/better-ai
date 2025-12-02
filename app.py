@@ -12,6 +12,7 @@ import logging
 from  src.chat.AgentAsk import AgentAsk
 from src.embbeding.embedding import embedding_documents
 from src.image_generation.google_genai import ImageGenerationService
+from auth import Authorization
 
 logging.basicConfig(
     filename='app.log',
@@ -49,13 +50,6 @@ app.add_middleware(
 # uvicorn app:app --reload
 # http://127.0.0.1:8000
 
-def get_authorization_betterai_api(authorization: str = Header(...)):
-    betterai_api_key = os.getenv("BETTERAI_API_KEY") # betterai-api-key
-    
-    if authorization != f"Bearer {betterai_api_key}":
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    return authorization
-
 
 
 # ========================
@@ -83,7 +77,7 @@ class AgentRunResponse(BaseModel):
 # ========================
 # ENDPOINT PRINCIPAL
 # ========================
-@app.post("/run-agent", dependencies=[Depends(get_authorization_betterai_api)], response_model=AgentRunResponse)
+@app.post("/run-agent", dependencies=[Depends(Authorization.multikey)], response_model=AgentRunResponse)
 def run_agent(request: AgentRunRequest):
     """
     Executa o agente de IA com os parâmetros fornecidos.
@@ -139,7 +133,7 @@ curl --location 'http://127.0.0.1:8000/run-agent' \
 
 
 
-@app.post("/embedding_file", dependencies=[Depends(get_authorization_betterai_api)], response_model=AgentRunResponse)
+@app.post("/embedding_file", dependencies=[Depends(Authorization.back_end_api_key)], response_model=AgentRunResponse)
 async def upload_file(
     metadata: str = Form(...),
     file: UploadFile = File(...)
@@ -206,7 +200,7 @@ curl --location 'http://127.0.0.1:8000/embedding_file' \
 
 
 
-@app.get("/generate-id", dependencies=[Depends(get_authorization_betterai_api)])
+@app.get("/generate-id", dependencies=[Depends(Authorization.back_end_api_key)])
 def generate_id():
     """
     Gera e retorna um UUID v4 como string.
@@ -232,7 +226,7 @@ class GenerateResponse(BaseModel):
     images: List[str]
 
 @app.post(
-    "/generate-image", dependencies=[Depends(get_authorization_betterai_api)],
+    "/generate-image", dependencies=[Depends(Authorization.back_end_api_key)],
     response_model=GenerateResponse,
     summary="Gera imagens com parâmetros fixos"
 )
@@ -288,40 +282,10 @@ curl --location --request DELETE 'https://better-ai-bucket-storage-production.up
 
 
 
-# TEST AUTHORIZATION
 
 
-# uvicorn app:app --reload
-# http://127.0.0.1:8000
 
 
-def get_authorization_mult_key(
-    authorization: str = Header(...),
-    company_id: str = Header(..., alias="company-id"),
-    company_key: str = Header(..., alias="company-key")
-):
-    # Chave master  
-    betterai_api_key = os.getenv("BETTERAI_API_KEY")
-
-    # Chave específica da empresa
-    secret_key_env = os.getenv(f"{company_id.upper()}_SECRET_KEY")
-
-    # Verifica BETTERAI_API_KEY
-    if authorization != f"Bearer {betterai_api_key}":
-        raise HTTPException(status_code=401, detail="Invalid Authorization Key")
-
-    # Verifica SECRET_KEY da empresa
-    if company_key != f"Bearer {secret_key_env}":
-        raise HTTPException(status_code=401, detail="Invalid Company Secret Key")
-
-    return True
-
-
-from auth import Authorization
-
-@app.get("/healthy-authorization", dependencies=[Depends(Authorization.multikey)])
-def healthy_authorization():
-    return {"status": "ok"}
 
 # ✅ Endpoint health check
 """
@@ -335,7 +299,9 @@ curl -X GET "http://127.0.0.1:8000/healthy-authorization" \
 def healthy():
     return {"status": "ok"}
 
-
+@app.get("/healthy-authorization", dependencies=[Depends(Authorization.multikey)])
+def healthy_authorization():
+    return {"status": "ok"}
 
 
 # Enzo Schitini

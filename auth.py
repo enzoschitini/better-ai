@@ -5,9 +5,9 @@ class AuthService:
 
     @staticmethod
     def validate_betterai_key(authorization: str):
-        betterai_api_key = os.getenv("BETTERAI_API_KEY")
+        back_end_api_key = os.getenv("BACK_END_API_KEY")
 
-        if authorization != f"Bearer {betterai_api_key}":
+        if authorization != f"Bearer {back_end_api_key}":
             raise HTTPException(status_code=401, detail="Invalid Authorization Key")
 
     @staticmethod
@@ -27,7 +27,7 @@ class AuthService:
 class Authorization:
 
     @staticmethod
-    def betterai_api_key(
+    def back_end_api_key(
         authorization: str = Header(...)
     ):
         AuthService.validate_betterai_key(authorization)
