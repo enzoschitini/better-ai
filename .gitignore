@@ -138,7 +138,7 @@ envs/
 
 # mkdocs documentation
 /site
-doc/
+/local
 
 # mypy
 .mypy_cache/
