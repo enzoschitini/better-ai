@@ -2,7 +2,6 @@ import os
 from fastapi import Header, HTTPException, Depends
 
 class AuthService:
-
     @staticmethod
     def validate_betterai_key(authorization: str):
         back_end_api_key = os.getenv("BACK_END_API_KEY")
@@ -25,7 +24,6 @@ class AuthService:
             raise HTTPException(status_code=401, detail="Invalid Company Secret Key")
 
 class Authorization:
-
     @staticmethod
     def back_end_api_key(
         authorization: str = Header(...)
