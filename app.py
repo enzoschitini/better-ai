@@ -317,7 +317,9 @@ def get_authorization_mult_key(
     return True
 
 
-@app.get("/healthy-authorization", dependencies=[Depends(get_authorization_mult_key)])
+from auth import Authorization
+
+@app.get("/healthy-authorization", dependencies=[Depends(Authorization.multikey)])
 def healthy_authorization():
     return {"status": "ok"}
 
