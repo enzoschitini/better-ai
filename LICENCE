@@ -1,30 +1,145 @@
-PROPRIETARY LICENSE
+PROPRIETARY LICENSE AGREEMENT
 
-Copyright (c) 2025 [NAME OR COMPANY]. All rights reserved.
+Copyright (©) 2025 BetterAI. All rights reserved.
+Jurisdiction: Brazil – Salvador/AB
 
-This software is confidential and the exclusive property of [NAME OR COMPANY].  
-Access and use are strictly limited to individuals, companies, or organizations that have been expressly authorized in writing by the copyright holder.
+This software, its source code, APIs, documentation, models, architecture, data structures, and all related components (“Software”) are confidential and proprietary to BetterAI. Access and use are restricted exclusively to individuals or organizations expressly authorized in writing by BetterAI.
 
-1. GRANT OF USE  
-No rights are granted to use, copy, modify, distribute, sublicense, or commercialize this software except with the prior written consent of [NAME OR COMPANY].
+By accessing or using the Software or any associated API, you acknowledge that you have read, understood, and agreed to all terms of this Agreement.
 
-2. RESTRICTIONS  
-Authorized users shall not:  
-a) Copy, reproduce, or redistribute this software, in whole or in part, to any unauthorized third parties;  
-b) Modify, decompile, reverse engineer, or create derivative works from this software without express written permission;  
-c) Use this software for illegal, competitive, or unauthorized purposes.
+----------------------------------------------------------------------
+1. GRANT OF LIMITED USE
+----------------------------------------------------------------------
+BetterAI grants the authorized user (“Licensee”) a non-exclusive, non-transferable, revocable license to:
+- Access and use the Software or APIs only for authorized purposes.
+- Use the API exclusively through a personal, private API Key issued by BetterAI.
 
-3. CONFIDENTIALITY  
-The source code, documentation, and any associated technical information are considered confidential. Authorized users agree to maintain strict confidentiality and not disclose any part to third parties without express permission.
+No other rights are granted unless expressly approved in writing.
 
-4. INTELLECTUAL PROPERTY  
-This software, including but not limited to its source code, design, structure, documentation, names, logos, and trademarks, remains the exclusive property of [NAME OR COMPANY]. No intellectual property rights are transferred to the user.
+----------------------------------------------------------------------
+2. SOURCE CODE ACCESS — DEVELOPMENT TEAM ONLY
+----------------------------------------------------------------------
+Unless explicitly authorized in writing:
+- No client, contractor, partner, or third party has access to the source code.
+- The source code is accessible only by developers internally authorized by BetterAI.
+- Any attempt to obtain, copy, replicate, or reverse engineer the source code is strictly prohibited.
 
-5. TERMINATION  
-Any breach of these terms will result in the immediate revocation of access and usage rights, without prejudice to any applicable legal actions.
+----------------------------------------------------------------------
+3. API ACCESS AND USAGE TERMS
+----------------------------------------------------------------------
 
-6. GOVERNING LAW  
-This license shall be governed by and construed in accordance with the laws of [COUNTRY OR STATE]. The courts of [CITY] shall have exclusive jurisdiction, and the parties waive any other jurisdiction to which they may be entitled.
+3.1 API Key  
+- The API Key is personal, non-transferable, confidential, and exclusive to the Licensee.
+- The Licensee is fully responsible for protecting the API Key from unauthorized access.
+- Any misuse, leakage, or unauthorized distribution is the Licensee’s responsibility.
+- BetterAI may revoke or replace the API Key at any time.
 
-BY ACCESSING OR USING THIS SOFTWARE, YOU ACKNOWLEDGE THAT YOU HAVE READ, UNDERSTOOD, AND AGREED TO THE TERMS OF THIS LICENSE.
+3.2 Restrictions  
+The Licensee shall NOT:
+a) Share, sell, redistribute, or grant access to the API to third parties;  
+b) Create proxies, wrappers, or systems that allow others to indirectly access the API;  
+c) Reverse engineer, inspect traffic, decode responses, or attempt to deduce internal algorithms;  
+d) Build competing or derivative products using the API;  
+e) Abuse rate limits, overload infrastructure, or compromise system stability.
 
+3.3 Monitoring  
+BetterAI may monitor, log, and audit all API usage for compliance and security.
+
+----------------------------------------------------------------------
+4. GENERAL RESTRICTIONS
+----------------------------------------------------------------------
+The Licensee shall not:
+a) Copy, duplicate, redistribute, or reproduce any part of the Software;  
+b) Modify, decompile, reverse engineer, or derive source code from the Software;  
+c) Create derivative or competing products;  
+d) Use the Software or API for illegal, abusive, fraudulent, or unauthorized purposes;  
+e) Disclose confidential information to any unauthorized parties.
+
+Any violation results in immediate license termination.
+
+----------------------------------------------------------------------
+5. CONFIDENTIALITY
+----------------------------------------------------------------------
+All components of the Software — including but not limited to source code, infrastructure, architecture, algorithms, documentation, and technical materials — are confidential.
+
+The Licensee agrees to:
+- Maintain secrecy and protect confidentiality;  
+- Prevent unauthorized disclosure;  
+- Immediately report suspected breaches.
+
+Confidentiality obligations survive termination.
+
+----------------------------------------------------------------------
+6. DATA HANDLING (API INPUT & OUTPUT)
+----------------------------------------------------------------------
+Unless expressly agreed in writing:
+- Data submitted to the API is processed only for executing the requested function.  
+- Data is not permanently stored nor used to train models.  
+- The Licensee is solely responsible for ensuring that submitted data complies with applicable law.
+
+----------------------------------------------------------------------
+7. TERMINATION
+----------------------------------------------------------------------
+BetterAI may revoke access immediately if the Licensee:
+- Violates any clause;  
+- Misuses the Software or API;  
+- Attempts to bypass authentication or protections;  
+- Compromises system security.
+
+Upon termination:
+- All usage rights are revoked;  
+- API Keys become invalid;  
+- All confidential materials must be deleted.
+
+----------------------------------------------------------------------
+8. LIMITATION OF LIABILITY
+----------------------------------------------------------------------
+BetterAI shall not be liable for:
+- Loss of profits, revenue, or business;  
+- Loss of data;  
+- Indirect, incidental, punitive, or consequential damages.
+
+Total liability is limited to the amount paid for the license (if any).
+
+----------------------------------------------------------------------
+9. WARRANTY DISCLAIMER
+----------------------------------------------------------------------
+The Software and APIs are provided “AS IS”, without any warranties, including:
+- Availability  
+- Accuracy  
+- Fitness for a particular purpose  
+- Error-free operation  
+
+BetterAI does not guarantee uninterrupted service.
+
+----------------------------------------------------------------------
+10. INDEMNIFICATION
+----------------------------------------------------------------------
+The Licensee agrees to indemnify, defend, and hold BetterAI harmless from:
+- Misuse of the Software or API;  
+- Violations of this License;  
+- Legal disputes arising from Licensee actions;  
+- Security breaches caused by negligence or misuse.
+
+----------------------------------------------------------------------
+11. GOVERNING LAW AND JURISDICTION
+----------------------------------------------------------------------
+This License is governed by the laws of Brazil.  
+Exclusive jurisdiction: Salvador – AB.
+
+All parties waive any other jurisdiction to which they may be entitled.
+
+----------------------------------------------------------------------
+12. ENTIRE AGREEMENT
+----------------------------------------------------------------------
+This License constitutes the complete and exclusive agreement between the parties, superseding all prior discussions, proposals, or agreements.
+
+----------------------------------------------------------------------
+ACCEPTANCE
+----------------------------------------------------------------------
+By accessing or using the Software or its APIs, the Licensee acknowledges:
+- Full understanding of this License;  
+- Agreement to all its terms;  
+- Acceptance of confidentiality and legal obligations.
+
+END OF LICENSE
