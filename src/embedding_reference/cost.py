@@ -64,10 +64,29 @@ updated_at = doc["updated_at"]
 hoje = datetime.utcnow().date()
 data_atualizada = updated_at.date()
 
+mapping = {
+    "EUR": "dollar_rate_EUR",
+    "BRL": "dollar_rate_BRL",
+}
+
 if data_atualizada == hoje:
     print("É de hoje!")
+    rate = doc[mapping["BRL"]]
 else:
     print("É de outro dia.")
+
+    """
+    Pega a cotação do dolar atualizada de uma fonte. Sendo que:
+
+    É passada uma moeda alvo (ex: BRL ou EUR..), com isso a função retorna a cotação atualizada do dólar para essa moeda.
+    """
+
+    # A nova cotação é usada para atulizar os dados no banco MongoDB
+    mongo.atualizar_documentos(
+        database_name="betterai_embeddings",
+        collection_name="embedding_costs",
+        filtro={"rate": "dollar_rates"},
+        novos_valores={mapping["BRL"]: 5.66, mapping["EUR"]: 0.87})
 
 
 """
