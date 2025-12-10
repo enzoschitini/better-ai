@@ -107,39 +107,6 @@ class TextProcessor(FileProcessorStrategy):
         return file_bytes.read().decode("utf-8")
 
 
-
-
-
-
-# Gerenciador de Prompts
-
-class PromptManager:
-    """Carrega e fornece prompts de forma centralizada."""
-
-    PROMPT_PATH = "src/knowledge_base/prompts.yaml"
-
-    @staticmethod
-    @lru_cache(maxsize=1)
-    def load_prompts() -> dict:
-        """Carrega o arquivo YAML apenas uma vez."""
-        if not os.path.exists(PromptManager.PROMPT_PATH):
-            raise FileNotFoundError(f"Arquivo {PromptManager.PROMPT_PATH} não encontrado.")
-        with open(PromptManager.PROMPT_PATH, "r", encoding="utf-8") as f:
-            return yaml.safe_load(f)
-
-    @classmethod
-    def get_prompt(cls, key: str) -> str:
-        """Obtém um prompt específico pelo nome."""
-        prompts = cls.load_prompts()
-        if key not in prompts:
-            raise KeyError(f"Prompt '{key}' não encontrado em {cls.PROMPT_PATH}.")
-        return prompts[key]
-    
-
-
-
-
-
 class FileProcessorFactory:
     """Seleciona a estratégia adequada conforme a extensão do arquivo."""
 
