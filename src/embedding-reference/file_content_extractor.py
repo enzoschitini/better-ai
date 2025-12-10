@@ -10,11 +10,6 @@ from base64 import b64decode
 import yaml
 from functools import lru_cache
 
-# Vertex AI imports
-import vertexai
-from google.oauth2 import service_account
-from vertexai.generative_models import GenerativeModel, Part
-
 
 class FileProcessorStrategy:
     """Interface base para processadores de arquivos ou mídias."""
@@ -111,6 +106,11 @@ class TextProcessor(FileProcessorStrategy):
         file_bytes.seek(0)
         return file_bytes.read().decode("utf-8")
 
+
+
+
+
+
 # Gerenciador de Prompts
 
 class PromptManager:
@@ -134,73 +134,10 @@ class PromptManager:
         if key not in prompts:
             raise KeyError(f"Prompt '{key}' não encontrado em {cls.PROMPT_PATH}.")
         return prompts[key]
+    
 
 
-class VertexAIBaseProcessor(FileProcessorStrategy):
-    """Classe base para processadores de mídia usando o Vertex AI e prompts externos."""
 
-    def __init__(self, prompt_key: str, mime_type: str):
-        self.prompt_key = prompt_key
-        self.mime_type = mime_type
-        self.prompt_text = PromptManager.get_prompt(prompt_key)
-        self._initialize_vertex_ai()
-        self.model = GenerativeModel("gemini-2.5-flash")
-
-    def _initialize_vertex_ai(self):
-        credentials_b64 = os.environ.get('GOOGLE_SERVICE_CREDENTIALS')
-        if not credentials_b64:
-            raise EnvironmentError("Credenciais do Vertex AI não encontradas.")
-        credentials = json.loads(b64decode(credentials_b64))
-        creds = service_account.Credentials.from_service_account_info(credentials)
-        vertexai.init(
-            project=credentials.get('project_id'),
-            location='us-central1',
-            credentials=creds
-        )
-
-    def _format_usage_metadata(self, usage_metadata):
-        text = str(usage_metadata)
-
-        result = {}
-        for line in text.strip().split("\n"):
-            key, value = line.split(":")
-            result[key.strip()] = int(value.strip())
-
-        return result
-
-    def _generate_content(self, media_bytes: bytes, prompt: str, mime_type: str) -> str:
-        try:
-            part = Part.from_data(media_bytes, mime_type=mime_type)
-            gen = self.model.generate_content([part, prompt])
-
-            response = {
-                "file_content": gen.text,
-                "usage_metadata": self._format_usage_metadata(gen.usage_metadata)
-            }
-            
-            return response
-        except Exception as e:
-            raise RuntimeError(f"Erro ao processar mídia: {e}")
-
-
-class ImageProcessor(VertexAIBaseProcessor):
-    def __init__(self):
-        super().__init__(prompt_key="image_prompt", mime_type="image/png")
-
-    def extract_content(self, file_bytes: BytesIO) -> str:
-        file_bytes.seek(0)
-
-        response = self._generate_content(file_bytes.read(), self.prompt_text, self.mime_type)
-        return response
-
-
-class AudioProcessor(VertexAIBaseProcessor):
-    def __init__(self):
-        super().__init__(prompt_key="audio_prompt", mime_type="audio/mpeg")
-
-    def extract_content(self, file_bytes: BytesIO) -> str:
-        file_bytes.seek(0)
-        return self._generate_content(file_bytes.read(), self.prompt_text, self.mime_type)
 
 
 class FileProcessorFactory:
@@ -227,25 +164,7 @@ class FileProcessorFactory:
             "xls": lambda: CSVXLSProcessor("xls"),
             "xlsx": lambda: CSVXLSProcessor("xlsx"),
             "xml": lambda: CSVXLSProcessor("xml"),
-            "json": JSONProcessor,
-
-            # Arquivos de imagem
-            "app": ImageProcessor,
-            "jpg": ImageProcessor,
-            "jpeg": ImageProcessor,
-            "png": ImageProcessor,
-            "bmp": ImageProcessor,
-            "gif": ImageProcessor,
-            "tiff": ImageProcessor,
-            "webp": ImageProcessor,
-
-            # Arquivos de áudio
-            "mp3": AudioProcessor,
-            "wav": AudioProcessor,
-            "ogg": AudioProcessor,
-            "flac": AudioProcessor,
-            "aac": AudioProcessor,
-            "m4a": AudioProcessor
+            "json": JSONProcessor
         }
 
 
