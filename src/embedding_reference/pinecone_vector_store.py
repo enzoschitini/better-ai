@@ -4,16 +4,18 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
+from dotenv import load_dotenv
 
+load_dotenv()
 
 class PineconeClient:
     """
     Responsável apenas por criar conexão com o Pinecone e manter o Index.
     """
-    def __init__(self, index_name: str = None, namespace: str = None):
+    def __init__(self, index_name: str = None, namespace: str = None, global_namespace: str = None):
         self.index_name = index_name or os.getenv("INDEX_NAME_PINECONE")
         self.main_namespace = namespace or os.getenv("KNOWLEDGE_BASE_PINECONE")
-        self.global_namespace = os.getenv("ALL_FILES_ENV")  # <-- evitando sobrescrever
+        self.global_namespace = global_namespace or os.getenv("PINECONE_GLOBAL_NAMESPACE")
 
         self.pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
         self.index = self.pc.Index(self.index_name)
@@ -35,12 +37,14 @@ class PineconeVectorService:
     - gerar embeddings
     - salvar nos dois namespaces
     """
-    def __init__(self, vector_client: PineconeClient, embedding_model_name: str = None):
+    def __init__(self, vector_client: PineconeClient, embedding_model_name: str = None, dimensions: int = None):
         self.client = vector_client
 
         self.embeddings_model = OpenAIEmbeddings(
             model=embedding_model_name or os.getenv("KNOWLEDGE_BASE_EMBEDDINGS_MODEL", "text-embedding-3-small")
         )
+
+        self.dimensions = dimensions or 1536
 
         # Vector store para o namespace global
         self.global_vectordb = self.client.create_vector_store(
@@ -74,7 +78,7 @@ class PineconeVectorService:
     def delete_documents(self, target_feature: str, target_id: str, namespace: str):
         """Remove embeddings de um namespace específico."""
         results = self.client.index.query(
-            vector=[0.0] * 1536,
+            vector=[0.0] * self.dimensions,
             namespace=namespace,
             filter={target_feature: {"$eq": target_id}},
             top_k=10000,
