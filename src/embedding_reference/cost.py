@@ -43,6 +43,53 @@ class EmbeddingCostCalculator:
 
 
 
+from src.chat.utils.mongo_manage import MongoDBManager
+from datetime import datetime
+
+mongo = MongoDBManager()
+
+docs = mongo.buscar_documentos(
+    database_name="betterai_embeddings",
+    collection_name="embedding_costs",
+    filtro={"rate": "dollar_rates"},
+    limite=1
+)
+
+doc = docs[0]
+
+print(doc)
+
+updated_at = doc["updated_at"]
+
+hoje = datetime.utcnow().date()
+data_atualizada = updated_at.date()
+
+if data_atualizada == hoje:
+    print("É de hoje!")
+else:
+    print("É de outro dia.")
+
+
+"""
+mongo.salvar_payload(
+    database_name="betterai_embeddings",
+    collection_name="embedding_costs",
+    payload={
+        "rate": "dollar_rates",
+        "dollar_rate_EUR": 0.85,
+        "dollar_rate_BRL": 5.46,
+    }
+)
+
+mongo.atualizar_documentos(
+    database_name="betterai_embeddings",
+    collection_name="embedding_costs",
+    filtro={"rate": "dollar_rates"},
+    novos_valores={"dollar_rate_BRL": 5.46})
+"""
+
+
+"""
 calc = EmbeddingCostCalculator("text-embedding-3-large")
 
 texto = "Este é um texto de teste para embeddding."
@@ -50,8 +97,6 @@ texto = "Este é um texto de teste para embeddding."
 resultado = calc.calculate_cost_json(texto)
 print(resultado)
 
-
-"""
 {
     "model": "text-embedding-3-large",
     "characters": 41,
@@ -59,4 +104,5 @@ print(resultado)
     "cost_usd": 0.000002
 }
 
+python -m src.embedding_reference.cost
 """
