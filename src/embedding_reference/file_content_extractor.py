@@ -4,7 +4,7 @@ from io import BytesIO
 from bs4 import BeautifulSoup
 from docx import Document
 from pptx import Presentation
-import fitz  # PyMuPDF      
+import fitz  #       
 import pandas as pd
 from base64 import b64decode
 import yaml
@@ -156,7 +156,9 @@ class FileProcessorFactory:
 
             # Arquivos de documentos
             "pdf": PDFProcessor,
+            "doc": DocxProcessor,
             "docx": DocxProcessor,
+            "ppt": PptxProcessor,
             "pptx": PptxProcessor,
 
             # Arquivos de dados estruturados
