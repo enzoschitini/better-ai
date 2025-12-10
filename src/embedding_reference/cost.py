@@ -4,8 +4,10 @@ import tiktoken
 class EmbeddingCostCalculator:
     # Por 1k tokens (1.000)
     MODEL_PRICES = {
-        "text-embedding-3-large": 0.00013,
         "text-embedding-3-small": 0.00002,
+        "text-embedding-ada-002": 0.00010,
+        "text-embedding-3-large": 0.00013
+
     }
 
     def __init__(self, model_name: str = "text-embedding-3-large"):
@@ -48,46 +50,12 @@ from datetime import datetime
 
 mongo = MongoDBManager()
 
-docs = mongo.buscar_documentos(
-    database_name="betterai_embeddings",
-    collection_name="embedding_costs",
-    filtro={"rate": "dollar_rates"},
-    limite=1
-)
+calc = EmbeddingCostCalculator("text-embedding-3-large")
 
-doc = docs[0]
+texto = "Este é um texto de teste para embeddding."
 
-print(doc)
-
-updated_at = doc["updated_at"]
-
-hoje = datetime.utcnow().date()
-data_atualizada = updated_at.date()
-
-mapping = {
-    "EUR": "dollar_rate_EUR",
-    "BRL": "dollar_rate_BRL",
-}
-
-if data_atualizada == hoje:
-    print("É de hoje!")
-    rate = doc[mapping["BRL"]]
-else:
-    print("É de outro dia.")
-
-    """
-    Pega a cotação do dolar atualizada de uma fonte. Sendo que:
-
-    É passada uma moeda alvo (ex: BRL ou EUR..), com isso a função retorna a cotação atualizada do dólar para essa moeda.
-    """
-
-    # A nova cotação é usada para atulizar os dados no banco MongoDB
-    mongo.atualizar_documentos(
-        database_name="betterai_embeddings",
-        collection_name="embedding_costs",
-        filtro={"rate": "dollar_rates"},
-        novos_valores={mapping["BRL"]: 5.66, mapping["EUR"]: 0.87})
-
+resultado = calc.calculate_cost_json(texto)
+print(resultado)
 
 """
 mongo.salvar_payload(
