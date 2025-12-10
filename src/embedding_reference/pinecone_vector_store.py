@@ -1,10 +1,12 @@
 import os
+from dotenv import load_dotenv
+
 from pinecone import Pinecone
+
 from langchain_openai import OpenAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
-from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -218,66 +220,3 @@ class PineconeVectorService:
         }
 
         return response
-    
-
-"""
---------------------------- Uso do módulo ---------------------------
-
-from PineconeVectorStore import PineconeClient, PineconeVectorService
-
-pine_client = PineconeClient()
-pine_service = PineconeVectorService(pine_client)
-
---------------------------- Embedding de conteúdo ---------------------------
-
-metadata = {"collection_name": "Teste", "serie_name": "Serie", "file_id": "2180282"}
-
-response = pine_service.generate_vectors(
-    text=text,
-    metadata=metadata,
-    save_global=True,
-    batch_size=1000
-)
-
-print(response)
-
-
---------------------------- Busca pelos documentos embedados ---------------------------
-
-pinecone_service = PineconeVectorService(PineconeClient())
-
-query = "O que dizem os arquivos?"
-
-results = pinecone_service.document_search(
-    query=query,
-    k=2,
-    filter={"file_id": "2180282"}
-)
-
-import json
-
-print(json.dumps(results, indent=4, ensure_ascii=False))
-
-for doc_id, doc in results.items():  # <-- chave + valor
-    print("\nID:", doc_id)
-    print(doc["page_content"])
-    print(doc["metadata"])
-    print("-" * 50)
-
-
---------------------------- Deleção de embeddings ---------------------------
-
-pine_service.delete_documents(
-    target_feature="file_id",
-    target_id="2180282",
-    namespace="embeddings"
-)
-
-pine_service.delete_documents(
-    target_feature="file_id",
-    target_id="2180282",
-    namespace="ALL_FILES_JOB"
-)
-
-
-"""
