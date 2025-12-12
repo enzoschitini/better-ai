@@ -4,6 +4,7 @@ import requests
 import os
 from dotenv import load_dotenv
 
+
 load_dotenv()
 
 
@@ -99,20 +100,20 @@ class DollarRateService:
 
         # 4.1 If it's already from today → use DB
         if db_date == today:
-            print("✔ Usando cotação do banco (já é de hoje).")
+            #print("✔ Usando cotação do banco (já é de hoje).")
             return db_rate
 
-        print("ℹ Cotação desatualizada. Tentando atualizar...")
+        #print("ℹ Cotação desatualizada. Tentando atualizar...")
 
         # 4.2 Try provider
         try:
             rates = self._fetch_from_provider()
-            print("✔ Provider retornou valores. Atualizando banco...")
+            #print("✔ Provider retornou valores. Atualizando banco...")
             self._update_db(rates["BRL"], rates["EUR"])
             return rates[currency]
 
         except Exception:
-            print("⚠ Provider falhou. Usando cotação antiga do banco.")
+            #print("⚠ Provider falhou. Usando cotação antiga do banco.")
             return db_rate
 
 
@@ -123,21 +124,11 @@ if __name__ == "__main__":
     service = DollarRateService()
 
     rate = service.get_rate("EUR")
-    print("\nCOTAÇÃO FINAL:", rate, "EUR")
+    #print("\nCOTAÇÃO FINAL:", rate, "EUR")
 
     rate = service.get_rate("BRL")
-    print("\nCOTAÇÃO FINAL:", rate, "BRL")
+    #print("\nCOTAÇÃO FINAL:", rate, "BRL")
 
-
-
-
-"""
-    1. Controlla su Mongo la se la cotazione è aggiornata (data di oggi)
-    2. Se sì, usa quella
-    3. Se no, prova a prendere la cotazione da un provider esterno
-    4. Se riesce, aggiorna il DB e usa quella
-    5. Se non riesce, usa la cotazione vecchia del DB 5.406098
-"""
 
 """
 python -m src.embedding_reference.dollar_rates

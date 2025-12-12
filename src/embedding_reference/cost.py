@@ -55,11 +55,6 @@ class EmbeddingCostCalculator:
 
 
 
-
-from datetime import datetime
-
-
-
 calc = EmbeddingCostCalculator("text-embedding-3-large")
 
 texto = "Este é um texto de teste para embeddding."
@@ -69,39 +64,4 @@ print(resultado)
 
 """
 python -m src.embedding_reference.cost
-
-mongo.salvar_payload(
-    database_name="betterai_embeddings",
-    collection_name="embedding_costs",
-    payload={
-        "rate": "dollar_rates",
-        "dollar_rate_EUR": 0.85,
-        "dollar_rate_BRL": 5.46,
-    }
-)
-
-mongo.atualizar_documentos(
-    database_name="betterai_embeddings",
-    collection_name="embedding_costs",
-    filtro={"rate": "dollar_rates"},
-    novos_valores={"dollar_rate_BRL": 5.46})
-"""
-
-
-"""
-calc = EmbeddingCostCalculator("text-embedding-3-large")
-
-texto = "Este é um texto de teste para embeddding."
-
-resultado = calc.calculate_cost_json(texto)
-print(resultado)
-
-{
-    "model": "text-embedding-3-large",
-    "characters": 41,
-    "tokens": 12,
-    "cost_usd": 0.000002
-}
-
-
 """
