@@ -1,5 +1,5 @@
-from src.embedding_reference.file_content_extractor import FileContentExtractor
-from src.embedding_reference.pinecone_vector_store import PineconeClient, PineconeVectorService
+from embedding.file_content_extractor import FileContentExtractor
+from embedding.pinecone_vector_store import PineconeClient, PineconeVectorService
 from io import BytesIO
 import os
 

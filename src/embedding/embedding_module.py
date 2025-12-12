@@ -1,5 +1,11 @@
+import os
+from dotenv import load_dotenv
 
+from src.embedding.file_content_extractor import FileContentExtractor
+from src.embedding.pinecone_vector_store import PineconeClient, PineconeVectorService
+from src.embedding.tokens_calculator.cost import EmbeddingCostCalculator
 
+load_dotenv()
 
 """
 python -m src.embedding.embedding_module
