@@ -9,11 +9,11 @@ load_dotenv()
 
 class DollarRateService:
     """
-    Serviço simples para:
-    - Ler a cotação do MongoDB
-    - Verificar se é de hoje
-    - Buscar cotação atualizada de um provider externo (Apilayer Fixer)
-    - Atualizar o banco caso necessário
+    Simple service to:
+    - Read the rate from MongoDB
+    - Check if it is updated (today)
+    - Fetch updated rates from an external provider (Apilayer Fixer)
+    - Update the database if needed
     """
 
     MAPPING = {
@@ -26,7 +26,7 @@ class DollarRateService:
         self.API_KEY = os.getenv("EXCHANGE_RATES_API_KEY")
 
     # ------------------------------
-    # 1. Ler do banco
+    # 1. Read from the database
     # ------------------------------
     def _get_from_db(self):
         docs = self.mongo.buscar_documentos(
@@ -38,12 +38,12 @@ class DollarRateService:
         return docs[0]
 
     # ------------------------------
-    # 2. Provider externo (Apilayer)
+    # 2. External provider (Apilayer)
     # ------------------------------
     def _fetch_from_provider(self):
         """
-        Busca BRL e EUR em uma única chamada Apilayer (Fixer).
-        Retorna dict: { "BRL": valor, "EUR": valor }
+        Fetch BRL and EUR using a single Apilayer request.
+        Returns a dict: { "BRL": value, "EUR": value }
         """
 
         try:
@@ -68,10 +68,10 @@ class DollarRateService:
             }
 
         except Exception as e:
-            raise RuntimeError("Erro ao buscar provider") from e
+            raise RuntimeError("Error fetching provider") from e
 
     # ------------------------------
-    # 3. Atualizar banco
+    # 3. Update the database
     # ------------------------------
     def _update_db(self, brl, eur):
         self.mongo.atualizar_documentos(
@@ -86,7 +86,7 @@ class DollarRateService:
         )
 
     # ------------------------------
-    # 4. Função principal
+    # 4. Main public method
     # ------------------------------
     def get_rate(self, currency: str):
 
@@ -94,17 +94,17 @@ class DollarRateService:
         db_rate = doc[self.MAPPING[currency]]
         updated_at = doc["updated_at"]
 
-        hoje = datetime.now(timezone.utc).date()
-        data_banco = updated_at.date()
+        today = datetime.now(timezone.utc).date()
+        db_date = updated_at.date()
 
-        # 4.1 Se já é de hoje → usar banco
-        if data_banco == hoje:
+        # 4.1 If it's already from today → use DB
+        if db_date == today:
             print("✔ Usando cotação do banco (já é de hoje).")
             return db_rate
 
         print("ℹ Cotação desatualizada. Tentando atualizar...")
 
-        # 4.2 Tentar provider externo
+        # 4.2 Try provider
         try:
             rates = self._fetch_from_provider()
             print("✔ Provider retornou valores. Atualizando banco...")
@@ -117,12 +117,16 @@ class DollarRateService:
 
 
 # ============================================================
-# Execução direta (apenas para teste)
+# Direct execution (for testing only)
 # ============================================================
 if __name__ == "__main__":
     service = DollarRateService()
+
+    rate = service.get_rate("EUR")
+    print("\nCOTAÇÃO FINAL:", rate, "EUR")
+
     rate = service.get_rate("BRL")
-    print("\nCOTAÇÃO FINAL:", rate)
+    print("\nCOTAÇÃO FINAL:", rate, "BRL")
 
 
 

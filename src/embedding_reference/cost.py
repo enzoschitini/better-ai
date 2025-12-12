@@ -1,5 +1,7 @@
 import json
 import tiktoken
+from src.embedding_reference.dollar_rates import DollarRateService
+from src.chat.utils.mongo_manage import MongoDBManager
 
 class EmbeddingCostCalculator:
     # Por 1k tokens (1.000)
@@ -32,23 +34,31 @@ class EmbeddingCostCalculator:
         num_tokens = self.count_tokens(text)
         total_cost = (num_tokens / 1000) * self.cost_per_1000
 
-        return {
+        service = DollarRateService()
+
+        cost_payload = {
             "embedding_model": self.model,
             "model_cost_per_1000_tokens": self._format_cost(self.cost_per_1000),
             "characters": num_chars,
             "tokens": num_tokens,
             "cost_usd": self._format_cost(total_cost),
+            "dollar_rates": {
+                "EUR": service.get_rate("EUR"),
+                "BRL": service.get_rate("BRL")
+            }
         }
 
+        return cost_payload
+
     def calculate_cost_json(self, text: str) -> str:
-        return json.dumps(self.calculate_cost(text), indent=4)
+        return self.calculate_cost(text)
 
 
 
-from src.chat.utils.mongo_manage import MongoDBManager
+
 from datetime import datetime
 
-mongo = MongoDBManager()
+
 
 calc = EmbeddingCostCalculator("text-embedding-3-large")
 
@@ -58,6 +68,8 @@ resultado = calc.calculate_cost_json(texto)
 print(resultado)
 
 """
+python -m src.embedding_reference.cost
+
 mongo.salvar_payload(
     database_name="betterai_embeddings",
     collection_name="embedding_costs",
@@ -91,5 +103,5 @@ print(resultado)
     "cost_usd": 0.000002
 }
 
-python -m src.embedding_reference.cost
+
 """
