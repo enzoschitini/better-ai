@@ -2,6 +2,8 @@
 
 
 """
+python -m src.embedding.embedding_module
+
 payload = {
     "fileId": "21d75dca2eec7b02080327f40220e20dxx2.pdf",
     "fileName": "name file.pdf",
@@ -34,7 +36,6 @@ payload = {
 6. Calcola i costi
 7. Salva l'operazione sul MongoDB
 8. Ritorna i parametri
-"""
 
 payload = {
     "status": "success",
@@ -44,7 +45,7 @@ payload = {
         "mongoId": "83720083721",
     }
 }
-
+"""
 
 
 
