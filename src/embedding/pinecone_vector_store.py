@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+from datetime import datetime, timezone
 
 from pinecone import Pinecone
 
@@ -152,6 +153,10 @@ class PineconeVectorService:
         Salva embeddings no namespace principal (KB).
         Se save_global=True, também salva no namespace global.
         """
+
+        dt_utc = datetime.now(timezone.utc).replace(microsecond=0, tzinfo=None)
+        metadata["creat_date_utc"] = str(dt_utc)
+        
         chunks = self.split_text(text)
         documents = self.build_documents(chunks, metadata)
 
@@ -229,12 +234,12 @@ class PineconeVectorService:
 
 
 
+# python -m src.embedding.pinecone_vector_store
 
-"""
 pine_client = PineconeClient(index_name="backai-vectorstore", namespace="test_namespace", global_namespace="global_namespace")
 pine_service = PineconeVectorService(pine_client, embedding_model_name="text-embedding-3-large", dimensions=3072)
 
-embedding_content = 
+embedding_content = """
 Sono uno sviluppatore con 4 anni di esperienza in progetti che combinano prestazioni, 
 scalabilità e best practice.
 
@@ -265,7 +270,7 @@ Da quando avevo 12 anni, quando ho iniziato a studiare robotica, ho coltivato la
 passione per lo sviluppo software. Credo nell'apprendimento pratico e so che, con dedizione, 
 impegno e pazienza, è possibile ottenere grandi risultati.  
 Oggi rimango motivato a sfidare la mia creatività e cercare nuovi modi per innovare e avere 
-un impatto positivo sul mondo che mi circonda.
+un impatto positivo sul mondo che mi circonda."""
 
 
 embedding_metadata = {"user_id": "user_123", "source": "embedding_test.py"}
@@ -278,4 +283,3 @@ response = pine_service.generate_vectors(
 )
 
 print("✅ Vectors generated and saved to Pinecone:", response)
-"""

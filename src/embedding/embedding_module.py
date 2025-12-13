@@ -130,7 +130,9 @@ payload = {
 
     "embedding_settings": {
         "llm_model": "text-embedding-3-large",
-        "dimensions": 3072
+        "dimensions": 3072,
+        "global_namespace": True,
+        "batch_size": 200
     },
     
     "metadata": {
