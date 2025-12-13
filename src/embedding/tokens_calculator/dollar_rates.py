@@ -120,6 +120,12 @@ class DollarRateService:
 # ============================================================
 # Direct execution (for testing only)
 # ============================================================
+
+
+
+"""
+python -m src.embedding_reference.dollar_rates
+
 if __name__ == "__main__":
     service = DollarRateService()
 
@@ -128,8 +134,4 @@ if __name__ == "__main__":
 
     rate = service.get_rate("BRL")
     #print("\nCOTAÇÃO FINAL:", rate, "BRL")
-
-
-"""
-python -m src.embedding_reference.dollar_rates
 """

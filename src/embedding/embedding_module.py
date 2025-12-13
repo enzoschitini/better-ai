@@ -7,6 +7,42 @@ from src.embedding.tokens_calculator.cost import EmbeddingCostCalculator
 
 load_dotenv()
 
+def payload_validation():
+    # 1. Valutazione delle informazioni (L'ID dell'archivio può venire vuoto, in questo caso tocca a betterai crearlo)
+    pass
+
+def file_from_bites():
+    # 2. Transforma l'archivio in BitesIO
+    pass
+
+def extract_file_content():
+    # 3. Estrarre il contenuto
+    pass
+
+def embedding_cost():
+    # Calcola i costi
+    pass
+
+def business_validation():
+    # Verifica se l'utente ha ancora dei crediti
+    pass
+
+def transform_embedding_data():
+    # Preparazione dei dati per l'embedding
+    pass
+
+def embedding():
+    # Si fa l'embedding
+    pass
+
+def save_process():
+    # Salva l'operazione sul MongoDB
+    pass
+
+def _EmbeddingExecute():
+    # Flusso completo
+    pass
+
 """
 python -m src.embedding.embedding_module
 

@@ -1,6 +1,6 @@
 import json
 import tiktoken
-from embedding.tokens_calculator.dollar_rates import DollarRateService
+from src.embedding.tokens_calculator.dollar_rates import DollarRateService
 from src.chat.utils.mongo_manage import MongoDBManager
 
 class EmbeddingCostCalculator:
@@ -55,13 +55,13 @@ class EmbeddingCostCalculator:
 
 
 
+"""
+python -m src.embedding_reference.cost
+
 calc = EmbeddingCostCalculator("text-embedding-3-large")
 
 texto = "Este é um texto de teste para embeddding."
 
 resultado = calc.calculate_cost_json(texto)
 print(resultado)
-
-"""
-python -m src.embedding_reference.cost
 """
