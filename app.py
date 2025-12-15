@@ -157,39 +157,137 @@ def generate_image(data: GenerateRequest) -> GenerateResponse:
 
 
 
+from io import BytesIO
 
+def file_from_bytes(file: UploadFile):
+    """
+    Recebe um UploadFile (FastAPI),
+    valida a extensão e retorna:
+    - filename
+    - extensão
+    - BytesIO
+    """
+
+    ALLOWED_EXTENSIONS = {
+        "txt", "md", "markdown", "html",
+        "pdf", "doc", "docx", "ppt", "pptx",
+        "csv", "xls", "xlsx", "xml", "json"
+    }
+
+    # Nome do arquivo
+    filename = file.filename
+
+    if not filename or "." not in filename:
+        raise ValueError("Nome de arquivo inválido")
+
+    # Extensão
+    ext = filename.lower().split(".")[-1]
+
+    if ext not in ALLOWED_EXTENSIONS:
+        raise ValueError(f"Extensão não suportada: .{ext}")
+
+    # Lê os bytes do UploadFile
+    file_bytes = file.file.read()
+
+    if not file_bytes:
+        raise ValueError("Arquivo vazio")
+
+    # Converte para BytesIO
+    file_bytes_io = BytesIO(file_bytes)
+
+    return filename, ext, file_bytes_io
+
+
+
+class EmbeddingSettings(BaseModel):
+    llm_model: str
+    dimensions: int
+    global_namespace: bool
+    batch_size: int
+
+
+class Metadata(BaseModel):
+    id_collection: str
+    id_series: str
+    id_client: str
+    id_user: str
+    id_workspace: str
+
+
+class UploadPayload(BaseModel):
+    fileId: str
+    fileName: str
+    fileUrl: Optional[str] = None
+    embedding_settings: EmbeddingSettings
+    metadata: Metadata
 
 
 @app.post("/test-upload")
-async def test_upload(
-    name: str = Form(...),
-    age: int = Form(...),
-    description: Optional[str] = Form(None),
+async def upload_file(
+    payload: str = Form(...),
     file: UploadFile = File(...)
 ):
+    # 🔹 Parse payload
+    try:
+        payload_dict = json.loads(payload)
+        payload_obj = UploadPayload(**payload_dict)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Invalid payload: {str(e)}")
+
+    # 🔹 Processa arquivo
+    try:
+        filename, ext, file_bytes_io = file_from_bytes(file)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
     return {
-        "payload": {
-            "name": name,
-            "age": age,
-            "description": description
-        },
+        "message": "Upload recebido com sucesso",
         "file": {
-            "filename": file.filename,
+            "filename": filename,
+            "extension": ext,
             "content_type": file.content_type
-        }
+        },
+        "payload": payload_obj.dict()
     }
 
 """
 curl -X POST http://127.0.0.1:8000/test-upload \
-  -F "name=Enzo" \
-  -F "age=25" \
-  -F "description=Arquivo de teste" \
-  -F "file=@exemplo.pdf"
+  -F 'payload={
+    "fileId": "21d75dca2eec7b02080327f40220e20dxx2.pdf",
+    "fileName": "name file.pdf",
+    "fileUrl": "https://domain.com/docs/21d75dca2eec7b02080327f40220e20dxx2.pdf",
+    "embedding_settings": {
+        "llm_model": "text-embedding-3-large",
+        "dimensions": 3072,
+        "global_namespace": true,
+        "batch_size": 200
+    },
+    "metadata": {
+        "id_collection": "id_collection_01",
+        "id_series": "id_series_01",
+        "id_client": "id_client_01",
+        "id_user": "id_user_01",
+        "id_workspace": "id_workspace_01"
+    }
+  }' \
+  -F "file=@document.pdf"
 
 # uvicorn app:app --reload
 # http://127.0.0.1:8000
 """
 
+
+@app.post("/upload")
+async def upload_file(
+    payload: str = Form(...),
+    file: UploadFile = File(...)
+):
+    file_data = file_from_bytes(file)
+
+    return {
+        "filename": file_data["filename"],
+        "extension": file_data["extension"]
+    }
 
 
 
