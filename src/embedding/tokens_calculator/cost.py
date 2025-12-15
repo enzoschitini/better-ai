@@ -1,7 +1,6 @@
 import json
 import tiktoken
 from src.embedding.tokens_calculator.dollar_rates import DollarRateService
-from src.chat.utils.mongo_manage import MongoDBManager
 
 class EmbeddingCostCalculator:
     # Por 1k tokens (1.000)

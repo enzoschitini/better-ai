@@ -10,7 +10,7 @@ import uuid
 import logging
 
 from  src.chat.AgentAsk import AgentAsk
-from src.embbeding.embedding import embedding_documents
+# from src.embedding.embedding_module import
 from src.image_generation.google_genai import ImageGenerationService
 from auth import Authorization
 
@@ -150,6 +150,45 @@ def generate_image(data: GenerateRequest) -> GenerateResponse:
 
 
 
+
+
+
+
+
+
+
+
+
+
+@app.post("/test-upload")
+async def test_upload(
+    name: str = Form(...),
+    age: int = Form(...),
+    description: Optional[str] = Form(None),
+    file: UploadFile = File(...)
+):
+    return {
+        "payload": {
+            "name": name,
+            "age": age,
+            "description": description
+        },
+        "file": {
+            "filename": file.filename,
+            "content_type": file.content_type
+        }
+    }
+
+"""
+curl -X POST http://127.0.0.1:8000/test-upload \
+  -F "name=Enzo" \
+  -F "age=25" \
+  -F "description=Arquivo de teste" \
+  -F "file=@exemplo.pdf"
+
+# uvicorn app:app --reload
+# http://127.0.0.1:8000
+"""
 
 
 
