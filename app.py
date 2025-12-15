@@ -10,7 +10,6 @@ import uuid
 import logging
 
 from  src.chat.AgentAsk import AgentAsk
-# from src.embedding.embedding_module import
 from src.image_generation.google_genai import ImageGenerationService
 from auth import Authorization
 
@@ -158,44 +157,7 @@ def generate_image(data: GenerateRequest) -> GenerateResponse:
 
 
 from io import BytesIO
-
-def file_from_bytes(file: UploadFile):
-    """
-    Recebe um UploadFile (FastAPI),
-    valida a extensão e retorna:
-    - filename
-    - extensão
-    - BytesIO
-    """
-
-    ALLOWED_EXTENSIONS = {
-        "txt", "md", "markdown", "html",
-        "pdf", "doc", "docx", "ppt", "pptx",
-        "csv", "xls", "xlsx", "xml", "json"
-    }
-
-    # Nome do arquivo
-    filename = file.filename
-
-    if not filename or "." not in filename:
-        raise ValueError("Nome de arquivo inválido")
-
-    # Extensão
-    ext = filename.lower().split(".")[-1]
-
-    if ext not in ALLOWED_EXTENSIONS:
-        raise ValueError(f"Extensão não suportada: .{ext}")
-
-    # Lê os bytes do UploadFile
-    file_bytes = file.file.read()
-
-    if not file_bytes:
-        raise ValueError("Arquivo vazio")
-
-    # Converte para BytesIO
-    file_bytes_io = BytesIO(file_bytes)
-
-    return filename, ext, file_bytes_io
+from src.embedding.embedding_module import *
 
 
 
@@ -236,7 +198,8 @@ async def upload_file(
 
     # 🔹 Processa arquivo
     try:
-        filename, ext, file_bytes_io = file_from_bytes(file)
+        filename, ext, file_bytes = file_from_bytes(file)
+        text = extract_file_content(file_bytes, ext)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -245,7 +208,8 @@ async def upload_file(
         "file": {
             "filename": filename,
             "extension": ext,
-            "content_type": file.content_type
+            "content_type": file.content_type,
+            "text": text    
         },
         "payload": payload_obj.dict()
     }

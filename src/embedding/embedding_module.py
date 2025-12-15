@@ -12,10 +12,13 @@ def payload_validation():
     # 1. Valutazione delle informazioni (L'ID dell'archivio può venire vuoto, in questo caso tocca a betterai crearlo)
     pass
 
-def file_from_bites(filename: str): # 2. Transforma l'archivio in BitesIO
+def file_from_bytes(file): # 2. Transforma l'archivio in BitesIO
     """
-    Carrega qualquer arquivo da pasta /src/embedding_reference/files/
-    e retorna um BytesIO + extensão válida.
+    Recebe um UploadFile (FastAPI),
+    valida a extensão e retorna:
+    - filename
+    - extensão
+    - BytesIO
     """
 
     ALLOWED_EXTENSIONS = {
@@ -24,27 +27,28 @@ def file_from_bites(filename: str): # 2. Transforma l'archivio in BitesIO
         "csv", "xls", "xlsx", "xml", "json"
     }
 
-    BASE_DIR = "src/embedding_reference/files/"
+    # Nome do arquivo
+    filename = file.filename
 
-    file_path = os.path.join(BASE_DIR, filename)
+    if not filename or "." not in filename:
+        raise ValueError("Nome de arquivo inválido")
 
-    # Valida caminho
-    if not os.path.exists(file_path):
-        raise FileNotFoundError(f"Arquivo não encontrado: {file_path}")
-
-    # Valida extensão
+    # Extensão
     ext = filename.lower().split(".")[-1]
+
     if ext not in ALLOWED_EXTENSIONS:
         raise ValueError(f"Extensão não suportada: .{ext}")
 
-    # Lê bytes
-    with open(file_path, "rb") as f:
-        file_bytes = f.read()
+    # Lê os bytes do UploadFile
+    file_bytes = file.file.read()
 
-    # Transforma em BytesIO
+    if not file_bytes:
+        raise ValueError("Arquivo vazio")
+
+    # Converte para BytesIO
     file_bytes_io = BytesIO(file_bytes)
 
-    return file_bytes_io, ext
+    return filename, ext, file_bytes_io
 
 def extract_file_content(file_bytes, file_extension):
     # 3. Estrarre il contenuto
@@ -56,70 +60,93 @@ def extract_file_content(file_bytes, file_extension):
         return extractor.extract()
 
     except Exception as e:
+        filename = "filename"
         print(f"❌ Error processing file '{filename}': {e}")
         raise
 
-def transform_embedding_data(self, file_process, file_extension):
+def transform_embedding_data(filename, file_content):
     # Preparazione dei dati per l'embedding
     try:
         #logger.debug("Preparando dados para embeddings...")
 
-        if "usage_metadata" in file_process.get("response", {}):
-            file_content = file_process["response"]["file_content"]
-            #logger.debug("Uso de metadata detectado: %s", file_process["response"]["usage_metadata"])
-        else:
-            file_content = file_process["response"]
-
         embedding_content = {
-            "file_name": self.sqs_message_body["metadata"]["st_name"],
-            "file_url": f"{os.getenv('S3_DOMAIN')}{self.sqs_message_body['fileUrl']}",
+            "file_name": filename,
+            "file_url": "https://test.com",
             "file_content": file_content
         }
 
         #logger.info("Dados para embedding preparados com sucesso.")
 
+        return embedding_content
+
     except Exception as e:
         #logger.error("Erro ao transformar dados para embedding : %s. jobId: %s, fileId: %s", e, self.sqs_message_body["jobId"], self.sqs_message_body["fileId"])
         raise
 
-    return embedding_content
-
 def embedding_cost(content):
-    # Calcola i costi
-    calc = EmbeddingCostCalculator("text-embedding-3-large")
-    resultado = calc.calculate_cost_json(content)
+    try:
+        # Calcola i costi
+        calc = EmbeddingCostCalculator("text-embedding-3-large")
+        response = calc.calculate_cost_json(content)
 
-    pass
+        return response
+
+    except Exception as e:
+        raise
 
 def business_validation():
     # Verifica se l'utente ha ancora dei crediti
     pass
 
 def embedding(embedding_content, embedding_metadata):
-    # Si fa l'embedding
+    try:
+        # Si fa l'embedding
+        pine_client = PineconeClient(index_name="backai-vectorstore", 
+                                    namespace="test_namespace", global_namespace="global_namespace")
+        
+        pine_service = PineconeVectorService(pine_client, embedding_model_name="text-embedding-3-large", dimensions=3072)
 
-    pine_client = PineconeClient(index_name="backai-vectorstore", 
-                                 namespace="test_namespace", global_namespace="global_namespace")
-    
-    pine_service = PineconeVectorService(pine_client, embedding_model_name="text-embedding-3-large", dimensions=3072)
+        response = pine_service.generate_vectors(
+            text=str(embedding_content),
+            metadata=embedding_metadata,
+            save_global=False,
+            batch_size=200
+        )
 
-    response = pine_service.generate_vectors(
-        text=str(embedding_content),
-        metadata=embedding_metadata,
-        save_global=False,
-        batch_size=200
-    )
+        return response
 
-    return response
+    except Exception as e:
+        raise
 
 def save_process():
     # Salva l'operazione sul MongoDB
     pass
 
-def _EmbeddingExecute():
-    # Flusso completo
-    pass
+def EmbeddingExecute():
+    # Fluxo 
+    filename = "Candidatura.pdf"
+    ext = "pdf"
+    text = """
+    Sono uno sviluppatore con 4 anni di esperienza in progetti che combinano prestazioni, 
+    scalabilità e best practice.
 
+    Sono un esperto di Intelligenza Artificiale, Machine Learning e dati, con una solida 
+    esperienza nello sviluppo di applicazioni complete e scalabili. 
+
+    Negli ultimi anni ho lavorato su diversi progetti in diversi settori, tra cui intelligenza artificiale, 
+    ho seguito da vicino l’evoluzione dell’AI Generativa, partendo dai primi esperimenti con gli AI 
+    Agents fino allo sviluppo di sistemi complessi di orchestrazione e automazione. Progettando 
+    architetture RAG, orchestrando modelli LLM e integrato strumenti come LangChain, 
+    LlamaIndex, Crewai e Dify per creare agenti intelligenti in grado di ragionare, pianificare e 
+    interagire in modo autonomo. 
+    """
+
+    embedding_content = transform_embedding_data(filename, text)
+    cost = embedding_cost(str(embedding_content))
+
+    return cost
+
+print(EmbeddingExecute())
 """
 python -m src.embedding.embedding_module
 
