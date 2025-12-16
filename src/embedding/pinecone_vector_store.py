@@ -221,8 +221,8 @@ class PineconeVectorService:
             "embedding_informations": {
                 "namespace_main": self.client.main_namespace,
                 "namespace_global": self.client.global_namespace if save_global else None,
-                "chunks_ids": all_ids,
-                "batch_count": batch_number
+                "batch_count": batch_number,
+                "chunks_ids": all_ids
             }
         }
 

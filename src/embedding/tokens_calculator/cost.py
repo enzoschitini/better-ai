@@ -34,17 +34,30 @@ class EmbeddingCostCalculator:
         total_cost = (num_tokens / 1000) * self.cost_per_1000
 
         service = DollarRateService()
+        dollar_rates = {
+            "EUR": service.get_rate("EUR"),
+            "BRL": service.get_rate("BRL")
+        }
+
+        cost_usd = float(self._format_cost(total_cost))
+
+        print("cost_usd", cost_usd)
+        print("EUR", dollar_rates["EUR"])
+
+        cost_eur = cost_usd * dollar_rates["EUR"]
+        cost_brl = cost_usd * dollar_rates["BRL"]
 
         cost_payload = {
             "embedding_model": self.model,
             "model_cost_per_1000_tokens": self._format_cost(self.cost_per_1000),
             "characters": num_chars,
             "tokens": num_tokens,
-            "cost_usd": self._format_cost(total_cost),
-            "dollar_rates": {
-                "EUR": service.get_rate("EUR"),
-                "BRL": service.get_rate("BRL")
-            }
+            "total_cost": {
+                "cost_usd": self._format_cost(cost_usd),
+                "cost_eur": self._format_cost(cost_eur),
+                "cost_brl": self._format_cost(cost_brl)
+            },
+            "dollar_rates": dollar_rates
         }
 
         return cost_payload

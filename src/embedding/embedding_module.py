@@ -140,27 +140,7 @@ def embedding(embedding_content, embedding_metadata):
         return response
 
     except Exception as e:
-        raise
-
-aggregate1 = {
-    "test": "test",
-
-    "test2": {
-        "test3": "test"
-    }
-}
-
-aggregate2 = {
-    "test4": "test",
-
-    "test5": {
-        "test6": "test",
-
-        "test7": {
-            "test6": "test"
-        }
-    }
-}
+        rais
 
 def save_process(payload:dict, aggregates:list):
     # Salva l'operazione sul MongoDB
