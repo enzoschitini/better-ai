@@ -218,10 +218,12 @@ class PineconeVectorService:
         response = {
             "status": "success",
             "message": "Embeddings salvos com sucesso no Pinecone.",
-            "saved_ids": all_ids,
-            "namespace_main": self.client.main_namespace,
-            "namespace_global": self.client.global_namespace if save_global else None,
-            "batch_count": batch_number
+            "embedding_informations": {
+                "namespace_main": self.client.main_namespace,
+                "namespace_global": self.client.global_namespace if save_global else None,
+                "chunks_ids": all_ids,
+                "batch_count": batch_number
+            }
         }
 
         return response

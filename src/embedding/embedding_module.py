@@ -8,6 +8,27 @@ from src.embedding.tokens_calculator.cost import EmbeddingCostCalculator
 
 load_dotenv()
 
+payload = {
+    "fileId": "21d75dca2eec7b02080327f40220e20dxx2.pdf",
+    "fileName": "name file.pdf",
+    "fileUrl": "https://domain.com/docs/21d75dca2eec7b02080327f40220e20dxx2.pdf",
+
+    "embedding_settings": {
+        "llm_model": "text-embedding-3-large",
+        "dimensions": 3072,
+        "global_namespace": True,
+        "batch_size": 200
+    },
+    
+    "metadata": {
+        "id_collection": "id_collection_01",
+        "id_series": "id_series_01",
+        "id_client": "id_client_01",
+        "id_user": "id_user_01",
+        "id_workspace": "id_workspace_01"
+    }
+}
+
 def payload_validation():
     # 1. Valutazione delle informazioni (L'ID dell'archivio può venire vuoto, in questo caso tocca a betterai crearlo)
     pass
@@ -87,7 +108,10 @@ def embedding_cost(content):
     try:
         # Calcola i costi
         calc = EmbeddingCostCalculator("text-embedding-3-large")
-        response = calc.calculate_cost_json(content)
+        cost = calc.calculate_cost_json(content)
+        response = {
+            "embedding_cost": cost
+        }
 
         return response
 
@@ -118,9 +142,33 @@ def embedding(embedding_content, embedding_metadata):
     except Exception as e:
         raise
 
-def save_process():
+aggregate1 = {
+    "test": "test",
+
+    "test2": {
+        "test3": "test"
+    }
+}
+
+aggregate2 = {
+    "test4": "test",
+
+    "test5": {
+        "test6": "test",
+
+        "test7": {
+            "test6": "test"
+        }
+    }
+}
+
+def save_process(payload:dict, aggregates:list):
     # Salva l'operazione sul MongoDB
-    pass
+    for agg in aggregates:
+        for key in agg.keys():
+            payload[key] = agg[key]
+    
+    return payload
 
 def EmbeddingExecute():
     # Fluxo 
@@ -144,7 +192,14 @@ def EmbeddingExecute():
     embedding_content = transform_embedding_data(filename, text)
     cost = embedding_cost(str(embedding_content))
 
-    return cost
+    vectorstore_embedding = embedding(embedding_content, payload["metadata"])
+    
+    mongo_payload = save_process(payload, [cost, {"vectorstore_informations": vectorstore_embedding["embedding_informations"]}])
+    import json
+
+    print(json.dumps(mongo_payload, indent=4))
+
+    return mongo_payload
 
 print(EmbeddingExecute())
 """
