@@ -10,23 +10,29 @@ from src.embedding.tokens_calculator.cost import EmbeddingCostCalculator
 load_dotenv()
 
 payload = {
+    "company_id": "1",
     "fileId": "21d75dca2eec7b02080327f40220e20dxx2.pdf",
     "fileName": "name file.pdf",
-    "fileUrl": "https://domain.com/docs/21d75dca2eec7b02080327f40220e20dxx2.pdf",
+    "fileUrl": "https://domain.com/docs/21d75dca2eec7b02080327f40220e20dxx2.pdf", # (Opzionale)
+    
+    "metadata": { # (Opzionale)
+        "filters": {
+            "id_collection": "id_collection_01",
+            "id_series": "id_series_01",
+            "id_client": "id_client_01",
+            "id_user": "id_user_01",
+            "id_workspace": "id_workspace_01"
+        },
+        "aditional_informatios": {
+            "Collection Name:": "BetterAI Repo"
+        }
+    },
 
-    "embedding_settings": {
+    "embedding_settings": { # (Opzionale)
         "llm_model": "text-embedding-3-large",
         "dimensions": 3072,
         "global_namespace": True,
         "batch_size": 200
-    },
-    
-    "metadata": {
-        "id_collection": "id_collection_01",
-        "id_series": "id_series_01",
-        "id_client": "id_client_01",
-        "id_user": "id_user_01",
-        "id_workspace": "id_workspace_01"
     }
 }
 
@@ -91,6 +97,10 @@ def transform_embedding_data(filename, file_content):
     try:
         #logger.debug("Preparando dados para embeddings...")
 
+        embedding_metadata = {
+            "fileIDD": "1"
+        }
+
         embedding_content = {
             "file_name": filename,
             "file_url": "https://test.com",
@@ -99,7 +109,7 @@ def transform_embedding_data(filename, file_content):
 
         #logger.info("Dados para embedding preparados com sucesso.")
 
-        return embedding_content
+        return embedding_content, embedding_metadata
 
     except Exception as e:
         #logger.error("Erro ao transformar dados para embedding : %s. jobId: %s, fileId: %s", e, self.sqs_message_body["jobId"], self.sqs_message_body["fileId"])
@@ -119,8 +129,15 @@ def embedding_cost(content):
     except Exception as e:
         raise
 
-def business_validation():
+# Classe separata:
+def business_validation(status):
     # Verifica se l'utente ha ancora dei crediti
+    if status == 1:
+        return True
+    else:
+        return False
+
+def business_update_usage():
     pass
 
 def embedding(embedding_content, embedding_metadata):
@@ -175,14 +192,18 @@ def EmbeddingExecute():
     interagire in modo autonomo. 
     """
 
-    embedding_content = transform_embedding_data(filename, text)
+    embedding_content, embedding_metadata = transform_embedding_data(filename, text)
     cost = embedding_cost(str(embedding_content))
 
-    vectorstore_embedding = embedding(embedding_content, payload["metadata"])
-    
-    mongo_id, mongo_payload = save_process(payload, [cost, {"vectorstore_informations": vectorstore_embedding["embedding_informations"]}])
+    print(business_validation(1))
 
-    return mongo_id
+    if business_validation(0):
+        vectorstore_embedding = embedding(embedding_content, embedding_metadata)
+        
+        mongo_id, mongo_payload = save_process(payload, [cost, {"vectorstore_informations": vectorstore_embedding["embedding_informations"]}])
+
+        return mongo_id
+    
 
 print(EmbeddingExecute())
 """
@@ -191,21 +212,26 @@ python -m src.embedding.embedding_module
 payload = {
     "fileId": "21d75dca2eec7b02080327f40220e20dxx2.pdf",
     "fileName": "name file.pdf",
-    "fileUrl": "https://domain.com/docs/21d75dca2eec7b02080327f40220e20dxx2.pdf" (Opzionale)
+    "fileUrl": "https://domain.com/docs/21d75dca2eec7b02080327f40220e20dxx2.pdf", # (Opzionale)
+    
+    "metadata": { # (Opzionale)
+        "filters": {
+            "id_collection": "id_collection_01",
+            "id_series": "id_series_01",
+            "id_client": "id_client_01",
+            "id_user": "id_user_01",
+            "id_workspace": "id_workspace_01"
+        },
+        "aditional_informatios": {
+            "Collection Name:": "BetterAI Repo"
+        }
+    },
 
-    "embedding_settings": {
+    "embedding_settings": { # (Opzionale)
         "llm_model": "text-embedding-3-large",
         "dimensions": 3072,
         "global_namespace": True,
         "batch_size": 200
-    },
-    
-    "metadata": {
-        "id_collection": "id_collection_01",
-        "id_series": "id_series_01",
-        "id_client": "id_client_01",
-        "id_user": "id_user_01",
-        "id_workspace": "id_workspace_01"
     }
 }
 
