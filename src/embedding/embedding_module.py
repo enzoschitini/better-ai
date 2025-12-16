@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from io import BytesIO
 
+from src.chat.utils.mongo_manage import MongoDBManager
 from src.embedding.file_content_extractor import FileContentExtractor
 from src.embedding.pinecone_vector_store import PineconeClient, PineconeVectorService
 from src.embedding.tokens_calculator.cost import EmbeddingCostCalculator
@@ -140,15 +141,20 @@ def embedding(embedding_content, embedding_metadata):
         return response
 
     except Exception as e:
-        rais
+        raise
 
 def save_process(payload:dict, aggregates:list):
     # Salva l'operazione sul MongoDB
+
+    mongo = MongoDBManager()
+
     for agg in aggregates:
         for key in agg.keys():
             payload[key] = agg[key]
     
-    return payload
+    mongo_id = mongo.salvar_payload(database_name="embeddings", collection_name="betterai_embeddings", payload=payload)
+    
+    return mongo_id, payload
 
 def EmbeddingExecute():
     # Fluxo 
@@ -174,12 +180,9 @@ def EmbeddingExecute():
 
     vectorstore_embedding = embedding(embedding_content, payload["metadata"])
     
-    mongo_payload = save_process(payload, [cost, {"vectorstore_informations": vectorstore_embedding["embedding_informations"]}])
-    import json
+    mongo_id, mongo_payload = save_process(payload, [cost, {"vectorstore_informations": vectorstore_embedding["embedding_informations"]}])
 
-    print(json.dumps(mongo_payload, indent=4))
-
-    return mongo_payload
+    return mongo_id
 
 print(EmbeddingExecute())
 """
