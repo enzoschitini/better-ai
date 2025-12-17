@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from io import BytesIO
+from decimal import Decimal
 
 from src.chat.utils.mongo_manage import MongoDBManager
 from src.embedding.file_content_extractor import FileContentExtractor
@@ -130,12 +131,41 @@ def embedding_cost(content):
         raise
 
 # Classe separata:
-def business_validation(status):
-    # Verifica se l'utente ha ancora dei crediti
-    if status == 1:
-        return True
-    else:
-        return False
+def business_validation(plan: dict, operation: dict) -> bool:
+    """
+    Retorna True se o plano possuir créditos suficientes
+    tanto em custo (USD) quanto em tokens.
+
+print("\nInformações do plano da empresa (No banco)")
+print(json.dumps(business["plan"], indent=4))
+print("\nInformações do custo previsto para a operação")
+print(json.dumps(embedding_cost, indent=4))
+
+print(
+    business_validation(
+        plan=business["plan"],
+        operation=embedding_cost
+    )
+)
+    """
+
+    # ===== CUSTO (USD) =====
+    budget_usd = Decimal(plan["resorce"]["cost"]["monthly_budget_total_cost_usd"])
+    used_usd = Decimal(plan["cost"]["total_cost_usd"])
+    operation_usd = Decimal(operation["embedding_cost"]["total_cost"]["cost_usd"])
+
+    has_usd_credit = (budget_usd - used_usd) >= operation_usd
+
+    # ===== TOKENS =====
+    budget_tokens = plan["resorce"]["tokens"]["monthly_budget_total_tokens"]
+    used_tokens = plan["tokens"]["total_tokens"]
+    operation_tokens = operation["embedding_cost"]["tokens"]
+
+    has_token_credit = (budget_tokens - used_tokens) >= operation_tokens
+
+    return has_usd_credit and has_token_credit
+
+
 
 def business_update_usage():
     pass
@@ -175,15 +205,12 @@ def save_process(payload:dict, aggregates:list):
 
 def EmbeddingExecute():
     # Fluxo 
+    # file_from_bytes -> filename, ext, file_bytes_io
+    # extract_file_content -> text
+
     filename = "Candidatura.pdf"
     ext = "pdf"
     text = """
-    Sono uno sviluppatore con 4 anni di esperienza in progetti che combinano prestazioni, 
-    scalabilità e best practice.
-
-    Sono un esperto di Intelligenza Artificiale, Machine Learning e dati, con una solida 
-    esperienza nello sviluppo di applicazioni complete e scalabili. 
-
     Negli ultimi anni ho lavorato su diversi progetti in diversi settori, tra cui intelligenza artificiale, 
     ho seguito da vicino l’evoluzione dell’AI Generativa, partendo dai primi esperimenti con gli AI 
     Agents fino allo sviluppo di sistemi complessi di orchestrazione e automazione. Progettando 

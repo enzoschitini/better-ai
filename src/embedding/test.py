@@ -27,58 +27,27 @@ embedding_cost = {
 
 from decimal import Decimal
 
-
-def has_credits_for_operation(plan_info: dict, operation_cost_info: dict) -> bool:
+def business_validation(plan: dict, operation: dict) -> bool:
     """
-    Retorna True se o plano tiver crédito suficiente
-    TANTO em custo (USD) QUANTO em tokens.
+    Retorna True se o plano possuir créditos suficientes
+    tanto em custo (USD) quanto em tokens.
     """
 
-    # ==========
-    # CUSTO (USD)
-    # ==========
+    # ===== CUSTO (USD) =====
+    budget_usd = Decimal(plan["resorce"]["cost"]["monthly_budget_total_cost_usd"])
+    used_usd = Decimal(plan["cost"]["total_cost_usd"])
+    operation_usd = Decimal(operation["embedding_cost"]["total_cost"]["cost_usd"])
 
-    monthly_budget_usd = Decimal(
-        plan_info["resorce"]["cost"]["monthly_budget_total_cost_usd"]
-    )
+    has_usd_credit = (budget_usd - used_usd) >= operation_usd
 
-    used_cost_usd = Decimal(
-        plan_info["cost"]["total_cost_usd"]
-    )
+    # ===== TOKENS =====
+    budget_tokens = plan["resorce"]["tokens"]["monthly_budget_total_tokens"]
+    used_tokens = plan["tokens"]["total_tokens"]
+    operation_tokens = operation["embedding_cost"]["tokens"]
 
-    operation_cost_usd = Decimal(
-        operation_cost_info["embedding_cost"]["total_cost"]["cost_usd"]
-    )
+    has_token_credit = (budget_tokens - used_tokens) >= operation_tokens
 
-    remaining_budget_usd = monthly_budget_usd - used_cost_usd
-
-    has_cost_credit = remaining_budget_usd >= operation_cost_usd
-
-    # ==========
-    # TOKENS
-    # ==========
-
-    monthly_budget_tokens = int(
-        plan_info["resorce"]["tokens"]["monthly_budget_total_tokens"]
-    )
-
-    used_tokens = int(
-        plan_info["tokens"]["total_tokens"]
-    )
-
-    operation_tokens = int(
-        operation_cost_info["embedding_cost"]["tokens"]
-    )
-
-    remaining_tokens = monthly_budget_tokens - used_tokens
-
-    has_token_credit = remaining_tokens >= operation_tokens
-
-    # ==========
-    # REGRA FINAL (AND)
-    # ==========
-
-    return has_cost_credit and has_token_credit
+    return has_usd_credit and has_token_credit
 
 
 print("\nInformações do plano da empresa (No banco)")
@@ -86,6 +55,48 @@ print(json.dumps(business["plan"], indent=4))
 print("\nInformações do custo previsto para a operação")
 print(json.dumps(embedding_cost, indent=4))
 
-print(has_credits_for_operation(plan_info=business["plan"], operation_cost_info=embedding_cost))
+print(
+    business_validation(
+        plan=business["plan"],
+        operation=embedding_cost
+    )
+)
 
+from decimal import Decimal
+from copy import deepcopy
+
+
+def business_update_usage(plan: dict, operation: dict) -> dict:
+    """
+    Atualiza o uso de créditos do plano (USD e tokens)
+    com base no custo da operação de embedding.
+
+    Retorna o plano atualizado.
+    """
+
+    if not business_validation(plan=plan, operation=operation):
+        return "Créditos insuficientes para realizar a operação"
+
+    # Trabalha com cópia para evitar side-effects
+    updated_plan = deepcopy(plan)
+
+    # ===== VALORES DA OPERAÇÃO =====
+    operation_usd = Decimal(operation["embedding_cost"]["total_cost"]["cost_usd"])
+    operation_tokens = int(operation["embedding_cost"]["tokens"])
+
+    # ===== ATUALIZA CUSTO (USD) =====
+    updated_plan["cost"]["input_cost_usd"] = str(
+        Decimal(updated_plan["cost"]["input_cost_usd"]) + operation_usd
+    )
+    updated_plan["cost"]["total_cost_usd"] = str(
+        Decimal(updated_plan["cost"]["total_cost_usd"]) + operation_usd
+    )
+    
+    # ===== ATUALIZA TOKENS =====
+    updated_plan["tokens"]["input_tokens"] += operation_tokens
+    updated_plan["tokens"]["total_tokens"] += operation_tokens
+
+    return updated_plan
+
+print(json.dumps(business_update_usage(plan=business["plan"], operation=embedding_cost), indent=4))
 # python -m src.embedding.test
