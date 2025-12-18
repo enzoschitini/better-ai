@@ -10,6 +10,7 @@ from src.chat.utils.mongo_manage import MongoDBManager
 from src.embedding.file_content_extractor import FileContentExtractor
 from src.embedding.pinecone_vector_store import PineconeClient, PineconeVectorService
 from src.embedding.tokens_calculator.cost import EmbeddingCostCalculator
+from src.embedding.tokens_calculator.business_plan_usage import BusinessPlanUsage
 
 load_dotenv()
 
@@ -44,102 +45,6 @@ payload = {
 
 
 
-# Classe separata:
-class BusinessPlanUsage:
-    """
-    Responsável por validar e atualizar o uso de créditos
-    (USD e tokens) de um plano de negócio.
-
-usage = BusinessPlanUsage(plan)
-
-if usage.validate(operation):
-    updated_plan = usage.update_usage(operation)
-    """
-
-    def __init__(self, plan: dict):
-        # Trabalha sempre com cópia para evitar side-effects
-        self.plan = deepcopy(plan)
-
-    # ======================================================
-    # VALIDATION
-    # ======================================================
-    def validate(self, operation: dict) -> bool:
-        """
-        Retorna True se o plano possuir créditos suficientes
-        tanto em custo (USD) quanto em tokens.
-        """
-
-        # ===== CUSTO (USD) =====
-        budget_usd = Decimal(
-            self.plan["resorce"]["cost"]["monthly_budget_total_cost_usd"]
-        )
-        used_usd = Decimal(self.plan["cost"]["total_cost_usd"])
-        operation_usd = Decimal(
-            operation["embedding_cost"]["total_cost"]["cost_usd"]
-        )
-
-        has_usd_credit = (budget_usd - used_usd) >= operation_usd
-
-        # ===== TOKENS =====
-        budget_tokens = self.plan["resorce"]["tokens"]["monthly_budget_total_tokens"]
-        used_tokens = self.plan["tokens"]["total_tokens"]
-        operation_tokens = operation["embedding_cost"]["tokens"]
-
-        has_token_credit = (budget_tokens - used_tokens) >= operation_tokens
-
-        return has_usd_credit and has_token_credit
-
-    # ======================================================
-    # UPDATE
-    # ======================================================
-    def update_usage(self, operation: dict, validate: bool = True) -> dict:
-        """
-        Atualiza o uso de créditos do plano (USD e tokens)
-        com base no custo da operação de embedding.
-
-        Retorna o plano atualizado.
-        """
-
-        if validate and not self.validate(operation):
-            raise ValueError("Créditos insuficientes para realizar a operação")
-
-        # ===== VALORES DA OPERAÇÃO =====
-        operation_usd = Decimal(
-            operation["embedding_cost"]["total_cost"]["cost_usd"]
-        )
-        operation_tokens = int(operation["embedding_cost"]["tokens"])
-
-        # ===== ATUALIZA CUSTO (USD) =====
-        self.plan["cost"]["input_cost_usd"] = str(
-            Decimal(self.plan["cost"]["input_cost_usd"]) + operation_usd
-        )
-        self.plan["cost"]["total_cost_usd"] = str(
-            Decimal(self.plan["cost"]["total_cost_usd"]) + operation_usd
-        )
-
-        # ===== ATUALIZA TOKENS =====
-        self.plan["tokens"]["input_tokens"] += operation_tokens
-        self.plan["tokens"]["total_tokens"] += operation_tokens
-
-        return self.plan
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 class EmbeddingFile:
     """
@@ -156,12 +61,10 @@ class EmbeddingFile:
         self.mongo = MongoDBManager()
 
 
-    def transform_embedding_data(self, file_extention, file_content):
+    def transform_embedding_data(self, payload, file_extention, file_content):
         # Preparazione dei dati per l'embedding
         try:
             #logger.debug("Preparando dados para embeddings...")
-
-            payload = self.payload
 
             embedding_content = {
                 "file_name": "filename",
@@ -197,15 +100,29 @@ class EmbeddingFile:
 
 
 
-    def embedding_cost(self, content):
+    def embedding_cost(self, embedding_content):
         try:
             # Calcola i costi
-            calc = EmbeddingCostCalculator(self.embedding_settings["llm_model"])
-            cost = calc.calculate_cost_json(content)
+            database_name="TokensUsage"
+            collection_name="BusinessAccountManage"
+            embedding_content = str(embedding_content)
 
-            return {
-                "embedding_cost": cost
-            }
+            calc = EmbeddingCostCalculator(self.embedding_settings["llm_model"])
+            operation_cost = {"embedding_cost": calc.calculate_cost_json(embedding_content)}
+
+            business = self.mongo.buscar_documentos(database_name, collection_name, {"business_id": "0011"})[0]
+            
+            updated_plan = BusinessPlanUsage(plan=business["plan"]).update_usage(operation=operation_cost)
+
+            if updated_plan == "not_credits":
+                return "not_credits"
+            
+            else:
+                self.mongo.atualizar_documentos(database_name, collection_name, {"business_id": "0011"}, {"plan": updated_plan})
+
+                return {
+                    "embedding_cost": operation_cost
+                }
 
         except Exception as e:
             raise
@@ -247,11 +164,7 @@ class EmbeddingFile:
         
         mongo_id = self.mongo.salvar_payload(database_name="embeddings", collection_name="betterai_embeddings", payload=payload)
         
-        return mongo_id, payload
-
-
-
-
+        return mongo_id
 
 
 
@@ -261,34 +174,19 @@ class EmbeddingFile:
         # payload_validation
         # file_from_bytes -> filename, ext, file_bytes_io
         # extract_file_content -> text
+        filename, ext, file_bytes_io = self.file_from_bytes()
 
         filename = "Candidatura.pdf"
         ext = "pdf"
         text = "Negli ultimi anni ho lavorato su diversi progetti in diversi settori, tra cui intelligenza artificiale"
 
-        embedding_content, embedding_metadata = self.transform_embedding_data(
-            payload=self.payload,
-            file_extention=ext,
-            file_content=text
-        )
+        embedding_content, embedding_metadata = self.transform_embedding_data(payload=self.payload, file_extention=ext, file_content=text)
         
         #"""
-        operation_cost = self.embedding_cost(content=str(embedding_content))
-
-        business = self.mongo.buscar_documentos(database_name="TokensUsage",
-                                        collection_name="BusinessAccountManage", 
-                                        filtro={"business_id": "0011"})[0]
-        
-        updated_plan = BusinessPlanUsage(plan=business["plan"]).update_usage(operation=operation_cost)
-
-        self.mongo.atualizar_documentos(
-            database_name="TokensUsage", collection_name="BusinessAccountManage", 
-            filtro={"business_id": "0011"}, novos_valores={"plan": updated_plan}
-        )
-        #"""
+        operation_cost = self.embedding_cost(content=embedding_content)
 
         vectorstore_embedding = self.embedding(str(embedding_content), embedding_metadata)
-        mongo_id, mongo_payload = self.save_process(self.payload, [operation_cost, {"vectorstore_informations": vectorstore_embedding["embedding_informations"]}])
+        mongo_id = self.save_process(self.payload, [operation_cost, {"vectorstore_informations": vectorstore_embedding["embedding_informations"]}])
 
         response = {
             "status": "success",
