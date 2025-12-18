@@ -61,6 +61,58 @@ class EmbeddingFile:
         self.mongo = MongoDBManager()
 
 
+    def file_from_bytes(self, file): # 2. Transforma l'archivio in BitesIO
+        """
+        Recebe um UploadFile (FastAPI),
+        valida a extensão e retorna:
+        - filename
+        - extensão
+        - BytesIO
+        """
+
+        ALLOWED_EXTENSIONS = {
+            "txt", "md", "markdown", "html",
+            "pdf", "doc", "docx", "ppt", "pptx",
+            "csv", "xls", "xlsx", "xml", "json"
+        }
+
+        # Nome do arquivo
+        filename = file.filename
+
+        if not filename or "." not in filename:
+            raise ValueError("Nome de arquivo inválido")
+
+        # Extensão
+        ext = filename.lower().split(".")[-1]
+
+        if ext not in ALLOWED_EXTENSIONS:
+            raise ValueError(f"Extensão não suportada: .{ext}")
+
+        # Lê os bytes do UploadFile
+        file_bytes = file.file.read()
+
+        if not file_bytes:
+            raise ValueError("Arquivo vazio")
+
+        # Converte para BytesIO
+        file_bytes_io = BytesIO(file_bytes)
+
+        return filename, ext, file_bytes_io
+
+    def extract_file_content(self, file_bytes, file_extension):
+        # 3. Estrarre il contenuto
+        """
+        Carrega arquivo → transforma em BytesIO → extrai conteúdo
+        """
+        try:
+            extractor = FileContentExtractor(file_bytes, file_extension)
+            return extractor.extract()
+
+        except Exception as e:
+            filename = "filename"
+            print(f"❌ Error processing file '{filename}': {e}")
+            raise
+
     def transform_embedding_data(self, payload, file_extention, file_content):
         # Preparazione dei dati per l'embedding
         try:
@@ -174,7 +226,6 @@ class EmbeddingFile:
         # payload_validation
         # file_from_bytes -> filename, ext, file_bytes_io
         # extract_file_content -> text
-        filename, ext, file_bytes_io = self.file_from_bytes()
 
         filename = "Candidatura.pdf"
         ext = "pdf"
@@ -198,12 +249,14 @@ class EmbeddingFile:
         }
 
         return response
-        
 
+
+"""
 embedding_module = EmbeddingFile(payload=payload, file="file")
 embed = embedding_module.EmbeddingExecute()
 
 print(embed)
+"""
 
 
 

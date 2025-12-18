@@ -157,7 +157,7 @@ def generate_image(data: GenerateRequest) -> GenerateResponse:
 
 
 from io import BytesIO
-from embedding.BASE_embedding_module import *
+from embedding.embedding_module import EmbeddingFile
 
 
 
@@ -198,8 +198,10 @@ async def upload_file(
 
     # 🔹 Processa arquivo
     try:
-        filename, ext, file_bytes = file_from_bytes(file)
-        text = extract_file_content(file_bytes, ext)
+        module = EmbeddingFile(payload=payload, file=file)
+
+        filename, ext, file_bytes = module.file_from_bytes(file)
+        text = module.extract_file_content(file_bytes, ext)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -239,19 +241,6 @@ curl -X POST http://127.0.0.1:8000/test-upload \
 # uvicorn app:app --reload
 # http://127.0.0.1:8000
 """
-
-
-@app.post("/upload")
-async def upload_file(
-    payload: str = Form(...),
-    file: UploadFile = File(...)
-):
-    file_data = file_from_bytes(file)
-
-    return {
-        "filename": file_data["filename"],
-        "extension": file_data["extension"]
-    }
 
 
 
