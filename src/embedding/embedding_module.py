@@ -3,6 +3,9 @@ from dotenv import load_dotenv
 from io import BytesIO
 from decimal import Decimal
 
+import json
+from copy import deepcopy
+
 from src.chat.utils.mongo_manage import MongoDBManager
 from src.embedding.file_content_extractor import FileContentExtractor
 from src.embedding.pinecone_vector_store import PineconeClient, PineconeVectorService
@@ -93,19 +96,26 @@ def extract_file_content(file_bytes, file_extension):
         print(f"❌ Error processing file '{filename}': {e}")
         raise
 
-def transform_embedding_data(filename, file_content):
+def transform_embedding_data(payload, file_extention, file_content):
     # Preparazione dei dati per l'embedding
     try:
         #logger.debug("Preparando dados para embeddings...")
 
-        embedding_metadata = {
-            "fileIDD": "1"
-        }
-
         embedding_content = {
-            "file_name": filename,
+            "file_name": "filename",
             "file_url": "https://test.com",
             "file_content": file_content
+        }
+        
+        embedding_content.update(payload["metadata"]["aditional_informatios"])
+
+        embedding_metadata = {
+            "company_id": payload["company_id"],
+            "fileId": payload["fileId"],
+            "fileName": payload["fileName"],
+            "file_extention": file_extention,
+            "fileUrl": payload["fileUrl"],
+            "metadata": payload["metadata"]
         }
 
         #logger.info("Dados para embedding preparados com sucesso.")
@@ -130,23 +140,18 @@ def embedding_cost(content):
     except Exception as e:
         raise
 
+
+
+
+
+
+
 # Classe separata:
+
 def business_validation(plan: dict, operation: dict) -> bool:
     """
     Retorna True se o plano possuir créditos suficientes
     tanto em custo (USD) quanto em tokens.
-
-print("\nInformações do plano da empresa (No banco)")
-print(json.dumps(business["plan"], indent=4))
-print("\nInformações do custo previsto para a operação")
-print(json.dumps(embedding_cost, indent=4))
-
-print(
-    business_validation(
-        plan=business["plan"],
-        operation=embedding_cost
-    )
-)
     """
 
     # ===== CUSTO (USD) =====
@@ -166,9 +171,44 @@ print(
     return has_usd_credit and has_token_credit
 
 
+def business_update_usage(plan: dict, operation: dict) -> dict:
+    """
+    Atualiza o uso de créditos do plano (USD e tokens)
+    com base no custo da operação de embedding.
 
-def business_update_usage():
-    pass
+    Retorna o plano atualizado.
+    """
+
+    if not business_validation(plan=plan, operation=operation):
+        return "Créditos insuficientes para realizar a operação"
+
+    # Trabalha com cópia para evitar side-effects
+    updated_plan = deepcopy(plan)
+
+    # ===== VALORES DA OPERAÇÃO =====
+    operation_usd = Decimal(operation["embedding_cost"]["total_cost"]["cost_usd"])
+    operation_tokens = int(operation["embedding_cost"]["tokens"])
+
+    # ===== ATUALIZA CUSTO (USD) =====
+    updated_plan["cost"]["input_cost_usd"] = str(
+        Decimal(updated_plan["cost"]["input_cost_usd"]) + operation_usd
+    )
+    updated_plan["cost"]["total_cost_usd"] = str(
+        Decimal(updated_plan["cost"]["total_cost_usd"]) + operation_usd
+    )
+    
+    # ===== ATUALIZA TOKENS =====
+    updated_plan["tokens"]["input_tokens"] += operation_tokens
+    updated_plan["tokens"]["total_tokens"] += operation_tokens
+
+    return updated_plan
+
+
+
+
+
+
+
 
 def embedding(embedding_content, embedding_metadata):
     try:
@@ -219,20 +259,37 @@ def EmbeddingExecute():
     interagire in modo autonomo. 
     """
 
-    embedding_content, embedding_metadata = transform_embedding_data(filename, text)
+    embedding_content, embedding_metadata = transform_embedding_data(
+        payload=payload,
+        file_extention=ext,
+        file_content=text
+    )
+
     cost = embedding_cost(str(embedding_content))
 
-    print(business_validation(1))
+    #vectorstore_embedding = embedding(embedding_content, embedding_metadata)
+    #mongo_id, mongo_payload = save_process(payload, [cost, {"vectorstore_informations": vectorstore_embedding["embedding_informations"]}])
 
-    if business_validation(0):
-        vectorstore_embedding = embedding(embedding_content, embedding_metadata)
-        
-        mongo_id, mongo_payload = save_process(payload, [cost, {"vectorstore_informations": vectorstore_embedding["embedding_informations"]}])
-
-        return mongo_id
+    return embedding_content
     
 
 print(EmbeddingExecute())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 """
 python -m src.embedding.embedding_module
 

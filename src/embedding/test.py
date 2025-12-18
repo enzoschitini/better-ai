@@ -1,102 +1,67 @@
 import json
-from src.chat.utils.mongo_manage import MongoDBManager
 
-mongo = MongoDBManager()
-
-business = mongo.buscar_documentos(database_name="TokensUsage",
-                                   collection_name="BusinessAccountManage", 
-                                   filtro={"business_id": "0011"})[0]
-
-embedding_cost = { 
-    "embedding_cost": {
-        "embedding_model": "text-embedding-3-large",
-        "model_cost_per_1000_tokens": "0.00013",
-        "characters": 913,
-        "tokens": 267,
-        "total_cost": {
-        "cost_usd": "0.00003471",
-        "cost_eur": "0.0000295222",
-        "cost_brl": "0.0001879998"
+payload = {
+    "company_id": "1",
+    "fileId": "21d75dca2eec7b02080327f40220e20dxx2.pdf",
+    "fileName": "name file.pdf",
+    "fileUrl": "https://domain.com/docs/21d75dca2eec7b02080327f40220e20dxx2.pdf", # (Opzionale)
+    
+    "metadata": { # (Opzionale)
+        "filters": {
+            "id_collection": "id_collection_01",
+            "id_series": "id_series_01",
+            "id_client": "id_client_01",
+            "id_user": "id_user_01",
+            "id_workspace": "id_workspace_01"
         },
-        "dollar_rates": {
-        "EUR": 0.85054,
-        "BRL": 5.4163
+        "aditional_informatios": {
+            "Collection Name:": "BetterAI Repo"
         }
+    },
+
+    "embedding_settings": { # (Opzionale)
+        "llm_model": "text-embedding-3-large",
+        "dimensions": 3072,
+        "global_namespace": True,
+        "batch_size": 200
     }
-  }
+}
 
-from decimal import Decimal
+def transform_embedding_data(payload, file_extention, file_content):
+    # Preparazione dei dati per l'embedding
+    try:
+        #logger.debug("Preparando dados para embeddings...")
 
-def business_validation(plan: dict, operation: dict) -> bool:
-    """
-    Retorna True se o plano possuir créditos suficientes
-    tanto em custo (USD) quanto em tokens.
-    """
+        embedding_content = {
+            "file_name": "filename",
+            "file_url": "https://test.com",
+            "file_content": file_content
+        }
+        
+        embedding_content.update(payload["metadata"]["aditional_informatios"])
 
-    # ===== CUSTO (USD) =====
-    budget_usd = Decimal(plan["resorce"]["cost"]["monthly_budget_total_cost_usd"])
-    used_usd = Decimal(plan["cost"]["total_cost_usd"])
-    operation_usd = Decimal(operation["embedding_cost"]["total_cost"]["cost_usd"])
+        embedding_metadata = {
+            "company_id": payload["company_id"],
+            "fileId": payload["fileId"],
+            "fileName": payload["fileName"],
+            "file_extention": file_extention,
+            "fileUrl": payload["fileUrl"],
+            "metadata": payload["metadata"]
+        }
 
-    has_usd_credit = (budget_usd - used_usd) >= operation_usd
+        #logger.info("Dados para embedding preparados com sucesso.")
 
-    # ===== TOKENS =====
-    budget_tokens = plan["resorce"]["tokens"]["monthly_budget_total_tokens"]
-    used_tokens = plan["tokens"]["total_tokens"]
-    operation_tokens = operation["embedding_cost"]["tokens"]
+        return embedding_content, embedding_metadata
 
-    has_token_credit = (budget_tokens - used_tokens) >= operation_tokens
+    except Exception as e:
+        #logger.error("Erro ao transformar dados para embedding : %s. jobId: %s, fileId: %s", e, self.sqs_message_body["jobId"], self.sqs_message_body["fileId"])
+        raise
 
-    return has_usd_credit and has_token_credit
-
-
-print("\nInformações do plano da empresa (No banco)")
-print(json.dumps(business["plan"], indent=4))
-print("\nInformações do custo previsto para a operação")
-print(json.dumps(embedding_cost, indent=4))
-
-print(
-    business_validation(
-        plan=business["plan"],
-        operation=embedding_cost
-    )
+embedding_content, embedding_metadata = transform_embedding_data(
+    payload=payload,
+    file_extention="pdf",
+    file_content="ndndndndndndndndnd"
 )
 
-from decimal import Decimal
-from copy import deepcopy
-
-
-def business_update_usage(plan: dict, operation: dict) -> dict:
-    """
-    Atualiza o uso de créditos do plano (USD e tokens)
-    com base no custo da operação de embedding.
-
-    Retorna o plano atualizado.
-    """
-
-    if not business_validation(plan=plan, operation=operation):
-        return "Créditos insuficientes para realizar a operação"
-
-    # Trabalha com cópia para evitar side-effects
-    updated_plan = deepcopy(plan)
-
-    # ===== VALORES DA OPERAÇÃO =====
-    operation_usd = Decimal(operation["embedding_cost"]["total_cost"]["cost_usd"])
-    operation_tokens = int(operation["embedding_cost"]["tokens"])
-
-    # ===== ATUALIZA CUSTO (USD) =====
-    updated_plan["cost"]["input_cost_usd"] = str(
-        Decimal(updated_plan["cost"]["input_cost_usd"]) + operation_usd
-    )
-    updated_plan["cost"]["total_cost_usd"] = str(
-        Decimal(updated_plan["cost"]["total_cost_usd"]) + operation_usd
-    )
-    
-    # ===== ATUALIZA TOKENS =====
-    updated_plan["tokens"]["input_tokens"] += operation_tokens
-    updated_plan["tokens"]["total_tokens"] += operation_tokens
-
-    return updated_plan
-
-print(json.dumps(business_update_usage(plan=business["plan"], operation=embedding_cost), indent=4))
-# python -m src.embedding.test
+print(json.dumps(embedding_content, indent=4))
+print(json.dumps(embedding_metadata, indent=4))
