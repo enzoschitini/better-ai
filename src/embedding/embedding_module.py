@@ -45,10 +45,6 @@ payload = {
 
 
 # Classe separata:
-from decimal import Decimal
-from copy import deepcopy
-
-
 class BusinessPlanUsage:
     """
     Responsável por validar e atualizar o uso de créditos
@@ -146,7 +142,9 @@ if usage.validate(operation):
 
 
 class EmbeddingFile:
-
+    """
+    Docstring per EmbeddingFile
+    """
     def __init__(self, payload, file):
 
         self.payload = payload
@@ -335,15 +333,6 @@ print(embed)
 
 """
 python -m src.embedding.embedding_module
-
-payload = {
-    "status": "success",
-    "message": "File embedded",
-    "metadata": {
-        "fileId": "21d75dca2eec7b02080327f40220e20dxx2.pdf",
-        "mongoId": "83720083721",
-    }
-}
 """
 
 
