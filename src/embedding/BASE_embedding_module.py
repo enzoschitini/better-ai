@@ -13,8 +13,6 @@ from src.embedding.tokens_calculator.cost import EmbeddingCostCalculator
 
 load_dotenv()
 
-
-
 payload = {
     "company_id": "1",
     "file_id": "21d75dca2eec7b02080327f40220e20dxx2.pdf",
@@ -41,6 +39,116 @@ payload = {
         "batch_size": 200
     }
 }
+
+def payload_validation():
+    # 1. Valutazione delle informazioni (L'ID dell'archivio può venire vuoto, in questo caso tocca a betterai crearlo)
+    pass
+
+def file_from_bytes(file): # 2. Transforma l'archivio in BitesIO
+    """
+    Recebe um UploadFile (FastAPI),
+    valida a extensão e retorna:
+    - filename
+    - extensão
+    - BytesIO
+    """
+
+    ALLOWED_EXTENSIONS = {
+        "txt", "md", "markdown", "html",
+        "pdf", "doc", "docx", "ppt", "pptx",
+        "csv", "xls", "xlsx", "xml", "json"
+    }
+
+    # Nome do arquivo
+    filename = file.filename
+
+    if not filename or "." not in filename:
+        raise ValueError("Nome de arquivo inválido")
+
+    # Extensão
+    ext = filename.lower().split(".")[-1]
+
+    if ext not in ALLOWED_EXTENSIONS:
+        raise ValueError(f"Extensão não suportada: .{ext}")
+
+    # Lê os bytes do UploadFile
+    file_bytes = file.file.read()
+
+    if not file_bytes:
+        raise ValueError("Arquivo vazio")
+
+    # Converte para BytesIO
+    file_bytes_io = BytesIO(file_bytes)
+
+    return filename, ext, file_bytes_io
+
+def extract_file_content(file_bytes, file_extension):
+    # 3. Estrarre il contenuto
+    """
+    Carrega arquivo → transforma em BytesIO → extrai conteúdo
+    """
+    try:
+        extractor = FileContentExtractor(file_bytes, file_extension)
+        return extractor.extract()
+
+    except Exception as e:
+        filename = "filename"
+        print(f"❌ Error processing file '{filename}': {e}")
+        raise
+
+def transform_embedding_data(payload, file_extention, file_content):
+    # Preparazione dei dati per l'embedding
+    try:
+        #logger.debug("Preparando dados para embeddings...")
+
+        embedding_content = {
+            "file_name": "filename",
+            "file_url": "https://test.com",
+            "file_content": file_content
+        }
+        
+        embedding_content.update(payload["metadata"]["aditional_informatios"])
+
+        embedding_metadata = {
+            "company_id": payload["company_id"],
+            "file_id": payload["file_id"],
+            "fileName": payload["fileName"],
+            "file_extention": file_extention,
+            "fileUrl": payload["fileUrl"]
+        }
+
+        # Metadata filters
+        embedding_metadata.update(payload["metadata"]["filters"])
+
+        # Metadata aditional_informatios
+        embedding_metadata.update(payload["metadata"]["aditional_informatios"])
+
+        #logger.info("Dados para embedding preparados com sucesso.")
+
+        return embedding_content, embedding_metadata
+
+    except Exception as e:
+        #logger.error("Erro ao transformar dados para embedding : %s. jobId: %s, fileId: %s", e, self.sqs_message_body["jobId"], self.sqs_message_body["fileId"])
+        raise
+
+def embedding_cost(content):
+    try:
+        # Calcola i costi
+        calc = EmbeddingCostCalculator("text-embedding-3-large")
+        cost = calc.calculate_cost_json(content)
+
+        return {
+            "embedding_cost": cost
+        }
+
+    except Exception as e:
+        raise
+
+
+
+
+
+
 
 
 
@@ -114,132 +222,6 @@ def business_update_usage(plan: dict, operation: dict) -> dict:
 
 
 
-def payload_validation():
-    # 1. Valutazione delle informazioni (L'ID dell'archivio può venire vuoto, in questo caso tocca a betterai crearlo)
-    pass
-
-
-
-
-
-def file_from_bytes(file): # 2. Transforma l'archivio in BitesIO
-    """
-    Recebe um UploadFile (FastAPI),
-    valida a extensão e retorna:
-    - filename
-    - extensão
-    - BytesIO
-    """
-
-    ALLOWED_EXTENSIONS = {
-        "txt", "md", "markdown", "html",
-        "pdf", "doc", "docx", "ppt", "pptx",
-        "csv", "xls", "xlsx", "xml", "json"
-    }
-
-    # Nome do arquivo
-    filename = file.filename
-
-    if not filename or "." not in filename:
-        raise ValueError("Nome de arquivo inválido")
-
-    # Extensão
-    ext = filename.lower().split(".")[-1]
-
-    if ext not in ALLOWED_EXTENSIONS:
-        raise ValueError(f"Extensão não suportada: .{ext}")
-
-    # Lê os bytes do UploadFile
-    file_bytes = file.file.read()
-
-    if not file_bytes:
-        raise ValueError("Arquivo vazio")
-
-    # Converte para BytesIO
-    file_bytes_io = BytesIO(file_bytes)
-
-    return filename, ext, file_bytes_io
-
-
-
-
-
-
-
-def extract_file_content(file_bytes, file_extension):
-    # 3. Estrarre il contenuto
-    """
-    Carrega arquivo → transforma em BytesIO → extrai conteúdo
-    """
-    try:
-        extractor = FileContentExtractor(file_bytes, file_extension)
-        return extractor.extract()
-
-    except Exception as e:
-        filename = "filename"
-        print(f"❌ Error processing file '{filename}': {e}")
-        raise
-
-
-
-
-
-
-
-def transform_embedding_data(payload, file_extention, file_content):
-    # Preparazione dei dati per l'embedding
-    try:
-        #logger.debug("Preparando dados para embeddings...")
-
-        embedding_content = {
-            "file_name": "filename",
-            "file_url": "https://test.com",
-            "file_content": file_content
-        }
-        
-        embedding_content.update(payload["metadata"]["aditional_informatios"])
-
-        embedding_metadata = {
-            "company_id": payload["company_id"],
-            "file_id": payload["file_id"],
-            "fileName": payload["fileName"],
-            "file_extention": file_extention,
-            "fileUrl": payload["fileUrl"]
-        }
-
-        # Metadata filters
-        embedding_metadata.update(payload["metadata"]["filters"])
-
-        # Metadata aditional_informatios
-        embedding_metadata.update(payload["metadata"]["aditional_informatios"])
-
-        #logger.info("Dados para embedding preparados com sucesso.")
-
-        return embedding_content, embedding_metadata
-
-    except Exception as e:
-        #logger.error("Erro ao transformar dados para embedding : %s. jobId: %s, fileId: %s", e, self.sqs_message_body["jobId"], self.sqs_message_body["fileId"])
-        raise
-
-
-
-
-
-def embedding_cost(content):
-    try:
-        # Calcola i costi
-        calc = EmbeddingCostCalculator("text-embedding-3-large")
-        cost = calc.calculate_cost_json(content)
-
-        return {
-            "embedding_cost": cost
-        }
-
-    except Exception as e:
-        raise
-
-
-
 
 
 def embedding(embedding_content, embedding_metadata):
@@ -262,10 +244,6 @@ def embedding(embedding_content, embedding_metadata):
     except Exception as e:
         raise
 
-
-
-
-
 def save_process(payload:dict, aggregates:list):
     # Salva l'operazione sul MongoDB
 
@@ -278,13 +256,6 @@ def save_process(payload:dict, aggregates:list):
     mongo_id = mongo.salvar_payload(database_name="embeddings", collection_name="betterai_embeddings", payload=payload)
     
     return mongo_id, payload
-
-
-
-
-
-
-
 
 def EmbeddingExecute():
     # Fluxo 
@@ -334,15 +305,6 @@ def EmbeddingExecute():
     
 
 print(EmbeddingExecute())
-
-
-
-
-
-
-
-
-
 
 
 

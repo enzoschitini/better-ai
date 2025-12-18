@@ -157,7 +157,7 @@ def generate_image(data: GenerateRequest) -> GenerateResponse:
 
 
 from io import BytesIO
-from src.embedding.embedding_module import *
+from embedding.BASE_embedding_module import *
 
 
 
