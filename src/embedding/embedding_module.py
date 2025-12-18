@@ -45,295 +45,269 @@ payload = {
 
 
 # Classe separata:
+from decimal import Decimal
+from copy import deepcopy
 
-def business_validation(plan: dict, operation: dict) -> bool:
+
+class BusinessPlanUsage:
     """
-    Retorna True se o plano possuir créditos suficientes
-    tanto em custo (USD) quanto em tokens.
-    """
+    Responsável por validar e atualizar o uso de créditos
+    (USD e tokens) de um plano de negócio.
 
-    # ===== CUSTO (USD) =====
-    budget_usd = Decimal(plan["resorce"]["cost"]["monthly_budget_total_cost_usd"])
-    used_usd = Decimal(plan["cost"]["total_cost_usd"])
-    operation_usd = Decimal(operation["embedding_cost"]["total_cost"]["cost_usd"])
+usage = BusinessPlanUsage(plan)
 
-    has_usd_credit = (budget_usd - used_usd) >= operation_usd
-
-    # ===== TOKENS =====
-    budget_tokens = plan["resorce"]["tokens"]["monthly_budget_total_tokens"]
-    used_tokens = plan["tokens"]["total_tokens"]
-    operation_tokens = operation["embedding_cost"]["tokens"]
-
-    has_token_credit = (budget_tokens - used_tokens) >= operation_tokens
-
-    return has_usd_credit and has_token_credit
-
-
-def business_update_usage(plan: dict, operation: dict) -> dict:
-    """
-    Atualiza o uso de créditos do plano (USD e tokens)
-    com base no custo da operação de embedding.
-
-    Retorna o plano atualizado.
+if usage.validate(operation):
+    updated_plan = usage.update_usage(operation)
     """
 
-    #if not business_validation(plan=plan, operation=operation):
-        #print("Créditos insuficientes para realizar a operação")
-        #raise
-
-    # Trabalha com cópia para evitar side-effects
-    updated_plan = deepcopy(plan)
-
-    # ===== VALORES DA OPERAÇÃO =====
-    operation_usd = Decimal(operation["embedding_cost"]["total_cost"]["cost_usd"])
-    operation_tokens = int(operation["embedding_cost"]["tokens"])
-
-    # ===== ATUALIZA CUSTO (USD) =====
-    updated_plan["cost"]["input_cost_usd"] = str(
-        Decimal(updated_plan["cost"]["input_cost_usd"]) + operation_usd
-    )
-    updated_plan["cost"]["total_cost_usd"] = str(
-        Decimal(updated_plan["cost"]["total_cost_usd"]) + operation_usd
-    )
-    
-    # ===== ATUALIZA TOKENS =====
-    updated_plan["tokens"]["input_tokens"] += operation_tokens
-    updated_plan["tokens"]["total_tokens"] += operation_tokens
-
-    return updated_plan
-
-
-
-
-
-
-
-
-
-
-
-
-
-def payload_validation():
-    # 1. Valutazione delle informazioni (L'ID dell'archivio può venire vuoto, in questo caso tocca a betterai crearlo)
-    pass
-
-
-
-
-
-def file_from_bytes(file): # 2. Transforma l'archivio in BitesIO
-    """
-    Recebe um UploadFile (FastAPI),
-    valida a extensão e retorna:
-    - filename
-    - extensão
-    - BytesIO
-    """
-
-    ALLOWED_EXTENSIONS = {
-        "txt", "md", "markdown", "html",
-        "pdf", "doc", "docx", "ppt", "pptx",
-        "csv", "xls", "xlsx", "xml", "json"
-    }
-
-    # Nome do arquivo
-    filename = file.filename
-
-    if not filename or "." not in filename:
-        raise ValueError("Nome de arquivo inválido")
-
-    # Extensão
-    ext = filename.lower().split(".")[-1]
-
-    if ext not in ALLOWED_EXTENSIONS:
-        raise ValueError(f"Extensão não suportada: .{ext}")
-
-    # Lê os bytes do UploadFile
-    file_bytes = file.file.read()
-
-    if not file_bytes:
-        raise ValueError("Arquivo vazio")
-
-    # Converte para BytesIO
-    file_bytes_io = BytesIO(file_bytes)
-
-    return filename, ext, file_bytes_io
-
-
-
-
-
-
-
-def extract_file_content(file_bytes, file_extension):
-    # 3. Estrarre il contenuto
-    """
-    Carrega arquivo → transforma em BytesIO → extrai conteúdo
-    """
-    try:
-        extractor = FileContentExtractor(file_bytes, file_extension)
-        return extractor.extract()
-
-    except Exception as e:
-        filename = "filename"
-        print(f"❌ Error processing file '{filename}': {e}")
-        raise
-
-
-
-
-
-
-
-def transform_embedding_data(payload, file_extention, file_content):
-    # Preparazione dei dati per l'embedding
-    try:
-        #logger.debug("Preparando dados para embeddings...")
-
-        embedding_content = {
-            "file_name": "filename",
-            "file_url": "https://test.com",
-            "file_content": file_content
-        }
-        
-        embedding_content.update(payload["metadata"]["aditional_informatios"])
-
-        embedding_metadata = {
-            "company_id": payload["company_id"],
-            "file_id": payload["file_id"],
-            "fileName": payload["fileName"],
-            "file_extention": file_extention,
-            "fileUrl": payload["fileUrl"]
-        }
-
-        # Metadata filters
-        embedding_metadata.update(payload["metadata"]["filters"])
-
-        # Metadata aditional_informatios
-        embedding_metadata.update(payload["metadata"]["aditional_informatios"])
-
-        #logger.info("Dados para embedding preparados com sucesso.")
-
-        return embedding_content, embedding_metadata
-
-    except Exception as e:
-        #logger.error("Erro ao transformar dados para embedding : %s. jobId: %s, fileId: %s", e, self.sqs_message_body["jobId"], self.sqs_message_body["fileId"])
-        raise
-
-
-
-
-
-def embedding_cost(content):
-    try:
-        # Calcola i costi
-        calc = EmbeddingCostCalculator("text-embedding-3-large")
-        cost = calc.calculate_cost_json(content)
-
-        return {
-            "embedding_cost": cost
-        }
-
-    except Exception as e:
-        raise
-
-
-
-
-
-def embedding(embedding_content, embedding_metadata):
-    try:
-        # Si fa l'embedding
-        pine_client = PineconeClient(index_name="backai-vectorstore", 
-                                    namespace="test_namespace", global_namespace="global_namespace")
-        
-        pine_service = PineconeVectorService(pine_client, embedding_model_name="text-embedding-3-large", dimensions=3072)
-
-        response = pine_service.generate_vectors(
-            text=str(embedding_content),
-            metadata=embedding_metadata,
-            save_global=False,
-            batch_size=200
+    def __init__(self, plan: dict):
+        # Trabalha sempre com cópia para evitar side-effects
+        self.plan = deepcopy(plan)
+
+    # ======================================================
+    # VALIDATION
+    # ======================================================
+    def validate(self, operation: dict) -> bool:
+        """
+        Retorna True se o plano possuir créditos suficientes
+        tanto em custo (USD) quanto em tokens.
+        """
+
+        # ===== CUSTO (USD) =====
+        budget_usd = Decimal(
+            self.plan["resorce"]["cost"]["monthly_budget_total_cost_usd"]
+        )
+        used_usd = Decimal(self.plan["cost"]["total_cost_usd"])
+        operation_usd = Decimal(
+            operation["embedding_cost"]["total_cost"]["cost_usd"]
         )
 
+        has_usd_credit = (budget_usd - used_usd) >= operation_usd
+
+        # ===== TOKENS =====
+        budget_tokens = self.plan["resorce"]["tokens"]["monthly_budget_total_tokens"]
+        used_tokens = self.plan["tokens"]["total_tokens"]
+        operation_tokens = operation["embedding_cost"]["tokens"]
+
+        has_token_credit = (budget_tokens - used_tokens) >= operation_tokens
+
+        return has_usd_credit and has_token_credit
+
+    # ======================================================
+    # UPDATE
+    # ======================================================
+    def update_usage(self, operation: dict, validate: bool = True) -> dict:
+        """
+        Atualiza o uso de créditos do plano (USD e tokens)
+        com base no custo da operação de embedding.
+
+        Retorna o plano atualizado.
+        """
+
+        if validate and not self.validate(operation):
+            raise ValueError("Créditos insuficientes para realizar a operação")
+
+        # ===== VALORES DA OPERAÇÃO =====
+        operation_usd = Decimal(
+            operation["embedding_cost"]["total_cost"]["cost_usd"]
+        )
+        operation_tokens = int(operation["embedding_cost"]["tokens"])
+
+        # ===== ATUALIZA CUSTO (USD) =====
+        self.plan["cost"]["input_cost_usd"] = str(
+            Decimal(self.plan["cost"]["input_cost_usd"]) + operation_usd
+        )
+        self.plan["cost"]["total_cost_usd"] = str(
+            Decimal(self.plan["cost"]["total_cost_usd"]) + operation_usd
+        )
+
+        # ===== ATUALIZA TOKENS =====
+        self.plan["tokens"]["input_tokens"] += operation_tokens
+        self.plan["tokens"]["total_tokens"] += operation_tokens
+
+        return self.plan
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class EmbeddingFile:
+
+    def __init__(self, payload, file):
+
+        self.payload = payload
+        self.file = file
+
+        self.metadata = payload["metadata"]
+        self.embedding_settings = payload["embedding_settings"]
+
+        self.mongo = MongoDBManager()
+
+
+    def transform_embedding_data(self, file_extention, file_content):
+        # Preparazione dei dati per l'embedding
+        try:
+            #logger.debug("Preparando dados para embeddings...")
+
+            payload = self.payload
+
+            embedding_content = {
+                "file_name": "filename",
+                "file_url": "https://test.com",
+                "file_content": file_content
+            }
+            
+            embedding_content.update(payload["metadata"]["aditional_informatios"])
+
+            embedding_metadata = {
+                "company_id": payload["company_id"],
+                "file_id": payload["file_id"],
+                "fileName": "fileName",
+                "file_extention": file_extention,
+                "fileUrl": payload["fileUrl"]
+            }
+
+            # Metadata filters
+            embedding_metadata.update(payload["metadata"]["filters"])
+
+            # Metadata aditional_informatios
+            embedding_metadata.update(payload["metadata"]["aditional_informatios"])
+
+            #logger.info("Dados para embedding preparados com sucesso.")
+
+            return embedding_content, embedding_metadata
+
+        except Exception as e:
+            #logger.error("Erro ao transformar dados para embedding : %s. jobId: %s, fileId: %s", e, self.sqs_message_body["jobId"], self.sqs_message_body["fileId"])
+            raise
+
+
+
+
+
+    def embedding_cost(self, content):
+        try:
+            # Calcola i costi
+            calc = EmbeddingCostCalculator(self.embedding_settings["llm_model"])
+            cost = calc.calculate_cost_json(content)
+
+            return {
+                "embedding_cost": cost
+            }
+
+        except Exception as e:
+            raise
+
+
+
+
+
+    def embedding(self, embedding_content, embedding_metadata):
+        try:
+            # Si fa l'embedding
+            pine_client = PineconeClient(index_name="backai-vectorstore", 
+                                        namespace="test_namespace", global_namespace="global_namespace")
+            
+            pine_service = PineconeVectorService(pine_client, embedding_model_name=self.embedding_settings["llm_model"], 
+                                                 dimensions=self.embedding_settings["dimensions"])
+
+            response = pine_service.generate_vectors(
+                text=str(embedding_content),
+                metadata=embedding_metadata,
+                save_global=self.embedding_settings["global_namespace"],
+                batch_size=self.embedding_settings["batch_size"]
+            )
+
+            return response
+
+        except Exception as e:
+            raise
+
+
+
+
+
+    def save_process(self, payload:dict, aggregates:list):
+        # Salva l'operazione sul MongoDB
+        for agg in aggregates:
+            for key in agg.keys():
+                payload[key] = agg[key]
+        
+        mongo_id = self.mongo.salvar_payload(database_name="embeddings", collection_name="betterai_embeddings", payload=payload)
+        
+        return mongo_id, payload
+
+
+
+
+
+
+
+
+    def EmbeddingExecute(self):
+        # Fluxo 
+        # payload_validation
+        # file_from_bytes -> filename, ext, file_bytes_io
+        # extract_file_content -> text
+
+        filename = "Candidatura.pdf"
+        ext = "pdf"
+        text = "Negli ultimi anni ho lavorato su diversi progetti in diversi settori, tra cui intelligenza artificiale"
+
+        embedding_content, embedding_metadata = self.transform_embedding_data(
+            payload=self.payload,
+            file_extention=ext,
+            file_content=text
+        )
+        
+        #"""
+        operation_cost = self.embedding_cost(content=str(embedding_content))
+
+        business = self.mongo.buscar_documentos(database_name="TokensUsage",
+                                        collection_name="BusinessAccountManage", 
+                                        filtro={"business_id": "0011"})[0]
+        
+        updated_plan = BusinessPlanUsage(plan=business["plan"]).update_usage(operation=operation_cost)
+
+        self.mongo.atualizar_documentos(
+            database_name="TokensUsage", collection_name="BusinessAccountManage", 
+            filtro={"business_id": "0011"}, novos_valores={"plan": updated_plan}
+        )
+        #"""
+
+        vectorstore_embedding = self.embedding(str(embedding_content), embedding_metadata)
+        mongo_id, mongo_payload = self.save_process(self.payload, [operation_cost, {"vectorstore_informations": vectorstore_embedding["embedding_informations"]}])
+
+        response = {
+            "status": "success",
+            "message": "File embedded",
+            "metadata": {
+                "fileId": self.payload["file_id"],
+                "mongoId": mongo_id,
+            }
+        }
+
         return response
+        
 
-    except Exception as e:
-        raise
+embedding_module = EmbeddingFile(payload=payload, file="file")
+embed = embedding_module.EmbeddingExecute()
 
-
-
-
-
-def save_process(payload:dict, aggregates:list):
-    # Salva l'operazione sul MongoDB
-
-    mongo = MongoDBManager()
-
-    for agg in aggregates:
-        for key in agg.keys():
-            payload[key] = agg[key]
-    
-    mongo_id = mongo.salvar_payload(database_name="embeddings", collection_name="betterai_embeddings", payload=payload)
-    
-    return mongo_id, payload
-
-
-
-
-
-
-
-
-def EmbeddingExecute():
-    # Fluxo 
-    # payload_validation
-    # file_from_bytes -> filename, ext, file_bytes_io
-    # extract_file_content -> text
-
-    filename = "Candidatura.pdf"
-    ext = "pdf"
-    text = """
-    Negli ultimi anni ho lavorato su diversi progetti in diversi settori, tra cui intelligenza artificiale, 
-    ho seguito da vicino l’evoluzione dell’AI Generativa, partendo dai primi esperimenti con gli AI 
-    Agents fino allo sviluppo di sistemi complessi di orchestrazione e automazione. Progettando 
-    architetture RAG, orchestrando modelli LLM e integrato strumenti come LangChain, 
-    LlamaIndex, Crewai e Dify per creare agenti intelligenti in grado di ragionare, pianificare e 
-    interagire in modo autonomo. 
-    """
-
-    embedding_content, embedding_metadata = transform_embedding_data(
-        payload=payload,
-        file_extention=ext,
-        file_content=text
-    )
-    
-    #"""
-    cost = embedding_cost(content=str(embedding_content))
-
-    mongo = MongoDBManager()
-
-    business = mongo.buscar_documentos(database_name="TokensUsage",
-                                    collection_name="BusinessAccountManage", 
-                                    filtro={"business_id": "0011"})[0]
-
-    updated_plan = business_update_usage(plan=business["plan"], operation=cost)
-
-    mongo.atualizar_documentos(
-        database_name="TokensUsage", collection_name="BusinessAccountManage", 
-        filtro={"business_id": "0011"}, novos_valores={"plan": updated_plan}
-    )
-    #"""
-
-    vectorstore_embedding = embedding(str(embedding_content), embedding_metadata)
-    mongo_id, mongo_payload = save_process(payload, [cost, {"vectorstore_informations": vectorstore_embedding["embedding_informations"]}])
-    
-
-    return mongo_id
-    
-
-print(EmbeddingExecute())
+print(embed)
 
 
 
@@ -361,47 +335,6 @@ print(EmbeddingExecute())
 
 """
 python -m src.embedding.embedding_module
-
-payload = {
-    "fileId": "21d75dca2eec7b02080327f40220e20dxx2.pdf",
-    "fileName": "name file.pdf",
-    "fileUrl": "https://domain.com/docs/21d75dca2eec7b02080327f40220e20dxx2.pdf", # (Opzionale)
-    
-    "metadata": { # (Opzionale)
-        "filters": {
-            "id_collection": "id_collection_01",
-            "id_series": "id_series_01",
-            "id_client": "id_client_01",
-            "id_user": "id_user_01",
-            "id_workspace": "id_workspace_01"
-        },
-        "aditional_informatios": {
-            "Collection Name:": "BetterAI Repo"
-        }
-    },
-
-    "embedding_settings": { # (Opzionale)
-        "llm_model": "text-embedding-3-large",
-        "dimensions": 3072,
-        "global_namespace": True,
-        "batch_size": 200
-    }
-}
-
-+ File
-
-1. Valutazione delle informazioni (L'ID dell'archivio può venire vuoto, in questo caso tocca a betterai crearlo)
-2. Transforma l'archivio in BitesIO
-
-3. Estrarre il contenuto
-3.1 Calcola i costi
-3.2 Verifica se l'utente ha ancora dei crediti
-
-4. Preparazione dei dati per l'embedding
-5. Si fa l'embedding
-6. Calcola i costi
-7. Salva l'operazione sul MongoDB
-8. Ritorna i parametri
 
 payload = {
     "status": "success",
