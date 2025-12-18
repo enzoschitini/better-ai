@@ -131,14 +131,15 @@ def embedding_cost(content):
         # Calcola i costi
         calc = EmbeddingCostCalculator("text-embedding-3-large")
         cost = calc.calculate_cost_json(content)
-        response = {
+
+        return {
             "embedding_cost": cost
         }
 
-        return response
-
     except Exception as e:
         raise
+
+
 
 
 
@@ -210,6 +211,13 @@ def business_update_usage(plan: dict, operation: dict) -> dict:
 
 
 
+
+
+
+
+
+
+
 def embedding(embedding_content, embedding_metadata):
     try:
         # Si fa l'embedding
@@ -245,6 +253,7 @@ def save_process(payload:dict, aggregates:list):
 
 def EmbeddingExecute():
     # Fluxo 
+    # payload_validation
     # file_from_bytes -> filename, ext, file_bytes_io
     # extract_file_content -> text
 
@@ -259,6 +268,7 @@ def EmbeddingExecute():
     interagire in modo autonomo. 
     """
 
+    """
     embedding_content, embedding_metadata = transform_embedding_data(
         payload=payload,
         file_extention=ext,
@@ -267,10 +277,11 @@ def EmbeddingExecute():
 
     cost = embedding_cost(str(embedding_content))
 
-    #vectorstore_embedding = embedding(embedding_content, embedding_metadata)
-    #mongo_id, mongo_payload = save_process(payload, [cost, {"vectorstore_informations": vectorstore_embedding["embedding_informations"]}])
+    vectorstore_embedding = embedding(embedding_content, embedding_metadata)
+    mongo_id, mongo_payload = save_process(payload, [cost, {"vectorstore_informations": vectorstore_embedding["embedding_informations"]}])
+    """
 
-    return embedding_content
+    return "embedding_content"
     
 
 print(EmbeddingExecute())
