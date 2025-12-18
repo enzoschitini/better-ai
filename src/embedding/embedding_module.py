@@ -15,7 +15,7 @@ load_dotenv()
 
 payload = {
     "company_id": "1",
-    "fileId": "21d75dca2eec7b02080327f40220e20dxx2.pdf",
+    "file_id": "21d75dca2eec7b02080327f40220e20dxx2.pdf",
     "fileName": "name file.pdf",
     "fileUrl": "https://domain.com/docs/21d75dca2eec7b02080327f40220e20dxx2.pdf", # (Opzionale)
     
@@ -111,12 +111,17 @@ def transform_embedding_data(payload, file_extention, file_content):
 
         embedding_metadata = {
             "company_id": payload["company_id"],
-            "fileId": payload["fileId"],
+            "file_id": payload["file_id"],
             "fileName": payload["fileName"],
             "file_extention": file_extention,
-            "fileUrl": payload["fileUrl"],
-            "metadata": payload["metadata"]
+            "fileUrl": payload["fileUrl"]
         }
+
+        # Metadata filters
+        embedding_metadata.update(payload["metadata"]["filters"])
+
+        # Metadata aditional_informatios
+        embedding_metadata.update(payload["metadata"]["aditional_informatios"])
 
         #logger.info("Dados para embedding preparados com sucesso.")
 
@@ -180,8 +185,9 @@ def business_update_usage(plan: dict, operation: dict) -> dict:
     Retorna o plano atualizado.
     """
 
-    if not business_validation(plan=plan, operation=operation):
-        return "Créditos insuficientes para realizar a operação"
+    #if not business_validation(plan=plan, operation=operation):
+        #print("Créditos insuficientes para realizar a operação")
+        #raise
 
     # Trabalha com cópia para evitar side-effects
     updated_plan = deepcopy(plan)
@@ -268,20 +274,34 @@ def EmbeddingExecute():
     interagire in modo autonomo. 
     """
 
-    """
     embedding_content, embedding_metadata = transform_embedding_data(
         payload=payload,
         file_extention=ext,
         file_content=text
     )
+    
+    #"""
+    cost = embedding_cost(content=str(embedding_content))
 
-    cost = embedding_cost(str(embedding_content))
+    mongo = MongoDBManager()
 
-    vectorstore_embedding = embedding(embedding_content, embedding_metadata)
+    business = mongo.buscar_documentos(database_name="TokensUsage",
+                                    collection_name="BusinessAccountManage", 
+                                    filtro={"business_id": "0011"})[0]
+
+    updated_plan = business_update_usage(plan=business["plan"], operation=cost)
+
+    mongo.atualizar_documentos(
+        database_name="TokensUsage", collection_name="BusinessAccountManage", 
+        filtro={"business_id": "0011"}, novos_valores={"plan": updated_plan}
+    )
+    #"""
+
+    vectorstore_embedding = embedding(str(embedding_content), embedding_metadata)
     mongo_id, mongo_payload = save_process(payload, [cost, {"vectorstore_informations": vectorstore_embedding["embedding_informations"]}])
-    """
+    
 
-    return "embedding_content"
+    return mongo_id
     
 
 print(EmbeddingExecute())
