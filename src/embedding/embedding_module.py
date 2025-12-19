@@ -20,9 +20,9 @@ payload = {
     "company_id": "1",
     "file_id": "21d75dca2eec7b02080327f40220e20dxx2.pdf",
     "fileName": "name file.pdf",
-    "fileUrl": "https://domain.com/docs/21d75dca2eec7b02080327f40220e20dxx2.pdf", # (Opzionale)
+    "fileUrl": "https://domain.com/docs/21d75dca2eec7b02080327f40220e20dxx2.pdf",
     
-    "metadata": { # (Opzionale)
+    "metadata": {
         "filters": {
             "id_collection": "id_collection_01",
             "id_series": "id_series_01",
@@ -35,7 +35,7 @@ payload = {
         }
     },
 
-    "embedding_settings": { # (Opzionale)
+    "embedding_settings": {
         "llm_model": "text-embedding-3-large",
         "dimensions": 3072,
         "global_namespace": True,

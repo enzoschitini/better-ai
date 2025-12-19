@@ -160,48 +160,41 @@ from io import BytesIO
 from embedding.embedding_module import EmbeddingFile
 
 
-
-class EmbeddingSettings(BaseModel):
-    llm_model: str
-    dimensions: int
-    global_namespace: bool
-    batch_size: int
-
-
-class Metadata(BaseModel):
-    id_collection: str
-    id_series: str
-    id_client: str
-    id_user: str
-    id_workspace: str
-
-
 class UploadPayload(BaseModel):
-    fileId: str
-    fileName: str
-    fileUrl: Optional[str] = None
-    embedding_settings: EmbeddingSettings
-    metadata: Metadata
+    data: Dict[str, Any]
 
-
+    class Config:
+        extra = "allow"
+        
 @app.post("/test-upload")
 async def upload_file(
     payload: str = Form(...),
     file: UploadFile = File(...)
 ):
-    # 🔹 Parse payload
+    # 🔹 Valida se payload é JSON válido
     try:
         payload_dict = json.loads(payload)
-        payload_obj = UploadPayload(**payload_dict)
+        payload_obj = UploadPayload(data=payload_dict)
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Invalid payload: {str(e)}")
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid payload JSON: {str(e)}"
+        )
+
+    # 🔹 Valida se arquivo chegou
+    if not file or not file.filename:
+        raise HTTPException(
+            status_code=400,
+            detail="File is required"
+        )
 
     # 🔹 Processa arquivo
     try:
-        module = EmbeddingFile(payload=payload, file=file)
+        module = EmbeddingFile(payload=payload_obj.data, file=file)
 
         filename, ext, file_bytes = module.file_from_bytes(file)
         text = module.extract_file_content(file_bytes, ext)
+
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -210,10 +203,9 @@ async def upload_file(
         "file": {
             "filename": filename,
             "extension": ext,
-            "content_type": file.content_type,
-            "text": text    
+            "content_type": file.content_type
         },
-        "payload": payload_obj.dict()
+        "payload": payload_obj.data
     }
 
 """
