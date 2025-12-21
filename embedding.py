@@ -18,12 +18,24 @@ class UploadPayload(BaseModel):
 
     class Config:
         extra = "allow"
-        
+
+
 @app.post("/test-upload")
 async def upload_file(
+    request: Request,
     payload: str = Form(...),
     file: UploadFile = File(...)
 ):
+    # 🔹 Garante que apenas 1 arquivo foi enviado
+    form = await request.form()
+    files = form.getlist("file")
+
+    if len(files) > 1:
+        raise HTTPException(
+            status_code=400,
+            detail="Only one file is allowed"
+        )
+
     # 🔹 Valida se payload é JSON válido
     try:
         payload_dict = json.loads(payload)
@@ -43,14 +55,20 @@ async def upload_file(
 
     # 🔹 Processa arquivo
     try:
-        module = EmbeddingFile(payload=payload_obj.data, file=file)
-        # html, md, txt, json, pptx, csv, xlsx, docx, 
+        module = EmbeddingFile(
+            payload=payload_obj.data,
+            file=file
+        )
+        # html, md, txt, json, pptx, csv, xlsx, docx
         result = module.EmbeddingExecute()
-
         return result
 
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
+
 
 """
 curl -X POST http://127.0.0.1:8000/test-upload \
