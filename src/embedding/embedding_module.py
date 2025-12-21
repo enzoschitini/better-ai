@@ -59,6 +59,11 @@ class EmbeddingFile:
         self.embedding_settings = payload["embedding_settings"]
 
         self.mongo = MongoDBManager()
+    
+    def payload_validation(self):
+        original_payload = self.payload
+
+        return original_payload
 
 
     def file_from_bytes(self, file): # 2. Transforma l'archivio in BitesIO
@@ -120,11 +125,11 @@ class EmbeddingFile:
 
             embedding_content = {
                 "file_name": "filename",
-                "file_url": "https://test.com",
-                "file_content": file_content
+                "file_url": "https://test.com"
             }
             
             embedding_content.update(payload["metadata"]["aditional_informatios"])
+            embedding_content["file_content"] = file_content["response"]
 
             embedding_metadata = {
                 "company_id": payload["company_id"],
@@ -222,29 +227,34 @@ class EmbeddingFile:
 
 
     def EmbeddingExecute(self):
-        # Fluxo 
-        # payload_validation
-        # file_from_bytes -> filename, ext, file_bytes_io
-        # extract_file_content -> text
+        payload = self.payload_validation()
+        filename, file_extension, file_bytes = self.file_from_bytes(file=self.file)
+        file_content = self.extract_file_content(file_bytes, file_extension)
 
-        filename = "Candidatura.pdf"
-        ext = "pdf"
         text = "Negli ultimi anni ho lavorato su diversi progetti in diversi settori, tra cui intelligenza artificiale"
 
-        embedding_content, embedding_metadata = self.transform_embedding_data(payload=self.payload, file_extention=ext, file_content=text)
-        
-        #"""
+        embedding_content, embedding_metadata = self.transform_embedding_data(payload=payload, file_extention=file_extension, file_content=file_content)
+
+        #vectorstore_embedding = self.embedding(embedding_content, embedding_metadata)
+
+        """
         operation_cost = self.embedding_cost(content=embedding_content)
 
-        vectorstore_embedding = self.embedding(str(embedding_content), embedding_metadata)
-        mongo_id = self.save_process(self.payload, [operation_cost, {"vectorstore_informations": vectorstore_embedding["embedding_informations"]}])
-
+        mongo_id = self.save_process(payload, [operation_cost, {"vectorstore_informations": vectorstore_embedding["embedding_informations"]}])
+        #"""
+        
         response = {
             "status": "success",
             "message": "File embedded",
             "metadata": {
-                "fileId": self.payload["file_id"],
-                "mongoId": mongo_id,
+                "fileId": payload["file_id"],
+                "mongoId": "mongo_id",
+                "filename": filename,
+                "ext": file_extension,
+                #"file_content": file_content,
+                "embedding_content": embedding_content,
+                #"embedding_metadata": embedding_metadata,
+                #"vectorstore_informations": vectorstore_embedding["embedding_informations"]
             }
         }
 

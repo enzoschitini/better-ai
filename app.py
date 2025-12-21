@@ -192,21 +192,15 @@ async def upload_file(
     try:
         module = EmbeddingFile(payload=payload_obj.data, file=file)
 
-        filename, ext, file_bytes = module.file_from_bytes(file)
-        text = module.extract_file_content(file_bytes, ext)
+        #filename, ext, file_bytes = module.file_from_bytes(file)
+        #text = module.extract_file_content(file_bytes, ext)
+
+        result = module.EmbeddingExecute()
+
+        return result
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-
-    return {
-        "message": "Upload recebido com sucesso",
-        "file": {
-            "filename": filename,
-            "extension": ext,
-            "content_type": file.content_type
-        },
-        "payload": payload_obj.data
-    }
 
 """
 curl -X POST http://127.0.0.1:8000/test-upload \
