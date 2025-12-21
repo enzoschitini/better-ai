@@ -56,27 +56,26 @@ class EmbeddingFile:
                  namespace=None,
                  global_namespace=None,
                  
-                 database_name_embed=None,
-                 collection_name_embed=None,
-                 database_name_usage=None,
-                 collection_name_usage=None):
+                 embeddings_database=None,
+                 embeddings_collection=None,
+                 usage_database=None,
+                 usage_collection=None):
 
         self.payload = payload
         self.embedding_settings = payload["embedding_settings"]
         self.file = file
 
         # Pinecone:
-        self.index_name = index_name or "backai-vectorstore"
-        self.namespace = namespace or "test_namespace"
-        self.global_namespace = global_namespace or "global_namespace"
+        self.index_name = index_name or os.getenv("PINECONE_INDEX_NAME")
+        self.namespace = namespace or os.getenv("PINECONE_INDEX_NAME")
+        self.global_namespace = global_namespace or os.getenv("PINECONE_GLOBAL_NAMESPACE")
 
         # MongoDB:
+        self.embeddings_database = embeddings_database or "embeddings"
+        self.embeddings_collection = embeddings_collection or "betterai_embeddings"
 
-        self.database_name_embed = database_name_embed or "embeddings"
-        self.collection_name_embed = collection_name_embed or "betterai_embeddings"
-
-        self.database_name_usage = database_name_usage or "TokensUsage"
-        self.collection_name_usage = collection_name_usage or "BusinessAccountManage"
+        self.usage_database = usage_database or "TokensUsage"
+        self.usage_collection = usage_collection or "BusinessAccountManage"
 
         # Classes:
 
@@ -180,8 +179,8 @@ class EmbeddingFile:
     def embedding_cost(self, embedding_content):
         try:
             # Calcola i costi
-            database_name = self.database_name_usage or "TokensUsage"
-            collection_name = self.collection_name_usage or "BusinessAccountManage"
+            database_name = self.usage_database or "TokensUsage"
+            collection_name = self.usage_collection or "BusinessAccountManage"
             embedding_content = str(embedding_content)
 
             calc = EmbeddingCostCalculator(self.embedding_settings["llm_model"])
@@ -243,7 +242,7 @@ class EmbeddingFile:
             for key in agg.keys():
                 payload[key] = agg[key]
         
-        mongo_id = self.mongo.salvar_payload(database_name=self.database_name_embed, collection_name=self.collection_name_embed, payload=payload)
+        mongo_id = self.mongo.salvar_payload(database_name=self.embeddings_database, collection_name=self.embeddings_collection, payload=payload)
         
         return mongo_id
 
@@ -259,27 +258,26 @@ class EmbeddingFile:
 
         embedding_content, embedding_metadata = self.transform_embedding_data(
             payload=payload, file_name=file_name, file_extention=file_extension, file_content=file_content)
-
-        """
-        embedding_content, embedding_metadata = self.transform_embedding_data(payload=payload, file_extention=file_extension, file_content=file_content)
-
+        
         vectorstore_embedding = self.embedding(embedding_content, embedding_metadata)
 
+        """
         
-        operation_cost = self.embedding_cost(content=embedding_content)
+        #"""
+
+        operation_cost = self.embedding_cost(embedding_content=embedding_content)
 
         mongo_id = self.save_process(payload, [operation_cost, {"vectorstore_informations": vectorstore_embedding["embedding_informations"]}])
-        #"""
         
         response = {
             "status": "success",
             "message": "File embedded",
             "metadata": {
                 "fileId": payload["file_id"],
-                "mongoId": "mongo_id",
+                "mongoId": mongo_id,
                 #"file_content": file_content,
-                "embedding_content": embedding_content,
-                "embedding_metadata": embedding_metadata,
+                #"embedding_content": embedding_content,
+                #"embedding_metadata": embedding_metadata,
                 #"vectorstore_informations": vectorstore_embedding["embedding_informations"]
             }
         }
