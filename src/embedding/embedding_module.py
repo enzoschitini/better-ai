@@ -1,51 +1,15 @@
 import os
 from dotenv import load_dotenv
 from io import BytesIO
-from decimal import Decimal
-
-import json
-from copy import deepcopy
 
 from src.chat.utils.mongo_manage import MongoDBManager
+
 from src.embedding.file_content_extractor import FileContentExtractor
 from src.embedding.pinecone_vector_store import PineconeClient, PineconeVectorService
 from src.embedding.tokens_calculator.cost import EmbeddingCostCalculator
 from src.embedding.tokens_calculator.business_plan_usage import BusinessPlanUsage
-from src.embedding.payload_validation import PayloadProcessor
 
 load_dotenv()
-
-
-
-payload = {
-    "company_id": "1",
-    "file_id": "21d75dca2eec7b02080327f40220e20dxx2.pdf",
-    "fileName": "name file.pdf",
-    "fileUrl": "https://domain.com/docs/21d75dca2eec7b02080327f40220e20dxx2.pdf",
-    
-    "metadata": {
-        "filters": {
-            "id_collection": "id_collection_01",
-            "id_series": "id_series_01",
-            "id_client": "id_client_01",
-            "id_user": "id_user_01",
-            "id_workspace": "id_workspace_01"
-        },
-        "aditional_informatios": {
-            "Collection Name:": "BetterAI Repo"
-        }
-    },
-
-    "embedding_settings": {
-        "llm_model": "text-embedding-3-large",
-        "dimensions": 3072,
-        "global_namespace": True,
-        "batch_size": 200
-    }
-}
-
-
-
 
 class EmbeddingFile:
     """
@@ -78,7 +42,6 @@ class EmbeddingFile:
         self.usage_collection = usage_collection or "BusinessAccountManage"
 
         # Classes:
-
         self.mongo = MongoDBManager()
 
 
@@ -120,6 +83,7 @@ class EmbeddingFile:
 
         return filename, ext, file_bytes_io
 
+
     def extract_file_content(self, file_bytes, file_extension):
         # 3. Estrarre il contenuto
         """
@@ -133,6 +97,7 @@ class EmbeddingFile:
             filename = "filename"
             print(f"❌ Error processing file '{filename}': {e}")
             raise
+
 
     def transform_embedding_data(self, payload, file_name, file_extention, file_content):
         # Preparazione dei dati per l'embedding
@@ -173,9 +138,6 @@ class EmbeddingFile:
             raise
 
 
-
-
-
     def embedding_cost(self, embedding_content):
         try:
             # Calcola i costi
@@ -204,9 +166,6 @@ class EmbeddingFile:
             raise
 
 
-
-
-
     def embedding(self, embedding_content, embedding_metadata):
         try:
             index_name = self.index_name
@@ -233,9 +192,6 @@ class EmbeddingFile:
             raise
 
 
-
-
-
     def save_process(self, payload:dict, aggregates:list):
         # Salva l'operazione sul MongoDB
         for agg in aggregates:
@@ -245,8 +201,6 @@ class EmbeddingFile:
         mongo_id = self.mongo.salvar_payload(database_name=self.embeddings_database, collection_name=self.embeddings_collection, payload=payload)
         
         return mongo_id
-
-
 
 
     def EmbeddingExecute(self):
@@ -262,11 +216,9 @@ class EmbeddingFile:
         vectorstore_embedding = self.embedding(embedding_content, embedding_metadata)
 
         """
-        
         #"""
 
         operation_cost = self.embedding_cost(embedding_content=embedding_content)
-
         mongo_id = self.save_process(payload, [operation_cost, {"vectorstore_informations": vectorstore_embedding["embedding_informations"]}])
         
         response = {
@@ -274,11 +226,7 @@ class EmbeddingFile:
             "message": "File embedded",
             "metadata": {
                 "fileId": payload["file_id"],
-                "mongoId": mongo_id,
-                #"file_content": file_content,
-                #"embedding_content": embedding_content,
-                #"embedding_metadata": embedding_metadata,
-                #"vectorstore_informations": vectorstore_embedding["embedding_informations"]
+                "mongoId": mongo_id
             }
         }
 
@@ -286,47 +234,5 @@ class EmbeddingFile:
 
 
 """
-embedding_module = EmbeddingFile(payload=payload, file="file")
-embed = embedding_module.EmbeddingExecute()
-
-print(embed)
-"""
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-"""
 python -m src.embedding.embedding_module
 """
-
-
-
-
-
-
-
-
-
-
-
