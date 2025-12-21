@@ -6,8 +6,8 @@ from typing import Tuple, Dict, List
 from fastapi import UploadFile
 
 from src.chat.utils.mongo_manage import MongoDBManager
-from src.embedding.file_content_extractor import FileContentExtractor
-from src.embedding.pinecone_vector_store import (
+from src.embedding.services.file_content_extractor import FileContentExtractor
+from src.embedding.services.pinecone_vector_store import (
     PineconeClient,
     PineconeVectorService
 )
@@ -211,16 +211,19 @@ class EmbeddingModule:
 
     async def execute(self) -> dict:
         # 1. Load file
-        file_name, extension, file_bytes = await FileService.load(self.file)
+        file_name, file_extension, file_bytes = await FileService.load(self.file)
+
+        self.payload["file_name"] = file_name
+        self.payload["file_extension"] = file_extension
 
         # 2. Extract content
-        content = ContentExtractorService.extract(file_bytes, extension)
+        content = ContentExtractorService.extract(file_bytes, file_extension)
 
         # 3. Transform
         embedding_content, embedding_metadata = EmbeddingTransformer.transform(
             payload=self.payload,
             file_name=file_name,
-            file_extension=extension,
+            file_extension=file_extension,
             extracted_content=content
         )
 

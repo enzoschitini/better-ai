@@ -4,8 +4,8 @@ from io import BytesIO
 
 from src.chat.utils.mongo_manage import MongoDBManager
 
-from src.embedding.file_content_extractor import FileContentExtractor
-from src.embedding.pinecone_vector_store import PineconeClient, PineconeVectorService
+from src.embedding.services.file_content_extractor import FileContentExtractor
+from src.embedding.services.pinecone_vector_store import PineconeClient, PineconeVectorService
 from src.embedding.tokens_calculator.cost import EmbeddingCostCalculator
 from src.embedding.tokens_calculator.business_plan_usage import BusinessPlanUsage
 

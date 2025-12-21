@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.embedding.embedding_module import EmbeddingModule
-from src.embedding.payload_validation import PayloadProcessor
+from src.embedding.services.payload_validation import PayloadProcessor
 
 app = FastAPI()
 
