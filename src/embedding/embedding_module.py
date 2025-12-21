@@ -50,13 +50,32 @@ class EmbeddingFile:
     """
     Docstring per EmbeddingFile
     """
-    def __init__(self, payload, file):
+    def __init__(self, payload, file, 
+                 embedding_settings=None,
+                 index_name=None,
+                 namespace=None,
+                 global_namespace=None):
 
         self.payload = payload
         self.file = file
 
-        self.metadata = payload["metadata"]
-        self.embedding_settings = payload["embedding_settings"]
+        #self.metadata = payload["metadata"]
+        self.embedding_settings = embedding_settings
+
+        # Pinecone:
+        self.index_name = "backai-vectorstore"
+        self.namespace = "test_namespace"
+        self.global_namespace="global_namespace"
+
+        # MongoDB:
+
+        self.database_name_embed = "embeddings"
+        self.collection_name_embed = "betterai_embeddings"
+
+        self.database_name_usage = "TokensUsage"
+        self.collection_name_usage = "BusinessAccountManage"
+
+        # Classes:
 
         self.mongo = MongoDBManager()
     
