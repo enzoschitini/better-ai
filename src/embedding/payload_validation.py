@@ -81,7 +81,7 @@ class PayloadProcessor:
 
     def _ensure_file_id(self):
         if "file_id" not in self.payload:
-            self.payload["file_id"] = f"{uuid.uuid4()}.pdf"
+            self.payload["file_id"] = f"{self.payload["company_id"]}-{uuid.uuid4()}"
 
     def _ensure_metadata(self):
         if "metadata" not in self.payload:
@@ -131,37 +131,40 @@ class PayloadProcessor:
                 )
 
 
-payload = {
-  "company_id": "1",
-  "file_id": "21d75dca2eec7b02080327f40220e20dxx2.pdf",
-  "file_url": "https://domain.com/docs/21d75dca2eec7b02080327f40220e20dxx2.pdf",
-  
-  "metadata": {
+def test():
+  payload = {
+    "company_id": "1",
+    #"file_id": "21d75dca2eec7b02080327f40220e20dxx2.pdf",
+    "file_url": "https://domain.com/docs/21d75dca2eec7b02080327f40220e20dxx2.pdf",
+    
+    "metadata": {
 
-    "filters": {
-      "id_collection": "id_collection_01",
-      "id_series": "id_series_01",
-      "id_client": "id_client_01",
-      "id_user": "id_user_01",
-      "id_workspace": "id_workspace_01"
+      "filters": {
+        "id_collection": "id_collection_01",
+        "id_series": "id_series_01",
+        "id_client": "id_client_01",
+        "id_user": "id_user_01",
+        "id_workspace": "id_workspace_01"
+      },
+
+      "additional_information": {
+        "collection_name": "BetterAI Repo"
+      }
     },
-
-    "additional_information": {
-      "collection_name": "BetterAI Repo"
+    
+    "embedding_settings": {
+      "llm_model": "text-embedding-3-large",
+      "dimensions": 3072,
+      "global_namespace": True,
+      "batch_size": 100
     }
-  },
-  
-  "embedding_settings": {
-    "llm_model": "text-embedding-3-large",
-    "dimensions": 3072,
-    "global_namespace": True,
-    "batch_size": 100
   }
-}
 
-import json
+  import json
 
-processor = PayloadProcessor(payload)
-final_payload = processor.process()
+  processor = PayloadProcessor(payload)
+  final_payload = processor.process()
 
-print(json.dumps(final_payload, indent=4))
+  print(json.dumps(final_payload, indent=4))
+
+test()
