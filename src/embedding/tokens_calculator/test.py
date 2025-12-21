@@ -6,7 +6,7 @@ payload = {
     "company_id": "1",
     "file_id": "21d75dca2eec7b02080327f40220e20dxx2.pdf",
     "fileName": "name file.pdf",
-    "fileUrl": "",
+    "fileUrl": "https://domain.com/docs/21d75dca2eec7b02080327f40220e20dxx2.pdf",
 
     # Metadata (Non è obbligatorio)
     
@@ -25,7 +25,7 @@ payload = {
 
     # Embedding Settings (Non è obbligatorio)
 
-    "embedding_settings": {
+    "embedding_settingss": {
         "llm_model": "text-embedding-3-large",
         "dimensions": 3072,
         "global_namespace": True,
@@ -64,8 +64,54 @@ def validate_required_fields(payload: dict) -> bool:
 
     return True
 
+def validate_embedding_settings(payload: dict) -> bool:
+    """
+    Valida embedding_settings:
+    - se NON esiste → True
+    - se esiste:
+        - deve essere un dict
+        - deve contenere i campi obbligatori
+        - valori NON None e NON stringhe vuote
+    """
+    if not isinstance(payload, dict):
+        return False
 
-print(validate_required_fields(payload=payload))
+    # embedding_settings è opzionale
+    if "embedding_settings" not in payload:
+        return True
+
+    embedding_settings = payload.get("embedding_settings")
+
+    if not isinstance(embedding_settings, dict):
+        return False
+
+    required_fields = (
+        "llm_model",
+        "dimensions",
+        "global_namespace",
+        "batch_size",
+    )
+
+    for field in required_fields:
+        if field not in embedding_settings:
+            return False
+
+        value = embedding_settings[field]
+
+        if value is None:
+            return False
+
+        if isinstance(value, str) and value.strip() == "":
+            return False
+
+    return True
+
+is_valid = (
+    validate_required_fields(payload)
+    and validate_embedding_settings(payload)
+)
+
+print(is_valid)
 
 
 # python -m src.embedding.tokens_calculator.test
