@@ -1,236 +1,264 @@
 import os
-from dotenv import load_dotenv
 from io import BytesIO
+from dotenv import load_dotenv
+from typing import Tuple, Dict, List
+
+from fastapi import UploadFile
 
 from src.chat.utils.mongo_manage import MongoDBManager
-
 from src.embedding.file_content_extractor import FileContentExtractor
-from src.embedding.pinecone_vector_store import PineconeClient, PineconeVectorService
+from src.embedding.pinecone_vector_store import (
+    PineconeClient,
+    PineconeVectorService
+)
 from src.embedding.tokens_calculator.cost import EmbeddingCostCalculator
 from src.embedding.tokens_calculator.business_plan_usage import BusinessPlanUsage
 
 load_dotenv()
 
-class EmbeddingFile:
-    """
-    Docstring per EmbeddingFile
-    """
-    def __init__(self, payload, file,
-                 index_name=None,
-                 namespace=None,
-                 global_namespace=None,
-                 
-                 embeddings_database=None,
-                 embeddings_collection=None,
-                 usage_database=None,
-                 usage_collection=None):
+# ======================================================
+# File Service
+# ======================================================
 
-        self.payload = payload
-        self.embedding_settings = payload["embedding_settings"]
-        self.file = file
+class FileService:
+    ALLOWED_EXTENSIONS = {
+        "txt", "md", "markdown", "html",
+        "pdf", "doc", "docx", "ppt", "pptx",
+        "csv", "xls", "xlsx", "xml", "json"
+    }
 
-        # Pinecone:
-        self.index_name = index_name or os.getenv("PINECONE_INDEX_NAME")
-        self.namespace = namespace or os.getenv("PINECONE_INDEX_NAME")
-        self.global_namespace = global_namespace or os.getenv("PINECONE_GLOBAL_NAMESPACE")
-
-        # MongoDB:
-        self.embeddings_database = embeddings_database or "embeddings"
-        self.embeddings_collection = embeddings_collection or "betterai_embeddings"
-
-        self.usage_database = usage_database or "TokensUsage"
-        self.usage_collection = usage_collection or "BusinessAccountManage"
-
-        # Classes:
-        self.mongo = MongoDBManager()
-
-
-    def file_from_bytes(self, file): # 2. Transforma l'archivio in BitesIO
-        """
-        Recebe um UploadFile (FastAPI),
-        valida a extensão e retorna:
-        - filename
-        - extensão
-        - BytesIO
-        """
-
-        ALLOWED_EXTENSIONS = {
-            "txt", "md", "markdown", "html",
-            "pdf", "doc", "docx", "ppt", "pptx",
-            "csv", "xls", "xlsx", "xml", "json"
-        }
-
-        # Nome do arquivo
+    @staticmethod
+    async def load(file: UploadFile) -> Tuple[str, str, BytesIO]:
         filename = file.filename
 
         if not filename or "." not in filename:
-            raise ValueError("Nome de arquivo inválido")
+            raise ValueError("Invalid filename")
 
-        # Extensão
-        ext = filename.lower().split(".")[-1]
+        extension = filename.lower().split(".")[-1]
 
-        if ext not in ALLOWED_EXTENSIONS:
-            raise ValueError(f"Extensão não suportada: .{ext}")
+        if extension not in FileService.ALLOWED_EXTENSIONS:
+            raise ValueError(f"Unsupported extension: .{extension}")
 
-        # Lê os bytes do UploadFile
-        file_bytes = file.file.read()
+        file_bytes = await file.read()
 
         if not file_bytes:
-            raise ValueError("Arquivo vazio")
+            raise ValueError("Empty file")
 
-        # Converte para BytesIO
-        file_bytes_io = BytesIO(file_bytes)
-
-        return filename, ext, file_bytes_io
+        return filename, extension, BytesIO(file_bytes)
 
 
-    def extract_file_content(self, file_bytes, file_extension):
-        # 3. Estrarre il contenuto
-        """
-        Carrega arquivo → transforma em BytesIO → extrai conteúdo
-        """
-        try:
-            extractor = FileContentExtractor(file_bytes, file_extension)
-            return extractor.extract()
+# ======================================================
+# Content Extraction
+# ======================================================
 
-        except Exception as e:
-            filename = "filename"
-            print(f"❌ Error processing file '{filename}': {e}")
-            raise
+class ContentExtractorService:
+
+    @staticmethod
+    def extract(file_bytes: BytesIO, extension: str) -> Dict:
+        extractor = FileContentExtractor(file_bytes, extension)
+        return extractor.extract()
 
 
-    def transform_embedding_data(self, payload, file_name, file_extention, file_content):
-        # Preparazione dei dati per l'embedding
-        try:
-            #logger.debug("Preparando dados para embeddings...")
-            additional_info = payload.get("metadata", {}).get("additional_information")
+# ======================================================
+# Embedding Transformer
+# ======================================================
 
-            embedding_content = {
-                "file_name": file_name,
-                "file_extention": file_extention
-            }
+class EmbeddingTransformer:
 
-            if additional_info:
-                embedding_content.update(payload["metadata"]["additional_information"])
+    @staticmethod
+    def transform(
+        payload: dict,
+        file_name: str,
+        file_extension: str,
+        extracted_content: dict
+    ) -> Tuple[dict, dict]:
 
-            embedding_content["file_content"] = file_content["response"]
+        additional_info = payload.get("metadata", {}).get("additional_information")
 
-            embedding_metadata = {
-                "company_id": payload["company_id"],
-                "file_id": payload["file_id"],
-                "file_name": file_name,
-                "file_extention": file_extention
-            }
-
-            # Metadata filters
-            embedding_metadata.update(payload["metadata"]["filters"])
-
-            # Metadata aditional_informatios
-            if additional_info:
-                embedding_metadata.update(payload["metadata"]["additional_information"])
-
-            #logger.info("Dados para embedding preparados com sucesso.")
-
-            return embedding_content, embedding_metadata
-
-        except Exception as e:
-            #logger.error("Erro ao transformar dados para embedding : %s. jobId: %s, fileId: %s", e, self.sqs_message_body["jobId"], self.sqs_message_body["fileId"])
-            raise
-
-
-    def embedding_cost(self, embedding_content):
-        try:
-            # Calcola i costi
-            database_name = self.usage_database or "TokensUsage"
-            collection_name = self.usage_collection or "BusinessAccountManage"
-            embedding_content = str(embedding_content)
-
-            calc = EmbeddingCostCalculator(self.embedding_settings["llm_model"])
-            operation_cost = {"embedding_cost": calc.calculate_cost_json(embedding_content)}
-
-            business = self.mongo.buscar_documentos(database_name, collection_name, {"business_id": "0011"})[0]
-            
-            updated_plan = BusinessPlanUsage(plan=business["plan"]).update_usage(operation=operation_cost)
-
-            if updated_plan == "not_credits":
-                return "not_credits"
-            
-            else:
-                self.mongo.atualizar_documentos(database_name, collection_name, {"business_id": "0011"}, {"plan": updated_plan})
-
-                return {
-                    "embedding_cost": operation_cost
-                }
-
-        except Exception as e:
-            raise
-
-
-    def embedding(self, embedding_content, embedding_metadata):
-        try:
-            index_name = self.index_name
-            namespace = self.namespace
-            global_namespace = self.global_namespace
-
-            # Si fa l'embedding
-            pine_client = PineconeClient(index_name, namespace, global_namespace)
-            
-            pine_service = PineconeVectorService(vector_client=pine_client, 
-                                                 embedding_model_name=self.embedding_settings["llm_model"], 
-                                                 dimensions=self.embedding_settings["dimensions"])
-
-            response = pine_service.generate_vectors(
-                text=str(embedding_content),
-                metadata=embedding_metadata,
-                save_global=self.embedding_settings["global_namespace"],
-                batch_size=self.embedding_settings["batch_size"]
-            )
-
-            return response
-
-        except Exception as e:
-            raise
-
-
-    def save_process(self, payload:dict, aggregates:list):
-        # Salva l'operazione sul MongoDB
-        for agg in aggregates:
-            for key in agg.keys():
-                payload[key] = agg[key]
-        
-        mongo_id = self.mongo.salvar_payload(database_name=self.embeddings_database, collection_name=self.embeddings_collection, payload=payload)
-        
-        return mongo_id
-
-
-    def EmbeddingExecute(self):
-        payload = self.payload
-        file_name, file_extension, file_bytes = self.file_from_bytes(file=self.file)
-        file_content = self.extract_file_content(file_bytes, file_extension)
-
-        text = "Negli ultimi anni ho lavorato su diversi progetti in diversi settori, tra cui intelligenza artificiale"
-
-        embedding_content, embedding_metadata = self.transform_embedding_data(
-            payload=payload, file_name=file_name, file_extention=file_extension, file_content=file_content)
-        
-        vectorstore_embedding = self.embedding(embedding_content, embedding_metadata)
-
-        """
-        #"""
-
-        operation_cost = self.embedding_cost(embedding_content=embedding_content)
-        mongo_id = self.save_process(payload, [operation_cost, {"vectorstore_informations": vectorstore_embedding["embedding_informations"]}])
-        
-        response = {
-            "status": "success",
-            "message": "File embedded",
-            "metadata": {
-                "fileId": payload["file_id"],
-                "mongoId": mongo_id
-            }
+        embedding_content = {
+            "file_name": file_name,
+            "file_extension": file_extension,
+            "file_content": extracted_content["response"]
         }
 
-        return response
+        if additional_info:
+            embedding_content.update(additional_info)
+
+        embedding_metadata = {
+            "business_id": payload["business_id"],
+            "file_id": payload["file_id"],
+            "file_name": file_name,
+            "file_extension": file_extension,
+            **payload["metadata"]["filters"]
+        }
+
+        if additional_info:
+            embedding_metadata.update(additional_info)
+
+        return embedding_content, embedding_metadata
+
+
+# ======================================================
+# Embedding (Pinecone)
+# ======================================================
+
+class EmbeddingService:
+
+    def __init__(self, embedding_settings: dict):
+        self.embedding_settings = embedding_settings
+
+        self.client = PineconeClient(
+            index_name=os.getenv("PINECONE_INDEX_NAME"),
+            namespace=os.getenv("PINECONE_NAMESPACE"),
+            global_namespace=os.getenv("PINECONE_GLOBAL_NAMESPACE")
+        )
+
+        self.service = PineconeVectorService(
+            vector_client=self.client,
+            embedding_model_name=embedding_settings["llm_model"],
+            dimensions=embedding_settings["dimensions"]
+        )
+
+    def embed(self, content: dict, metadata: dict) -> dict:
+        return self.service.generate_vectors(
+            text=content["file_content"],
+            metadata=metadata,
+            save_global=self.embedding_settings["global_namespace"],
+            batch_size=self.embedding_settings["batch_size"]
+        )
+
+
+# ======================================================
+# Usage / Cost Service
+# ======================================================
+
+class UsageService:
+
+    def __init__(self, mongo: MongoDBManager):
+        self.mongo = mongo
+        self.database = "TokensUsage"
+        self.collection = "BusinessAccountManage"
+
+    def register_cost(
+        self,
+        business_id: str,
+        text: str,
+        model_name: str
+    ) -> Dict | str:
+
+        calculator = EmbeddingCostCalculator(model_name)
+        cost = calculator.calculate_cost_json(text)
+
+        business = self.mongo.buscar_documentos(
+            self.database,
+            self.collection,
+            {"business_id": business_id}
+        )[0]
+
+        updated_plan = BusinessPlanUsage(
+            plan=business["plan"]
+        ).update_usage({"embedding_cost": cost})
+
+        if updated_plan == "not_credits":
+            return "not_credits"
+
+        self.mongo.atualizar_documentos(
+            self.database,
+            self.collection,
+            {"business_id": business_id},
+            {"plan": updated_plan}
+        )
+
+        return {"embedding_cost": cost}
+
+
+# ======================================================
+# Persistence Service
+# ======================================================
+
+class EmbeddingPersistenceService:
+
+    def __init__(self, mongo: MongoDBManager):
+        self.mongo = mongo
+        self.database = "embeddings"
+        self.collection = "betterai_embeddings"
+
+    def save(self, payload: dict, aggregates: List[dict]) -> str:
+        data = payload.copy()
+
+        for item in aggregates:
+            if item:
+                data.update(item)
+
+        return self.mongo.salvar_payload(
+            database_name=self.database,
+            collection_name=self.collection,
+            payload=data
+        )
+
+
+# ======================================================
+# Orchestrator (replaces the "faz tudo" class)
+# ======================================================
+
+class EmbeddingModule:
+
+    def __init__(self, payload: dict, file: UploadFile):
+        self.payload = payload
+        self.file = file
+        self.mongo = MongoDBManager()
+        self.embedding_settings = payload["embedding_settings"]
+
+    async def execute(self) -> dict:
+        # 1. Load file
+        file_name, extension, file_bytes = await FileService.load(self.file)
+
+        # 2. Extract content
+        content = ContentExtractorService.extract(file_bytes, extension)
+
+        # 3. Transform
+        embedding_content, embedding_metadata = EmbeddingTransformer.transform(
+            payload=self.payload,
+            file_name=file_name,
+            file_extension=extension,
+            extracted_content=content
+        )
+
+        # 4. Embedding
+        embedding_service = EmbeddingService(self.embedding_settings)
+        vector_info = embedding_service.embed(
+            embedding_content,
+            embedding_metadata
+        )
+
+        # 5. Cost
+        """"""
+        usage_service = UsageService(self.mongo)
+        cost = usage_service.register_cost(
+            business_id=self.payload["business_id"],
+            text=embedding_content["file_content"],
+            model_name=self.embedding_settings["llm_model"]
+        )
+
+        if cost == "not_credits":
+            raise RuntimeError("Insufficient credits")
+
+        # 6. Persist
+        persistence = EmbeddingPersistenceService(self.mongo)
+        mongo_id = persistence.save(
+            self.payload,
+            [
+                cost,
+                {"vectorstore_information": vector_info["embedding_informations"]}
+            ]
+        )
+
+        return {
+            "status": "success",
+            "file_id": self.payload["file_id"],
+            "mongo_id": mongo_id
+        }
+
 
 
 """

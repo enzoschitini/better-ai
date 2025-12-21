@@ -15,7 +15,7 @@ class PayloadProcessor:
     """
 
     ALLOWED_ROOT_KEYS = {
-        "company_id",
+        "business_id",
         "file_id",
         "file_url",
         "metadata",
@@ -38,7 +38,7 @@ class PayloadProcessor:
 
     def process(self) -> Dict[str, Any]:
         self._validate_root_keys()
-        self._validate_company_id()
+        self._validate_business_id()
 
         self._ensure_file_id()
         self._ensure_metadata()
@@ -59,9 +59,9 @@ class PayloadProcessor:
                 f"Chiavi non ammesse nel payload: {extra_keys}"
             )
 
-    def _validate_company_id(self):
-        if "company_id" not in self.payload:
-            raise PayloadValidationError("company_id è obbligatorio")
+    def _validate_business_id(self):
+        if "business_id" not in self.payload:
+            raise PayloadValidationError("business_id è obbligatorio")
 
     def _validate_no_null_values(self):
         def check_dict(d: Dict[str, Any], path="root"):
@@ -81,7 +81,7 @@ class PayloadProcessor:
 
     def _ensure_file_id(self):
         if "file_id" not in self.payload:
-            self.payload["file_id"] = f"{self.payload["company_id"]}-{uuid.uuid4()}"
+            self.payload["file_id"] = f"{self.payload["business_id"]}-{uuid.uuid4()}"
 
     def _ensure_metadata(self):
         if "metadata" not in self.payload:
@@ -133,7 +133,7 @@ class PayloadProcessor:
 
 def test():
   payload = {
-    "company_id": "1",
+    "business_id": "0011",
     #"file_id": "21d75dca2eec7b02080327f40220e20dxx2.pdf",
     "file_url": "https://domain.com/docs/21d75dca2eec7b02080327f40220e20dxx2.pdf",
     
@@ -167,4 +167,4 @@ def test():
 
   print(json.dumps(final_payload, indent=4))
 
-test()
+#test()

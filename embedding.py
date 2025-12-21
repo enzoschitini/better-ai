@@ -9,7 +9,7 @@ from fastapi import FastAPI, UploadFile, HTTPException, Request, Form, Depends, 
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.embedding.embedding_module import EmbeddingFile
+from src.embedding.embedding_module import EmbeddingModule
 from src.embedding.payload_validation import PayloadProcessor
 
 app = FastAPI()
@@ -61,12 +61,12 @@ async def upload_file(
 
         print(f"\n{json.dumps(valid_payload, indent=4)}\n")
 
-        module = EmbeddingFile(
+        module = EmbeddingModule(
             payload=valid_payload,
             file=file
         )
         # html, md, txt, json, pptx, csv, xlsx, docx
-        result = module.EmbeddingExecute()
+        result = await module.execute()
         return result
 
     except ValueError as e:
