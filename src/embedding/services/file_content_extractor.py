@@ -4,7 +4,7 @@ from io import BytesIO
 from bs4 import BeautifulSoup
 from docx import Document
 from pptx import Presentation
-import fitz  #       
+import pymupdf as fitz  
 import pandas as pd
 from base64 import b64decode
 import yaml

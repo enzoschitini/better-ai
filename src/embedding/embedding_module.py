@@ -23,8 +23,9 @@ load_dotenv()
 class FileService:
     ALLOWED_EXTENSIONS = {
         "txt", "md", "markdown", "html",
-        "pdf", "doc", "docx", "ppt", "pptx",
-        "csv", "xls", "xlsx", "xml", "json"
+        "pdf", "docx", "pptx",
+        "csv", "xlsx", "json"
+        # "doc", "ppt", "xls", "xml"
     }
 
     @staticmethod
@@ -235,7 +236,7 @@ class EmbeddingModule:
         )
 
         # 5. Cost
-        """"""
+        """
         usage_service = UsageService(self.mongo)
         cost = usage_service.register_cost(
             business_id=self.payload["business_id"],
@@ -245,6 +246,9 @@ class EmbeddingModule:
 
         if cost == "not_credits":
             raise RuntimeError("Insufficient credits")
+        """
+        
+        cost = {"cost": "cost"}
 
         # 6. Persist
         persistence = EmbeddingPersistenceService(self.mongo)
