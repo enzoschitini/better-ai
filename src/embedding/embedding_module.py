@@ -263,7 +263,7 @@ class EmbeddingModule:
         return {
             "status": "success",
             "file_id": self.payload["file_id"],
-            "mongo_id": mongo_id
+            "mongo_id": mongo_id["inserted_id"]
         }
 
 

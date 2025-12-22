@@ -14,20 +14,25 @@ from src.embedding.services.payload_validation import PayloadProcessor
 
 app = FastAPI()
 
-class UploadPayload(BaseModel):
+
+class EmbeddingPayload(BaseModel):
     data: Dict[str, Any]
 
     class Config:
         extra = "allow"
 
+class EmbeddingResponse(BaseModel):
+    status: str
+    file_id: str
+    mongo_id: str
 
-@app.post("/test-upload")
+@app.post("/embedding-file", response_model=EmbeddingResponse)
 async def upload_file(
     request: Request,
     payload: str = Form(...),
     file: UploadFile = File(...)
 ):
-    # 🔹 Garante que apenas 1 arquivo foi enviado
+    # Ensures that only 1 file was sent.
     form = await request.form()
     files = form.getlist("file")
 
@@ -37,35 +42,33 @@ async def upload_file(
             detail="Only one file is allowed"
         )
 
-    # 🔹 Valida se payload é JSON válido
+    # Validates if the payload is valid JSON.
     try:
         payload_dict = json.loads(payload)
-        payload_obj = UploadPayload(data=payload_dict)
+        payload_obj = EmbeddingPayload(data=payload_dict)
     except Exception as e:
         raise HTTPException(
             status_code=400,
             detail=f"Invalid payload JSON: {str(e)}"
         )
 
-    # 🔹 Valida se arquivo chegou
+    # Checks if the file has arrived.
     if not file or not file.filename:
         raise HTTPException(
             status_code=400,
             detail="File is required"
         )
 
-    # 🔹 Processa arquivo
+    # Process file
     try:
         payload_processor = PayloadProcessor(payload_obj.data)
         valid_payload = payload_processor.process()
-
-        print(f"\n{json.dumps(valid_payload, indent=4)}\n")
 
         module = EmbeddingModule(
             payload=valid_payload,
             file=file
         )
-        # html, md, txt, json, pptx, csv, xlsx, docx
+        
         result = await module.execute()
         return result
 
@@ -77,9 +80,9 @@ async def upload_file(
 
 
 """
-curl -X POST http://127.0.0.1:8000/test-upload \
+curl -X POST http://127.0.0.1:8000/embedding-file \
   -F 'payload={
-  "company_id": "1",
+  "business_id": "0011",
   "file_id": "21d75dca2eec7b02080327f40220e20dxx2.pdf",
   "file_url": "https://domain.com/docs/21d75dca2eec7b02080327f40220e20dxx2.pdf",
   "metadata": {
@@ -101,6 +104,7 @@ curl -X POST http://127.0.0.1:8000/test-upload \
     "batch_size": 100
   }
 }
+
 ' \
   -F "file=@document.pdf"
 
