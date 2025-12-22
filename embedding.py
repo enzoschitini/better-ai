@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src.embedding.embedding_module import EmbeddingModule
 from src.embedding.services.payload_validation import PayloadProcessor
+from src.embedding.services.pinecone_vector_store import PineconeClient, PineconeVectorService
 
 app = FastAPI()
 

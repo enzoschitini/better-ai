@@ -179,7 +179,7 @@ class PineconeVectorService:
             """
 
             try:
-                print("Enviando batch_docs para o Pinecone...")
+                print("Sending batch_docs to Pinecone...")
                 #if batch_number == 3:
                     #raise Exception("Erro forçado após 3 execuções do loop")
 
@@ -231,9 +231,7 @@ class PineconeVectorService:
 
 
 
-def test():
-    # python -m src.embedding.pinecone_vector_store
-
+def embedding_test():
     pine_client = PineconeClient(index_name="backai-vectorstore", namespace="test_namespace", global_namespace="global_namespace")
     pine_service = PineconeVectorService(pine_client, embedding_model_name="text-embedding-3-large", dimensions=3072)
 
@@ -253,3 +251,15 @@ By transforming unstructured data into vectors, embeddings make it possible to e
     )
 
     print("✅ Vectors generated and saved to Pinecone:", response)
+
+def delete_test():
+    pine_client = PineconeClient(index_name="backai-vectorstore", namespace="test_namespace", global_namespace="global_namespace")
+    pine_service = PineconeVectorService(pine_client, embedding_model_name="text-embedding-3-large", dimensions=3072)
+
+    delete = pine_service.delete_documents("source", "embedding_test.py", "test_namespace")
+    print(f"\n{delete}\n")
+
+    return delete
+
+
+# python -m src.embedding.services.pinecone_vector_store
