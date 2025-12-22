@@ -155,7 +155,7 @@ class PineconeVectorService:
         """
 
         dt_utc = datetime.now(timezone.utc).replace(microsecond=0, tzinfo=None)
-        metadata["creat_date_utc"] = str(dt_utc)
+        metadata["created_at"] = str(dt_utc)
         
         chunks = self.split_text(text)
         documents = self.build_documents(chunks, metadata)
@@ -231,58 +231,25 @@ class PineconeVectorService:
 
 
 
+def test():
+    # python -m src.embedding.pinecone_vector_store
 
+    pine_client = PineconeClient(index_name="backai-vectorstore", namespace="test_namespace", global_namespace="global_namespace")
+    pine_service = PineconeVectorService(pine_client, embedding_model_name="text-embedding-3-large", dimensions=3072)
 
-
-
+    embedding_content = """
+Embeddings are vector representations of data (such as text, documents, or images) that capture their semantic meaning in a numerical space.
+This technique allows for the comparison of content by similarity, enabling semantic searches, classification, recommendation, and information retrieval.
+By transforming unstructured data into vectors, embeddings make it possible to efficiently index and query large volumes of information in vector databases.
 """
-# python -m src.embedding.pinecone_vector_store
 
-pine_client = PineconeClient(index_name="backai-vectorstore", namespace="test_namespace", global_namespace="global_namespace")
-pine_service = PineconeVectorService(pine_client, embedding_model_name="text-embedding-3-large", dimensions=3072)
+    embedding_metadata = {"user_id": "user_123", "source": "embedding_test.py"}
 
-embedding_content = 
-Sono uno sviluppatore con 4 anni di esperienza in progetti che combinano prestazioni, 
-scalabilità e best practice.
+    response = pine_service.generate_vectors(
+        text=str(embedding_content),
+        metadata=embedding_metadata,
+        save_global=False,
+        batch_size=200
+    )
 
-Sono un esperto di Intelligenza Artificiale, Machine Learning e dati, con una solida 
-esperienza nello sviluppo di applicazioni complete e scalabili. 
-
-Negli ultimi anni ho lavorato su diversi progetti in diversi settori, tra cui intelligenza artificiale, 
-ho seguito da vicino l’evoluzione dell’AI Generativa, partendo dai primi esperimenti con gli AI 
-Agents fino allo sviluppo di sistemi complessi di orchestrazione e automazione. Progettando 
-architetture RAG, orchestrando modelli LLM e integrato strumenti come LangChain, 
-LlamaIndex, Crewai e Dify per creare agenti intelligenti in grado di ragionare, pianificare e 
-interagire in modo autonomo. 
-
-La mia conoscenza dei modelli di Machine Learning deriva dalla mia esperienza come Data 
-Scientist e Data Analyst, dove unisco l’approccio analitico alla capacità di tradurre i dati in 
-strategie concrete. Laureato all'EBAC, con competenze in statistica, modelli di 
-apprendimento automatico, Python, SQL, creazione di dashboard con Streamlit, GitHub, 
-Excel, tra gli altri. Sempre alla ricerca di insight nascosti, quei dettagli non sempre evidenti 
-ma di immenso valore per il business. 
-
-Ho lavorato anche come sviluppatore Bubble, realizzando siti web, landing page e 
-applicazioni complete senza codice, ma con logiche avanzate e un approccio da vero 
-sviluppatore software. Nel tempo ho creato piattaforme SaaS, sistemi gestionali, 
-marketplace e app educative, integrando API esterne, database complessi e automazioni 
-intelligenti. 
-
-Da quando avevo 12 anni, quando ho iniziato a studiare robotica, ho coltivato la mia 
-passione per lo sviluppo software. Credo nell'apprendimento pratico e so che, con dedizione, 
-impegno e pazienza, è possibile ottenere grandi risultati.  
-Oggi rimango motivato a sfidare la mia creatività e cercare nuovi modi per innovare e avere 
-un impatto positivo sul mondo che mi circonda.
-
-
-embedding_metadata = {"user_id": "user_123", "source": "embedding_test.py"}
-
-response = pine_service.generate_vectors(
-    text=str(embedding_content),
-    metadata=embedding_metadata,
-    save_global=False,
-    batch_size=200
-)
-
-print("✅ Vectors generated and saved to Pinecone:", response)
-"""
+    print("✅ Vectors generated and saved to Pinecone:", response)
