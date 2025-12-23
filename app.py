@@ -1,18 +1,28 @@
-from fastapi import FastAPI, UploadFile, HTTPException, Request, Form, Depends, Header, File
-from fastapi.responses import JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
-
-from pydantic import BaseModel, Field
-from typing import List, Dict, Any, Optional, Literal
 import json
 import os
 import uuid
 import logging
 
-from  src.chat.AgentAsk import AgentAsk
-from src.embbeding.embedding import embedding_documents
-from src.image_generation.google_genai import ImageGenerationService
+from pydantic import BaseModel, Field
+from typing import List, Dict, Any, Optional, Literal
+from dotenv import load_dotenv
+
+from fastapi import FastAPI, UploadFile, HTTPException, Request, Form, Depends, Header, File
+from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+
 from auth import Authorization
+from src.chat.AgentAsk import AgentAsk
+
+from src.embedding.embedding_module import EmbeddingModule
+from src.embedding.services.pinecone_vector_store import PineconeClient, PineconeVectorService
+
+from src.image_generation.google_genai import ImageGenerationService
+from src.embedding.services.payload_validation import PayloadProcessor
+
+# ================================================
+# API SETTINGS
+# ================================================
 
 logging.basicConfig(
     filename='app.log',
@@ -47,6 +57,22 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type"],  # cabeçalhos necessários
 )
 
+load_dotenv()
+
+
+
+# ================================================
+# SERVICES
+# ================================================
+
+
+@app.get("/generate-id", dependencies=[Depends(Authorization.multikey)])
+def generate_id():
+    """
+    Gera e retorna um UUID v4 como string.
+    """
+    new_id = str(uuid.uuid4())
+    return {"id": new_id}
 
 
 # ========================
@@ -107,17 +133,117 @@ def run_agent(request: AgentRunRequest):
 
 
 
+# ========================
+# Embedding Services
+# ========================
+
+class EmbeddingPayload(BaseModel):
+    data: Dict[str, Any]
+
+    class Config:
+        extra = "allow"
 
 
-@app.get("/generate-id", dependencies=[Depends(Authorization.multikey)])
-def generate_id():
-    """
-    Gera e retorna um UUID v4 como string.
-    """
-    new_id = str(uuid.uuid4())
-    return {"id": new_id}
+class EmbeddingResponse(BaseModel):
+    status: str
+    file_id: str
+    mongo_id: str
+
+@app.post("/embedding-file", response_model=EmbeddingResponse, dependencies=[Depends(Authorization.multikey)], 
+          summary="It processes the uploaded file, generates vector embeddings, and stores them in a vector database.")
+
+async def embedding_file(
+    request: Request,
+    payload: str = Form(...),
+    file: UploadFile = File(...)
+):
+    # Ensures that only 1 file was sent.
+    form = await request.form()
+    files = form.getlist("file")
+
+    if len(files) > 1:
+        raise HTTPException(
+            status_code=400,
+            detail="Only one file is allowed"
+        )
+
+    # Validates if the payload is valid JSON.
+    try:
+        payload_dict = json.loads(payload)
+        payload_obj = EmbeddingPayload(data=payload_dict)
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid payload JSON: {str(e)}"
+        )
+
+    # Checks if the file has arrived.
+    if not file or not file.filename:
+        raise HTTPException(
+            status_code=400,
+            detail="File is required"
+        )
+
+    # Process file
+    try:
+        payload_processor = PayloadProcessor(payload_obj.data)
+        valid_payload = payload_processor.process()
+
+        module = EmbeddingModule(
+            payload=valid_payload,
+            file=file
+        )
+        
+        result = await module.execute()
+        return result
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
 
 
+# ========================
+# Delete
+# ========================
+
+class DeleteVectorsResponse(BaseModel):
+    deleted_vectors: int = Field(..., description="Quantidade de vetores removidos")
+    message: str = Field(..., description="Mensagem de confirmação da operação")
+
+@app.post("/delete-vectors", response_model=DeleteVectorsResponse, dependencies=[Depends(Authorization.multikey)],
+          summary="Excludes vectors indexed in Pinecone using metadata filters."
+)
+async def delete_vectors(
+    target_feature: str = Form(...),
+    target_id: str = Form(...),
+    namespace: str = Form(...)
+):
+    pine_client = PineconeClient(
+        index_name=os.getenv("PINECONE_INDEX_NAME"),
+        namespace=os.getenv("PINECONE_NAMESPACE"),
+        global_namespace=os.getenv("PINECONE_GLOBAL_NAMESPACE")
+    )
+
+    pine_service = PineconeVectorService(
+        vector_client=pine_client,
+        embedding_model_name="text-embedding-3-large",
+        dimensions=3072
+    )
+
+    response = pine_service.delete_documents(target_feature, target_id, namespace)
+
+    return response
+
+
+
+
+
+
+# ========================
+# Image Generate
+# ========================
 
 class GenerateRequest(BaseModel):
     prompt: str
@@ -145,10 +271,6 @@ def generate_image(data: GenerateRequest) -> GenerateResponse:
         image_size=data.image_size,
         model=data.model
     )
-
-
-
-
 
 
 
