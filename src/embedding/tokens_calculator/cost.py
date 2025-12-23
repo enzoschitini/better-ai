@@ -41,9 +41,6 @@ class EmbeddingCostCalculator:
 
         cost_usd = float(self._format_cost(total_cost))
 
-        print("cost_usd", cost_usd)
-        print("EUR", dollar_rates["EUR"])
-
         cost_eur = cost_usd * dollar_rates["EUR"]
         cost_brl = cost_usd * dollar_rates["BRL"]
 

@@ -15,6 +15,43 @@ from src.embedding.services.pinecone_vector_store import PineconeClient, Pinecon
 
 app = FastAPI()
 
+class DeleteVectorsResponse(BaseModel):
+    deleted_vectors: int = Field(..., description="Quantidade de vetores removidos")
+    message: str = Field(..., description="Mensagem de confirmação da operação")
+
+@app.post("/delete-vectors", 
+          response_model=DeleteVectorsResponse
+)
+async def delete_vectors(
+    target_feature: str = Form(...),
+    target_id: str = Form(...),
+    namespace: str = Form(...)
+):
+    pine_client = PineconeClient(
+        index_name=os.getenv("PINECONE_INDEX_NAME"),
+        namespace=os.getenv("PINECONE_NAMESPACE"),
+        global_namespace=os.getenv("PINECONE_GLOBAL_NAMESPACE")
+    )
+
+    pine_service = PineconeVectorService(
+        vector_client=pine_client,
+        embedding_model_name="text-embedding-3-large",
+        dimensions=3072
+    )
+
+    response = pine_service.delete_documents(target_feature, target_id, namespace)
+
+    return response
+
+"""
+curl -X POST http://localhost:8000/delete-vectors \
+  -H "Accept: application/json" \
+  -F "target_feature=customer_id" \
+  -F "target_id=12345" \
+  -F "namespace=clientes"
+
+"""
+
 
 class EmbeddingPayload(BaseModel):
     data: Dict[str, Any]
@@ -28,7 +65,7 @@ class EmbeddingResponse(BaseModel):
     mongo_id: str
 
 @app.post("/embedding-file", response_model=EmbeddingResponse)
-async def upload_file(
+async def embedding_file(
     request: Request,
     payload: str = Form(...),
     file: UploadFile = File(...)

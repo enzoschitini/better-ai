@@ -95,7 +95,10 @@ class PineconeVectorService:
                 batch = ids_to_delete[i:i + batch_size]
                 self.client.index.delete(ids=batch, namespace=namespace)
 
-            return f"✅ {len(ids_to_delete)} vetores apagados de `{namespace}`"
+            return {
+                "deleted_vectors": len(ids_to_delete),
+                "message": f"✅ {len(ids_to_delete)} vetores apagados de `{namespace}`"
+            }
 
         return f"Nenhum vetor encontrado em `{namespace}`"
     
@@ -241,7 +244,7 @@ This technique allows for the comparison of content by similarity, enabling sema
 By transforming unstructured data into vectors, embeddings make it possible to efficiently index and query large volumes of information in vector databases.
 """
 
-    embedding_metadata = {"user_id": "user_123", "source": "embedding_test.py"}
+    embedding_metadata = {"user_id": "user_1234567", "source": "embedding_test.py"}
 
     response = pine_service.generate_vectors(
         text=str(embedding_content),
@@ -261,5 +264,7 @@ def delete_test():
 
     return delete
 
+#print(embedding_test())
+#print(delete_test())
 
 # python -m src.embedding.services.pinecone_vector_store
