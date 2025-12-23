@@ -80,7 +80,7 @@ def generate_id():
 # ========================
 class AgentRunRequest(BaseModel):
     session_id: Optional[str] = Field(default=None, description="ID da sessão para manter o contexto da conversa")
-    business_id: str = Field(..., description="Identificador único do negócio")
+    client_id: str = Field(..., description="Identificador único do negócio")
     metadata: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Metadados adicionais sobre o cliente ou contexto")
     input_text: str = Field(..., description="Texto de entrada fornecido pelo usuário")
     user_prompt: Optional[str] = Field(default="Você é um agente de IA", description="Instrução de comportamento para o modelo")
@@ -110,7 +110,7 @@ def run_agent(request: AgentRunRequest):
     try:
         result = AgentAsk(
             input_text=request.input_text,
-            business_id=request.business_id,
+            client_id=request.client_id,
             metadata=request.metadata,
             user_prompt=request.user_prompt,
             temperature=request.temperature,

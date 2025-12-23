@@ -1,7 +1,7 @@
 import json
 
 payload = {
-    "company_id": "1",
+    "client_id": "1",
     "fileId": "21d75dca2eec7b02080327f40220e20dxx2.pdf",
     "fileName": "name file.pdf",
     "fileUrl": "https://domain.com/docs/21d75dca2eec7b02080327f40220e20dxx2.pdf", # (Opzionale)
@@ -41,7 +41,7 @@ def transform_embedding_data(payload, file_extention, file_content):
         embedding_content.update(payload["metadata"]["aditional_informatios"])
 
         embedding_metadata = {
-            "company_id": payload["company_id"],
+            "client_id": payload["client_id"],
             "fileId": payload["fileId"],
             "fileName": payload["fileName"],
             "file_extention": file_extention,

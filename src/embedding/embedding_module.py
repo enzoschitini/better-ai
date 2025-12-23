@@ -86,7 +86,7 @@ class EmbeddingTransformer:
             embedding_content.update(additional_info)
 
         embedding_metadata = {
-            "business_id": payload["business_id"],
+            "client_id": payload["client_id"],
             "file_id": payload["file_id"],
             "file_name": file_name,
             "file_extension": file_extension,
@@ -142,7 +142,7 @@ class UsageService:
 
     def register_cost(
         self,
-        business_id: str,
+        client_id: str,
         text: str,
         model_name: str
     ) -> Dict | str:
@@ -153,7 +153,7 @@ class UsageService:
         business = self.mongo.buscar_documentos(
             self.database,
             self.collection,
-            {"business_id": business_id}
+            {"client_id": client_id}
         )[0]
 
         updated_plan = BusinessPlanUsage(
@@ -166,7 +166,7 @@ class UsageService:
         self.mongo.atualizar_documentos(
             self.database,
             self.collection,
-            {"business_id": business_id},
+            {"client_id": client_id},
             {"plan": updated_plan}
         )
 
@@ -239,7 +239,7 @@ class EmbeddingModule:
         """
         usage_service = UsageService(self.mongo)
         cost = usage_service.register_cost(
-            business_id=self.payload["business_id"],
+            client_id=self.payload["client_id"],
             text=embedding_content["file_content"],
             model_name=self.embedding_settings["llm_model"]
         )

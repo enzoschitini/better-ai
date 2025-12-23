@@ -10,19 +10,19 @@ setup_logging()
 class BusinessPlanManager:
     """Orquestra o cálculo de custos e atualização de plano."""
 
-    def __init__(self, business_id: str, model: str, tokens_data: dict, mongo):
-        self.business_id = business_id
+    def __init__(self, client_id: str, model: str, tokens_data: dict, mongo):
+        self.client_id = client_id
         self.model = model
         self.tokens_data = tokens_data
         self.repo = BusinessRepository(mongo)
 
         logging.info(
-            f"[BusinessPlanManager] Inicializado — business_id={business_id}, model={model}"
+            f"[BusinessPlanManager] Inicializado — client_id={client_id}, model={model}"
         )
 
     def execute(self):
         logging.info(
-            f"[BusinessPlanManager] Iniciando processamento de uso — business_id={self.business_id}"
+            f"[BusinessPlanManager] Iniciando processamento de uso — client_id={self.client_id}"
         )
 
         try:
@@ -38,12 +38,12 @@ class BusinessPlanManager:
             )
 
             # ===== 2. BUSCAR DADOS DA EMPRESA =====
-            plan_data = self.repo.get_business_data(self.business_id)
+            plan_data = self.repo.get_business_data(self.client_id)
             if not plan_data:
                 logging.error(
-                    f"[BusinessPlanManager] Empresa não encontrada para business_id={self.business_id}"
+                    f"[BusinessPlanManager] Empresa não encontrada para client_id={self.client_id}"
                 )
-                raise ValueError(f"Empresa '{self.business_id}' não encontrada.")
+                raise ValueError(f"Empresa '{self.client_id}' não encontrada.")
 
             logging.debug(
                 f"[BusinessPlanManager] Dados da empresa carregados com sucesso."
@@ -82,7 +82,7 @@ class BusinessPlanManager:
 
             # ===== 6. SALVAR NO BANCO =====
             self.repo.update_business_data(plan_data["_id"], plan_data)
-            self.repo.update_local_status(self.business_id, plan_status)
+            self.repo.update_local_status(self.client_id, plan_status)
             self.repo.insert_process_tokens_usage(self.tokens_data)
 
             logging.info(
@@ -91,7 +91,7 @@ class BusinessPlanManager:
 
             # ===== 7. RETORNO =====
             result = {
-                "business_id": self.business_id,
+                "client_id": self.client_id,
                 "model": self.model,
                 "status": plan_status,
                 "updated_costs": new_tokens
@@ -105,6 +105,6 @@ class BusinessPlanManager:
 
         except Exception as e:
             logging.error(
-                f"[BusinessPlanManager] ERRO durante processamento — business_id={self.business_id}, erro={str(e)}"
+                f"[BusinessPlanManager] ERRO durante processamento — client_id={self.client_id}, erro={str(e)}"
             )
             raise
