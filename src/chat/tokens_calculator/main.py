@@ -12,9 +12,9 @@ from src.chat.utils.mongo_manage import MongoDBManager
 from src.chat.tokens_calculator.manager import BusinessPlanManager
 
 
-def menage_chat_usage(BUSINESS_ID, MODEL, tokens_response):
+def menage_chat_usage(client_id, MODEL, tokens_response):
     logging.info(
-        f"[menage_chat_usage] Iniciando controle de uso — BUSINESS_ID={BUSINESS_ID}, MODEL={MODEL}"
+        f"[menage_chat_usage] Iniciando controle de uso — client_id={client_id}, MODEL={MODEL}"
     )
 
     try:
@@ -26,9 +26,9 @@ def menage_chat_usage(BUSINESS_ID, MODEL, tokens_response):
         mongo = MongoDBManager()
         logging.info("[menage_chat_usage] MongoDBManager instanciado com sucesso.")
 
-        manager = BusinessPlanManager(BUSINESS_ID, MODEL, tokens_response, mongo)
+        manager = BusinessPlanManager(client_id, MODEL, tokens_response, mongo)
         logging.info(
-            f"[menage_chat_usage] BusinessPlanManager criado — empresa={BUSINESS_ID}, modelo={MODEL}"
+            f"[menage_chat_usage] BusinessPlanManager criado — empresa={client_id}, modelo={MODEL}"
         )
 
         resultado = manager.execute()
@@ -44,7 +44,7 @@ def menage_chat_usage(BUSINESS_ID, MODEL, tokens_response):
 
     except Exception as e:
         logging.error(
-            f"[menage_chat_usage] ERRO ao gerenciar uso — empresa={BUSINESS_ID}, modelo={MODEL}, erro={str(e)}"
+            f"[menage_chat_usage] ERRO ao gerenciar uso — empresa={client_id}, modelo={MODEL}, erro={str(e)}"
         )
 
         return {

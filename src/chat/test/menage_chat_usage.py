@@ -106,12 +106,12 @@ class BusinessRepository:
         self.mongo = mongo
         self.json_path = json_path
 
-    def get_business_data(self, business_id: str) -> dict:
+    def get_business_data(self, client_id: str) -> dict:
         """Busca dados da empresa no MongoDB."""
         docs = self.mongo.buscar_documentos(
             "TokensUsage",
             "BusinessAccountManage",
-            {"business_id": business_id}
+            {"client_id": client_id}
         )
         return docs[0] if docs else None
 
@@ -125,13 +125,13 @@ class BusinessRepository:
             new_data
         )
 
-    def update_local_status(self, business_id: str, new_status: str):
+    def update_local_status(self, client_id: str, new_status: str):
         """Atualiza o status no arquivo local JSON."""
         with open(self.json_path, "r", encoding="utf-8") as f:
             dados = json.load(f)
 
         for item in dados:
-            if item.get("business_id") == business_id:
+            if item.get("client_id") == client_id:
                 item["status_plan"] = new_status
 
         with open(self.json_path, "w", encoding="utf-8") as f:
@@ -145,8 +145,8 @@ class BusinessRepository:
 class BusinessPlanManager:
     """Orquestra o cálculo de custos e atualização de plano."""
 
-    def __init__(self, business_id: str, model: str, tokens_data: Dict, mongo: MongoDBManager):
-        self.business_id = business_id
+    def __init__(self, client_id: str, model: str, tokens_data: Dict, mongo: MongoDBManager):
+        self.client_id = client_id
         self.model = model
         self.tokens_data = tokens_data
         self.repo = BusinessRepository(mongo)
@@ -158,9 +158,9 @@ class BusinessPlanManager:
         updated_tokens = calculator.calculate(self.tokens_data)
 
         # 2️⃣ Busca dados atuais
-        plan_data = self.repo.get_business_data(self.business_id)
+        plan_data = self.repo.get_business_data(self.client_id)
         if not plan_data:
-            raise ValueError(f"Empresa '{self.business_id}' não encontrada no banco.")
+            raise ValueError(f"Empresa '{self.client_id}' não encontrada no banco.")
 
         # 3️⃣ Atualiza tokens
         new_tokens = updated_tokens["cost"]
@@ -180,10 +180,10 @@ class BusinessPlanManager:
 
         # 6️⃣ Persiste no Mongo e JSON
         self.repo.update_business_data(plan_data["_id"], plan_data)
-        self.repo.update_local_status(self.business_id, plan_status)
+        self.repo.update_local_status(self.client_id, plan_status)
 
         return {
-            "business_id": self.business_id,
+            "client_id": self.client_id,
             "model": self.model,
             "status": plan_status,
             "updated_costs": new_tokens
@@ -195,7 +195,7 @@ class BusinessPlanManager:
 # ============================================================
 
 if __name__ == "__main__":
-    BUSINESS_ID = "0010"
+    client_id = "0010"
     MODEL = "gpt-4o-mini"
     dic = {
         "tokens_estimados": {
@@ -205,6 +205,6 @@ if __name__ == "__main__":
     }
 
     mongo = MongoDBManager()
-    manager = BusinessPlanManager(BUSINESS_ID, MODEL, dic, mongo)
+    manager = BusinessPlanManager(client_id, MODEL, dic, mongo)
     resultado = manager.execute()
     #print(json.dumps(resultado, indent=4, ensure_ascii=False))
