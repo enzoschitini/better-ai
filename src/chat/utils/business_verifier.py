@@ -24,13 +24,13 @@ class BusinessVerifier:
             #print(f"❌ Erro ao decodificar o JSON em {self.caminho_arquivo}")
             return []
 
-    def plano_ativo(self, business_id: str) -> bool:
+    def plano_ativo(self, client_id: str) -> bool:
         """Retorna True se o plano da empresa estiver ativo."""
         for empresa in self.dados:
-            if empresa["business_id"] == business_id:
+            if empresa["client_id"] == client_id:
                 return empresa["status_plan"].lower() == "activated"  # ✅ corrigido
         return False  # Caso o ID não exista
 
-    def verificar(self, business_id: str):
+    def verificar(self, client_id: str):
         """Retorna o status textual do plano."""
-        return "activated" if self.plano_ativo(business_id) else "deactivated"
+        return "activated" if self.plano_ativo(client_id) else "deactivated"
