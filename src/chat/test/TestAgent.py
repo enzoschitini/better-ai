@@ -19,7 +19,7 @@ while True:
 
     try:
         # Passa o mesmo session_id para manter a memória
-        business_id = "0011"  # Exemplo de business_id
+        client_id = "0011"  # Exemplo de client_id
         selected_tools = [
             "retorna_temperatura_atual",
             "busca_wikipedia",
@@ -34,7 +34,7 @@ while True:
             "fraciona_salario_dic": {"dataframe": "clienti", "user_id": "C002", "value": 1}
         }
 
-        resposta = AgentAsk(input_text=user_input, business_id=business_id,
+        resposta = AgentAsk(input_text=user_input, client_id=client_id,
                             metadata={"client_id": "1234"},
                             user_prompt="Você é um agente de IA",
                             temperature=0.5,

@@ -1,10 +1,10 @@
 [
     {
-        "business_id": "0010",
+        "client_id": "0010",
         "status_plan": "no_activated"
     },
     {
-        "business_id": "0011",
+        "client_id": "0011",
         "status_plan": "no_activated"
     }
 ]

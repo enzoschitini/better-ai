@@ -116,7 +116,7 @@ class EmbeddingFile:
             embedding_content["file_content"] = file_content["response"]
 
             embedding_metadata = {
-                "company_id": payload["company_id"],
+                "client_id": payload["client_id"],
                 "file_id": payload["file_id"],
                 "file_name": file_name,
                 "file_extention": file_extention
@@ -148,7 +148,7 @@ class EmbeddingFile:
             calc = EmbeddingCostCalculator(self.embedding_settings["llm_model"])
             operation_cost = {"embedding_cost": calc.calculate_cost_json(embedding_content)}
 
-            business = self.mongo.buscar_documentos(database_name, collection_name, {"business_id": "0011"})[0]
+            business = self.mongo.buscar_documentos(database_name, collection_name, {"client_id": "0011"})[0]
             
             updated_plan = BusinessPlanUsage(plan=business["plan"]).update_usage(operation=operation_cost)
 
@@ -156,7 +156,7 @@ class EmbeddingFile:
                 return "not_credits"
             
             else:
-                self.mongo.atualizar_documentos(database_name, collection_name, {"business_id": "0011"}, {"plan": updated_plan})
+                self.mongo.atualizar_documentos(database_name, collection_name, {"client_id": "0011"}, {"plan": updated_plan})
 
                 return {
                     "embedding_cost": operation_cost

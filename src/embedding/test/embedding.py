@@ -120,7 +120,7 @@ async def embedding_file(
 """
 curl -X POST http://127.0.0.1:8000/embedding-file \
   -F 'payload={
-  "business_id": "0011",
+  "client_id": "0011",
   "file_id": "21d75dca2eec7b02080327f40220e20dxx2.pdf",
   "file_url": "https://domain.com/docs/21d75dca2eec7b02080327f40220e20dxx2.pdf",
   "metadata": {

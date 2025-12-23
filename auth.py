@@ -10,17 +10,17 @@ class AuthService:
             raise HTTPException(status_code=401, detail="Invalid Authorization Key")
 
     @staticmethod
-    def validate_company_secret(company_id: str, company_key: str):
-        env_key_name = f"{company_id.upper()}_SECRET_KEY"
+    def validate_company_secret(client: str, secret_key: str):
+        env_key_name = f"{client.upper()}_SECRET_KEY"
         secret_key_env = os.getenv(env_key_name)
 
         if secret_key_env is None:
             raise HTTPException(
                 status_code=401,
-                detail=f"Secret Key not found for company_id: {company_id}"
+                detail=f"Secret Key not found for client: {client}"
             )
 
-        if company_key != f"Bearer {secret_key_env}":
+        if secret_key != f"Bearer {secret_key_env}":
             raise HTTPException(status_code=401, detail="Invalid Company Secret Key")
 
 class Authorization:
@@ -34,13 +34,13 @@ class Authorization:
     @staticmethod
     def multikey(
         authorization: str = Header(...),
-        company_id: str = Header(..., alias="company-id"),
-        company_key: str = Header(..., alias="company-key"),
+        client: str = Header(..., alias="Client"),
+        secret_key: str = Header(..., alias="SecretKey"),
     ):
         # Valida chave master (BETTERAI_API_KEY)
         AuthService.validate_betterai_key(authorization)
 
         # Valida chave de empresa
-        AuthService.validate_company_secret(company_id, company_key)
+        AuthService.validate_company_secret(client, secret_key)
 
         return True

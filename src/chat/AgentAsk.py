@@ -34,16 +34,16 @@ setup_logging()
 # =========================================
 # EXECUÇÃO DO AGENTE (STREAMING + TOOLS + MEMÓRIA)
 # =========================================
-def AgentAsk(input_text: str, business_id: str, metadata: dict, user_prompt: str, temperature: float,
+def AgentAsk(input_text: str, client_id: str, metadata: dict, user_prompt: str, temperature: float,
              tool_kit: list, tool_dic: dict,
              session_id: str = None, streaming: bool = False):
     
     logging.info(f"=== Iniciando AgentAsk() ===")
-    logging.info(f"Entrada recebida | empresa={business_id} | session_id={session_id} | streaming={streaming}")
+    logging.info(f"Entrada recebida | empresa={client_id} | session_id={session_id} | streaming={streaming}")
 
     verificador = BusinessVerifier("src/chat/tokens_calculator/business_acess.json")
-    status_plan = verificador.verificar(business_id)
-    logging.info(f"Status do plano da empresa ({business_id}): {status_plan}")
+    status_plan = verificador.verificar(client_id)
+    logging.info(f"Status do plano da empresa ({client_id}): {status_plan}")
 
     inicio = time.time()
     session_id = session_id or str(uuid.uuid4())
@@ -78,7 +78,7 @@ def AgentAsk(input_text: str, business_id: str, metadata: dict, user_prompt: str
         # Log final
         log_data = {
             "session_id": session_id,
-            "business_id": business_id,
+            "client_id": client_id,
             "metadata": metadata,
             "input": input_text,
             "response": final_text,
@@ -119,7 +119,7 @@ def AgentAsk(input_text: str, business_id: str, metadata: dict, user_prompt: str
         logging.info("Enviando dados de uso de tokens para gerenciamento em background...")
         threading.Thread(
             target=menage_chat_usage,
-            args=(business_id, "gpt-4o-mini", log_data),
+            args=(client_id, "gpt-4o-mini", log_data),
             daemon=True
         ).start()
 
