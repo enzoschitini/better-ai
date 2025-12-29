@@ -192,6 +192,13 @@ if __name__ == "__main__":
             "title": "Curtidas",
             "description": "Quantidade de likes",
             "examples": [5, 12]
+        },
+        {
+            "name": "sentimento",
+            "type": "bool",
+            "title": "Foi bom ou ruim?",
+            "description": "Diga se o comentário é positivo ou negativo",
+            "examples": [True, False]
         }
     ]
 
