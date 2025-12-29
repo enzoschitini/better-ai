@@ -51,3 +51,10 @@ context_comments: |
   "aspect": "Percezione del prodotto",
   "summary": "La maggior parte dei commenti esprime soddisfazione per la qualità
 }
+
+# 3. Rilevamento di sentimenti
+{
+  "sentimento": "Nome del sentimento",
+  "perche": "Motivazione del sentimento rilevato nei commenti",
+  "cosa_migliorare": "Suggerimenti per miglioramenti basati sui commenti"
+}
