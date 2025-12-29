@@ -17,41 +17,6 @@ from src.text_classifier.template_base.prompt_loader import PromptLoader
 from dotenv import load_dotenv
 load_dotenv()
 
-
-scraper_comments = """
-Comentários sobre o Produto – Simulação de PDF
-
-João Ferreira
-Produto excelente! Superou minhas expectativas e chegou antes do prazo.
-148
-
-Mariana Alves
-Funciona bem, mas achei que poderia vir com mais opções de configuração.
-76
-
-Carlos Nogueira
-Ótimo custo-benefício. Compraria novamente sem dúvidas!
-respostas: 122
-
-Ana Beatriz Costa
-Não gostei muito da qualidade do material. Poderia ser mais resistente.
-42
-
-Roberto Santos
-Sensacional! Uso todos os dias e recomendo para todo mundo.
-305
-
-Larissa Moura Atendeu bem, mas a embalagem veio um pouco amassada.
-
-
-
-
-
-Vinícius Prado
-Simplesmente perfeito. Melhor compra do ano!
-277
-"""
-
 class GenericTextExtractor:
     """
     Extractor genérico e 100% flexível para parsing estruturado de qualquer texto,
@@ -141,7 +106,7 @@ class GenericTextExtractor:
         )
 
         return f"""
-Extraia informações estruturadas do texto abaixo.
+Extraia informações estruturadas do texto abaixo. Analise o texto como um todo e identifique.
 
 Campos esperados:
 {fields_description}
@@ -171,7 +136,7 @@ Texto:
 # EXEMPLO DE USO
 # ==========================================================
 if __name__ == "__main__":
-    schema = [
+    schema_1 = [ # Approvato
         {
             "name": "usuario",
             "type": "str",
@@ -202,19 +167,30 @@ if __name__ == "__main__":
         }
     ]
 
-    extractor = GenericTextExtractor(schema)
+    schema_2 = [
+        {
+            "name": "pontos_positivos",
+            "type": "str",
+            "title": "Pontos Positivos",
+            "description": "Liste até 3 aspectos positivos que tornam o vídeo bom ou atraente. Pode incluir criatividade, clareza, engajamento, duração adequada, interação com o público, estética, entre outros.",
+            "examples": ["Criatividade na apresentação; vídeo curto e dinâmico; boa interação com o público."]
+        },
+        {
+            "name": "pontos_negativos",
+            "type": "str",
+            "title": "Pontos Negativos",
+            "description": "Liste até 3 aspectos que podem dificultar a compreensão ou reduzir a qualidade do vídeo. Pode incluir áudio ruim, iluminação fraca, efeitos visuais excessivos, cortes confusos, entre outros.",
+            "examples": ["Áudio um pouco abafado; iluminação irregular; cortes rápidos que podem confundir."]
+        }
+    ]
 
-    texto = """
-    João
-    Gostei muito do conteúdo!
-    Likes: 10
+    extractor = GenericTextExtractor(schema_2)
+    txt_path = "simple.txt"
 
-    Maria
-    Não recomendo.
-    Likes: 2
-    """
+    with open(f"src/text_classifier/template_base/txt_examples/{txt_path}", "r", encoding="utf-8") as file:
+        scraper = file.read().strip()
 
-    resultado = extractor.extract(scraper_comments)
+    resultado = extractor.extract(scraper)
     print(json.dumps(resultado, indent=2, ensure_ascii=False))
 
 
