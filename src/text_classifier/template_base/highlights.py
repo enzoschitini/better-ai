@@ -7,7 +7,7 @@ from langchain_openai import ChatOpenAI
 from langchain.output_parsers import PydanticOutputParser
 from langchain.prompts import PromptTemplate
 
-from src.TextParses.prompt_loader import PromptLoader
+from src.text_classifier.template_base.prompt_loader import PromptLoader
 
 from dotenv import load_dotenv
 import os
@@ -16,7 +16,7 @@ load_dotenv()
 
 class HighlightsExtractor:
     def __init__(self):
-        self.loader = PromptLoader("src/TextParses/prompt.yaml")
+        self.loader = PromptLoader("src/text_classifier.template_base/prompt.yaml")
 
         class Resposta(BaseModel):
             titulo_do_video: str = Field(
@@ -189,7 +189,7 @@ class HighlightsExtractor:
 
     # === Agora o scraper_highlights vem de um .txt ===
     def extract(self, objetivo, txt_path: str):
-        txt_path = f"src/TextParses/{txt_path}"
+        txt_path = f"src/text_classifier.template_base/{txt_path}"
         
         if not os.path.exists(txt_path):
             raise FileNotFoundError(f"Arquivo não encontrado: {txt_path}")
@@ -232,7 +232,7 @@ print(f"\n⏱ Tempo total de execução: {minutes} min {seconds:.2f} s")
 
 """
 
-# python -m src.TextParses.highlights
+# python -m src.text_classifier.template_base.highlights
 
 
 

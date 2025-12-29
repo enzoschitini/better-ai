@@ -7,7 +7,7 @@ from src.knowledge_base.file_content_extractor import FileContentExtractor
 start_time = time.perf_counter()
 
 # Caminho do arquivo MP4
-file_path = 'src/TextParses/N8N.mp4'
+file_path = 'src/text_classifier.template_base/N8N.mp4'
 #file_path = 'src/ParseComments/text.txt'
 
 # Abrir o arquivo em modo binário e carregá-lo em uma variável BytesIO
@@ -34,4 +34,4 @@ seconds = execution_time % 60
 print(f"\n⏱ Tempo total de execução: {minutes} min {seconds:.2f} s")
 
 # Agora a variável mp4_data contém o conteúdo do arquivo como BytesIO
-# python -m src.TextParses.extract
+# python -m src.text_classifier.template_base.extract

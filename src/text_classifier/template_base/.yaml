@@ -1,0 +1,53 @@
+# List parses
+[
+  {
+    "type": "str",
+    "title": "Text title",
+    "description": "Text description",
+    "examples": [
+      "Example 1",
+      "Example 2"
+    ]
+  }
+]
+
+context_comments: |
+  1. Context
+  2. Cosa si deve estrarre
+  3. Text input
+  4. Output aspettato
+  5. Eccezioni: Nel caso non siano incontrati i valori per le string ed i numeri
+
+
+# Cosa si può fare quando sono aspettati più di un solo tipo di output?
+
+# 1. Analisi dei singoli commenti
+[
+  {{
+    "name": "...",
+    "comment": "...",
+    "likes": 123,
+    "replies": 10,
+  }}
+]
+
+# 2. Analisi di aspetti specifici
+{
+  "total_comments": 100,
+  "most_liked_comment": {{
+    "name": "...",
+    "comment": "...",
+    "likes": 123,
+    "replies": 10,
+  }},
+  "average_likes": 25.5
+}
+
+- Percezione del prodotto
+- Feedback sul servizio clienti
+- Suggerimenti per miglioramenti futuri
+
+{
+  "aspect": "Percezione del prodotto",
+  "summary": "La maggior parte dei commenti esprime soddisfazione per la qualità
+}

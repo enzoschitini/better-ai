@@ -2,8 +2,8 @@ import time
 import json
 import asyncio
 
-from src.TextParses.highlights import HighlightsExtractor
-from src.TextParses.parse_comments import CommentExtractor
+from src.text_classifier.template_base.highlights import HighlightsExtractor
+from src.text_classifier.template_base.parse_comments import CommentExtractor
 
 
 def parte_1_sync():
@@ -16,7 +16,7 @@ def parte_1_sync():
 
 
 def parte_2_sync():
-    with open("src/TextParses/text.txt", "r", encoding="utf-8") as file:
+    with open("src/text_classifier.template_base/text.txt", "r", encoding="utf-8") as file:
         scraper_comments = file.read().strip()
 
     parser = CommentExtractor()
@@ -56,4 +56,4 @@ if __name__ == "__main__":
     print(f"\n⏱ Tempo total de execução: {minutes} min {seconds:.2f} s")
 
 
-# python -m src.TextParses.parse
+# python -m src.text_classifier.template_base.parse

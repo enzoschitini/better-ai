@@ -28,7 +28,7 @@ class PromptLoader:
 
 
 
-loader = PromptLoader("src/TextParses/prompt.yaml")
+loader = PromptLoader("src/text_classifier.template_base/prompt.yaml")
 transcription = "transcriptiontranscriptiontranscriptiontranscriptiontranscriptiontranscription"
 
 prompt = loader.get(

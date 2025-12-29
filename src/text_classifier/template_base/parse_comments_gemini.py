@@ -1,8 +1,8 @@
 import json
-from pydantic import BaseModel, Field
 from typing import List
+from pydantic import BaseModel, Field
 
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.output_parsers import PydanticOutputParser
 from langchain.prompts import PromptTemplate
 
@@ -16,67 +16,98 @@ class CommentExtractor:
     def __init__(self):
         self.loader = PromptLoader("src/text_classifier/template_base/prompt.yaml")
 
-        # === Classes originais ===
+        # =====================
+        # MODELOS Pydantic
+        # =====================
         class Comentario(BaseModel):
             usuario: str = Field(
                 title=self.loader.get("parse_comments.usuario.title"),
                 description=self.loader.get("parse_comments.usuario.description"),
-                examples=self.loader.get("parse_comments.usuario.examples"))
-            
+                examples=self.loader.get("parse_comments.usuario.examples"),
+            )
+
             comentario: str = Field(
                 title=self.loader.get("parse_comments.comentario.title"),
                 description=self.loader.get("parse_comments.comentario.description"),
-                examples=self.loader.get("parse_comments.comentario.examples"))
+                examples=self.loader.get("parse_comments.comentario.examples"),
+            )
 
             likes: int = Field(
                 title=self.loader.get("parse_comments.likes.title"),
                 description=self.loader.get("parse_comments.likes.description"),
-                examples=self.loader.get("parse_comments.likes.examples"))
+                examples=self.loader.get("parse_comments.likes.examples"),
+            )
 
             replies: int = Field(
                 title=self.loader.get("parse_comments.replies.title"),
                 description=self.loader.get("parse_comments.replies.description"),
-                examples=self.loader.get("parse_comments.replies.examples"))
+                examples=self.loader.get("parse_comments.replies.examples"),
+            )
 
         class Resposta(BaseModel):
-            comentarios: List[Comentario] = Field(description="Lista de comentários extraídos")
+            comentarios: List[Comentario] = Field(
+                description="Lista de comentários extraídos"
+            )
 
         self.Comentario = Comentario
         self.Resposta = Resposta
 
-        # Cria o parser
-        self.output_parser = PydanticOutputParser(pydantic_object=self.Resposta)
-
-        # Template original da sua chain
-        self.prompt = PromptTemplate(
-            template="Responda de forma estruturada.\n{format_instructions}\nInput: {input}",
-            input_variables=["input"],
-            partial_variables={"format_instructions": self.output_parser.get_format_instructions()},
+        # =====================
+        # OUTPUT PARSER
+        # =====================
+        self.output_parser = PydanticOutputParser(
+            pydantic_object=self.Resposta
         )
 
-        # Modelo original
-        self.llm = ChatOpenAI(model="gpt-4.1-mini", temperature=0.4)
+        # =====================
+        # PROMPT
+        # =====================
+        self.prompt = PromptTemplate(
+            template=(
+                "Responda exclusivamente no formato solicitado.\n"
+                "{format_instructions}\n\n"
+                "Input:\n{input}"
+            ),
+            input_variables=["input"],
+            partial_variables={
+                "format_instructions": self.output_parser.get_format_instructions()
+            },
+        )
 
+        # =====================
+        # LLM – GEMINI
+        # =====================
+        self.llm = ChatGoogleGenerativeAI(
+            model="gemini-1.5-flash",
+            temperature=0.4,
+            convert_system_message_to_human=True,
+        )
+
+        # =====================
+        # CHAIN
+        # =====================
         self.chain = self.prompt | self.llm | self.output_parser
 
-    # === Prompt ORIGINAL, sem mexer em nada ===
-    def parse_prompt(self, comments):
-        prompt = self.loader.get(
+    # =====================
+    # PROMPT BASE (inalterado)
+    # =====================
+    def parse_prompt(self, comments: str) -> str:
+        return self.loader.get(
             "context_comments",
-            comments=comments
+            comments=comments,
         )
 
-        return prompt
-    
-    # === Função principal ===
-    def extract(self, scraper_comments):
+    # =====================
+    # FUNÇÃO PRINCIPAL
+    # =====================
+    def extract(self, scraper_comments: str):
         input_prompt = self.parse_prompt(scraper_comments)
         resposta = self.chain.invoke({"input": input_prompt})
         return resposta.model_dump()["comentarios"]
 
 
 # ========================
-# Exemplo de uso
+# EXEMPLO DE USO
 # ========================
 
 scraper_comments = """
@@ -102,37 +133,18 @@ Roberto Santos
 Sensacional! Uso todos os dias e recomendo para todo mundo.
 305
 
-Larissa Moura Atendeu bem, mas a embalagem veio um pouco amassada.
-
-
-
-
+Larissa Moura
+Atendeu bem, mas a embalagem veio um pouco amassada.
 
 Vinícius Prado
 Simplesmente perfeito. Melhor compra do ano!
 277
 """
 
-#"""
-query = "Extrair comentários individuais do texto original."
-
 parser = CommentExtractor()
 resultado = parser.extract(scraper_comments)
 
 print(json.dumps(resultado, indent=2, ensure_ascii=False))
-#"""
-
-# python -m src.text_classifier.template_base.parse_comments
 
 
-
-
-
-
-
-
-
-
-
-
-
+# python -m src.text_classifier.template_base.parse_comments_gemini
