@@ -1,5 +1,40 @@
 schema_1:
   - name: usuario
+    type: str
+    title: Usuário
+    description: Nome do usuário que escreveu o texto
+    examples:
+      - João
+      - Maria
+
+  - name: comentario
+    type: str
+    title: Comentário
+    description: Texto do comentário
+    examples:
+      - Gostei muito!
+      - Não recomendo
+
+  - name: likes
+    type: int
+    title: Curtidas
+    description: Quantidade de likes
+    examples:
+      - 5
+      - 12
+
+  - name: sentimento
+    type: bool
+    title: Foi bom ou ruim?
+    description: Diga se o comentário é positivo ou negativo
+    examples:
+      - true
+      - false
+
+
+
+schema_2:
+  - name: usuario
     type: object
     title: Usuário
     description: Dados do usuário que escreveu o texto
@@ -43,4 +78,27 @@ schema_1:
     examples:
       - true
       - false
+
+
+
+schema_3:
+  - name: pontos_positivos
+    type: str
+    title: Pontos Positivos
+    description: >
+      Liste até 3 aspectos positivos que tornam o vídeo bom ou atraente.
+      Pode incluir criatividade, clareza, engajamento, duração adequada,
+      interação com o público, estética, entre outros.
+    examples:
+      - "Criatividade na apresentação; vídeo curto e dinâmico; boa interação com o público."
+
+  - name: pontos_negativos
+    type: str
+    title: Pontos Negativos
+    description: >
+      Liste até 3 aspectos que podem dificultar a compreensão ou reduzir a qualidade do vídeo.
+      Pode incluir áudio ruim, iluminação fraca, efeitos visuais excessivos,
+      cortes confusos, entre outros.
+    examples:
+      - "Áudio um pouco abafado; iluminação irregular; cortes rápidos que podem confundir."
 

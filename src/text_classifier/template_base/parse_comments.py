@@ -1,6 +1,7 @@
 import json
 from pydantic import BaseModel, Field
 from typing import List
+import yaml
 
 from langchain_openai import ChatOpenAI
 from langchain.output_parsers import PydanticOutputParser
@@ -166,102 +167,13 @@ Texto:
 # EXEMPLO DE USO
 # ==========================================================
 if __name__ == "__main__":
-    schema_1 = [ # Approvato
-        {
-            "name": "usuario",
-            "type": "str",
-            "title": "Usuário",
-            "description": "Nome do usuário que escreveu o texto",
-            "examples": ["João", "Maria"]
-        },
-        {
-            "name": "comentario",
-            "type": "str",
-            "title": "Comentário",
-            "description": "Texto do comentário",
-            "examples": ["Gostei muito!", "Não recomendo"]
-        },
-        {
-            "name": "likes",
-            "type": "int",
-            "title": "Curtidas",
-            "description": "Quantidade de likes",
-            "examples": [5, 12]
-        },
-        {
-            "name": "sentimento",
-            "type": "bool",
-            "title": "Foi bom ou ruim?",
-            "description": "Diga se o comentário é positivo ou negativo",
-            "examples": [True, False]
-        }
-    ]
+    with open(f"src/text_classifier/template_base/schema.yaml", "r", encoding="utf-8") as f:
+        schema_config = yaml.safe_load(f)
 
-    schema_2 = [
-        {
-            "name": "usuario",
-            "type": "object",
-            "title": "Usuário",
-            "description": "Dados do usuário que escreveu o texto",
-            "properties": [
-                {
-                    "name": "nome",
-                    "type": "str",
-                    "title": "Nome",
-                    "description": "Primeiro nome do usuário",
-                    "examples": ["João", "Maria"]
-                },
-                {
-                    "name": "sobrenome",
-                    "type": "str",
-                    "title": "Sobrenome",
-                    "description": "Sobrenome do usuário",
-                    "examples": ["Silva", "Souza"]
-                }
-            ]
-        },
-        {
-            "name": "comentario",
-            "type": "str",
-            "title": "Comentário",
-            "description": "Texto do comentário",
-            "examples": ["Gostei muito!", "Não recomendo"]
-        },
-        {
-            "name": "likes",
-            "type": "int",
-            "title": "Curtidas",
-            "description": "Quantidade de likes",
-            "examples": [5, 12]
-        },
-        {
-            "name": "sentimento",
-            "type": "bool",
-            "title": "Foi bom ou ruim?",
-            "description": "Indica se o comentário é positivo (True) ou negativo (False)",
-            "examples": [True, False]
-        }
-    ]
+    schema = schema_config["schema_2"]
 
-    schema_3 = [
-        {
-            "name": "pontos_positivos",
-            "type": "str",
-            "title": "Pontos Positivos",
-            "description": "Liste até 3 aspectos positivos que tornam o vídeo bom ou atraente. Pode incluir criatividade, clareza, engajamento, duração adequada, interação com o público, estética, entre outros.",
-            "examples": ["Criatividade na apresentação; vídeo curto e dinâmico; boa interação com o público."]
-        },
-        {
-            "name": "pontos_negativos",
-            "type": "str",
-            "title": "Pontos Negativos",
-            "description": "Liste até 3 aspectos que podem dificultar a compreensão ou reduzir a qualidade do vídeo. Pode incluir áudio ruim, iluminação fraca, efeitos visuais excessivos, cortes confusos, entre outros.",
-            "examples": ["Áudio um pouco abafado; iluminação irregular; cortes rápidos que podem confundir."]
-        }
-    ]
-
-    extractor = GenericTextExtractor(schema_2)
-    txt_path = "simple.txt"
+    extractor = GenericTextExtractor(schema)
+    txt_path = "text.txt"
 
     with open(f"src/text_classifier/template_base/txt_examples/{txt_path}", "r", encoding="utf-8") as file:
         scraper = file.read().strip()
