@@ -1,0 +1,46 @@
+schema_1:
+  - name: usuario
+    type: object
+    title: Usuário
+    description: Dados do usuário que escreveu o texto
+    properties:
+      - name: nome
+        type: str
+        title: Nome
+        description: Primeiro nome do usuário
+        examples:
+          - João
+          - Maria
+
+      - name: sobrenome
+        type: str
+        title: Sobrenome
+        description: Sobrenome do usuário
+        examples:
+          - Silva
+          - Souza
+
+  - name: comentario
+    type: str
+    title: Comentário
+    description: Texto do comentário
+    examples:
+      - Gostei muito!
+      - Não recomendo
+
+  - name: likes
+    type: int
+    title: Curtidas
+    description: Quantidade de likes
+    examples:
+      - 5
+      - 12
+
+  - name: sentimento
+    type: bool
+    title: Foi bom ou ruim?
+    description: Indica se o comentário é positivo (true) ou negativo (false)
+    examples:
+      - true
+      - false
+

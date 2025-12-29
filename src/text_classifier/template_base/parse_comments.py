@@ -18,11 +18,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class GenericTextExtractor:
-    """
-    Extractor genérico e 100% flexível para parsing estruturado de qualquer texto,
-    orientado por schema dinâmico.
-    """
-
     TYPE_MAP = {
         "str": str,
         "int": int,
@@ -30,24 +25,19 @@ class GenericTextExtractor:
         "bool": bool,
     }
 
-    def __init__(
-        self,
-        schema: List[dict],
-        model: str = "gpt-4.1-mini",
-        temperature: float = 0.3,
-    ):
+    def __init__(self, schema: List[dict], model="gpt-4.1-mini", temperature=0.3):
         self.schema = schema
 
-        # === Criação dinâmica dos modelos ===
-        self.ItemModel = self._create_item_model()
-        self.ResponseModel = self._create_response_model()
+        self.ItemModel = self._build_model("ParsedItem", schema)
+        self.ResponseModel = create_model(
+            "ParsedResponse",
+            items=(List[self.ItemModel], Field(description="Itens extraídos")),
+        )
 
-        # === Parser ===
         self.output_parser = PydanticOutputParser(
             pydantic_object=self.ResponseModel
         )
 
-        # === Prompt ===
         self.prompt = PromptTemplate(
             template=self._build_prompt(),
             input_variables=["input"],
@@ -56,66 +46,105 @@ class GenericTextExtractor:
             },
         )
 
-        # === LLM ===
-        self.llm = ChatOpenAI(
-            model=model,
-            temperature=temperature
-        )
-
-        # === Chain ===
+        self.llm = ChatOpenAI(model=model, temperature=temperature)
         self.chain = self.prompt | self.llm | self.output_parser
 
     # ======================================================
-    # MODEL BUILDERS
+    # MODEL BUILDER (RECURSIVO)
     # ======================================================
 
-    def _create_item_model(self) -> Type[BaseModel]:
+    def _build_model(self, model_name: str, schema: List[dict]) -> Type[BaseModel]:
         fields = {}
 
-        for field in self.schema:
-            py_type = self.TYPE_MAP.get(field["type"], Any)
+        for field in schema:
+            field_type = field["type"]
 
-            default_value = "" if py_type is str else 0
+            # ---------- OBJECT (NESTED JSON)
+            if field_type == "object":
+                nested_model = self._build_model(
+                    f"{model_name}_{field['name']}",
+                    field.get("properties", [])
+                )
 
-            fields[field["name"]] = (
-                py_type,
-                Field(
-                    title=field.get("title", ""),
-                    description=field.get("description", ""),
-                    examples=field.get("examples", []),
-                    default=default_value,
-                ),
-            )
+                fields[field["name"]] = (
+                    nested_model,
+                    Field(
+                        description=field.get("description", ""),
+                        default={}
+                    ),
+                )
 
-        return create_model("ParsedItem", **fields)
+            # ---------- LIST
+            elif field_type == "list":
+                item_def = field["items"]
 
-    def _create_response_model(self) -> Type[BaseModel]:
-        return create_model(
-            "ParsedResponse",
-            items=(List[self.ItemModel], Field(description="Itens extraídos")),
-        )
+                if item_def["type"] == "object":
+                    item_model = self._build_model(
+                        f"{model_name}_{field['name']}_Item",
+                        item_def.get("properties", [])
+                    )
+                    py_type = List[item_model]
+                else:
+                    py_type = List[self.TYPE_MAP.get(item_def["type"], Any)]
+
+                fields[field["name"]] = (
+                    py_type,
+                    Field(
+                        description=field.get("description", ""),
+                        default=[]
+                    ),
+                )
+
+            # ---------- PRIMITIVE
+            else:
+                py_type = self.TYPE_MAP.get(field_type, Any)
+                default = "" if py_type is str else 0
+
+                fields[field["name"]] = (
+                    py_type,
+                    Field(
+                        description=field.get("description", ""),
+                        examples=field.get("examples", []),
+                        default=default,
+                    ),
+                )
+
+        return create_model(model_name, **fields)
 
     # ======================================================
     # PROMPT
     # ======================================================
 
     def _build_prompt(self) -> str:
-        fields_description = "\n".join(
-            f"- {f['name']} ({f['type']}): {f.get('description', '')}"
-            for f in self.schema
-        )
+        def describe(schema, indent=0):
+            lines = []
+            prefix = "  " * indent
+
+            for f in schema:
+                if f["type"] == "object":
+                    lines.append(f"{prefix}- {f['name']} (object):")
+                    lines.extend(describe(f["properties"], indent + 1))
+                elif f["type"] == "list":
+                    lines.append(f"{prefix}- {f['name']} (list)")
+                else:
+                    lines.append(
+                        f"{prefix}- {f['name']} ({f['type']}): {f.get('description','')}"
+                    )
+            return lines
+
+        fields_description = "\n".join(describe(self.schema))
 
         return f"""
-Extraia informações estruturadas do texto abaixo. Analise o texto como um todo e identifique.
+Extraia informações estruturadas do texto abaixo conforme o schema.
 
 Campos esperados:
 {fields_description}
 
 Regras:
+- Respeite a estrutura hierárquica
+- Não invente dados
+- Campos ausentes devem ser vazios
 - Retorne apenas os registros encontrados
-- Caso um campo não esteja presente, use string vazia ou 0
-- Não invente informações
-- Ignore dados irrelevantes
 
 {{format_instructions}}
 
@@ -124,12 +153,13 @@ Texto:
 """
 
     # ======================================================
-    # PUBLIC API
+    # API
     # ======================================================
 
     def extract(self, text: str) -> List[dict]:
         response = self.chain.invoke({"input": text})
         return response.model_dump()["items"]
+
 
 
 # ==========================================================
@@ -168,6 +198,52 @@ if __name__ == "__main__":
     ]
 
     schema_2 = [
+        {
+            "name": "usuario",
+            "type": "object",
+            "title": "Usuário",
+            "description": "Dados do usuário que escreveu o texto",
+            "properties": [
+                {
+                    "name": "nome",
+                    "type": "str",
+                    "title": "Nome",
+                    "description": "Primeiro nome do usuário",
+                    "examples": ["João", "Maria"]
+                },
+                {
+                    "name": "sobrenome",
+                    "type": "str",
+                    "title": "Sobrenome",
+                    "description": "Sobrenome do usuário",
+                    "examples": ["Silva", "Souza"]
+                }
+            ]
+        },
+        {
+            "name": "comentario",
+            "type": "str",
+            "title": "Comentário",
+            "description": "Texto do comentário",
+            "examples": ["Gostei muito!", "Não recomendo"]
+        },
+        {
+            "name": "likes",
+            "type": "int",
+            "title": "Curtidas",
+            "description": "Quantidade de likes",
+            "examples": [5, 12]
+        },
+        {
+            "name": "sentimento",
+            "type": "bool",
+            "title": "Foi bom ou ruim?",
+            "description": "Indica se o comentário é positivo (True) ou negativo (False)",
+            "examples": [True, False]
+        }
+    ]
+
+    schema_3 = [
         {
             "name": "pontos_positivos",
             "type": "str",
