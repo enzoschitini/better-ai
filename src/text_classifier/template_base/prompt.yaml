@@ -1,0 +1,205 @@
+context_comments: |
+  Extraia os dados dos comentários no formato estruturado:
+  - usuario
+  - comentario
+  - likes
+  - replies
+
+  O texto está organizado sempre como:
+  NOME (nome do usuário que fez o comentário)
+  COMENTÁRIO (texto com o comentário)
+  LIKES (número inteiro representando a quantidade de likes)
+  REPLIES (número inteiro representando a quantidade de respostas)
+
+  Retorne APENAS os registros encontrados.
+
+  Comentários:
+  {comments}
+
+  Output esperado:
+  [
+    {{
+      "name": "...",
+      "comment": "...",
+      "likes": 123,
+      "replies": 10,
+    }}
+  ]
+
+  OBS: Caso algum campo não esteja presente, retorne uma string vazia no lugar.
+
+parse_comments:
+  usuario:
+    title: "Usuário"
+    description: "Nome do usuário que deixou o comentário. Caso não haja, retorne uma string vazia"
+    examples:
+      - "João Silva"
+
+  comentario:
+    title: "Comentário"
+    description: "Comentário escrito pelo usuário. Caso não haja, retorne uma string vazia"
+    examples:
+      - "Gostei muito do conteúdo, parabéns!"
+
+  likes:
+    title: "Curtidas"
+    description: "Quantidade de likes no comentário. Caso não haja, retorne 0"
+    examples:
+      - 12
+
+  replies:
+    title: "Respostas"
+    description: "Quantidade de respostas no comentário. Caso não haja, retorne 0"
+    examples:
+      - 3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+parse_highlights: |
+  Extraia os dados da transcrição no formato estruturado:
+  - titulo_do_video
+  - resumo_do_video
+  - pontos_positivos
+  - pontos_negativos
+  - marcas_mencionadas
+  - produtos_mencionados
+  - explicacao_geral_do_video
+  - ambiente_do_video
+  - cenario_principal
+  - expressao_facial
+  - tom_de_voz
+  - musica_trilha_sonora
+  - emojis_apresentados
+  - legendas_utilizadas
+  - apelo_emocional
+  - identificacao_de_tendencias
+
+  Retorne APENAS UM JSON.
+
+  Transcrição do vídeo:
+  {transcription}
+
+  OBS: Caso algum campo não esteja presente, retorne uma string vazia.
+
+
+
+
+titulo_do_video:
+  title: "Título do vídeo"
+  description: "Gere um título com o que mais se encaixa de acordo com o vídeo"
+  examples:
+    - "Sobremesa Rápida para Festas: Delícias em Minutos! 🍰🎉"
+    - "Unboxing do novo iPhone 17 Pro"
+
+resumo_do_video:
+  title: "1. Resumo do Vídeo"
+  description: "Explique de forma simples o que acontece no vídeo. Inclua a ação principal do criador e o objetivo do vídeo."
+  examples:
+    - "O criador ensina a fazer uma sobremesa rápida usando ingredientes simples, ideal para festas de aniversário."
+
+pontos_positivos:
+  title: "2. Pontos Positivos"
+  description: "Liste até 3 aspectos positivos que tornam o vídeo bom ou atraente. Pode incluir criatividade, clareza, engajamento, duração adequada, interação com o público, estética, entre outros."
+  examples:
+    - "Criatividade na apresentação; vídeo curto e dinâmico; boa interação com o público."
+
+pontos_negativos:
+  title: "3. Pontos Negativos"
+  description: "Liste até 3 aspectos que podem dificultar a compreensão ou reduzir a qualidade do vídeo. Pode incluir áudio ruim, iluminação fraca, efeitos visuais excessivos, cortes confusos, entre outros."
+  examples:
+    - "Áudio um pouco abafado; iluminação irregular; cortes rápidos que podem confundir."
+
+marcas_mencionadas:
+  title: "4. Marcas Mencionadas"
+  description: "Indique marcas mostradas ou mencionadas no vídeo, se houver."
+  examples:
+    - "Nike (tênis usado pelo criador); Apple (iPhone usado para filmar)."
+
+produtos_mencionados:
+  title: "5. Produtos Mencionados"
+  description: "Liste produtos usados ou destacados no vídeo, com a marca se possível."
+  examples:
+    - "Bolo de Chocolate da marca 'Doce Vida'; iPhone 14 Pro Max usado para filmar."
+
+explicacao_geral_do_video:
+  title: "6. Explicação Geral do Vídeo"
+  description: "Descreva detalhadamente o conteúdo e o objetivo do vídeo, explicando o passo a passo do que é mostrado ou ensinado."
+  examples:
+    - "O vídeo mostra passo a passo como preparar uma sobremesa rápida, desde a separação dos ingredientes até a finalização e apresentação."
+
+ambiente_do_video:
+  title: "7. Ambiente Onde o Vídeo Foi Gravado"
+  description: "Explique o local do vídeo e o cenário geral em que ele acontece."
+  examples:
+    - "Cozinha moderna e bem iluminada, com utensílios visíveis e decoração simples."
+
+cenario_principal:
+  title: "8. Cenário Principal do Vídeo"
+  description: "Foque na área ou objeto principal onde a ação do vídeo acontece."
+  examples:
+    - "Bancada da cozinha, onde o criador prepara a receita; cortes para a mesa decorada."
+
+expressao_facial:
+  title: "9. Expressão Facial das Pessoas"
+  description: "Descreva as emoções e reações faciais do criador ou participantes ao longo do vídeo."
+  examples:
+    - "Expressão sorridente e animada; demonstra satisfação ao finalizar a receita."
+
+tom_de_voz:
+  title: "10. Tom de Voz das Pessoas"
+  description: "Informe como o criador se comunica com o público durante o vídeo."
+  examples:
+    - "Tom informal, entusiasmado e amigável, transmitindo proximidade."
+
+musica_trilha_sonora:
+  title: "11. Músicas e Trilha Sonora"
+  description: "Identifique músicas ou sons de fundo e explique o efeito deles no vídeo."
+  examples:
+    - "Música pop animada ao fundo, criando um clima leve e descontraído."
+
+emojis_apresentados:
+  title: "12. Emojis Apresentados no Vídeo"
+  description: "Liste os emojis utilizados e explique o momento ou efeito que eles destacam."
+  examples:
+    - "🍰🎉🤩 usados para destacar o resultado final e momentos de entusiasmo."
+
+legendas_utilizadas:
+  title: "13. Legendas Utilizadas"
+  description: "Explique se há legendas, como são apresentadas e se ajudam na compreensão do conteúdo."
+  examples:
+    - "Legendas claras e objetivas, com fonte grande, destacando cada etapa da receita."
+
+apelo_emocional:
+  title: "14. Apelo Emocional"
+  description: "Explique quais sentimentos ou sensações o vídeo desperta no público."
+  examples:
+    - "Sensação de alegria e inspiração, incentivando o público a testar a receita."
+
+identificacao_de_tendencias:
+  title: "15. Identificação de Tendências"
+  description: "Analise tendências emergentes, compare com conteúdos anteriores e cite influenciadores ou criadores que reforçam esse tipo de conteúdo."
+  examples:
+    - "Receitas rápidas e práticas estão em alta; vídeo mais dinâmico que versões anteriores; tendência reforçada por criadores populares de culinária nas redes sociais."
+
+
+
+xxxxxxxxxxxxx:
+  title: "xxxxxxxxxxxxx"
+  description: "xxxxxxxxxxxxx"
+  examples:
+    - "xxxxxxxxxxxxx"
+
