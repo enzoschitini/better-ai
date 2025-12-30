@@ -1,59 +1,120 @@
 import json
 import csv
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Iterable
 
-
-def flatten_json(
-    data: Any,
-    parent_key: str = "",
-    sep: str = "_"
-) -> Dict[str, Any]:
+class JsonFlattener:
     """
-    Trasforma JSON annidati (dict + list) in un dizionario flat
+    Responsabile della trasformazione di JSON annidati in dizionari flat
     """
-    items = {}
 
-    if isinstance(data, dict):
+    def __init__(self, separator: str = "_"):
+        self.separator = separator
+
+    def flatten(
+        self,
+        data: Any,
+        parent_key: str = ""
+    ) -> Dict[str, Any]:
+        items: Dict[str, Any] = {}
+
+        if isinstance(data, dict):
+            items.update(self._flatten_dict(data, parent_key))
+
+        elif isinstance(data, list):
+            items.update(self._flatten_list(data, parent_key))
+
+        else:
+            items[parent_key] = data
+
+        return items
+
+    def _flatten_dict(
+        self,
+        data: Dict[str, Any],
+        parent_key: str
+    ) -> Dict[str, Any]:
+        items = {}
+
         for key, value in data.items():
-            new_key = f"{parent_key}{sep}{key}" if parent_key else key
-            items.update(flatten_json(value, new_key, sep))
+            new_key = (
+                f"{parent_key}{self.separator}{key}"
+                if parent_key else key
+            )
+            items.update(self.flatten(value, new_key))
 
-    elif isinstance(data, list):
-        for i, value in enumerate(data):
-            new_key = f"{parent_key}{sep}{i}"
-            items.update(flatten_json(value, new_key, sep))
+        return items
 
-    else:
-        items[parent_key] = data
+    def _flatten_list(
+        self,
+        data: List[Any],
+        parent_key: str
+    ) -> Dict[str, Any]:
+        items = {}
 
-    return items
+        for index, value in enumerate(data):
+            new_key = f"{parent_key}{self.separator}{index}"
+            items.update(self.flatten(value, new_key))
+
+        return items
 
 
-def json_to_csv(
-    json_data: List[Dict[str, Any]],
-    output_csv: str
-):
+class JsonToCSVConverter:
     """
-    Converte una lista di JSON in CSV
+    Pipeline completa:
+    JSON → flatten → CSV
     """
-    flat_rows = []
 
-    for entry in json_data:
-        flat_rows.append(flatten_json(entry))
+    def __init__(
+        self,
+        separator: str = "_",
+        encoding: str = "utf-8"
+    ):
+        self.flattener = JsonFlattener(separator)
+        self.encoding = encoding
 
-    # tutte le colonne possibili
-    fieldnames = sorted(
-        {key for row in flat_rows for key in row.keys()}
-    )
+    def load_json(self, path: str) -> List[Dict[str, Any]]:
+        with open(path, "r", encoding=self.encoding) as file:
+            return json.load(file)
 
-    with open(output_csv, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(flat_rows)
+    def transform(
+        self,
+        json_data: Iterable[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
+        return [
+            self.flattener.flatten(entry)
+            for entry in json_data
+        ]
+
+    def save_csv(
+        self,
+        rows: List[Dict[str, Any]],
+        output_path: str
+    ) -> None:
+        fieldnames = sorted(
+            {key for row in rows for key in row.keys()}
+        )
+
+        with open(output_path, "w", newline="", encoding=self.encoding) as file:
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(rows)
+
+    def run(
+        self,
+        input_json_path: str,
+        output_csv_path: str
+    ) -> None:
+        data = self.load_json(input_json_path)
+        flat_rows = self.transform(data)
+        self.save_csv(flat_rows, output_csv_path)
 
 
 if __name__ == "__main__":
-    with open("src/text_classifier/output_n8n.json", "r", encoding="utf-8") as f:
-        data = json.load(f)
+    converter = JsonToCSVConverter(separator="_")
+    converter.run(
+        "src/text_classifier/output_n8n.json",
+        "output.csv"
+    )
 
-    json_to_csv(data, "output.csv")
+
+
