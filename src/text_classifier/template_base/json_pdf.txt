@@ -1,0 +1,213 @@
+(better-ai) PS C:\Users\schit\better-ai> python -m src.text_classifier.template_base.parse_comments
+[
+  {
+    "marca_mencionada": {
+      "nome": "Enote",
+      "setor_de_atuacao": "Automação e Integração de Software",
+      "numero_de_mencoes": 100,
+      "contexto_da_mencao": "Enote é apresentada como a principal ferramenta do curso, destacada por suas funcionalidades de automação no code, integração com Google Sheets e WhatsApp, e capacidades avançadas de inteligência artificial, incluindo agentes de IA. O vídeo detalha como criar contas, configurar automações, e utilizar integrações do Enote.",
+      "mencoes": [
+        {
+          "trecho": "Seja muito bem-vindo ao curso de Enote gratuito da Nocode Startup.",
+          "timestamp": "00:00:00"
+        },
+        {
+          "trecho": "a base das principais funcionalidades do Enote, que você vai utilizar em praticamente todas as suas automações.",
+          "timestamp": "00:00:05"
+        },
+        {
+          "trecho": "a gente vai aprender a criar integrações com outros sistemas, como as planilhas do Google, como criar automações com inteligência artificial e criar agentes de A, e também como criar automações totalmente personalizadas, utilizando aí APIs e Webhooks, nesse caso, integrando com o WhatsApp, para no fim a gente ter aí um agente de A integrado ao nosso querido Zap.",
+          "timestamp": "00:00:22"
+        },
+        {
+          "trecho": "o Enote, ele é uma ferramenta de automações e integrações que possui uma interface visual no code de desenvolvimento",
+          "timestamp": "00:06:38"
+        },
+        {
+          "trecho": "o Enote já disponibiliza pra gente centenas de integrações pré-prontas, facilitando demais, agilizando demais essas nossas integrações, essas nossas automações.",
+          "timestamp": "00:07:22"
+        },
+        {
+          "trecho": "o Enote possui funções avançadas de A, como nenhuma outra ferramenta comparativa a ela possui.",
+          "timestamp": "00:07:57"
+        },
+        {
+          "trecho": "o Enote se desponta demais nesse quesito, sendo hoje uma das melhores ferramentas pra gente conseguir criar agentes de A de forma no code do mercado.",
+          "timestamp": "00:08:08"
+        },
+        {
+          "trecho": "ele possui as versões tanto cloud, quanto as versões self-host.",
+          "timestamp": "00:08:27"
+        },
+        {
+          "trecho": "a versão cloud, a versão do Enote, no qual a gente vai pagar de fato para a empresa do Enote pra gente utilizar o serviço deles, criar a nossa conta no Enote e poder fazer as nossas automações lá.",
+          "timestamp": "00:08:48"
+        },
+        {
+          "trecho": "o serviço self-host é a gente basicamente pegar o código fonte que o Enote disponibiliza pra gente, a gente pegar isso, a gente instalar em servidores nossos, em máquinas nossas e agora a gente vai cuidar de toda essa infraestrutura do código",
+          "timestamp": "00:08:48"
+        },
+        {
+          "trecho": "é somando todas essas funcionalidades e benefícios que faz com que o Enote seja a nossa ferramenta de escolha para criação de automações, automações com inteligência artificial e criação de agentes de A",
+          "timestamp": "00:09:56"
+        },
+        {
+          "trecho": "Link na descrição, você encontra o link para fazer o cadastro no Enote",
+          "timestamp": "00:10:41"
+        },
+        {
+          "trecho": "bora iniciar esse nosso curso, criando a nossa conta no Enote.",
+          "timestamp": "00:11:03"
+        },
+        {
+          "trecho": "recomendo fortemente que você comece seus estudos, seus usos, suas automações pela versão cloud, quando você sentir a necessidade, estiver criando aí, de fato, automações, se sentir essa necessidade, você vai para a versão auto-hospedada",
+          "timestamp": "00:11:23"
+        },
+        {
+          "trecho": "a gente vai criar a nossa conta.",
+          "timestamp": "00:11:18"
+        },
+        {
+          "trecho": "a gente já vai cair aqui no formulário, vocês podem criar aí a conta de vocês.",
+          "timestamp": "00:12:12"
+        },
+        {
+          "trecho": "a gente pode começar a criar as nossas automações.",
+          "timestamp": "00:13:14"
+        },
+        {
+          "trecho": "a gente já vê como que a nossa automação, ela flui",
+          "timestamp": "00:15:35"
+        },
+        {
+          "trecho": "o Enote disponibiliza pra gente as nossas ações, né, pra gente executar após esse nosso gatilho.",
+          "timestamp": "00:25:41"
+        },
+        {
+          "trecho": "a gente pode tanto pesquisar aqui, né, Google Sheets, que vai ser uma forma mais fácil",
+          "timestamp": "00:34:04"
+        },
+        {
+          "trecho": "então, entrando aqui no Google Sheets, pra a gente configurar essa nossa automação, primeira coisa, toda a automação precisa é a autentificação",
+          "timestamp": "00:36:06"
+        },
+        {
+          "trecho": "o Enote Cloud aqui, ele tem essa opção, né, fazer o login com o Google.",
+          "timestamp": "00:36:45"
+        },
+        {
+          "trecho": "Feito isso, né, a integração, dando verdinho aqui, integração já está salva e conectada e integrada.",
+          "timestamp": "00:37:08"
+        },
+        {
+          "trecho": "Então, a partir de agora, o Enote tem acesso ao nosso Google Drive, né, pra gente utilizar ali os, as nossas planilhas do Google.",
+          "timestamp": "00:37:19"
+        },
+        {
+          "trecho": "o Google Sheets tem essas duas ações.",
+          "timestamp": "00:37:39"
+        },
+        {
+          "trecho": "a gente já cria aqui a nossa operação de append row, que é adicionar uma linha, ele já veio pré-configurado pra a gente nessa ação.",
+          "timestamp": "00:38:12"
+        },
+        {
+          "trecho": "então, vou clicar aqui, ele já vai adicionar, eu vou fechar aqui esse nosso fluxo.",
+          "timestamp": "00:38:51"
+        },
+        {
+          "trecho": "Adiciona aqui o nosso, eh, Google Sheets já na sequência do nosso fluxo, né?",
+          "timestamp": "00:39:03"
+        }
+      ]
+    }
+  },
+  {
+    "marca_mencionada": {
+      "nome": "Google Sheets",
+      "setor_de_atuacao": "Planilhas e Produtividade",
+      "numero_de_mencoes": 40,
+      "contexto_da_mencao": "Google Sheets é mencionado como sistema externo com o qual o Enote integra para registrar dados, como mensagens e leads, em planilhas. O vídeo mostra como autenticar, configurar e usar o Google Sheets dentro das automações do Enote.",
+      "mencoes": [
+        {
+          "trecho": "a gente vai aprender a criar integrações com outros sistemas, como as planilhas do Google",
+          "timestamp": "00:00:22"
+        },
+        {
+          "trecho": "integrado ao Google Sheets e ao WhatsApp, para você também poder compartilhar esse número do WhatsApp para as pessoas conversarem com esse seu agente.",
+          "timestamp": "00:01:21"
+        },
+        {
+          "trecho": "Esse agente, ele vai registrar todas as perguntas realizadas pelo usuário em uma planilha do Google Sheets.",
+          "timestamp": "00:05:16"
+        },
+        {
+          "trecho": "a gente pode tanto pesquisar aqui, né, Google Sheets, que vai ser uma forma mais fácil",
+          "timestamp": "00:34:04"
+        },
+        {
+          "trecho": "então, entrando aqui no Google Sheets, pra a gente configurar essa nossa automação, primeira coisa, toda a automação precisa é a autentificação",
+          "timestamp": "00:36:06"
+        },
+        {
+          "trecho": "o Enote Cloud aqui, ele tem essa opção, né, fazer o login com o Google.",
+          "timestamp": "00:36:45"
+        },
+        {
+          "trecho": "Feito isso, né, a integração, dando verdinho aqui, integração já está salva e conectada e integrada.",
+          "timestamp": "00:37:08"
+        },
+        {
+          "trecho": "Então, a partir de agora, o Enote tem acesso ao nosso Google Drive, né, pra gente utilizar ali os, as nossas planilhas do Google.",
+          "timestamp": "00:37:19"
+        },
+        {
+          "trecho": "o Google Sheets tem essas duas ações.",
+          "timestamp": "00:37:39"
+        },
+        {
+          "trecho": "a gente já cria aqui a nossa operação de append row, que é adicionar uma linha, ele já veio pré-configurado pra a gente nessa ação.",
+          "timestamp": "00:38:12"
+        },
+        {
+          "trecho": "então, vou clicar aqui, ele já vai adicionar, eu vou fechar aqui esse nosso fluxo.",
+          "timestamp": "00:38:51"
+        },
+        {
+          "trecho": "Adiciona aqui o nosso, eh, Google Sheets já na sequência do nosso fluxo, né?",
+          "timestamp": "00:39:03"
+        }
+      ]
+    }
+  },
+  {
+    "marca_mencionada": {
+      "nome": "WhatsApp",
+      "setor_de_atuacao": "Comunicação e Mensageria",
+      "numero_de_mencoes": 5,
+      "contexto_da_mencao": "WhatsApp é citado como exemplo de integração via API e Webhooks com o Enote para criação de agentes de IA que interagem via WhatsApp, registrando leads e permitindo conversas automatizadas.",
+      "mencoes": [
+        {
+          "trecho": "integrando com o WhatsApp, para no fim a gente ter aí um agente de A integrado ao nosso querido Zap.",
+          "timestamp": "00:00:22"
+        },
+        {
+          "trecho": "E o segundo, um agente de A integrado ao Google Sheets e ao WhatsApp, para você também poder compartilhar esse número do WhatsApp para as pessoas conversarem com esse seu agente.",
+          "timestamp": "00:01:21"
+        },
+        {
+          "trecho": "a gente vai utilizar como exemplo aqui a API do WhatsApp.",  
+          "timestamp": "00:04:12"
+        },
+        {
+          "trecho": "o nosso case 2, que a gente também vai estar criando, é um agente integrado ao WhatsApp que vai registrar todos os leads que entram em contato com a gente dentro desse nosso agente.",
+          "timestamp": "00:05:18"
+        },
+        {
+          "trecho": "você pode aí compartilhar tanto o link da web para qualquer pessoa utilizar, ou tanto o esse número do WhatsApp para qualquer pessoa conversar com esse seu agente.",
+          "timestamp": "00:05:37"
+        }
+      ]
+    }
+  }
+]

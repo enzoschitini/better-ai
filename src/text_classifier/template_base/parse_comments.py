@@ -170,10 +170,10 @@ if __name__ == "__main__":
     with open(f"src/text_classifier/template_base/schema.yaml", "r", encoding="utf-8") as f:
         schema_config = yaml.safe_load(f)
 
-    schema = schema_config["schema_2"]
+    schema = schema_config["schema_5"]
 
     extractor = GenericTextExtractor(schema)
-    txt_path = "text.txt"
+    txt_path = "n8n.txt"
 
     with open(f"src/text_classifier/template_base/txt_examples/{txt_path}", "r", encoding="utf-8") as file:
         scraper = file.read().strip()
