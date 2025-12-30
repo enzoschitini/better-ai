@@ -304,3 +304,33 @@ schema_5:
               examples:
                 - "00:02:15"
                 - "00:05:30"
+
+
+schema_6:
+  - name: titolo
+    type: str
+    title: Títolo da notícia
+    description: Títolo principal da notícia
+    examples:
+      - "Governo anuncia novas medidas econômicas"
+      - "Descoberta científica revoluciona tratamento de doenças"
+
+  - name: descricao
+    type: str
+    title: Descrição da notícia
+    description: Resumo breve do conteúdo da notícia
+    examples:
+      - "O governo implementou uma série de medidas para estimular a economia nacional."
+      - "Cientistas desenvolveram uma nova técnica que promete melhorar significativamente o tratamento de várias doenças."
+
+  - name: informacoes_chave
+    type: list
+    title: Informações chave
+    description: Lista de pontos importantes abordados na notícia
+    items:
+      type: str
+    examples:
+      - "Medidas incluem redução de impostos e incentivos para pequenas empresas."
+      - "Nova técnica utiliza nanotecnologia para direcionar medicamentos diretamente às células afetadas."
+
+
