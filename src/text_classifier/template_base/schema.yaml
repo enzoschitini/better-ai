@@ -334,3 +334,156 @@ schema_6:
       - "Nova técnica utiliza nanotecnologia para direcionar medicamentos diretamente às células afetadas."
 
 
+schema_7:
+  - name: reviewerID
+    type: str
+    title: Id da review
+    description: Identificador único do revisor
+    examples:
+      - "A1234567890"
+      - "B0987654321"
+
+  - name: sentiment_label
+    type: str
+    title: Rótulo de sentimento
+    description: Classificação geral do sentimento do texto
+    examples:
+      - "positivo"
+      - "negativo"
+      - "neutro"
+      - "misto"
+
+  - name: sentiment_score
+    type: float
+    title: Score de sentimento
+    description: Pontuação numérica do sentimento geral (normalizada entre -1 e 1 ou 0 e 1)
+    examples:
+      - 0.82
+      - -0.35
+      - 0.05
+
+  - name: sentiment_intensity
+    type: str
+    title: Intensidade do sentimento
+    description: Grau de intensidade emocional percebida no texto
+    examples:
+      - "baixa"
+      - "média"
+      - "alta"
+
+  - name: emotion_scores
+    type: dict
+    title: Pontuação das emoções
+    description: Distribuição das emoções identificadas no texto
+    additionalProperties:
+      type: float
+    examples:
+      - joy: 0.85
+        frustration: 0.10
+        anger: 0.05
+      - sadness: 0.60
+        anger: 0.25
+        fear: 0.15
+
+  - name: aspect_sentiment
+    type: dict
+    title: Sentimento por aspecto
+    description: Avaliação de sentimento associada a aspectos específicos do produto ou serviço
+    additionalProperties:
+      type: str
+    examples:
+      - design: "positivo"
+        adhesion: "positivo"
+        battery: "negativo"
+        delivery: "neutro"
+
+  - name: mixed_sentiment
+    type: bool
+    title: Sentimento misto
+    description: Indica se o texto apresenta sentimentos positivos e negativos simultaneamente
+    examples:
+      - true
+      - false
+
+  - name: product_strengths
+    type: list
+    title: Pontos fortes do produto
+    description: Lista de aspectos consistentemente avaliados de forma positiva
+    items:
+      type: str
+    examples:
+      - "design"
+      - "qualidade"
+      - "adesão"
+
+  - name: product_weaknesses
+    type: list
+    title: Pontos fracos do produto
+    description: Lista de aspectos consistentemente avaliados de forma negativa
+    items:
+      type: str
+    examples:
+      - "bateria"
+      - "durabilidade"
+      - "desempenho"
+
+  - name: key_words
+    type: list
+    title: Palavras-chave
+    description: Lista de termos relevantes extraídos do texto analisado
+    items:
+      type: str
+    examples:
+      - "design"
+      - "bateria fraca"
+      - "boa aderência"
+      - "entrega rápida"
+
+
+
+
+schema_8:
+  - name: reviewerID
+    type: str
+    title: Id da review
+    description: Identificador único do revisor
+    examples:
+      - "A1234567890"
+      - "B0987654321"
+
+  - name: sentiment_label
+    type: str
+    title: Rótulo de sentimento
+    description: Classificação geral do sentimento do texto
+    examples:
+      - "positivo"
+      - "negativo"
+      - "neutro"
+      - "misto"
+
+  - name: product_strengths
+    type: list
+    title: Pontos fortes do produto
+    description: Lista de aspectos consistentemente avaliados de forma positiva. Só pode ser um desses ["qualidade", "preço", "outros" (especifique qual)]
+    items:
+      type: str
+    examples:
+      - "qualidade"
+      - "preço"
+      - "outros"
+
+  - name: product_weaknesses
+    type: list
+    title: Pontos fracos do produto
+    description: Lista de aspectos consistentemente avaliados de forma negativa. Só pode ser um desses ["preço_alto", "baixa_qualidade", "outros" (especifique qual)]
+    items:
+      type: str
+    examples:
+      - "preço_alto"
+      - "baixa_qualidade"
+      - "outros"
+
+
+
+
+

@@ -167,19 +167,26 @@ Texto:
 # EXEMPLO DE USO
 # ==========================================================
 if __name__ == "__main__":
+    import time
+
+    start_time = time.time()
+
     with open(f"src/text_classifier/template_base/schema.yaml", "r", encoding="utf-8") as f:
         schema_config = yaml.safe_load(f)
 
-    schema = schema_config["schema_5"]
+    schema = schema_config["schema_7"]
 
     extractor = GenericTextExtractor(schema)
-    txt_path = "n8n.txt"
+    txt_path = "arquivo.txt"
 
     with open(f"src/text_classifier/template_base/txt_examples/{txt_path}", "r", encoding="utf-8") as file:
         scraper = file.read().strip()
 
     resultado = extractor.extract(scraper)
     print(json.dumps(resultado, indent=2, ensure_ascii=False))
+
+    end_time = time.time()
+    print(f"Tempo de execução: {end_time - start_time:.2f} segundos")
 
 
 

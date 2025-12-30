@@ -1,0 +1,42 @@
+[
+  {
+    "reviewerID": "A30TL5EWN6DFXT",
+    "reviewText": "They look good and stick good! I just don't like the rounded shape because I was always bumping it and Siri kept popping up and it was irritating. I just won't buy a product like this again"
+  },
+  {
+    "reviewerID": "ASY55RVNIL0UD",
+    "reviewText": "These stickers work like the review says they do. They stick on great and they stay on the phone. They are super stylish and I can share them with my sister. :)"
+  },
+  {
+    "reviewerID": "A2TMXE2AFO7ONB",
+    "reviewText": "These are awesome and make my phone look so stylish! I have only used one so far and have had it on for almost a year! CAN YOU BELIEVE THAT! ONE YEAR!! Great quality!"
+  },
+  {
+    "reviewerID": "AWJ0WZQYMYFQ4",
+    "reviewText": "Item arrived in great time and was in perfect condition. However, I ordered these buttons because they were a great deal and included a FREE screen protector. I never received one. Though its not a big deal, it would've been nice to get it since they claim it comes with one."
+  },
+  {
+    "reviewerID": "ATX7CZYFXI1KW",
+    "reviewText": "awesome! stays on, and looks great. can be used on multiple apple products.  especially having nails, it helps to have an elevated key."
+  },
+  {
+    "reviewerID": "APX47D16JOP7H",
+    "reviewText": "These make using the home button easy. My daughter and I both like them.  I would purchase them again. Well worth the price."
+  },
+  {
+    "reviewerID": "A1JVVYYO7G56DS",
+    "reviewText": "Came just as described.. It doesn't come unstuck and its cute! People ask where I got them from & it's great when driving."
+  },
+  {
+    "reviewerID": "A6FGO4TBZ3QFZ",
+    "reviewText": "it worked for the first week then it only charge my phone to 20%. it is a waste of money."
+  },
+  {
+    "reviewerID": "A2JWEDW5FSVB0F",
+    "reviewText": "Good case, solid build. Protects phone all around with good access to buttons. Battery charges with full battery lasts me a full day. I usually leave my house around 7am and return at 10pm. I'm glad that it lasts from start to end. 5/5"
+  },
+  {
+    "reviewerID": "A8AJS1DW7L3JJ",
+    "reviewText": "This is a fantastic case. Very stylish and protects my phone. Easy access to all buttons and features, without any loss of phone reception. But most importantly, it double power, just as promised. Great buy"
+  }
+]
