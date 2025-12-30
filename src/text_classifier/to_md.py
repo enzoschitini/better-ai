@@ -4,7 +4,7 @@ from typing import Any, List
 
 class MarkdownStyle:
     def __init__(self):
-        self.divider = "---"
+        self.divider = ""
         self.key_prefix = "### "
 
 
