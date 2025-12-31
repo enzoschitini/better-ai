@@ -173,12 +173,10 @@ if __name__ == "__main__":
     with open(f"src/text_classifier/schema.yaml", "r", encoding="utf-8") as f:
         schema_config = yaml.safe_load(f)
 
-    schema = schema_config["schema_2"]
-
-    print(json.dumps(schema, indent=2, ensure_ascii=False))
+    schema = schema_config["schema_7"]
 
     extractor = GenericTextExtractor(schema)
-    txt_path = "n8n.txt"
+    txt_path = "arquivo.txt"
 
     with open(f"src/text_classifier/txt_examples/{txt_path}", "r", encoding="utf-8") as file:
         scraper = file.read().strip()
