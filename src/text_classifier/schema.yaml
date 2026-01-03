@@ -484,6 +484,48 @@ schema_8:
       - "outros"
 
 
+schema_9:
+  - name: titolo
+    type: str
+    title: Titolo
+    description: Titolo della pubblicazione
+    examples:
+      - "Una svolta per l'energia rinnovabile"
 
+  - name: descrizione
+    type: str
+    title: Descrizione
+    description: Descrizione della pubblicazione, il testo che accompagna il titolo
+    examples:
+      - "Scienziati italiani sviluppano una nuova tecnologia per migliorare l'efficienza delle energie rinnovabili."
 
+  - name: categoria
+    type: str
+    title: Categoria
+    description: Categoria della pubblicazione
+    examples:
+      - "SCIENZA"
+      - "VIAGGI"
+
+  - name: parole_chiave
+    type: list
+    title: Parole Chiave
+    description: Elenco delle parole chiave rilevanti estratte dalla pubblicazione
+    items:
+      type: str
+    examples:
+      - "energia_rinnovabile" 
+      - "tecnologia"
+      - "scienziati_italiani"
+
+  - name: tag
+    type: list
+    title: Tag
+    description: Elenco dei tag rilevanti estratti dalla pubblicazione. Devono esseci almeno 10 tag, poiché serviranno per categorizzare meglio il contenuto. In oltre, i tag devono iniziare con il simbolo '#'.
+    items:
+      type: str
+    examples:
+      - "#energia_rinnovabile"
+      - "#scienza"
+      - "#tecnologia"
 
