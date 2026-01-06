@@ -1,3 +1,66 @@
+lezioni:
+  - name: nome_insegnate
+    type: str
+    title: Nome Insegnate
+    description: Il nome dell'insegnate della lezione
+    examples:
+      - Alice
+      - Anna
+
+  - name: prezzo_della_lezione
+    type: str
+    title: Prezzo della lezione
+    description: Il prezzo della lezione in reais
+    examples:
+      - 48,69 R$
+      - 54,10 R$
+
+  - name: ora_inizio
+    type: str
+    title: Ora Inizio
+    description: Ora di inizio dell'aula
+    examples:
+      - 07:00
+      - 11:30
+
+  - name: ora_fine
+    type: str
+    title: Ora Fine
+    description: Ora di fine dell'aula
+    examples:
+      - 07:50
+      - 12:20
+
+  - name: giorno_della_settimana
+    type: str
+    title: Giorno della Settimana
+    description: Nome del giorno della settimana in cui si svolge l'aula
+    examples:
+      - Martedì
+      - Sabato
+
+  - name: mese
+    type: str
+    title: Nome del Mese
+    description: Nome del mese in cui si svolge l'aula
+    examples:
+      - Novembre
+      - Settembre
+
+  - name: data
+    type: str
+    title: Data
+    description: Data completa in formato gg/mm
+    examples:
+      - 22/12
+      - 15/09
+
+
+
+
+
+
+
 schema_1:
   - name: usuario
     type: str

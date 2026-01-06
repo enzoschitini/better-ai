@@ -10,6 +10,7 @@ import json
 
 from src.embedding.embedding_module import ContentExtractorService, FileService
 from src.text_classifier.text_classifier import GenericTextExtractor
+from src.chat.tokens_calculator.cost_calculator import CostCalculator
 
 schema = [
   {
@@ -47,11 +48,18 @@ schema = [
   }
 ]
 
+payload = {
+    "client_id": "client_123",
+    "job_id": "test_job_001",
+    "metadata": None,
+    "schema": schema
+}
 
 
 
 
-class EmbeddingModule:
+
+class TextParserModule:
     def __init__(self, payload: dict, file: UploadFile):
         self.payload = payload
         self.file = file
@@ -64,7 +72,7 @@ class EmbeddingModule:
 
         start_time = time.time()
 
-        extractor = GenericTextExtractor(schema)
+        extractor = GenericTextExtractor(self.payload["schema"])
 
         # 2. Extract content
         scraper = ContentExtractorService.extract(file_bytes, file_extension)
@@ -80,11 +88,48 @@ class EmbeddingModule:
             ]
         }
 
+        # Costo
+        cost_informations = {
+            "llm_model": {
+                "name": "gpt-4o-mini",
+                "input_rate_per_1k_tokens_usd": 0.001,
+                "output_rate_per_1k_tokens_usd": 0.004
+            },
+
+            "tokens": {
+                "input_tokens": 1500,
+                "output_tokens": 500,
+                "total_tokens": 2000
+            },
+            
+            "cost": {
+                "usd": {
+                    "input_cost_usd": "0.001500",
+                    "output_cost_usd": "0.000500",
+                    "total_cost_usd": "0.002000"
+                }
+            },
+
+            "rates": {
+                "EUR": 0.85,
+                "BRL": 4.50
+            }
+        }
+
+
+
+
+
+
+        """
         # Salvar resultado em JSON
         with open(f"src/text_classifier/output_{file_name.replace(f'.{file_extension}', '')}.json", "w", encoding="utf-8") as f:
             json.dump(resultado, f, indent=2, ensure_ascii=False)
 
         print(json.dumps(resultado, indent=2, ensure_ascii=False))
+        """
+
+
 
         end_time = time.time()
         print(f"Tempo de execução: {end_time - start_time:.2f} segundos")
@@ -106,8 +151,8 @@ async def run_test():
             file=f
         )
 
-        module = EmbeddingModule(
-            payload={"source": "manual_test"},
+        module = TextParserModule(
+            payload=payload,
             file=upload_file
         )
 

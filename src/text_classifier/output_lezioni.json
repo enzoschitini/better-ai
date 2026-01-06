@@ -1,0 +1,542 @@
+[
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Lunedì",
+    "mese": "gen",
+    "data": "05/01"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "14:30",
+    "ora_fine": "15:20",
+    "giorno_della_settimana": "Lunedì",
+    "mese": "dic",
+    "data": "29/12"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "08:30",
+    "ora_fine": "09:20",
+    "giorno_della_settimana": "Lunedì",
+    "mese": "dic",
+    "data": "29/12"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Martedì",
+    "mese": "dic",
+    "data": "23/12"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Lunedì",
+    "mese": "dic",
+    "data": "22/12"
+  },
+  {
+    "nome_insegnate": "Elsa",
+    "prezzo_della_lezione": "54,10 R$",
+    "ora_inizio": "11:30",
+    "ora_fine": "12:20",
+    "giorno_della_settimana": "Sabato",
+    "mese": "dic",
+    "data": "20/12"
+  },
+  {
+    "nome_insegnate": "Anais",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "09:00",
+    "ora_fine": "09:50",
+    "giorno_della_settimana": "Venerdì",
+    "mese": "dic",
+    "data": "19/12"
+  },
+  {
+    "nome_insegnate": "Valentina",
+    "prezzo_della_lezione": "54,10 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Giovedì",
+    "mese": "dic",
+    "data": "18/12"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Lunedì",
+    "mese": "dic",
+    "data": "15/12"
+  },
+  {
+    "nome_insegnate": "Valentina",
+    "prezzo_della_lezione": "54,10 R$",
+    "ora_inizio": "07:30",
+    "ora_fine": "08:20",
+    "giorno_della_settimana": "Giovedì",
+    "mese": "dic",
+    "data": "11/12"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Martedì",
+    "mese": "dic",
+    "data": "09/12"
+  },
+  {
+    "nome_insegnate": "Anna",
+    "prezzo_della_lezione": "54,10 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Venerdì",
+    "mese": "dic",
+    "data": "05/12"
+  },
+  {
+    "nome_insegnate": "Elsa",
+    "prezzo_della_lezione": "54,10 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Mercoledì",
+    "mese": "dic",
+    "data": "03/12"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Martedì",
+    "mese": "dic",
+    "data": "02/12"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Venerdì",
+    "mese": "nov",
+    "data": "28/11"
+  },
+  {
+    "nome_insegnate": "Elsa",
+    "prezzo_della_lezione": "54,10 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Mercoledì",
+    "mese": "nov",
+    "data": "26/11"
+  },
+  {
+    "nome_insegnate": "Elsa",
+    "prezzo_della_lezione": "54,10 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Lunedì",
+    "mese": "nov",
+    "data": "24/11"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "54,10 R$",
+    "ora_inizio": "10:00",
+    "ora_fine": "10:50",
+    "giorno_della_settimana": "Sabato",
+    "mese": "nov",
+    "data": "22/11"
+  },
+  {
+    "nome_insegnate": "Valentina",
+    "prezzo_della_lezione": "54,10 R$",
+    "ora_inizio": "09:00",
+    "ora_fine": "09:50",
+    "giorno_della_settimana": "Giovedì",
+    "mese": "nov",
+    "data": "20/11"
+  },
+  {
+    "nome_insegnate": "Valentina",
+    "prezzo_della_lezione": "54,10 R$",
+    "ora_inizio": "12:30",
+    "ora_fine": "13:20",
+    "giorno_della_settimana": "Lunedì",
+    "mese": "nov",
+    "data": "17/11"
+  },
+  {
+    "nome_insegnate": "Eva",
+    "prezzo_della_lezione": "54,10 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Venerdì",
+    "mese": "nov",
+    "data": "14/11"
+  },
+  {
+    "nome_insegnate": "Eva",
+    "prezzo_della_lezione": "54,10 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Martedì",
+    "mese": "nov",
+    "data": "11/11"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Venerdì",
+    "mese": "nov",
+    "data": "07/11"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "12:30",
+    "ora_fine": "13:20",
+    "giorno_della_settimana": "Mercoledì",
+    "mese": "nov",
+    "data": "05/11"
+  },
+  {
+    "nome_insegnate": "Eva",
+    "prezzo_della_lezione": "54,10 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Lunedì",
+    "mese": "nov",
+    "data": "03/11"
+  },
+  {
+    "nome_insegnate": "Anna",
+    "prezzo_della_lezione": "54,10 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Venerdì",
+    "mese": "ott",
+    "data": "31/10"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Martedì",
+    "mese": "ott",
+    "data": "28/10"
+  },
+  {
+    "nome_insegnate": "Valentina",
+    "prezzo_della_lezione": "54,10 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Lunedì",
+    "mese": "ott",
+    "data": "27/10"
+  },
+  {
+    "nome_insegnate": "Valentina",
+    "prezzo_della_lezione": "54,10 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Mercoledì",
+    "mese": "ott",
+    "data": "22/10"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Martedì",
+    "mese": "ott",
+    "data": "21/10"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Venerdì",
+    "mese": "ott",
+    "data": "17/10"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Lunedì",
+    "mese": "ott",
+    "data": "13/10"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "13:00",
+    "ora_fine": "13:50",
+    "giorno_della_settimana": "Sabato",
+    "mese": "ott",
+    "data": "11/10"
+  },
+  {
+    "nome_insegnate": "Giulia",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Venerdì",
+    "mese": "ott",
+    "data": "10/10"
+  },
+  {
+    "nome_insegnate": "Sara",
+    "prezzo_della_lezione": "54,10 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Mercoledì",
+    "mese": "ott",
+    "data": "08/10"
+  },
+  {
+    "nome_insegnate": "",
+    "prezzo_della_lezione": "54,10 R$",
+    "ora_inizio": "07:30",
+    "ora_fine": "08:20",
+    "giorno_della_settimana": "Lunedì",
+    "mese": "ott",
+    "data": "06/10"
+  },
+  {
+    "nome_insegnate": "Giulia",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Venerdì",
+    "mese": "ott",
+    "data": "03/10"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "13:00",
+    "ora_fine": "13:50",
+    "giorno_della_settimana": "Giovedì",
+    "mese": "ott",
+    "data": "02/10"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Mercoledì",
+    "mese": "ott",
+    "data": "01/10"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "14:00",
+    "ora_fine": "14:50",
+    "giorno_della_settimana": "Sabato",
+    "mese": "set",
+    "data": "27/09"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Venerdì",
+    "mese": "set",
+    "data": "26/09"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "13:30",
+    "ora_fine": "14:20",
+    "giorno_della_settimana": "Mercoledì",
+    "mese": "set",
+    "data": "24/09"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Lunedì",
+    "mese": "set",
+    "data": "22/09"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Mercoledì",
+    "mese": "set",
+    "data": "17/09"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Lunedì",
+    "mese": "set",
+    "data": "15/09"
+  },
+  {
+    "nome_insegnate": "",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Venerdì",
+    "mese": "set",
+    "data": "12/09"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Mercoledì",
+    "mese": "set",
+    "data": "10/09"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Martedì",
+    "mese": "set",
+    "data": "09/09"
+  },
+  {
+    "nome_insegnate": "",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Venerdì",
+    "mese": "set",
+    "data": "05/09"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "13:30",
+    "ora_fine": "14:20",
+    "giorno_della_settimana": "Mercoledì",
+    "mese": "set",
+    "data": "03/09"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Lunedì",
+    "mese": "set",
+    "data": "01/09"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Mercoledì",
+    "mese": "ago",
+    "data": "27/08"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Lunedì",
+    "mese": "ago",
+    "data": "25/08"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Venerdì",
+    "mese": "ago",
+    "data": "22/08"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Mercoledì",
+    "mese": "ago",
+    "data": "20/08"
+  },
+  {
+    "nome_insegnate": "Ludovica",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Lunedì",
+    "mese": "ago",
+    "data": "18/08"
+  },
+  {
+    "nome_insegnate": "Michelle",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Venerdì",
+    "mese": "ago",
+    "data": "15/08"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Mercoledì",
+    "mese": "ago",
+    "data": "13/08"
+  },
+  {
+    "nome_insegnate": "Alice",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Lunedì",
+    "mese": "ago",
+    "data": "11/08"
+  },
+  {
+    "nome_insegnate": "Michelle",
+    "prezzo_della_lezione": "48,69 R$",
+    "ora_inizio": "07:00",
+    "ora_fine": "07:50",
+    "giorno_della_settimana": "Venerdì",
+    "mese": "ago",
+    "data": "08/08"
+  }
+]
