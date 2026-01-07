@@ -2,59 +2,79 @@ import asyncio
 from fastapi import UploadFile
 import json
 import time
-from src.text_parse.extract import TextParserModule
+from src.text_parse.text_parse_module import TextParserModule
+import httpx
+
+url = "http://127.0.0.1:8000/text_parse"
 
 schema = [
-  {
-    "name": "titolo",
-    "type": "str",
-    "title": "Títolo da notícia",
-    "description": "Títolo principal da notícia",
-    "examples": [
-      "Governo anuncia novas medidas econômicas",
-      "Descoberta científica revoluciona tratamento de doenças"
-    ]
-  },
-  {
-    "name": "descricao",
-    "type": "str",
-    "title": "Descrição da notícia",
-    "description": "Resumo breve do conteúdo da notícia",
-    "examples": [
-      "O governo implementou uma série de medidas para estimular a economia nacional.",
-      "Cientistas desenvolveram uma nova técnica que promete melhorar significativamente o tratamento de várias doenças."
-    ]
-  },
-  {
-    "name": "informacoes_chave",
-    "type": "list",
-    "title": "Informações chave",
-    "description": "Lista de pontos importantes abordados na notícia",
-    "items": {
-      "type": "str"
+    {
+        "name": "nome_insegnate",
+        "type": "str",
+        "title": "Nome Insegnate",
+        "description": "Il nome dell'insegnate della lezione",
+        "examples": ["Alice", "Anna"]
     },
-    "examples": [
-      "Medidas incluem redução de impostos e incentivos para pequenas empresas.",
-      "Nova técnica utiliza nanotecnologia para direcionar medicamentos diretamente às células afetadas."
-    ]
-  }
+    {
+        "name": "prezzo_della_lezione",
+        "type": "str",
+        "title": "Prezzo della lezione",
+        "description": "Il prezzo della lezione in reais",
+        "examples": ["48,69 R$", "54,10 R$"]
+    },
+    {
+        "name": "ora_inizio",
+        "type": "str",
+        "title": "Ora Inizio",
+        "description": "Ora di inizio dell'aula",
+        "examples": ["07:00", "11:30"]
+    },
+    {
+        "name": "ora_fine",
+        "type": "str",
+        "title": "Ora Fine",
+        "description": "Ora di fine dell'aula",
+        "examples": ["07:50", "12:20"]
+    },
+    {
+        "name": "giorno_della_settimana",
+        "type": "str",
+        "title": "Giorno della Settimana",
+        "description": "Nome del giorno della settimana in cui si svolge l'aula",
+        "examples": ["Martedì", "Sabato"]
+    },
+    {
+        "name": "mese",
+        "type": "str",
+        "title": "Nome del Mese",
+        "description": "Nome del mese in cui si svolge l'aula",
+        "examples": ["Novembre", "Settembre"]
+    },
+    {
+        "name": "data",
+        "type": "str",
+        "title": "Data",
+        "description": "Data completa in formato gg/mm",
+        "examples": ["22/12", "15/09"]
+    }
 ]
 
 payload = {
     "client_id": "client_123",
-    "job_id": "test_job_001",
+    "job_id": "lezioni_job_001",
     "metadata": None,
     "schema": schema
 }
 
+file_name = "g1.txt" # "Candidatura.pdf" #
+file_path = f"src/text_parse/txt_examples/{file_name}"
 
 async def run_test():
     start_time = time.time()
-    file_path = "src/text_parse/txt_examples/g1.txt"
 
     with open(file_path, "rb") as f:
         upload_file = UploadFile(
-            filename="g1.txt",
+            filename=file_name,
             file=f
         )
 
@@ -71,20 +91,26 @@ async def run_test():
         print(f"Tempo de execução: {end_time - start_time:.2f} segundos")
 
 
-if __name__ == "__main__":
-    asyncio.run(run_test())
+def test(value):
+    if value == 1:
+        asyncio.run(run_test())
+    
+    else:
+        with open(file_path, "rb") as f:
+            response = httpx.post(
+                url,
+                files={
+                    # payload come stringa JSON (Form)
+                    "payload": (None, json.dumps(payload), "application/json"),
+                    # file upload
+                    "file": ("lezione2.txt", f, "text/plain"),
+                },
+                timeout=60.0
+            )
 
+        print("Status:", response.status_code)
+        print("Response:")
+        print(json.dumps(response.json(), indent=2, ensure_ascii=False))
 
-
+test(2)
 # python -m src.text_parse.test
-
-"""
-# Salvar resultado em JSON
-with open(f"src/text_parse/output_{file_name.replace(f'.{file_extension}', '')}.json", "w", encoding="utf-8") as f:
-    json.dump(resultado, f, indent=2, ensure_ascii=False)
-
-print(json.dumps(resultado, indent=2, ensure_ascii=False))
-"""
-
-
-

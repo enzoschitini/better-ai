@@ -1,7 +1,7 @@
 from fastapi import UploadFile
 
 from src.embedding.embedding_module import ContentExtractorService, FileService
-from src.text_parse.text_parse import GenericTextExtractor
+from src.text_parse.langchain_parse import GenericTextExtractor
 from src.text_parse.cost import LLMCostCalculator
 
 
@@ -36,26 +36,21 @@ class TextParserModule:
         scraper = scraper["response"]
 
         extractor = GenericTextExtractor(self.payload["schema"])
-        #parse = extractor.extract(scraper)
-        parse = {
-            "titolo": "Governo anuncia novas medidas econômicas",
-            "descricao": "O governo implementou uma série de medidas para estimular a economia nacional.",
-            "informacoes_chave": [
-                "Medidas incluem redução de impostos e incentivos para pequenas empresas.",
-                "Foco em inovação tecnológica e sustentabilidade."
-            ]
-        }
+        parse = extractor.extract(scraper)
 
+        #"""
         cost_informations = self.calc_cost_informations(
             model="gpt-4o-mini", 
             schema=self.schema,
             scraper=scraper,
             result=parse
         )
+        #"""
+        # cost_informations = "cost_informations"
 
         result = {
             "job_id": self.job_id,
-            "file_name": file_name,
+            "len": len(scraper),
             "cost_informations": cost_informations,
             "parse": parse
         }
@@ -63,4 +58,4 @@ class TextParserModule:
         return result
 
 
-# python -m src.text_parse.extract
+# python -m src.text_parse.text_parse_module
