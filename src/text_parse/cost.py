@@ -184,10 +184,12 @@ def test(model: str, schema: dict, scraper: str, result: dict):
 
     print(json.dumps(cost_informations, indent=4, ensure_ascii=False))
 
+"""
 test(
     model="gpt-4o-mini",
     schema=schema,
     scraper=scraper,
     result=result
 )
+"""
 # python -m src.text_parse.cost

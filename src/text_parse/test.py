@@ -1,5 +1,7 @@
 import asyncio
 from fastapi import UploadFile
+import json
+import time
 from src.text_parse.extract import TextParserModule
 
 schema = [
@@ -47,6 +49,7 @@ payload = {
 
 
 async def run_test():
+    start_time = time.time()
     file_path = "src/text_parse/txt_examples/g1.txt"
 
     with open(file_path, "rb") as f:
@@ -62,12 +65,14 @@ async def run_test():
 
         result = await module.execute()
 
+        print(f"\n{json.dumps(result, indent=2, ensure_ascii=False)}")
+
+        end_time = time.time()
+        print(f"Tempo de execução: {end_time - start_time:.2f} segundos")
+
 
 if __name__ == "__main__":
     asyncio.run(run_test())
-
-
-
 
 
 
