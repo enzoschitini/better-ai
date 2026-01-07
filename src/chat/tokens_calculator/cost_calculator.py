@@ -75,3 +75,80 @@ class CostCalculator:
                 f"Erro ao calcular custos no modelo '{self.model_name}': {str(e)}"
             )
             raise e
+
+
+
+
+
+import pytest
+
+
+def mock_tokens_response(input_tokens=1000, output_tokens=500):
+    return {
+        "tokens_estimados": {
+            "input": {
+                "combined": {
+                    "tokens_estimated": input_tokens
+                }
+            },
+            "output": {
+                "tokens_estimated": output_tokens
+            }
+        }
+    }
+
+
+def test_cost_calculator_initialization_success():
+    calculator = CostCalculator("gpt-4o-mini")
+
+    assert calculator.model_name == "gpt-4o-mini"
+    assert "input" in calculator.model_cost
+    assert "output" in calculator.model_cost
+
+
+def test_cost_calculator_invalid_model():
+    with pytest.raises(ValueError):
+        CostCalculator("modelo-inexistente")
+
+
+def test_cost_calculator_calculate_success():
+    import json
+    calculator = CostCalculator("gpt-4o-mini")
+    tokens_response = mock_tokens_response(1000, 500)
+
+    result = calculator.calculate(tokens_response)
+
+    assert "cost" in result
+
+    cost = result["cost"]
+
+    assert cost["modelo"] == "gpt-4o-mini"
+    assert cost["input_tokens"] == 1000
+    assert cost["output_tokens"] == 500
+    assert cost["total_tokens"] == 1500
+
+    # Custos esperados
+    expected_input_cost = (1000 / 1_000_000) * 0.15
+    expected_output_cost = (500 / 1_000_000) * 0.60
+    expected_total_cost = expected_input_cost + expected_output_cost
+
+    assert float(cost["input_cost_usd"]) == pytest.approx(expected_input_cost, rel=1e-6)
+    assert float(cost["output_cost_usd"]) == pytest.approx(expected_output_cost, rel=1e-6)
+    assert float(cost["total_cost_usd"]) == pytest.approx(expected_total_cost, rel=1e-6)
+
+    print(json.dumps(result["cost"], indent=2))
+
+
+def test_cost_calculator_invalid_tokens_payload():
+    calculator = CostCalculator("gpt-4o-mini")
+
+    invalid_payload = {
+        "tokens_estimados": {
+            "input": {}
+        }
+    }
+
+    with pytest.raises(Exception):
+        calculator.calculate(invalid_payload)
+
+# python -m src.chat.tokens_calculator.cost_calculator
