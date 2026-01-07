@@ -124,14 +124,14 @@ class DollarRateService:
 
 
 """
-python -m src.embedding_reference.dollar_rates
+#python -m src.embedding.tokens_calculator.dollar_rates
 
 if __name__ == "__main__":
     service = DollarRateService()
 
     rate = service.get_rate("EUR")
-    #print("\nCOTAÇÃO FINAL:", rate, "EUR")
+    print("\nCOTAÇÃO FINAL:", rate, "EUR")
 
     rate = service.get_rate("BRL")
-    #print("\nCOTAÇÃO FINAL:", rate, "BRL")
-"""
+    print("\nCOTAÇÃO FINAL:", rate, "BRL")
+#"""
