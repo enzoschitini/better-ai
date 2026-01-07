@@ -165,12 +165,13 @@ Texto:
 # ==========================================================
 # EXEMPLO DE USO
 # ==========================================================
-if __name__ == "__main__":
+def test():
     import time
+    base = "src/text_parse/txt_examples/"
 
     start_time = time.time()
 
-    with open(f"src/text_classifier/schema.yaml", "r", encoding="utf-8") as f:
+    with open(f"{base}schema.yaml", "r", encoding="utf-8") as f:
         schema_config = yaml.safe_load(f)
 
     schema = schema_config["lezioni"]
@@ -178,13 +179,13 @@ if __name__ == "__main__":
     extractor = GenericTextExtractor(schema)
     txt_path = "lezioni.txt"
 
-    with open(f"src/text_classifier/txt_examples/{txt_path}", "r", encoding="utf-8") as file:
+    with open(f"{base}{txt_path}", "r", encoding="utf-8") as file:
         scraper = file.read().strip()
 
     resultado = extractor.extract(scraper)
 
     # Salvar resultado em JSON
-    with open(f"src/text_classifier/output_{txt_path.replace('.txt', '')}.json", "w", encoding="utf-8") as f:
+    with open(f"{base}output_{txt_path.replace('.txt', '')}.json", "w", encoding="utf-8") as f:
         json.dump(resultado, f, indent=2, ensure_ascii=False)
 
     print(json.dumps(resultado, indent=2, ensure_ascii=False))
@@ -194,4 +195,4 @@ if __name__ == "__main__":
 
 
 
-# python -m src.text_classifier.text_classifier
+# python -m src.text_parse.text_parse

@@ -46,6 +46,9 @@ if usage.validate(operation):
         operation_tokens = operation["tokens"]["total_tokens"]
 
         has_token_credit = (budget_tokens - used_tokens) >= operation_tokens
+        
+        print(budget_tokens, used_tokens, operation_tokens)
+        print(has_token_credit)
 
         return has_usd_credit and has_token_credit
 
@@ -136,9 +139,14 @@ mongo = MongoDBManager()
 plan = mongo.buscar_documentos(database_name="TokensUsage", collection_name="BusinessAccountManage", filtro={"business_id": "0011"})[0]
 
 updater = BusinessPlanUsage(plan["plan"])
-print(updater.validate(operation))
-
 new_plan = updater.update_usage(operation, True)
+
+status = updater.validate(operation)
+
+print("Status:", status)
+
+if status == False:
+    new_plan["status"] = "no_activated"
 
 mongo.atualizar_documentos(
     database_name="TokensUsage",
@@ -149,4 +157,4 @@ mongo.atualizar_documentos(
 
 print(new_plan)
 
-# python -m src.text_classifier.business_plan_usage
+# python -m src.text_parse.business_plan_usage

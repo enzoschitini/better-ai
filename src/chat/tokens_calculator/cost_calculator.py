@@ -151,6 +151,4 @@ def test_cost_calculator_invalid_tokens_payload():
     with pytest.raises(Exception):
         calculator.calculate(invalid_payload)
 
-test_cost_calculator_calculate_success()
-
 # python -m src.chat.tokens_calculator.cost_calculator

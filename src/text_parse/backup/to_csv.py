@@ -112,7 +112,7 @@ class JsonToCSVConverter:
 if __name__ == "__main__":
     converter = JsonToCSVConverter(separator="_")
     converter.run(
-        "src/text_classifier/output_lezioni.json",
+        "src/text_parse/output_lezioni.json",
         "output.csv"
     )
 

@@ -190,4 +190,4 @@ test(
     scraper=scraper,
     result=result
 )
-# python -m src.text_classifier.cost
+# python -m src.text_parse.cost
