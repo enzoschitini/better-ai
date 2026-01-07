@@ -12,13 +12,15 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from auth import Authorization
+
 from src.chat.AgentAsk import AgentAsk
 
-from src.embedding.embedding_module import EmbeddingModule
+from src.embedding.services.payload_validation import PayloadProcessor
 from src.embedding.services.pinecone_vector_store import PineconeClient, PineconeVectorService
+from src.embedding.embedding_module import EmbeddingModule
 
 from src.image_generation.google_genai import ImageGenerationService
-from src.embedding.services.payload_validation import PayloadProcessor
+from src.text_parse.text_parse_module import TextParserModule
 
 # ================================================
 # API SETTINGS
@@ -237,10 +239,6 @@ async def delete_vectors(
     return response
 
 
-
-
-
-
 # ========================
 # Image Generate
 # ========================
@@ -274,6 +272,46 @@ def generate_image(data: GenerateRequest) -> GenerateResponse:
 
 
 
+@app.post("/parse-content", dependencies=[Depends(Authorization.multikey)],
+          summary="Parse and extract structured content from files using schema")
+async def text_parse(
+    payload: str = Form(...),
+    file: UploadFile = File(...)
+):
+    """
+    Endpoint per parsing testuale.
+    Riceve:
+    - payload: JSON string (schema, client_id, job_id, etc.)
+    - file: file da analizzare (txt, pdf, ecc.)
+    """
+    import time
+
+    start_time = time.time()
+
+    # Parse payload JSON
+    try:
+        payload_dict = json.loads(payload)
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Payload non è un JSON valido")
+
+    # Inizializza il modulo
+    module = TextParserModule(
+        payload=payload_dict,
+        file=file
+    )
+
+    # Esegui parsing
+    try:
+        result = await module.execute()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    end_time = time.time()
+
+    return {
+        "result": result,
+        "execution_time_seconds": round(end_time - start_time, 2)
+    }
 
 
 

@@ -1,0 +1,594 @@
+lezioni:
+  - name: nome_insegnate
+    type: str
+    title: Nome Insegnate
+    description: Il nome dell'insegnate della lezione
+    examples:
+      - Alice
+      - Anna
+
+  - name: prezzo_della_lezione
+    type: str
+    title: Prezzo della lezione
+    description: Il prezzo della lezione in reais
+    examples:
+      - 48,69 R$
+      - 54,10 R$
+
+  - name: ora_inizio
+    type: str
+    title: Ora Inizio
+    description: Ora di inizio dell'aula
+    examples:
+      - 07:00
+      - 11:30
+
+  - name: ora_fine
+    type: str
+    title: Ora Fine
+    description: Ora di fine dell'aula
+    examples:
+      - 07:50
+      - 12:20
+
+  - name: giorno_della_settimana
+    type: str
+    title: Giorno della Settimana
+    description: Nome del giorno della settimana in cui si svolge l'aula
+    examples:
+      - Martedì
+      - Sabato
+
+  - name: mese
+    type: str
+    title: Nome del Mese
+    description: Nome del mese in cui si svolge l'aula
+    examples:
+      - Novembre
+      - Settembre
+
+  - name: data
+    type: str
+    title: Data
+    description: Data completa in formato gg/mm
+    examples:
+      - 22/12
+      - 15/09
+
+
+
+
+
+
+
+schema_1:
+  - name: usuario
+    type: str
+    title: Usuário
+    description: Nome do usuário que escreveu o texto
+    examples:
+      - João
+      - Maria
+
+  - name: comentario
+    type: str
+    title: Comentário
+    description: Texto do comentário
+    examples:
+      - Gostei muito!
+      - Não recomendo
+
+  - name: likes
+    type: int
+    title: Curtidas
+    description: Quantidade de likes
+    examples:
+      - 5
+      - 12
+
+  - name: sentimento
+    type: bool
+    title: Foi bom ou ruim?
+    description: Diga se o comentário é positivo ou negativo
+    examples:
+      - true
+      - false
+
+
+
+schema_2:
+  - name: usuario
+    type: object
+    title: Usuário
+    description: Dados do usuário que escreveu o texto
+    properties:
+      - name: nome
+        type: str
+        title: Nome
+        description: Primeiro nome do usuário
+        examples:
+          - João
+          - Maria
+
+      - name: sobrenome
+        type: str
+        title: Sobrenome
+        description: Sobrenome do usuário
+        examples:
+          - Silva
+          - Souza
+
+  - name: comentario
+    type: str
+    title: Comentário
+    description: Texto do comentário
+    examples:
+      - Gostei muito!
+      - Não recomendo
+
+  - name: likes
+    type: int
+    title: Curtidas
+    description: Quantidade de likes
+    examples:
+      - 5
+      - 12
+
+  - name: sentimento
+    type: bool
+    title: Foi bom ou ruim?
+    description: Indica se o comentário é positivo (true) ou negativo (false)
+    examples:
+      - true
+      - false
+
+
+
+schema_3:
+  - name: pontos_positivos
+    type: str
+    title: Pontos Positivos
+    description: >
+      Liste até 3 aspectos positivos que tornam o vídeo bom ou atraente.
+      Pode incluir criatividade, clareza, engajamento, duração adequada,
+      interação com o público, estética, entre outros.
+    examples:
+      - "Criatividade na apresentação; vídeo curto e dinâmico; boa interação com o público."
+
+  - name: pontos_negativos
+    type: str
+    title: Pontos Negativos
+    description: >
+      Liste até 3 aspectos que podem dificultar a compreensão ou reduzir a qualidade do vídeo.
+      Pode incluir áudio ruim, iluminação fraca, efeitos visuais excessivos,
+      cortes confusos, entre outros.
+    examples:
+      - "Áudio um pouco abafado; iluminação irregular; cortes rápidos que podem confundir."
+
+
+
+
+schema_4:
+  - name: titulo_do_video
+    type: str
+    title: Título do vídeo
+    description: Gere um título que mais se encaixa de acordo com o vídeo
+    examples:
+      - "Sobremesa Rápida para Festas: Delícias em Minutos! 🍰🎉"
+      - "Unboxing do novo iPhone 17 Pro"
+
+  - name: resumo_do_video
+    type: str
+    title: Resumo do Vídeo
+    description: >
+      Explique de forma simples o que acontece no vídeo.
+      Inclua a ação principal do criador e o objetivo do vídeo.
+    examples:
+      - "O criador ensina a fazer uma sobremesa rápida usando ingredientes simples, ideal para festas de aniversário."
+
+  - name: pontos_positivos
+    type: str
+    title: Pontos Positivos
+    description: >
+      Liste até 3 aspectos positivos que tornam o vídeo bom ou atraente.
+      Pode incluir criatividade, clareza, engajamento, duração adequada,
+      interação com o público, estética, entre outros.
+    examples:
+      - "Criatividade na apresentação; vídeo curto e dinâmico; boa interação com o público."
+
+  - name: pontos_negativos
+    type: str
+    title: Pontos Negativos
+    description: >
+      Liste até 3 aspectos que podem dificultar a compreensão ou reduzir a qualidade do vídeo.
+      Pode incluir áudio ruim, iluminação fraca, efeitos visuais excessivos,
+      cortes confusos, entre outros.
+    examples:
+      - "Áudio um pouco abafado; iluminação irregular; cortes rápidos que podem confundir."
+
+  - name: marcas_mencionadas
+    type: str
+    title: Marcas Mencionadas
+    description: Indique marcas mostradas ou mencionadas no vídeo, se houver.
+    examples:
+      - "Nike (tênis usado pelo criador); Apple (iPhone usado para filmar)."
+
+  - name: produtos_mencionados
+    type: str
+    title: Produtos Mencionados
+    description: Liste produtos usados ou destacados no vídeo, com a marca se possível.
+    examples:
+      - "Bolo de Chocolate da marca 'Doce Vida'; iPhone 14 Pro Max usado para filmar."
+
+  - name: explicacao_geral_do_video
+    type: str
+    title: Explicação Geral do Vídeo
+    description: >
+      Descreva detalhadamente o conteúdo e o objetivo do vídeo,
+      explicando o passo a passo do que é mostrado ou ensinado.
+    examples:
+      - "O vídeo mostra passo a passo como preparar uma sobremesa rápida, desde a separação dos ingredientes até a finalização."
+
+  - name: ambiente_do_video
+    type: str
+    title: Ambiente Onde o Vídeo Foi Gravado
+    description: Explique o local do vídeo e o cenário geral em que ele acontece.
+    examples:
+      - "Cozinha moderna e bem iluminada, com utensílios visíveis e decoração simples."
+
+  - name: cenario_principal
+    type: str
+    title: Cenário Principal do Vídeo
+    description: Foque na área ou objeto principal onde a ação do vídeo acontece.
+    examples:
+      - "Bancada da cozinha, onde o criador prepara a receita; cortes para a mesa decorada."
+
+  - name: expressao_facial
+    type: str
+    title: Expressão Facial das Pessoas
+    description: >
+      Descreva as emoções e reações faciais do criador ou participantes ao longo do vídeo.
+    examples:
+      - "Expressão sorridente e animada; demonstra satisfação ao finalizar a receita."
+
+  - name: tom_de_voz
+    type: str
+    title: Tom de Voz das Pessoas
+    description: Informe como o criador se comunica com o público durante o vídeo.
+    examples:
+      - "Tom informal, entusiasmado e amigável, transmitindo proximidade."
+
+  - name: musica_trilha_sonora
+    type: str
+    title: Músicas e Trilha Sonora
+    description: >
+      Identifique músicas ou sons de fundo e explique o efeito deles no vídeo.
+    examples:
+      - "Música pop animada ao fundo, criando um clima leve e descontraído."
+
+  - name: emojis_apresentados
+    type: str
+    title: Emojis Apresentados no Vídeo
+    description: >
+      Liste os emojis utilizados e explique o momento ou efeito que eles destacam.
+    examples:
+      - "🍰🎉🤩 usados para destacar o resultado final e momentos de entusiasmo."
+
+  - name: legendas_utilizadas
+    type: str
+    title: Legendas Utilizadas
+    description: >
+      Explique se há legendas, como são apresentadas e se ajudam na compreensão do conteúdo.
+    examples:
+      - "Legendas claras e objetivas, com fonte grande, destacando cada etapa da receita."
+
+  - name: apelo_emocional
+    type: str
+    title: Apelo Emocional
+    description: >
+      Explique quais sentimentos ou sensações o vídeo desperta no público.
+    examples:
+      - "Sensação de alegria e inspiração, incentivando o público a testar a receita."
+
+  - name: identificacao_de_tendencias
+    type: str
+    title: Identificação de Tendências
+    description: >
+      Analise tendências emergentes, compare com conteúdos anteriores
+      e cite influenciadores ou criadores que reforçam esse tipo de conteúdo.
+    examples:
+      - >
+        Receitas rápidas e práticas estão em alta; vídeo mais dinâmico que versões anteriores;
+        tendência reforçada por criadores populares de culinária nas redes sociais.
+
+schema_5:
+  - name: marca_mencionada
+    type: str
+    title: Marca Mencionada
+    description: Indique marcas mostradas ou mencionadas no vídeo, se houver.
+    examples:
+      - "Nike (tênis usado pelo criador); Apple (iPhone usado para filmar)."
+
+  - name: marca_mencionada
+    type: object
+    title: Marca
+    description: Dados da marca mencionada no vídeo
+    properties:
+      - name: nome
+        type: str
+        title: Nome
+        description: Nome da marca mencionada
+        examples:
+          - Apple
+          - Lego
+
+      - name: setor_de_atuacao
+        type: str
+        title: Setor de atuação
+        description: Setor de atuação da marca mencionada
+        examples:
+          - Tecnologia
+          - Brinquedos
+
+      - name: numero_de_mencoes
+        type: int
+        title: Menções no vídeo
+        description: Quantas vezes a marca foi mencionada no vídeo
+        examples:
+          - 2
+          - 5
+
+      - name: contexto_da_mencao
+        type: str
+        title: Contexto da menção
+        description: Descreva o contexto em que a marca foi mencionada no vídeo
+        examples:
+          - "O criador elogia a qualidade do produto."
+          - "A marca é usada como exemplo de inovação."
+
+      - name: mencoes
+        type: list
+        title: Mencoes
+        description: Lista de menções da marca no vídeo
+        items:
+          type: object
+          properties:
+            - name: trecho
+              type: str
+              title: Trecho do vídeo
+              description: Trecho específico do vídeo onde a marca é mencionada
+              examples:
+                - "Eu adoro usar meu iPhone da Apple para tudo."
+                - "A Lego sempre traz brinquedos criativos."
+            - name: timestamp
+              type: str
+              title: Timestamp
+              description: Momento exato no vídeo em que a marca é mencionada
+              examples:
+                - "00:02:15"
+                - "00:05:30"
+
+
+schema_6:
+  - name: titolo
+    type: str
+    title: Títolo da notícia
+    description: Títolo principal da notícia
+    examples:
+      - "Governo anuncia novas medidas econômicas"
+      - "Descoberta científica revoluciona tratamento de doenças"
+
+  - name: descricao
+    type: str
+    title: Descrição da notícia
+    description: Resumo breve do conteúdo da notícia
+    examples:
+      - "O governo implementou uma série de medidas para estimular a economia nacional."
+      - "Cientistas desenvolveram uma nova técnica que promete melhorar significativamente o tratamento de várias doenças."
+
+  - name: informacoes_chave
+    type: list
+    title: Informações chave
+    description: Lista de pontos importantes abordados na notícia
+    items:
+      type: str
+    examples:
+      - "Medidas incluem redução de impostos e incentivos para pequenas empresas."
+      - "Nova técnica utiliza nanotecnologia para direcionar medicamentos diretamente às células afetadas."
+
+
+schema_7:
+  - name: reviewerID
+    type: str
+    title: Id da review
+    description: Identificador único do revisor
+    examples:
+      - "A1234567890"
+      - "B0987654321"
+
+  - name: sentiment_label
+    type: str
+    title: Rótulo de sentimento
+    description: Classificação geral do sentimento do texto
+    examples:
+      - "positivo"
+      - "negativo"
+      - "neutro"
+      - "misto"
+
+  - name: sentiment_score
+    type: float
+    title: Score de sentimento
+    description: Pontuação numérica do sentimento geral (normalizada entre -1 e 1 ou 0 e 1)
+    examples:
+      - 0.82
+      - -0.35
+      - 0.05
+
+  - name: sentiment_intensity
+    type: str
+    title: Intensidade do sentimento
+    description: Grau de intensidade emocional percebida no texto
+    examples:
+      - "baixa"
+      - "média"
+      - "alta"
+
+  - name: emotion_scores
+    type: dict
+    title: Pontuação das emoções
+    description: Distribuição das emoções identificadas no texto
+    additionalProperties:
+      type: float
+    examples:
+      - joy: 0.85
+        frustration: 0.10
+        anger: 0.05
+      - sadness: 0.60
+        anger: 0.25
+        fear: 0.15
+
+  - name: aspect_sentiment
+    type: dict
+    title: Sentimento por aspecto
+    description: Avaliação de sentimento associada a aspectos específicos do produto ou serviço
+    additionalProperties:
+      type: str
+    examples:
+      - design: "positivo"
+        adhesion: "positivo"
+        battery: "negativo"
+        delivery: "neutro"
+
+  - name: mixed_sentiment
+    type: bool
+    title: Sentimento misto
+    description: Indica se o texto apresenta sentimentos positivos e negativos simultaneamente
+    examples:
+      - true
+      - false
+
+  - name: product_strengths
+    type: list
+    title: Pontos fortes do produto
+    description: Lista de aspectos consistentemente avaliados de forma positiva
+    items:
+      type: str
+    examples:
+      - "design"
+      - "qualidade"
+      - "adesão"
+
+  - name: product_weaknesses
+    type: list
+    title: Pontos fracos do produto
+    description: Lista de aspectos consistentemente avaliados de forma negativa
+    items:
+      type: str
+    examples:
+      - "bateria"
+      - "durabilidade"
+      - "desempenho"
+
+  - name: key_words
+    type: list
+    title: Palavras-chave
+    description: Lista de termos relevantes extraídos do texto analisado
+    items:
+      type: str
+    examples:
+      - "design"
+      - "bateria fraca"
+      - "boa aderência"
+      - "entrega rápida"
+
+
+
+
+schema_8:
+  - name: reviewerID
+    type: str
+    title: Id da review
+    description: Identificador único do revisor
+    examples:
+      - "A1234567890"
+      - "B0987654321"
+
+  - name: sentiment_label
+    type: str
+    title: Rótulo de sentimento
+    description: Classificação geral do sentimento do texto
+    examples:
+      - "positivo"
+      - "negativo"
+      - "neutro"
+      - "misto"
+
+  - name: product_strengths
+    type: list
+    title: Pontos fortes do produto
+    description: Lista de aspectos consistentemente avaliados de forma positiva. Só pode ser um desses ["qualidade", "preço", "outros" (especifique qual)]
+    items:
+      type: str
+    examples:
+      - "qualidade"
+      - "preço"
+      - "outros"
+
+  - name: product_weaknesses
+    type: list
+    title: Pontos fracos do produto
+    description: Lista de aspectos consistentemente avaliados de forma negativa. Só pode ser um desses ["preço_alto", "baixa_qualidade", "outros" (especifique qual)]
+    items:
+      type: str
+    examples:
+      - "preço_alto"
+      - "baixa_qualidade"
+      - "outros"
+
+
+schema_9:
+  - name: titolo
+    type: str
+    title: Titolo
+    description: Titolo della pubblicazione
+    examples:
+      - "Una svolta per l'energia rinnovabile"
+
+  - name: descrizione
+    type: str
+    title: Descrizione
+    description: Descrizione della pubblicazione, il testo che accompagna il titolo
+    examples:
+      - "Scienziati italiani sviluppano una nuova tecnologia per migliorare l'efficienza delle energie rinnovabili."
+
+  - name: categoria
+    type: str
+    title: Categoria
+    description: Categoria della pubblicazione
+    examples:
+      - "SCIENZA"
+      - "VIAGGI"
+
+  - name: parole_chiave
+    type: list
+    title: Parole Chiave
+    description: Elenco delle parole chiave rilevanti estratte dalla pubblicazione
+    items:
+      type: str
+    examples:
+      - "energia_rinnovabile" 
+      - "tecnologia"
+      - "scienziati_italiani"
+
+  - name: tag
+    type: list
+    title: Tag
+    description: Elenco dei tag rilevanti estratti dalla pubblicazione. Devono esseci almeno 10 tag, poiché serviranno per categorizzare meglio il contenuto. In oltre, i tag devono iniziare con il simbolo '#'.
+    items:
+      type: str
+    examples:
+      - "#energia_rinnovabile"
+      - "#scienza"
+      - "#tecnologia"
+
