@@ -3,6 +3,7 @@ from io import BytesIO
 from fastapi import UploadFile
 import yaml
 import json
+from src.embedding.tokens_calculator.dollar_rates import DollarRateService
 
 # ==============================
 # Embedding Module
@@ -48,21 +49,28 @@ schema = [
   }
 ]
 
+text = "text"
+
 payload = {
     "client_id": "client_123",
     "job_id": "test_job_001",
     "metadata": None,
-    "schema": schema
+    "schema": schema,
+    "scraper": text
 }
-
-
 
 
 
 class TextParserModule:
     def __init__(self, payload: dict, file: UploadFile):
         self.payload = payload
-        self.file = file
+        self.metadata = payload.get("metadata", {})
+        self.schema = payload.get("schema", {})
+
+        if payload.get("scraper", ""):
+            self.scraper = payload.get("scraper", "")
+        else:
+            self.file = file
 
     async def execute(self) -> dict:
         # 1. Load file
@@ -88,39 +96,6 @@ class TextParserModule:
             ]
         }
 
-        # Costo
-        cost_informations = {
-            "llm_model": {
-                "name": "gpt-4o-mini",
-                "input_rate_per_1k_tokens_usd": 0.001,
-                "output_rate_per_1k_tokens_usd": 0.004
-            },
-
-            "tokens": {
-                "input_tokens": 1500,
-                "output_tokens": 500,
-                "total_tokens": 2000
-            },
-            
-            "cost": {
-                "usd": {
-                    "input_cost_usd": "0.001500",
-                    "output_cost_usd": "0.000500",
-                    "total_cost_usd": "0.002000"
-                }
-            },
-
-            "rates": {
-                "EUR": 0.85,
-                "BRL": 4.50
-            }
-        }
-
-
-
-
-
-
         """
         # Salvar resultado em JSON
         with open(f"src/text_classifier/output_{file_name.replace(f'.{file_extension}', '')}.json", "w", encoding="utf-8") as f:
@@ -133,6 +108,29 @@ class TextParserModule:
 
         end_time = time.time()
         print(f"Tempo de execução: {end_time - start_time:.2f} segundos")
+    
+    async def scraper_execute(self) -> dict:
+        scraper = self.payload.get("scraper", "")
+
+        extractor = GenericTextExtractor(self.payload["schema"])
+        #result = extractor.extract(scraper)
+
+        result = {
+            "titolo": "Governo anuncia novas medidas econômicas",
+            "descricao": "O governo implementou uma série de medidas para estimular a economia nacional.",
+            "informacoes_chave": [
+                "Medidas incluem redução de impostos e incentivos para pequenas empresas.",
+                "Foco em inovação tecnológica e sustentabilidade."
+            ]
+        }
+
+        service = DollarRateService()
+
+        rate = service.get_rate("EUR")
+
+        rate = service.get_rate("BRL")
+
+        return result
 
 
 
