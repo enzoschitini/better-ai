@@ -284,9 +284,6 @@ async def text_parse(
     - payload: JSON string (schema, client_id, job_id, etc.)
     - file: file da analizzare (txt, pdf, ecc.)
     """
-    import time
-
-    start_time = time.time()
 
     # Parse payload JSON
     try:
@@ -306,11 +303,8 @@ async def text_parse(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-    end_time = time.time()
-
     return {
-        "result": result,
-        "execution_time_seconds": round(end_time - start_time, 2)
+        "result": result
     }
 
 
