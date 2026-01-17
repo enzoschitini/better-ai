@@ -420,7 +420,7 @@ def edit_GAIS3_multi(image_paths):
 
     return response
 
-#"""
+"""
 edit_GAIS3_multi([
     "src/image_generation/imgs/base/gen1.png",
     "src/image_generation/imgs/base/gen2.png"
@@ -449,7 +449,7 @@ def edit_GAIS4_multi(base_image_path, reference_image_paths):
             A PRIMEIRA imagem é a IMAGEM BASE.
             As imagens seguintes são apenas REFERÊNCIAS.
 
-            Modifique a imagem base adicionado o estilo das imagens de referencia
+            Modifique toda a imagem base criando uma versão com o estilo das imagens de referencia
             """
         )
     ]
@@ -541,11 +541,11 @@ def edit_GAIS4_multi(base_image_path, reference_image_paths):
 
     return response
 
-#"""
+"""
 edit_GAIS4_multi(
     base_image_path="src/image_generation/imgs/base/gen1.png",
     reference_image_paths=[
-        "src/image_generation/imgs/base/gen3.png"
+        "src/image_generation/imgs/base/gen3.png",
         "src/image_generation/imgs/base/gen4.png"
     ]
 )
