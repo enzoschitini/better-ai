@@ -194,7 +194,18 @@ def edit_GAIS():
 
 
 
+
+
+############################################################
+# GOOGLE AI STUDIO - MIGLIORATE
+############################################################
+
+
+
+
+# ----------------------------------------------------------
 # Fornendo immagini:
+# ----------------------------------------------------------
 
 def edit_GAIS2(image_path):
     client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
@@ -255,6 +266,11 @@ def edit_GAIS2(image_path):
 #edit_GAIS2("src/image_generation/imgs/base/gen1.png")
 
 
+
+# ----------------------------------------------------------
+# Fornendo diverse immagini:
+# ----------------------------------------------------------
+
 def edit_GAIS2_multi(image_paths):
     client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
@@ -314,8 +330,98 @@ def edit_GAIS2_multi(image_paths):
 
                 print(f"🖼️ Imagem salva: {file_name}")
 
-#"""
+"""
 edit_GAIS2_multi([
+    "src/image_generation/imgs/base/gen1.png",
+    "src/image_generation/imgs/base/gen2.png"
+])
+#"""
+
+
+
+
+# ----------------------------------------------------------
+# Recupero dei dati di consumo:
+# ----------------------------------------------------------
+
+def edit_GAIS3_multi(image_paths):
+    client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+
+    parts = [
+        types.Part.from_text(
+            text="Analise as imagens e substitua o quadro pela Mona Lisa"
+        )
+    ]
+
+    for path in image_paths:
+        with open(path, "rb") as f:
+            image_bytes = f.read()
+
+        mime_type, _ = mimetypes.guess_type(path)
+
+        parts.append(
+            types.Part.from_bytes(
+                data=image_bytes,
+                mime_type=mime_type
+            )
+        )
+
+    contents = [
+        types.Content(
+            role="user",
+            parts=parts
+        )
+    ]
+
+    config = types.GenerateContentConfig(
+        temperature=0.75,
+        response_modalities=["IMAGE", "TEXT"],
+        image_config=types.ImageConfig(aspect_ratio="9:16"),
+    )
+
+    # 🔹 CHAMADA SEM STREAM
+    response = client.models.generate_content(
+        model="gemini-2.5-flash-image",
+        contents=contents,
+        config=config,
+    )
+
+    # --------------------
+    # TEXTO + IMAGEM
+    # --------------------
+    image_index = 0
+
+    if response.candidates:
+        for part in response.candidates[0].content.parts:
+
+            # TEXTO
+            if part.text:
+                print("TEXTO:", part.text)
+
+            # IMAGEM
+            if part.inline_data:
+                ext = mimetypes.guess_extension(part.inline_data.mime_type)
+                file_name = f"output_{image_index}{ext}"
+                image_index += 1
+
+                with open(file_name, "wb") as f:
+                    f.write(part.inline_data.data)
+
+                print(f"🖼️ Imagem salva: {file_name}")
+
+    # --------------------
+    # METADATA DE CONSUMO
+    # --------------------
+    if response.usage_metadata:
+        print("\n📊 USO DE TOKENS:")
+        print("Prompt tokens:", response.usage_metadata.prompt_token_count)
+        print("Resposta tokens:", response.usage_metadata.candidates_token_count)
+        print("Total tokens:", response.usage_metadata.total_token_count)
+
+    return response
+
+#"""
+edit_GAIS3_multi([
     "src/image_generation/imgs/base/gen1.png",
     "src/image_generation/imgs/base/gen2.png"
 ])
