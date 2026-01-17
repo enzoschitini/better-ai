@@ -209,7 +209,7 @@ def edit_GAIS2(image_path):
             role="user",
             parts=[
                 types.Part.from_text(
-                    text="Analise esta imagem e gere uma versão estilizada em cartoon"
+                    text="Analise esta imagem e gere duas versões estilizadas em cartoon"
                 ),
                 types.Part.from_bytes(
                     data=image_bytes,
@@ -252,8 +252,71 @@ def edit_GAIS2(image_path):
 
                 print(f"🖼️ Imagem salva: {file_name}")
 
-edit_GAIS2("src/image_generation/imgs/base/gen1.png")
+#edit_GAIS2("src/image_generation/imgs/base/gen1.png")
 
 
+def edit_GAIS2_multi(image_paths):
+    client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
+    parts = [
+        types.Part.from_text(
+            text="Analise as imagens e subistitua o quadro pela monalisa"
+        )
+    ]
 
+    for path in image_paths:
+        with open(path, "rb") as f:
+            image_bytes = f.read()
+
+        mime_type, _ = mimetypes.guess_type(path)
+
+        parts.append(
+            types.Part.from_bytes(
+                data=image_bytes,
+                mime_type=mime_type
+            )
+        )
+
+    contents = [
+        types.Content(
+            role="user",
+            parts=parts
+        )
+    ]
+
+    config = types.GenerateContentConfig(
+        temperature=0.75,
+        response_modalities=["IMAGE", "TEXT"],
+        image_config=types.ImageConfig(aspect_ratio="9:16"),
+    )
+
+    image_index = 0
+
+    for chunk in client.models.generate_content_stream(
+        model="gemini-2.5-flash-image",
+        contents=contents,
+        config=config,
+    ):
+        if not chunk.candidates:
+            continue
+
+        for part in chunk.candidates[0].content.parts:
+            if part.text:
+                print("TEXTO:", part.text)
+
+            if part.inline_data:
+                ext = mimetypes.guess_extension(part.inline_data.mime_type)
+                file_name = f"output_{image_index}{ext}"
+                image_index += 1
+
+                with open(file_name, "wb") as f:
+                    f.write(part.inline_data.data)
+
+                print(f"🖼️ Imagem salva: {file_name}")
+
+#"""
+edit_GAIS2_multi([
+    "src/image_generation/imgs/base/gen1.png",
+    "src/image_generation/imgs/base/gen2.png"
+])
+#"""
