@@ -120,7 +120,13 @@ def generate_GAIS():
         generated_image.image.save(f"generated_image_{n}.jpg")
 
 
-
+"""
+| Modelo   | Resolução | Custo por imagem |
+| -------- | --------- | ---------------- |
+| imagen-4 | 1K        | ~$0.02           |
+| imagen-4 | 2K        | ~$0.04           |
+| imagen-4 | 4K        | ~$0.08           |
+"""
 
 
 
