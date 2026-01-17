@@ -119,6 +119,7 @@ def generate_GAIS():
     for n, generated_image in enumerate(result.generated_images):
         generated_image.image.save(f"generated_image_{n}.jpg")
 
+#generate_GAIS()
 
 """
 | Modelo   | Resolução | Custo por imagem |
