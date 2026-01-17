@@ -426,3 +426,127 @@ edit_GAIS3_multi([
     "src/image_generation/imgs/base/gen2.png"
 ])
 #"""
+
+
+
+
+
+
+
+# ----------------------------------------------------------
+# RAGGRUPPAMENTO DELLE IMMAGINI (BASE E RIFERIMENTI):
+# ----------------------------------------------------------
+
+def edit_GAIS4_multi(base_image_path, reference_image_paths):
+    client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+
+    # --------------------
+    # PROMPT SEMÂNTICO CLARO
+    # --------------------
+    parts = [
+        types.Part.from_text(
+            text="""
+            A PRIMEIRA imagem é a IMAGEM BASE.
+            As imagens seguintes são apenas REFERÊNCIAS.
+
+            Modifique a imagem base adicionado o estilo das imagens de referencia
+            """
+        )
+    ]
+
+    # --------------------
+    # IMAGEM BASE
+    # --------------------
+    with open(base_image_path, "rb") as f:
+        base_bytes = f.read()
+
+    base_mime, _ = mimetypes.guess_type(base_image_path)
+
+    parts.append(
+        types.Part.from_bytes(
+            data=base_bytes,
+            mime_type=base_mime
+        )
+    )
+
+    # --------------------
+    # IMAGENS DE REFERÊNCIA
+    # --------------------
+    for path in reference_image_paths:
+        with open(path, "rb") as f:
+            ref_bytes = f.read()
+
+        ref_mime, _ = mimetypes.guess_type(path)
+
+        parts.append(
+            types.Part.from_bytes(
+                data=ref_bytes,
+                mime_type=ref_mime
+            )
+        )
+
+    contents = [
+        types.Content(
+            role="user",
+            parts=parts
+        )
+    ]
+
+    config = types.GenerateContentConfig(
+        temperature=0.75,
+        response_modalities=["IMAGE", "TEXT"],
+        image_config=types.ImageConfig(aspect_ratio="9:16"),
+    )
+
+    # --------------------
+    # CHAMADA SEM STREAM
+    # --------------------
+    response = client.models.generate_content(
+        model="gemini-2.5-flash-image",
+        contents=contents,
+        config=config,
+    )
+
+    # --------------------
+    # TEXTO + IMAGEM
+    # --------------------
+    image_index = 0
+
+    if response.candidates:
+        for part in response.candidates[0].content.parts:
+
+            # TEXTO
+            if part.text:
+                print("TEXTO:", part.text)
+
+            # IMAGEM
+            if part.inline_data:
+                ext = mimetypes.guess_extension(part.inline_data.mime_type)
+                file_name = f"output_{image_index}{ext}"
+                image_index += 1
+
+                with open(file_name, "wb") as f:
+                    f.write(part.inline_data.data)
+
+                print(f"🖼️ Imagem salva: {file_name}")
+
+    # --------------------
+    # METADATA DE CONSUMO
+    # --------------------
+    if response.usage_metadata:
+        print("\n📊 USO DE TOKENS:")
+        print("Prompt tokens:", response.usage_metadata.prompt_token_count)
+        print("Resposta tokens:", response.usage_metadata.candidates_token_count)
+        print("Total tokens:", response.usage_metadata.total_token_count)
+
+    return response
+
+#"""
+edit_GAIS4_multi(
+    base_image_path="src/image_generation/imgs/base/gen1.png",
+    reference_image_paths=[
+        "src/image_generation/imgs/base/gen3.png"
+        "src/image_generation/imgs/base/gen4.png"
+    ]
+)
+#"""
