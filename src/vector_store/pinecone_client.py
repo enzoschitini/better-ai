@@ -35,7 +35,7 @@ class PineconeClient:
             )
 
         # Prioridade: parâmetro > variável de ambiente
-        self.index_name = index_name or os.getenv("INDEX_NAME_PINECONE")
+        self.index_name = index_name or os.getenv("PINECONE_INDEX_NAME")
         self.namespace = namespace or os.getenv("KNOWLEDGE_BASE_PINECONE")
         self.embedding_model = (
             embedding_model
@@ -43,9 +43,9 @@ class PineconeClient:
         )
 
         if not self.index_name:
-            logger.error("index_name não informado nem encontrado na variável de ambiente INDEX_NAME_PINECONE.")
+            logger.error("index_name não informado nem encontrado na variável de ambiente PINECONE_INDEX_NAME.")
             raise ValueError(
-                "index_name não informado nem encontrado na variável de ambiente INDEX_NAME_PINECONE."
+                "index_name não informado nem encontrado na variável de ambiente PINECONE_INDEX_NAME."
             )
 
         self._init_pinecone()
