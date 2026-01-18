@@ -102,3 +102,120 @@ class PineconeRetriever:
             raise RuntimeError("Failed to process search results.") from e
 
         return documents
+
+
+
+
+
+
+
+
+
+
+    def get_by_target(
+        self,
+        batch_size: int = 100,
+        dimension: int = 3072,
+        
+        target_key: str = "file_id",
+        target_value: str = None
+
+    ) -> List[Dict[str, Any]]:
+
+        if not target_value:
+            raise ValueError("target_value cannot be empty.")
+
+        if batch_size <= 0:
+            raise ValueError("batch_size must be greater than zero.")
+
+        dummy_vector = [0.0] * dimension
+
+        results: List[Dict[str, Any]] = []
+        pagination_token: Optional[str] = None
+
+        try:
+            while True:
+                response = self.index.query(
+                    vector=dummy_vector,
+                    namespace=self.namespace,
+                    top_k=batch_size,
+                    include_metadata=True,
+                    include_values=False,
+                    filter={
+                        target_key: {"$eq": target_value}
+                    },
+                    pagination_token=pagination_token,
+                )
+
+                for match in response.get("matches", []):
+                    results.append(
+                        {
+                            "id": match["id"],
+                            "metadata": match.get("metadata", {}),
+                            "score": match.get("score"),
+                        }
+                    )
+
+                pagination_token = (
+                    response.get("pagination", {}) or {}
+                ).get("next")
+
+                if not pagination_token:
+                    break
+
+        except Exception as e:
+            logger.exception(
+                "Failed to retrieve vectors for target_value=%s", target_value
+            )
+            raise RuntimeError(
+                "Failed to retrieve vectors by target_value."
+            ) from e
+
+        return results
+
+
+
+
+
+import json
+
+client = PineconeClient(
+    namespace="betterai-embeddings-dev",
+    embedding_model="text-embedding-3-large"
+)
+
+retriever = PineconeRetriever(client)
+
+vectors = retriever.get_by_target(
+    target_value="21d75dca2eec7b02080327f40220e20dxx2"
+)
+
+print(len(vectors))
+
+#print(f"\n\n{json.dumps(vectors, indent=4)}\n\n")
+
+# python -m src.vector_store.pinecone_retriever
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
