@@ -1,13 +1,17 @@
 import os
-from dotenv import load_dotenv
 from datetime import datetime, timezone
+from typing import List, Dict, Optional
 
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.schema import Document
+from langchain.embeddings import OpenAIEmbeddings
+
+from langchain_pinecone import PineconeVectorStore
 from pinecone import Pinecone
 
-from langchain_openai import OpenAIEmbeddings
-from langchain_pinecone import PineconeVectorStore
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_core.documents import Document
+from src.vector_store.pinecone_client import PineconeClient
+
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -33,238 +37,365 @@ class PineconeClient:
         )
 
 
-class PineconeVectorService:
-    """
-    Service responsável por:
-    - transformar texto em chunks
-    - gerar embeddings
-    - salvar nos dois namespaces
-    """
-    def __init__(self, vector_client: PineconeClient, embedding_model_name: str = None, dimensions: int = None):
-        self.client = vector_client
 
-        self.embeddings_model = OpenAIEmbeddings(
-            model=embedding_model_name or os.getenv("KNOWLEDGE_BASE_EMBEDDINGS_MODEL", "text-embedding-3-small")
-        )
 
-        self.dimensions = dimensions or 1536
 
-        # Vector store para o namespace global
-        self.global_vectordb = self.client.create_vector_store(
-            embeddings_model=self.embeddings_model,
-            namespace=self.client.global_namespace
-        )
 
-        # Vector store para o namespace principal (base de conhecimento)
-        self.main_vectordb = self.client.create_vector_store(
-            embeddings_model=self.embeddings_model,
-            namespace=self.client.main_namespace
-        )
 
-    # ----------------- Helpers ------------------
 
-    @staticmethod
-    def split_text(text: str, chunk_size: int = 3000, chunk_overlap: int = 300):
-        """Divide texto em chunks."""
-        splitter = RecursiveCharacterTextSplitter(
+# ============================================================
+# ===================== TEXT CHUNKING ========================
+# ============================================================
+
+class TextChunker:
+    """Responsável apenas por dividir texto em chunks."""
+
+    def __init__(self, chunk_size: int = 3000, chunk_overlap: int = 300):
+        self.splitter = RecursiveCharacterTextSplitter(
             chunk_size=chunk_size,
             chunk_overlap=chunk_overlap,
             separators=["\n\n", "\n", ".", " "]
         )
-        return splitter.split_text(text)
+
+    def split(self, text: str) -> List[str]:
+        return self.splitter.split_text(text)
+
+
+# ============================================================
+# ==================== DOCUMENT FACTORY ======================
+# ============================================================
+
+class DocumentFactory:
+    """Cria objetos Document a partir de chunks."""
 
     @staticmethod
-    def build_documents(chunks: list[str], metadata: dict):
-        """Cria objetos Document a partir dos chunks."""
-        return [Document(page_content=chunk, metadata={**metadata}) for chunk in chunks]
+    def from_chunks(chunks: List[str], metadata: Dict) -> List[Document]:
+        return [
+            Document(page_content=chunk, metadata=dict(metadata))
+            for chunk in chunks
+        ]
 
-    def delete_documents(self, target_feature: str, target_id: str, namespace: str):
-        """Remove embeddings de um namespace específico."""
+
+# ============================================================
+# ================== PINECONE REPOSITORY =====================
+# ============================================================
+
+class PineconeRepository:
+    """
+    Camada de infraestrutura.
+    Responsável apenas por interagir com o Pinecone.
+    """
+
+    def __init__(self, client, embeddings, dimensions: int):
+        self.client = client
+        self.embeddings = embeddings
+        self.dimensions = dimensions
+
+    def vector_store(self, namespace: str):
+        return self.client.create_vector_store(
+            embeddings_model=self.embeddings,
+            namespace=namespace
+        )
+
+    def delete_by_metadata(
+        self,
+        feature: str,
+        value: str,
+        namespace: str
+    ) -> int:
         results = self.client.index.query(
             vector=[0.0] * self.dimensions,
             namespace=namespace,
-            filter={target_feature: {"$eq": target_id}},
+            filter={feature: {"$eq": value}},
             top_k=10000,
         )
 
-        ids_to_delete = [match["id"] for match in results.get("matches", [])]
+        ids = [match["id"] for match in results.get("matches", [])]
 
-        if ids_to_delete:
-            batch_size = 1000
-            for i in range(0, len(ids_to_delete), batch_size):
-                batch = ids_to_delete[i:i + batch_size]
-                self.client.index.delete(ids=batch, namespace=namespace)
+        for i in range(0, len(ids), 1000):
+            self.client.index.delete(
+                ids=ids[i:i + 1000],
+                namespace=namespace
+            )
 
-            return {
-                "deleted_vectors": len(ids_to_delete),
-                "message": f"✅ {len(ids_to_delete)} vetores apagados de `{namespace}`"
-            }
-
-        return f"Nenhum vetor encontrado em `{namespace}`"
-    
-    # ----------------- Similarity Search ------------------
-
-    def document_search(self, query: str, k: int = 3, namespace: str = None, filter: dict = None):
-        """
-        Busca documentos no Pinecone usando similarity_search.
-
-        Args:
-            query (str): Texto a ser buscado.
-            k (int): Quantidade de resultados.
-            namespace (str): Namespace onde será feita a consulta.
-                             Se None, usa o namespace principal (embeddings da KB).
-            filter (dict): Filtro opcional, exemplo:
-                           {"file_id": {"$eq": "<id_do_arquivo>"}}
-
-        Returns:
-            list[Document]: documentos encontrados com page_content + metadata
-        """
-
-        # Usa o namespace adequado (KB ou global)
-        selected_namespace = namespace or self.client.main_namespace
-
-        # Cria um vectorstore específico para busca (com filtro opcional)
-        vectordb = self.client.create_vector_store(
-            embeddings_model=self.embeddings_model,
-            namespace=selected_namespace
-        )
-
-        # Realiza a busca por similaridade usando embeddings
-        search_results = vectordb.similarity_search(
-            query=query,
-            k=k,
-            filter=filter  # <-- filtro aplicado
-        )
-
-        results = {}
-
-        for result in search_results:
-            insert = {
-                "metadata": result.metadata,
-                "page_content": result.page_content
-            }
-            
-            results[result.id] = insert
-
-        return results
+        return len(ids)
 
 
-    # ----------------- Embeddings ------------------
+# ============================================================
+# ================= VECTOR INGESTION SERVICE =================
+# ============================================================
 
-    def generate_vectors(self, text: str, metadata: dict, save_global: bool = False, batch_size: int = 100):
-        """
-        Salva embeddings no namespace principal (KB).
-        Se save_global=True, também salva no namespace global.
-        """
+class VectorIngestionService:
+    """
+    Orquestra:
+    - chunking
+    - criação de documentos
+    - persistência no Pinecone
+    """
 
-        dt_utc = datetime.now(timezone.utc).replace(microsecond=0, tzinfo=None)
-        metadata["created_at"] = str(dt_utc)
-        
-        chunks = self.split_text(text)
-        documents = self.build_documents(chunks, metadata)
+    def __init__(
+        self,
+        repository: PineconeRepository,
+        chunker: TextChunker,
+        document_factory: DocumentFactory,
+        main_namespace: str,
+        global_namespace: str,
+    ):
+        self.repo = repository
+        self.chunker = chunker
+        self.document_factory = document_factory
+        self.main_namespace = main_namespace
+        self.global_namespace = global_namespace
 
-        # Trava de segurança
+    def ingest(
+        self,
+        text: str,
+        metadata: Dict,
+        save_global: bool = False,
+        batch_size: int = 100
+    ) -> Dict:
+
         if batch_size > 100:
             batch_size = 100
 
-        all_ids = []
+        dt_utc = datetime.now(timezone.utc).replace(microsecond=0, tzinfo=None)
+        metadata["created_at"] = str(dt_utc)
+
+        chunks = self.chunker.split(text)
+        documents = self.document_factory.from_chunks(chunks, metadata)
+
+        main_store = self.repo.vector_store(self.main_namespace)
+        global_store = self.repo.vector_store(self.global_namespace)
+
+        saved_ids = []
         batch_number = 0
 
-        for i in range(0, len(documents), batch_size):
-            batch_docs = documents[i : i + batch_size]
-            batch_number += 1
+        try:
+            for i in range(0, len(documents), batch_size):
+                batch_number += 1
+                batch_docs = documents[i:i + batch_size]
 
-            """
-            # Test
-            for doc in batch_docs:
-                print(f"len: {len(doc.page_content)}") 
-                print(f"chunk: {doc.page_content[:80]}...")
-            """
-
-            try:
-                print("Sending batch_docs to Pinecone...")
-                #if batch_number == 3:
-                    #raise Exception("Erro forçado após 3 execuções do loop")
-
-                # Sempre salva no namespace principal
-                ids = self.main_vectordb.add_documents(batch_docs)
-                all_ids.extend(ids)
-
-                # Opcional: salva também no namespace global
-                if save_global:
-                    self.global_vectordb.add_documents(batch_docs)
-
-            except Exception as error:
-                self.delete_documents("file_id", metadata.get("file_id"), self.client.main_namespace)
-                self.delete_documents("file_id", metadata.get("file_id"), self.client.global_namespace)
-                
-                """
-                print(f"Erro no batch {batch_number}: {error}")
-                #print(self.delete_documents("file_id", metadata.get("file_id"), self.client.main_namespace))
+                ids = main_store.add_documents(batch_docs)
+                saved_ids.extend(ids)
 
                 if save_global:
-                    print(self.delete_documents("file_id", metadata.get("file_id"), self.client.global_namespace))
-                """
+                    global_store.add_documents(batch_docs)
 
-                response = {
-                    "status": "error",
-                    "message": "Erro ao salvar embeddings no Pinecone.",
-                    "error": str(error),
-                    "saved_ids": all_ids,
-                    "namespace_main": self.client.main_namespace,
-                    "namespace_global": self.client.global_namespace if save_global else None,
-                    "batch": batch_number
-                }
+        except Exception as error:
+            # rollback defensivo
+            self.repo.delete_by_metadata(
+                "file_id",
+                metadata.get("file_id"),
+                self.main_namespace
+            )
 
-                return response
+            if save_global:
+                self.repo.delete_by_metadata(
+                    "file_id",
+                    metadata.get("file_id"),
+                    self.global_namespace
+                )
 
-        response = {
-            "status": "success",
-            "message": "Embeddings salvos com sucesso no Pinecone.",
-            "embedding_informations": {
-                "namespace_main": self.client.main_namespace,
-                "namespace_global": self.client.global_namespace if save_global else None,
-                "batch_count": batch_number,
-                "chunks_ids": all_ids
+            return {
+                "status": "error",
+                "message": "Erro ao salvar embeddings no Pinecone.",
+                "error": str(error),
+                "saved_ids": saved_ids,
+                "batch": batch_number
             }
+
+        return {
+            "status": "success",
+            "message": "Embeddings salvos com sucesso.",
+            "chunks": len(documents),
+            "batches": batch_number,
+            "ids": saved_ids,
+            "namespace_main": self.main_namespace,
+            "namespace_global": self.global_namespace if save_global else None
         }
+
+
+# ============================================================
+# ================= VECTOR SEARCH SERVICE ====================
+# ============================================================
+
+class VectorSearchService:
+    """Responsável apenas por buscas de similaridade."""
+
+    def __init__(
+        self,
+        repository: PineconeRepository,
+        namespace: str
+    ):
+        self.repo = repository
+        self.namespace = namespace
+
+    def search(
+        self,
+        query: str,
+        k: int = 3,
+        filter: Optional[Dict] = None
+    ) -> Dict:
+
+        store = self.repo.vector_store(self.namespace)
+
+        results = store.similarity_search(
+            query=query,
+            k=k,
+            filter=filter
+        )
+
+        response = {}
+
+        for doc in results:
+            response[doc.id] = {
+                "page_content": doc.page_content,
+                "metadata": doc.metadata
+            }
 
         return response
 
 
+# ============================================================
+# ===================== MAIN FACADE ==========================
+# ============================================================
+
+class PineconeVectorService:
+    """
+    Facade pública.
+    Mantém compatibilidade com sua implementação atual.
+    """
+
+    def __init__(
+        self,
+        vector_client,
+        embedding_model_name: Optional[str] = None,
+        dimensions: Optional[int] = None,
+    ):
+        self.client = vector_client
+
+        self.embeddings = OpenAIEmbeddings(
+            model=embedding_model_name
+            or os.getenv(
+                "KNOWLEDGE_BASE_EMBEDDINGS_MODEL",
+                "text-embedding-3-small"
+            )
+        )
+
+        self.dimensions = dimensions or 1536
+
+        self.repository = PineconeRepository(
+            client=self.client,
+            embeddings=self.embeddings,
+            dimensions=self.dimensions
+        )
+
+        self.chunker = TextChunker()
+        self.document_factory = DocumentFactory()
+
+        self.ingestion_service = VectorIngestionService(
+            repository=self.repository,
+            chunker=self.chunker,
+            document_factory=self.document_factory,
+            main_namespace=self.client.main_namespace,
+            global_namespace=self.client.global_namespace
+        )
+
+    # ----------------- API pública -----------------
+
+    def generate_vectors(
+        self,
+        text: str,
+        metadata: Dict,
+        save_global: bool = False,
+        batch_size: int = 100
+    ):
+        return self.ingestion_service.ingest(
+            text=text,
+            metadata=metadata,
+            save_global=save_global,
+            batch_size=batch_size
+        )
+
+    def document_search(
+        self,
+        query: str,
+        k: int = 3,
+        namespace: Optional[str] = None,
+        filter: Optional[Dict] = None
+    ):
+        search_service = VectorSearchService(
+            repository=self.repository,
+            namespace=namespace or self.client.main_namespace
+        )
+
+        return search_service.search(
+            query=query,
+            k=k,
+            filter=filter
+        )
+
+    def delete_documents(
+        self,
+        target_feature: str,
+        target_id: str,
+        namespace: str
+    ):
+        deleted = self.repository.delete_by_metadata(
+            feature=target_feature,
+            value=target_id,
+            namespace=namespace
+        )
+
+        if deleted:
+            return {
+                "deleted_vectors": deleted,
+                "message": f"✅ {deleted} vetores apagados de `{namespace}`"
+            }
+
+        return f"Nenhum vetor encontrado em `{namespace}`"
 
 
-def embedding_test():
-    pine_client = PineconeClient(index_name="backai-vectorstore", namespace="test_namespace", global_namespace="global_namespace")
-    pine_service = PineconeVectorService(pine_client, embedding_model_name="text-embedding-3-large", dimensions=3072)
 
-    embedding_content = """
-Embeddings are vector representations of data (such as text, documents, or images) that capture their semantic meaning in a numerical space.
-This technique allows for the comparison of content by similarity, enabling semantic searches, classification, recommendation, and information retrieval.
-By transforming unstructured data into vectors, embeddings make it possible to efficiently index and query large volumes of information in vector databases.
+
+
+
+pinecone_client = PineconeClient(index_name="backai-vectorstore", namespace="test_namespace", global_namespace="global_namespace")
+
+vector_service = PineconeVectorService(
+    vector_client=pinecone_client,  # seu client já existente
+    # embedding_model_name="text-embedding-3-small",  # opcional
+    # dimensions=1536                                 # opcional
+)
+
+text = """
+Python é uma linguagem de programação de alto nível,
+muito usada em ciência de dados, automação e IA.
 """
 
-    embedding_metadata = {"user_id": "user_1234567", "source": "embedding_test.py"}
+metadata = {
+    "file_id": "doc_001",
+    "source": "manual_python",
+    "type": "knowledge_base"
+}
 
-    response = pine_service.generate_vectors(
-        text=str(embedding_content),
-        metadata=embedding_metadata,
-        save_global=False,
-        batch_size=200
-    )
+response = vector_service.generate_vectors(
+    text=text,
+    metadata=metadata,
+    save_global=False,   # salva também no namespace global
+    batch_size=50
+)
 
-    print("✅ Vectors generated and saved to Pinecone:", response)
+print(response)
 
-def delete_test():
-    pine_client = PineconeClient(index_name="backai-vectorstore", namespace="test_namespace", global_namespace="global_namespace")
-    pine_service = PineconeVectorService(pine_client, embedding_model_name="text-embedding-3-large", dimensions=3072)
 
-    delete = pine_service.delete_documents("source", "embedding_test.py", "test_namespace")
-    print(f"\n{delete}\n")
 
-    return delete
 
-#print(embedding_test())
-#print(delete_test())
 
-# python -m src.embedding.services.pinecone_vector_store
+
+
+
+
+
+
+# python -m src.vector_store.pinecone_vector_store

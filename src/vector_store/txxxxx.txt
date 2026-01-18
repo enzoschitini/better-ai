@@ -1,0 +1,32 @@
+def embedding_test():
+    pine_client = PineconeClient(index_name="backai-vectorstore", namespace="test_namespace", global_namespace="global_namespace")
+    pine_service = PineconeVectorService(pine_client, embedding_model_name="text-embedding-3-large", dimensions=3072)
+
+    embedding_content = """
+Embeddings are vector representations of data (such as text, documents, or images) that capture their semantic meaning in a numerical space.
+This technique allows for the comparison of content by similarity, enabling semantic searches, classification, recommendation, and information retrieval.
+By transforming unstructured data into vectors, embeddings make it possible to efficiently index and query large volumes of information in vector databases.
+"""
+
+    embedding_metadata = {"user_id": "user_1234567", "source": "embedding_test.py"}
+
+    response = pine_service.generate_vectors(
+        text=str(embedding_content),
+        metadata=embedding_metadata,
+        save_global=False,
+        batch_size=200
+    )
+
+    print("✅ Vectors generated and saved to Pinecone:", response)
+
+def delete_test():
+    pine_client = PineconeClient(index_name="backai-vectorstore", namespace="test_namespace", global_namespace="global_namespace")
+    pine_service = PineconeVectorService(pine_client, embedding_model_name="text-embedding-3-large", dimensions=3072)
+
+    delete = pine_service.delete_documents("source", "embedding_test.py", "test_namespace")
+    print(f"\n{delete}\n")
+
+    return delete
+
+#print(embedding_test())
+#print(delete_test())
