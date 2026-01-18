@@ -9,31 +9,107 @@ from langchain.embeddings import OpenAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
 from pinecone import Pinecone
 
-from src.vector_store.pinecone_client import PineconeClient
 
 from dotenv import load_dotenv
 
 load_dotenv()
 
+
+import os
+import logging
+from typing import Optional
+
+from dotenv import load_dotenv
+from langchain_openai import OpenAIEmbeddings
+import pinecone
+
+from langchain_pinecone import PineconeVectorStore
+
+load_dotenv()
+
+logger = logging.getLogger(__name__)
+
+
 class PineconeClient:
     """
-    Responsável apenas por criar conexão com o Pinecone e manter o Index.
+    Responsável apenas por:
+    - carregar credenciais
+    - inicializar Pinecone
+    - expor namespaces
+    - criar VectorStores
     """
-    def __init__(self, index_name: str = None, namespace: str = None, global_namespace: str = None):
-        self.index_name = index_name or os.getenv("INDEX_NAME_PINECONE")
-        self.main_namespace = namespace or os.getenv("KNOWLEDGE_BASE_PINECONE")
-        self.global_namespace = global_namespace or os.getenv("PINECONE_GLOBAL_NAMESPACE")
 
-        self.pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
+    def __init__(
+        self,
+        index_name: Optional[str] = None,
+        main_namespace: Optional[str] = None,
+        global_namespace: Optional[str] = None,
+        embedding_model: Optional[str] = None,
+    ):
+        # ---------- Credenciais ----------
+        self.openai_key = os.getenv("OPENAI_API_KEY")
+        self.pinecone_key = os.getenv("PINECONE_API_KEY")
+
+        if not self.openai_key or not self.pinecone_key:
+            raise EnvironmentError(
+                "OPENAI_API_KEY ou PINECONE_API_KEY não encontrados."
+            )
+
+        # ---------- Configurações ----------
+        self.index_name = index_name or os.getenv("PINECONE_INDEX_NAME")
+        if not self.index_name:
+            raise ValueError(
+                "index_name não informado nem definido em PINECONE_INDEX_NAME."
+            )
+
+        self.main_namespace = (
+            main_namespace or os.getenv("KNOWLEDGE_BASE_PINECONE", "default")
+        )
+
+        self.global_namespace = (
+            global_namespace
+            or os.getenv("KNOWLEDGE_BASE_GLOBAL_PINECONE", "global")
+        )
+
+        self.embedding_model_name = (
+            embedding_model
+            or os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small")
+        )
+
+        # ---------- Inicializações ----------
+        self._init_pinecone()
+        self._init_embeddings()
+
+    # ======================================================
+    # Internals
+    # ======================================================
+
+    def _init_pinecone(self) -> None:
+        self.pc = pinecone.Pinecone(api_key=self.pinecone_key)
         self.index = self.pc.Index(self.index_name)
 
-    def create_vector_store(self, embeddings_model, namespace) -> PineconeVectorStore:
-        """Factory method: cada VectorStore é criado com um namespace específico."""
+    def _init_embeddings(self) -> None:
+        self.embeddings = OpenAIEmbeddings(
+            model=self.embedding_model_name
+        )
+
+    # ======================================================
+    # Public API
+    # ======================================================
+
+    def create_vector_store(
+        self,
+        namespace: Optional[str] = None,
+        embeddings=None,
+    ) -> PineconeVectorStore:
+        """
+        Cria um VectorStore no namespace desejado.
+        """
         return PineconeVectorStore(
             index=self.index,
-            embedding=embeddings_model,
+            embedding=embeddings or self.embeddings,
             text_key="text",
-            namespace=namespace
+            namespace=namespace or self.main_namespace,
         )
 
 
@@ -93,7 +169,7 @@ class PineconeRepository:
 
     def vector_store(self, namespace: str):
         return self.client.create_vector_store(
-            embeddings_model=self.embeddings,
+            embeddings=self.embeddings,
             namespace=namespace
         )
 
@@ -215,46 +291,6 @@ class VectorIngestionService:
         }
 
 
-# ============================================================
-# ================= VECTOR SEARCH SERVICE ====================
-# ============================================================
-
-class VectorSearchService:
-    """Responsável apenas por buscas de similaridade."""
-
-    def __init__(
-        self,
-        repository: PineconeRepository,
-        namespace: str
-    ):
-        self.repo = repository
-        self.namespace = namespace
-
-    def search(
-        self,
-        query: str,
-        k: int = 3,
-        filter: Optional[Dict] = None
-    ) -> Dict:
-
-        store = self.repo.vector_store(self.namespace)
-
-        results = store.similarity_search(
-            query=query,
-            k=k,
-            filter=filter
-        )
-
-        response = {}
-
-        for doc in results:
-            response[doc.id] = {
-                "page_content": doc.page_content,
-                "metadata": doc.metadata
-            }
-
-        return response
-
 
 # ============================================================
 # ===================== MAIN FACADE ==========================
@@ -317,24 +353,6 @@ class PineconeVectorService:
             batch_size=batch_size
         )
 
-    def document_search(
-        self,
-        query: str,
-        k: int = 3,
-        namespace: Optional[str] = None,
-        filter: Optional[Dict] = None
-    ):
-        search_service = VectorSearchService(
-            repository=self.repository,
-            namespace=namespace or self.client.main_namespace
-        )
-
-        return search_service.search(
-            query=query,
-            k=k,
-            filter=filter
-        )
-
     def delete_documents(
         self,
         target_feature: str,
@@ -360,12 +378,12 @@ class PineconeVectorService:
 
 
 
-pinecone_client = PineconeClient(index_name="backai-vectorstore", namespace="test_namespace", global_namespace="global_namespace")
+pinecone_client = PineconeClient(index_name="backai-vectorstore", main_namespace="test_namespace")
 
 vector_service = PineconeVectorService(
     vector_client=pinecone_client,  # seu client já existente
-    # embedding_model_name="text-embedding-3-small",  # opcional
-    # dimensions=1536                                 # opcional
+    embedding_model_name="text-embedding-3-large",  # opcional
+    dimensions=3072                                 # opcional
 )
 
 text = """

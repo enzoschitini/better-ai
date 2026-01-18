@@ -6,9 +6,12 @@ from dotenv import load_dotenv
 from langchain_openai import OpenAIEmbeddings
 import pinecone
 
+from langchain_pinecone import PineconeVectorStore
+
 load_dotenv()
 
 logger = logging.getLogger(__name__)
+
 
 class PineconeClient:
     """
@@ -59,3 +62,21 @@ class PineconeClient:
     def _init_embeddings(self, model_name: str) -> None:
         """Inicializa o modelo de embeddings."""
         self.embeddings = OpenAIEmbeddings(model=model_name)
+
+    def create_vector_store(
+        self,
+        embeddings_model=None,
+        namespace=None
+    ) -> PineconeVectorStore:
+        """Factory method: cria um VectorStore com namespace específico."""
+
+        embeddings_model = embeddings_model or self.embedding_model
+        namespace = namespace or self.namespace
+
+        return PineconeVectorStore(
+            index=self.index,
+            embedding=embeddings_model,
+            text_key="text",
+            namespace=namespace
+        )
+

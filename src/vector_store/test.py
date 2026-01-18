@@ -34,7 +34,7 @@ def test_similarity_search():
     for item in results:
         print(json.dumps(item, indent=4, ensure_ascii=False))
 
-
+test_similarity_search()
 
 def test_get_all_docs_by_metadata():
     vectors = retriever.get_all_docs_by_metadata(
