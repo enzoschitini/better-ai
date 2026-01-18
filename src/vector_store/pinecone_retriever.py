@@ -1,5 +1,5 @@
 import logging
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Union
 
 from src.vector_store.pinecone_client import PineconeClient
 
@@ -104,22 +104,12 @@ class PineconeRetriever:
         return documents
 
 
-
-
-
-
-
-
-
-
     def get_by_target(
         self,
         batch_size: int = 100,
         dimension: int = 3072,
-        
         target_key: str = "file_id",
-        target_value: str = None
-
+        target_value: Union[str, List[str]] = None,
     ) -> List[Dict[str, Any]]:
 
         if not target_value:
@@ -129,6 +119,16 @@ class PineconeRetriever:
             raise ValueError("batch_size must be greater than zero.")
 
         dummy_vector = [0.0] * dimension
+
+        # 🔑 Montagem correta do filtro
+        if isinstance(target_value, list):
+            filter_query = {
+                target_key: {"$in": target_value}
+            }
+        else:
+            filter_query = {
+                target_key: {"$eq": target_value}
+            }
 
         results: List[Dict[str, Any]] = []
         pagination_token: Optional[str] = None
@@ -141,9 +141,7 @@ class PineconeRetriever:
                     top_k=batch_size,
                     include_metadata=True,
                     include_values=False,
-                    filter={
-                        target_key: {"$eq": target_value}
-                    },
+                    filter=filter_query,
                     pagination_token=pagination_token,
                 )
 
@@ -165,10 +163,12 @@ class PineconeRetriever:
 
         except Exception as e:
             logger.exception(
-                "Failed to retrieve vectors for target_value=%s", target_value
+                "Failed to retrieve vectors for %s=%s",
+                target_key,
+                target_value,
             )
             raise RuntimeError(
-                "Failed to retrieve vectors by target_value."
+                "Failed to retrieve vectors by target."
             ) from e
 
         return results
@@ -187,7 +187,7 @@ client = PineconeClient(
 retriever = PineconeRetriever(client)
 
 vectors = retriever.get_by_target(
-    target_value="21d75dca2eec7b02080327f40220e20dxx2"
+    target_value=["xxxxxx", "21d75dca2eec7b02080327f40220e20dxx2"]
 )
 
 print(len(vectors))
