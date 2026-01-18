@@ -87,14 +87,6 @@ class PineconeClient:
     # Public API
     # ======================================================
 
-    def get_embeddings(self, model_name: Optional[str] = None) -> OpenAIEmbeddings:
-        """
-        Retorna embeddings (permite override do modelo).
-        """
-        if model_name:
-            return OpenAIEmbeddings(model=model_name)
-        return self.embeddings
-
     def get_namespace(self, namespace: Optional[str] = None) -> str:
         """
         Resolve namespace padrão.
@@ -114,22 +106,4 @@ class PineconeClient:
             embedding=embeddings or self.embeddings,
             text_key="text",
             namespace=self.get_namespace(namespace),
-        )
-
-    def create_retriever(
-        self,
-        namespace: Optional[str] = None,
-        search_kwargs: Optional[dict] = None,
-        embeddings: Optional[OpenAIEmbeddings] = None,
-    ):
-        """
-        Cria um Retriever pronto para RAG.
-        """
-        vectorstore = self.create_vector_store(
-            namespace=namespace,
-            embeddings=embeddings,
-        )
-
-        return vectorstore.as_retriever(
-            search_kwargs=search_kwargs or {"k": 4}
         )

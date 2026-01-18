@@ -282,6 +282,7 @@ class PineconeVectorService:
 pinecone_client = PineconeClient(
     index_name="backai-vectorstore",
     main_namespace="test_namespace",
+    global_namespace="vvvvvv"
 )
 
 vector_service = PineconeVectorService(
@@ -304,7 +305,7 @@ metadata = {
 response = vector_service.generate_vectors(
     text=text,
     metadata=metadata,
-    save_global=False,   # salva também no namespace global
+    save_global=True,   # salva também no namespace global
     batch_size=50
 )
 
