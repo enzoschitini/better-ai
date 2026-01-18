@@ -1,43 +1,40 @@
-# https://github.com/enzoschitini/Asimov-Academy/tree/main/Google%20Ai/Nano%20Banana/doc
 from google import genai
 from google.genai import types
-from PIL import Image
-from io import BytesIO
 import mimetypes
 import os
-
 from dotenv import load_dotenv
 
 load_dotenv()
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-def edit_GAIS4_multi(base_image_paths: list, reference_image_paths=None):
+
+def edit_GAIS4_multi(
+    base_image_paths: list,
+    reference_image_paths: list | None = None
+) -> dict:
     client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
     # --------------------
-    # PROMPT SEMÂNTICO CLARO
+    # PROMPT
     # --------------------
     parts = [
         types.Part.from_text(
-            text="""
-Gere uma imagem seguindo o estilo dessas
-"""
+            text="Gere uma imagem seguindo o estilo dessas"
         )
     ]
 
     # --------------------
-    # IMAGEM BASE
+    # IMAGENS BASE
     # --------------------
     for path in base_image_paths:
         with open(path, "rb") as f:
-            base_bytes = f.read()
+            image_bytes = f.read()
 
-        base_mime, _ = mimetypes.guess_type(path)
+        mime_type, _ = mimetypes.guess_type(path)
 
         parts.append(
             types.Part.from_bytes(
-                data=base_bytes,
-                mime_type=base_mime
+                data=image_bytes,
+                mime_type=mime_type
             )
         )
 
@@ -47,14 +44,14 @@ Gere uma imagem seguindo o estilo dessas
     if reference_image_paths:
         for path in reference_image_paths:
             with open(path, "rb") as f:
-                ref_bytes = f.read()
+                image_bytes = f.read()
 
-            ref_mime, _ = mimetypes.guess_type(path)
+            mime_type, _ = mimetypes.guess_type(path)
 
             parts.append(
                 types.Part.from_bytes(
-                    data=ref_bytes,
-                    mime_type=ref_mime
+                    data=image_bytes,
+                    mime_type=mime_type
                 )
             )
 
@@ -69,75 +66,90 @@ Gere uma imagem seguindo o estilo dessas
         temperature=0.75,
         top_p=0.85,
         max_output_tokens=1024,
-        stop_sequences=[
-            """1""",
-            """3""",
-        ],
-        response_modalities=[
-            "IMAGE",
-            "TEXT",
-        ],
-        system_instruction=[
-            types.Part.from_text(text="""
-
-"""),
-        ],
+        response_modalities=["IMAGE", "TEXT"],
         image_config=types.ImageConfig(
-            aspect_ratio="9:16",
-        ),
+            aspect_ratio="9:16"
+        )
     )
 
     # --------------------
-    # CHAMADA SEM STREAM
+    # CHAMADA AO MODELO
     # --------------------
     response = client.models.generate_content(
         model="gemini-2.5-flash-image",
         contents=contents,
-        config=config,
+        config=config
     )
 
     # --------------------
-    # TEXTO + IMAGEM
+    # PARSE DA RESPOSTA
     # --------------------
-    image_index = 0
+    text_response = None
+    images = []
 
     if response.candidates:
         for part in response.candidates[0].content.parts:
 
-            # TEXTO
             if part.text:
-                print("TEXTO:", part.text)
+                text_response = part.text
 
-            # IMAGEM
             if part.inline_data:
-                ext = mimetypes.guess_extension(part.inline_data.mime_type)
-                file_name = f"output_{image_index}{ext}"
-                image_index += 1
-
-                with open(file_name, "wb") as f:
-                    f.write(part.inline_data.data)
-
-                print(f"🖼️ Imagem salva: {file_name}")
+                images.append({
+                    "mime_type": part.inline_data.mime_type,
+                    "data": part.inline_data.data  # bytes puros
+                })
 
     # --------------------
-    # METADATA DE CONSUMO
+    # METADATA DE USO
     # --------------------
+    usage_metadata = None
+
     if response.usage_metadata:
-        print("\n📊 USO DE TOKENS:")
-        print("Prompt tokens:", response.usage_metadata.prompt_token_count)
-        print("Resposta tokens:", response.usage_metadata.candidates_token_count)
-        print("Total tokens:", response.usage_metadata.total_token_count)
+        usage_metadata = {
+            "prompt_tokens": response.usage_metadata.prompt_token_count,
+            "output_tokens": response.usage_metadata.candidates_token_count,
+            "total_tokens": response.usage_metadata.total_token_count
+        }
 
-    return response
+    # --------------------
+    # JSON FINAL
+    # --------------------
+    return {
+        "text_response": text_response,
+        "images": images,
+        "usage_metadata": usage_metadata
+    }
 
 
-edit_GAIS4_multi(
+import mimetypes
+
+response = edit_GAIS4_multi(
     base_image_paths=[
         "src/image_generation/imgs/base/gen3.png",
         "src/image_generation/imgs/base/gen4.png"
     ]
-
 )
+
+# Pasta de saída (opcional)
+output_dir = "outputs"
+os.makedirs(output_dir, exist_ok=True)
+
+for idx, image in enumerate(response["images"]):
+    mime_type = image["mime_type"]
+    image_bytes = image["data"]
+
+    # Descobre extensão pelo mime_type
+    ext = mimetypes.guess_extension(mime_type) or ".png"
+
+    file_path = os.path.join(output_dir, f"output_{idx}{ext}")
+
+    with open(file_path, "wb") as f:
+        f.write(image_bytes)
+
+    print(f"🖼️ Imagem salva em: {file_path}")
+
+
+
 
 """
 edit_GAIS4_multi(
@@ -150,4 +162,15 @@ edit_GAIS4_multi(
         "src/image_generation/imgs/base/gen4.png"
     ]
 )
+
+
+response = {
+    "text_response": "Claro, aqui está a imagem solicitada.",
+    "images": [#Lista com as imagens]
+    "usage_metadata": {
+        "prompt_tokens": 100,
+        "output_tokens": 100,
+        "total_tokens": 200
+    }
+}
 #"""
