@@ -61,7 +61,7 @@ class PineconeRetriever:
         self.embeddings = client.embeddings
 
         # Namespace padrão para isolamento lógico dos vetores
-        self.namespace = client.namespace
+        self.namespace = client.main_namespace
 
 
 

@@ -4,7 +4,7 @@ from src.vector_store.pinecone_client import PineconeClient
 from src.vector_store.pinecone_retriever import PineconeRetriever
 
 client = PineconeClient(
-    namespace="betterai-embeddings-dev",
+    main_namespace="betterai-embeddings-dev",
     embedding_model="text-embedding-3-large"
 )
 
