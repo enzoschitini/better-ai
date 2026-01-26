@@ -22,8 +22,8 @@ from src.embedding.embedding_module import EmbeddingModule
 from src.image_generation.google_genai import ImageGenerationService
 from src.text_parse.text_parse_module import TextParserModule
 
-from src.deep_recearch.tavily_recearch.tavily_core import TavilyDeepResearch
-from src.deep_recearch.tavily_recearch.context_builder import TavilyContextBuilder, TavilyResearchRunner
+from src.deep_research.tavily_research.tavily_core import TavilyDeepResearch
+from src.deep_research.tavily_research.context_builder import TavilyContextBuilder, TavilyResearchRunner
 
 
 # ================================================

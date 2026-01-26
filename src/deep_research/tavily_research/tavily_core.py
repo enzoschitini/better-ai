@@ -1,10 +1,5 @@
-import os
-from dotenv import load_dotenv
-
 from typing import List, Dict, Any, List
 from tavily import TavilyClient
-
-load_dotenv()
 
 class TavilyDeepResearch:
     """

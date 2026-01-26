@@ -1,10 +1,7 @@
-
 import os
 from typing import Dict, Any, List, Optional, Dict, Any
 
-from src.deep_recearch.tavily_recearch.tavily_core import TavilyDeepResearch
-
-# python -m src.deep_recearch.tavily_recearch.context_builder
+from src.deep_research.tavily_research.tavily_core import TavilyDeepResearch
 
 class TavilyContextBuilder:
     def __init__(
@@ -172,3 +169,5 @@ if __name__ == "__main__":
     )
 
     print(markdown_context)
+
+    # python -m src.deep_recearch.tavily_recearch.context_builder
