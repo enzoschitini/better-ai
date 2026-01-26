@@ -82,8 +82,6 @@ class TavilyContextBuilder:
         return self.to_markdown(filtered_result)
 
 
-
-
 class TavilyResearchRunner:
     def __init__(
         self,
