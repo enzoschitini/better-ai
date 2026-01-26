@@ -22,6 +22,10 @@ from src.embedding.embedding_module import EmbeddingModule
 from src.image_generation.google_genai import ImageGenerationService
 from src.text_parse.text_parse_module import TextParserModule
 
+from src.deep_research.tavily_research.tavily_core import TavilyDeepResearch
+from src.deep_research.tavily_research.context_builder import TavilyContextBuilder, TavilyResearchRunner
+
+
 # ================================================
 # API SETTINGS
 # ================================================
@@ -272,6 +276,10 @@ def generate_image(data: GenerateRequest) -> GenerateResponse:
 
 
 
+# ========================
+# Context Parser
+# ========================
+
 @app.post("/parse-content", dependencies=[Depends(Authorization.multikey)],
           summary="Parse and extract structured content from files using schema")
 async def text_parse(
@@ -308,11 +316,51 @@ async def text_parse(
     }
 
 
+# ========================
+# Deep Research Context
+# ========================
+
+class ContextBuilderRequest(BaseModel):
+    query: str
+    search_depth: str = "advanced"
+    max_results: int = 35
+    topic: str = "general"
+    include_answer: bool = True
+    min_score: float = 0.5
 
 
+@app.post("/deep-research/context-builder")
+def context_builder(payload: ContextBuilderRequest):
+    try:
+        researcher = TavilyDeepResearch(
+            api_key=os.getenv("TAVILY_API_KEY")
+        )
 
+        builder = TavilyContextBuilder(
+            researcher=researcher,
+            min_score=payload.min_score
+        )
 
+        runner = TavilyResearchRunner(builder)
 
+        markdown_context = runner.run(
+            query=payload.query,
+            search_depth=payload.search_depth,
+            max_results=payload.max_results,
+            topic=payload.topic,
+            include_answer=payload.include_answer
+        )
+
+        return {
+            "query": payload.query,
+            "result": markdown_context
+        }
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
 
 
 
