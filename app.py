@@ -352,6 +352,7 @@ def context_builder(payload: ContextBuilderRequest):
         )
 
         return {
+            "status": 200,
             "query": payload.query,
             "result": markdown_context
         }
