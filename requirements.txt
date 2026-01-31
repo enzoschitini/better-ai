@@ -43,3 +43,7 @@ wikipedia~=1.4.0
 
 # --- 8. INTERNAL SERVICES ---
 pytest~=9.0.2
+
+# --- 9. DEEP RECEARCH ---
+tavily~=1.1.0
+tavily-python~=0.7.19
