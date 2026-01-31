@@ -329,7 +329,8 @@ class ContextBuilderRequest(BaseModel):
     min_score: float = 0.5
 
 
-@app.post("/deep-research/context-builder")
+@app.post("/deep-research/context-builder", dependencies=[Depends(Authorization.multikey)],
+          summary="Builds context for deep research using TavilyDeepResearch.")
 def context_builder(payload: ContextBuilderRequest):
     try:
         researcher = TavilyDeepResearch(
