@@ -52,6 +52,46 @@ def generate_images(
 | imagen-4 | 1K        | ~$0.02           |
 | imagen-4 | 2K        | ~$0.04           |
 | imagen-4 | 4K        | ~$0.08           |
+
+# Gemini (Multimodal com imagem)
+
+gemini-3-pro-preview
+gemini-3-flash-preview
+gemini-3-pro-image-preview
+
+gemini-2.5-flash-image
+gemini-2.5-pro-image-preview
+gemini-2.0-pro-vision
+gemini-1.5-pro-vision-latest
+gemini-1.5-flash-vision-latest
+
+# Imagen 3.x
+imagen-3.0-generate-001
+imagen-3.0-generate-002
+imagen-3.0-fast-generate-001
+imagen-3.0-capability-001
+imagen-3.0-edit-001
+imagen-3.0-inpaint-001
+imagen-3.0-outpaint-001
+
+# Imagen 4.x
+imagen-4.0-generate-001
+imagen-4.0-fast-generate-001
+imagen-4.0-ultra-generate-001
+imagen-4.0-edit-preview
+imagen-4.0-inpaint-preview
+imagen-4.0-outpaint-preview
+
+# Modelos especiais (imagem aplicada)
+virtual-try-on-001
+virtual-try-on-preview
+imagen-4.0-upscale-preview
+imagen-4.0-upscale-001
+imagen-product-recontext-preview-06-30
+imagen-product-recontext-001
+imagen-background-replace-preview
+imagen-style-transfer-preview
+
 """
 
 def test():
@@ -63,7 +103,7 @@ def test():
     human presence.
     """
 
-    images = generate_images(prompt, number_of_images=2)
+    images = generate_images(prompt, number_of_images=1)
 
     for i, img in enumerate(images):
         img.save(f"generated_image_{i}.jpg")
