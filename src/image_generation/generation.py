@@ -251,9 +251,7 @@ class ImageRepository:
 # USAGE EXAMPLE
 # =========================
 
-client_manager = GeminiClient()
-client = client_manager.get_client()
-
+client = GeminiClient().get_client()
 validator = ImageParamsValidator(IMAGE_MODELS_CATALOG)
 generator = ImageGenerator(client, validator)
 repository = ImageRepository(base_path="storage/images")
