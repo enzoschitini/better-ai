@@ -24,6 +24,8 @@ paths = repository.save_repository(images)
 
 print(paths)
 
+# https://raw.githubusercontent.com/enzoschitini/better-ai/refs/heads/feature/SCRUM-78/storage/futuristic_city_20260204_113602_1.jpg?token=GHSAT0AAAAAADKHQUHFU522URHVHH2EFATC2MJ63FQ
+
 # A cinematic photo of a futuristic city at night
 
 # python -m src.image_generation.application

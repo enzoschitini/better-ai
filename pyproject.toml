@@ -43,4 +43,6 @@ dependencies = [
     "wikipedia~=1.4.0",
     # --- 8. INTERNAL SERVICES ---
     "pytest>=9.0.2",
+    "firebase-admin>=7.1.0",
+    "supabase>=2.27.3",
 ]
