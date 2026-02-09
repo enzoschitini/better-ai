@@ -3,6 +3,7 @@ from typing import List
 from datetime import datetime
 
 from src.image_generation.config import GeneratedImage
+from src.storage.supabase.storage_menager import StorageManager
 
 class ImageRepository:
     def __init__(self, base_path: str = "generated_images"):
@@ -34,3 +35,16 @@ class ImageRepository:
         if mime_type == "image/png":
             return "png"
         raise ValueError(f"Unsupported mime type for persistence: {mime_type}")
+    
+    def upload_to_supabase(self, bucket_name: str, byte_data: bytes) -> str:
+        manager = StorageManager(bucket_name=bucket_name)
+        storage_name = self.base_path # f"StorageManager/{file_name}"
+
+        upload_res = manager.upload_bytes(storage_name, byte_data)
+
+        if upload_res:
+            return manager.get_url(storage_name)
+            
+
+
+

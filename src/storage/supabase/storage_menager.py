@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import List, Optional
 from supabase import create_client, Client
 
 from dotenv import load_dotenv
@@ -19,8 +19,15 @@ class SupabaseConnection:
 
 class StorageManager:
     """Encapsula operações de manipulação de arquivos no Bucket."""
-    def __init__(self, supabase_client: Client, bucket_name: str):
-        self.supabase = supabase_client
+    
+    def __init__(self, bucket_name: str, supabase_client: Optional[Client] = None):
+        # Se o client não for passado, ele instancia o SupabaseConnection 
+        # e extrai o atributo .client automaticamente
+        if supabase_client is None:
+            self.supabase = SupabaseConnection().client
+        else:
+            self.supabase = supabase_client
+            
         self.bucket_name = bucket_name
         self.storage = self.supabase.storage.from_(bucket_name)
 
@@ -49,31 +56,31 @@ class StorageManager:
         """Gera a URL pública de um arquivo."""
         return self.storage.get_public_url(path)
 
+if __name__ == "__main__":
+    # 1. Inicializa a conexão
+    conn = SupabaseConnection()
 
-# 1. Inicializa a conexão
-conn = SupabaseConnection()
+    # 2. Instancia o gerenciador para o bucket específico
+    manager = StorageManager(conn.client, bucket_name="images")
 
-# 2. Instancia o gerenciador para o bucket específico
-manager = StorageManager(conn.client, bucket_name="images")
+    # 3. Exemplo: Upload de um arquivo (simulando bytes)
+    caminho_local = "storage/mappa_20260204_202404_1.jpg"
+    nome_no_storage = f"StorageManager/{os.path.basename(caminho_local)}"
 
-# 3. Exemplo: Upload de um arquivo (simulando bytes)
-caminho_local = "storage/mappa_20260204_202404_1.jpg"
-nome_no_storage = f"StorageManager/{os.path.basename(caminho_local)}"
+    def upload_file_example():
+        """Exemplo de upload usando bytes."""
 
-def upload_file_example():
-    """Exemplo de upload usando bytes."""
+        with open(caminho_local, "rb") as f:
+            byte_data = f.read()
+            upload_res = manager.upload_bytes(nome_no_storage, byte_data)
+            
+        if upload_res:
+            print(f"Upload concluído! URL: {manager.get_url(nome_no_storage)}")
 
-    with open(caminho_local, "rb") as f:
-        byte_data = f.read()
-        upload_res = manager.upload_bytes(nome_no_storage, byte_data)
-        
-    if upload_res:
-        print(f"Upload concluído! URL: {manager.get_url(nome_no_storage)}")
+    def delete_files_example():
+        # 4. Exemplo: Deleção múltipla
+        arquivos_para_deletar = [nome_no_storage, "uploads/antigo_01.jpg"]
+        del_res = manager.delete_files(arquivos_para_deletar)
+        print(f"Status da deleção: {del_res}")
 
-def delete_files_example():
-    # 4. Exemplo: Deleção múltipla
-    arquivos_para_deletar = [nome_no_storage, "uploads/antigo_01.jpg"]
-    del_res = manager.delete_files(arquivos_para_deletar)
-    print(f"Status da deleção: {del_res}")
-
-delete_files_example()
+    delete_files_example()
