@@ -12,20 +12,21 @@ generator = ImageGenerator(client, validator)
 
 images = generator.generate(
     prompt="""
-Crea l'immagine di una città italiana
+Da Vinci style anatomical sketch of a dissected Monarch butterfly. Detailed drawings of the head, wings, and legs on textured parchment with notes in English.
 """,
     model="imagen-4.0-ultra-generate-001",
-    number_of_images=1,
+    number_of_images=3,
     aspect_ratio="9:16",
     image_size="2K",
 )
 
-file_name = uuid.uuid4().hex
-repository = ImageRepository(base_path=f"StorageManager/{file_name}")
-
 #response = repository.save_repository(images)
-response = repository.upload_to_supabase(bucket_name="images", byte_data=images[0].image_bytes)
-print(response)
+for img in images:
+    unique_name = f"{uuid.uuid4().hex}.jpg"
+    repository = ImageRepository(base_path=f"StorageManager/{unique_name}")
+
+    file_url = repository.upload_to_supabase(bucket_name="images", byte_data=img.image_bytes)
+    print(f"Uploaded image URL: {file_url}")
 
 # https://raw.githubusercontent.com/enzoschitini/better-ai/refs/heads/feature/SCRUM-78/storage/futuristic_city_20260204_113602_1.jpg?token=GHSAT0AAAAAADKHQUHFU522URHVHH2EFATC2MJ63FQ
 
