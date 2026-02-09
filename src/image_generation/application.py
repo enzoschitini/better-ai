@@ -8,7 +8,7 @@ from src.image_generation.utils.image_repository import ImageRepository
 client = GeminiClient().get_client()
 validator = ImageParamsValidator()
 generator = ImageGenerator(client, validator)
-repository = ImageRepository(base_path="storage/images")
+repository = ImageRepository(base_path="storage")
 
 images = generator.generate(
     prompt="""
@@ -20,7 +20,7 @@ Da Vinci style anatomical sketch of a dissected Monarch butterfly. Detailed draw
     image_size="2K",
 )
 
-paths = repository.save_repository(images, prefix="mappa")
+paths = repository.save_repository(images)
 
 print(paths)
 
