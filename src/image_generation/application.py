@@ -5,29 +5,8 @@ from src.image_generation.utils.params_validator import ImageParamsValidator
 from src.image_generation.generation import ImageGenerator
 from src.image_generation.utils.image_repository import ImageRepository
 
-IMAGE_MODELS_CATALOG = {
-    "imagen-4.0-generate-001": {
-        "max_output_images_per_prompt": 4,
-        "supported_aspect_ratios": ["1:1", "3:4", "4:3", "9:16", "16:9"],
-        "supported_resolutions": ["1K", "2K"],
-        "mime_types": ["image/png", "image/jpeg"],
-    },
-    "imagen-4.0-fast-generate-001": {
-        "max_output_images_per_prompt": 4,
-        "supported_aspect_ratios": ["1:1", "3:4", "4:3", "9:16", "16:9"],
-        "supported_resolutions": ["1K"],
-        "mime_types": ["image/png", "image/jpeg"],
-    },
-    "imagen-4.0-ultra-generate-001": {
-        "max_output_images_per_prompt": 4,
-        "supported_aspect_ratios": ["1:1", "3:4", "4:3", "9:16", "16:9"],
-        "supported_resolutions": ["1K", "2K"],
-        "mime_types": ["image/png", "image/jpeg"],
-    },
-}
-
 client = GeminiClient().get_client()
-validator = ImageParamsValidator(IMAGE_MODELS_CATALOG)
+validator = ImageParamsValidator()
 generator = ImageGenerator(client, validator)
 repository = ImageRepository(base_path="storage/images")
 
