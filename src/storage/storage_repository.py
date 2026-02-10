@@ -9,7 +9,6 @@ class StorageRepository:
     def __init__(self, base_path: str = None, bucket_name: str = None):
         self.base_path = base_path
         self.bucket_name = bucket_name
-        os.makedirs(self.base_path, exist_ok=True)
 
     def local_repository(self, images: List[GeneratedImage], prefix: str = "image") -> List[str]:
         """

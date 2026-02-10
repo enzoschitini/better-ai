@@ -23,6 +23,7 @@ google-genai~=1.52.0
 # Bancos de dados relacionais, NoSQL e Vetoriais
 pinecone~=7.3.0
 pymongo~=4.15.3
+supabase~=2.27.3
 
 # --- 5. DOCUMENT PROCESSING & RAG ---
 # Bibliotecas de extração de texto para alimentar sua base de conhecimento
