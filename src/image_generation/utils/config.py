@@ -22,7 +22,7 @@ IMAGE_MODELS_CATALOG = {
 }
 
 BUCKET_NAME = "images"
-STORAGE_BASE_PATH = "StorageManager"
+STORAGE_BASE_PATH = "image_generations"
 ID_PREFIX = "img-"
 
 @dataclass
