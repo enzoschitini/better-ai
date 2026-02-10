@@ -1,25 +1,4 @@
-
-IMAGE_MODELS_CATALOG = {
-    "imagen-4.0-generate-001": {
-        "max_output_images_per_prompt": 4,
-        "supported_aspect_ratios": ["1:1", "3:4", "4:3", "9:16", "16:9"],
-        "supported_resolutions": ["1K", "2K"],
-        "mime_types": ["image/png", "image/jpeg"],
-    },
-    "imagen-4.0-fast-generate-001": {
-        "max_output_images_per_prompt": 4,
-        "supported_aspect_ratios": ["1:1", "3:4", "4:3", "9:16", "16:9"],
-        "supported_resolutions": ["1K"],
-        "mime_types": ["image/png", "image/jpeg"],
-    },
-    "imagen-4.0-ultra-generate-001": {
-        "max_output_images_per_prompt": 4,
-        "supported_aspect_ratios": ["1:1", "3:4", "4:3", "9:16", "16:9"],
-        "supported_resolutions": ["1K", "2K"],
-        "mime_types": ["image/png", "image/jpeg"],
-    },
-}
-
+from src.image_generation.config import IMAGE_MODELS_CATALOG
 class ImageParamsValidator:
     def __init__(self, catalog: dict | None = None):
         self.catalog = catalog or IMAGE_MODELS_CATALOG
@@ -70,3 +49,5 @@ class ImageParamsValidator:
                 f"Supported: {specs['supported_resolutions']}"
             )
 
+
+# python -m src.image_generation.utils.params_validator
