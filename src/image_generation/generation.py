@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from src.image_generation.config import GeneratedImage
+from src.image_generation.utils.config import GeneratedImage
 from src.image_generation.utils.params_validator import ImageParamsValidator
 from dotenv import load_dotenv
 

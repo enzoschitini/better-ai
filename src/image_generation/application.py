@@ -1,10 +1,10 @@
-from src.image_generation.gemini_client import GeminiClient
-from src.image_generation.config import Imagen, BUCKET_NAME, STORAGE_BASE_PATH, ID_PREFIX
+from src.image_generation.utils.gemini_client import GeminiClient
+from src.image_generation.utils.config import Imagen, BUCKET_NAME, STORAGE_BASE_PATH, ID_PREFIX
 
 from src.image_generation.utils.params_validator import ImageParamsValidator
 from src.image_generation.generation import ImageGenerator
 from src.storage.storage_repository import StorageRepository
-from src.image_generation.utils.unique_id_factory import IDGenerator
+from src.utils.unique_id_factory import IDGenerator
 
 client = GeminiClient().get_client()
 validator = ImageParamsValidator()
@@ -14,10 +14,10 @@ repository = StorageRepository(base_path=STORAGE_BASE_PATH, bucket_name=BUCKET_N
 
 images = generator.generate(
     prompt="""
-Da Vinci style anatomical sketch of a dissected Monarch butterfly. Detailed drawings of the head, wings, and legs on textured parchment with notes in English.
+Renaissance anatomical study of a mythical griffin, cross-sections of muscles and bones, vintage scientific notebook style.
 """,
     model=Imagen.GENERATE.id,
-    number_of_images=1,
+    number_of_images=2,
     aspect_ratio=Imagen.GENERATE.ratios.R16_9,
     image_size=Imagen.GENERATE.resolutions.K2,
 )

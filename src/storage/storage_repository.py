@@ -2,7 +2,7 @@ import os
 from typing import List
 from datetime import datetime
 
-from src.image_generation.config import GeneratedImage
+from src.image_generation.utils.config import GeneratedImage
 from src.storage.supabase.storage_menager import StorageManager
 
 class StorageRepository:

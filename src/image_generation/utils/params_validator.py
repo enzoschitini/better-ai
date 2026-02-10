@@ -1,4 +1,4 @@
-from src.image_generation.config import IMAGE_MODELS_CATALOG
+from src.image_generation.utils.config import IMAGE_MODELS_CATALOG
 class ImageParamsValidator:
     def __init__(self, catalog: dict | None = None):
         self.catalog = catalog or IMAGE_MODELS_CATALOG
