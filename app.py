@@ -19,7 +19,7 @@ from src.embedding.services.payload_validation import PayloadProcessor
 from src.embedding.services.pinecone_vector_store import PineconeClient, PineconeVectorService
 from src.embedding.embedding_module import EmbeddingModule
 
-from src.image_generation.google_genai import ImageGenerationService
+from src.image_generation.applications import ImageGeneration
 from src.text_parse.text_parse_module import TextParserModule
 
 # ================================================
@@ -242,7 +242,6 @@ async def delete_vectors(
 # ========================
 # Image Generate
 # ========================
-
 class GenerateRequest(BaseModel):
     prompt: str
     number_of_images: int
@@ -255,20 +254,43 @@ class GenerateResponse(BaseModel):
     images: List[str]
 
 @app.post(
-    "/generate-image", dependencies=[Depends(Authorization.multikey)],
+    "/generate-image", 
     response_model=GenerateResponse,
+    dependencies=[Depends(Authorization.multikey)],
     summary="Gera imagens com parâmetros fixos"
 )
 def generate_image(data: GenerateRequest) -> GenerateResponse:
-    gen = ImageGenerationService()
+    model_map = {
+        "FAST": "imagen-4.0-fast-generate-001",
+        "BASE": "imagen-4.0-generate-001",
+        "ULTRA": "imagen-4.0-ultra-generate-001"
+    }
+    
+    selected_model = model_map.get(data.model)
 
-    return gen.generate(
-        prompt=data.prompt,
-        number_of_images=data.number_of_images,
-        aspect_ratio=data.aspect_ratio,
-        image_size=data.image_size,
-        model=data.model
-    )
+    try:
+        generater = ImageGeneration()
+
+        urls = generater.gen(
+            prompt=data.prompt,
+            model=selected_model,
+            number_of_images=data.number_of_images,
+            aspect_ratio=data.aspect_ratio,
+            image_size=data.image_size,
+        )
+
+        response_obj = GenerateResponse(
+            status=200,
+            images=urls
+        )
+
+        return response_obj
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Erro interno: {str(e)}"
+        )
 
 
 

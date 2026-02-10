@@ -6,35 +6,65 @@ from src.image_generation.generation import ImageGenerator
 from src.storage.storage_repository import StorageRepository
 from src.utils.unique_id_factory import IDGenerator
 
-client = GeminiClient().get_client()
-validator = ImageParamsValidator()
-generator = ImageGenerator(client, validator)
-repository = StorageRepository(base_path=STORAGE_BASE_PATH, bucket_name=BUCKET_NAME)
+
+class ImageGeneration:
+    def __init__(self):
+        client = GeminiClient().get_client()
+        validator = ImageParamsValidator()
+
+        self.generator = ImageGenerator(client, validator)
+        self.repository = StorageRepository(
+            base_path=STORAGE_BASE_PATH,
+            bucket_name=BUCKET_NAME
+        )
+
+    def gen(
+        self,
+        prompt: str,
+        model: str,
+        number_of_images: int,
+        aspect_ratio: str,
+        image_size: str,
+    ) -> list[str]:
+        images = self.generator.generate(
+            prompt=prompt,
+            model=model,
+            number_of_images=number_of_images,
+            aspect_ratio=aspect_ratio,
+            image_size=image_size,
+        )
+
+        urls = []
+
+        for img in images:
+            image_id = IDGenerator.timestamp(prefix=ID_PREFIX)
+            extension = img.mime_type.split("/")[-1]
+            unique_name = f"{image_id}.{extension}"
+
+            file_url = self.repository.upload_to_supabase(
+                file_name=unique_name,
+                byte_data=img.image_bytes
+            )
+
+            urls.append(file_url)
+
+        return urls
 
 
-images = generator.generate(
-    prompt="""
-Renaissance anatomical study of a mythical griffin, cross-sections of muscles and bones, vintage scientific notebook style.
-""",
-    model=Imagen.GENERATE.id,
-    number_of_images=2,
-    aspect_ratio=Imagen.GENERATE.ratios.R16_9,
-    image_size=Imagen.GENERATE.resolutions.K2,
-)
+if __name__ == "__main__":
+    service = ImageGeneration()
 
-for img in images:
-    id = IDGenerator.timestamp(prefix=ID_PREFIX)
-    extension = img.mime_type.split('/')[-1]
+    urls = service.gen(
+        prompt="""
+    Renaissance anatomical study of a mythical griffin, cross-sections of muscles and bones, vintage scientific notebook style.
+    """,
+        model=Imagen.GENERATE.id,
+        number_of_images=2,
+        aspect_ratio=Imagen.GENERATE.ratios.R16_9,
+        image_size=Imagen.GENERATE.resolutions.K2,
+    )
 
-    unique_name = f"{id}.{extension}"
-    file_url = repository.upload_to_supabase(file_name=unique_name, byte_data=img.image_bytes)
-
-    print(f"\n\nUploaded image URL: {file_url}\n")
-
-
-
-
-
+    print(urls)
 
 
 prompts_examples = {
