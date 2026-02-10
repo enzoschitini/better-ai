@@ -3,7 +3,7 @@ from src.image_generation.config import Imagen, BUCKET_NAME, STORAGE_BASE_PATH, 
 
 from src.image_generation.utils.params_validator import ImageParamsValidator
 from src.image_generation.generation import ImageGenerator
-from src.image_generation.utils.image_repository import StorageRepository
+from src.storage.storage_repository import StorageRepository
 from src.image_generation.utils.unique_id_factory import IDGenerator
 
 client = GeminiClient().get_client()
