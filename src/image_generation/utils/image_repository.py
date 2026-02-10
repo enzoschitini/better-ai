@@ -5,12 +5,13 @@ from datetime import datetime
 from src.image_generation.config import GeneratedImage
 from src.storage.supabase.storage_menager import StorageManager
 
-class ImageRepository:
-    def __init__(self, base_path: str = "generated_images"):
+class StorageRepository:
+    def __init__(self, base_path: str = None, bucket_name: str = None):
         self.base_path = base_path
+        self.bucket_name = bucket_name
         os.makedirs(self.base_path, exist_ok=True)
 
-    def save_repository(self, images: List[GeneratedImage], prefix: str = "image") -> List[str]:
+    def local_repository(self, images: List[GeneratedImage], prefix: str = "image") -> List[str]:
         """
         Salva imagens localmente e retorna os caminhos salvos.
         """
@@ -36,9 +37,9 @@ class ImageRepository:
             return "png"
         raise ValueError(f"Unsupported mime type for persistence: {mime_type}")
     
-    def upload_to_supabase(self, bucket_name: str, byte_data: bytes) -> str:
-        manager = StorageManager(bucket_name=bucket_name)
-        storage_name = self.base_path # f"StorageManager/{file_name}"
+    def upload_to_supabase(self, file_name: str, byte_data: bytes) -> str:
+        manager = StorageManager(bucket_name=self.bucket_name)
+        storage_name = f"{self.base_path}/{file_name}"
 
         upload_res = manager.upload_bytes(storage_name, byte_data)
 

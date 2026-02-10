@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 
-
 IMAGE_MODELS_CATALOG = {
     "imagen-4.0-generate-001": {
         "max_output_images_per_prompt": 4,
@@ -21,6 +20,10 @@ IMAGE_MODELS_CATALOG = {
         "mime_types": ["image/png", "image/jpeg"],
     },
 }
+
+BUCKET_NAME = "images"
+STORAGE_BASE_PATH = "StorageManager"
+ID_PREFIX = "img-"
 
 @dataclass
 class GeneratedImage:
