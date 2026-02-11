@@ -120,6 +120,23 @@ def edit_GAIS4_multi(
         "usage_metadata": usage_metadata
     }
 
+"""
+
+# class ImageEdit
+
+1. Build Parts (Prompt + Imagens)
+2. Config (temperature, top_p, max_tokens, etc)
+3. Model Call
+4. Response Parse (texto, imagens, metadata)
+5. Calc cost (tokens and USD)
+6. Save images
+7. MongoDB Payload (texto, paths, metadata, cost)
+8. Response
+
+"""
+
+
+
 
 import mimetypes
 

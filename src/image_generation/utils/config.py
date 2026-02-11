@@ -30,11 +30,6 @@ class GeneratedImage:
     image_bytes: bytes
     mime_type: str
 
-@dataclass
-class GeneratedImage:
-    image_bytes: bytes
-    mime_type: str
-
 @dataclass(frozen=True)
 class Ratios:
     R1_1: str = "1:1"

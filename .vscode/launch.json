@@ -8,7 +8,7 @@
         "name": "Image Generation",
         "type": "python",
         "request": "launch",
-        "module": "src.image_generation.application",
+        "module": "src.image_generation.applications",
         "console": "integratedTerminal"
         }
     ]
