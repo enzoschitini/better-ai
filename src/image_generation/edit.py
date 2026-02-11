@@ -6,13 +6,16 @@
 # 3. Model Call
 # 4. Response Parse (texto, imagens, metadata)
 
+import json
 from src.image_generation.utils.gemini_client import GeminiClient
+
+from google.genai import types
 
 client = GeminiClient().get_client()
 
 
-
 from typing import List, Dict, Optional
+
 
 class ImageEdit:
     DEFAULT_CONTENT_CONFIG = {
@@ -23,30 +26,54 @@ class ImageEdit:
         "aspect_ratio": "1:1",
     }
 
-    def __init__(self, prompt: str, content_config: Optional[Dict] = None, images: Optional[List[Dict]] = None):
-        self.prompt = prompt
+    def __init__(self, content_config: Optional[Dict] = None):
         self.content_config = self._build_content_config(content_config)
-        self.images = images or []
 
     def _build_content_config(self, content_config: Optional[Dict]) -> Dict:
-        """
-        Mergeia o config recebido com os defaults.
-        Prioridade: valores passados pelo usuário > defaults
-        """
-        if not content_config:
-            return self.DEFAULT_CONTENT_CONFIG.copy()
-
         return {
             **self.DEFAULT_CONTENT_CONFIG,
-            **content_config
+            **(content_config or {})
+        }
+
+    def prints(self):
+        print("\nContent Config:", self.content_config)
+
+    def build_payload(self, prompt: str, images: Optional[List[Dict]] = None) -> Dict:
+        if not prompt or not isinstance(prompt, str):
+            raise ValueError("`prompt` é obrigatório e deve ser uma string não vazia.")
+
+        return {
+            "prompt": prompt,
+            "content_config": self.content_config,
+            "images": images or []
         }
     
-    def prints(self):
-        import json
-        print("\n\nPrompt:", self.prompt)
-        print("\nContent Config:", self.content_config)
-        print("\nImages:", self.images, "\n\n")
+    # 1. Build Parts (Prompt + Imagens)
+    def build_parts(self, prompt: str, images: Optional[List[Dict]] = None) -> List[Dict]:
+        # Prompt
 
+        parts = [
+            types.Part.from_text(
+                text="Gere uma imagem seguindo o estilo dessas"
+            )
+        ]
+
+        # Imagens Base (opcional)
+        mime = magic.Magic(mime=True)
+
+        for image_bytes in images:
+            mime_type = mime.from_buffer(image_bytes)
+
+            parts.append(
+                types.Part.from_bytes(
+                    data=image_bytes[:100],
+                    mime_type=mime_type
+                )
+            )
+        
+        print("\nParts:", parts)
+
+        return parts
 
 
 
@@ -90,19 +117,24 @@ if __name__ == "__main__":
 
     print(images)
 
-    img = ImageEdit(
-        prompt="Gere uma imagem...",
+    editor = ImageEdit(
         content_config={
-            "model": "gemini-2.5-flash-image",
             "temperature": 0.9,
-            "top_p": 0.9,
-            "max_output_tokens": 2048,
-            "aspect_ratio": "9:16",
-        },
-        images=images
+            "aspect_ratio": "9:16"
+        }
     )
 
-    img.prints()
+    payload = editor.build_payload(
+        prompt="Gere uma imagem no estilo dessas",
+        images=images  # opcional
+    )
+
+    print(payload)
+
+    editor.build_parts(
+        prompt="Gere uma imagem no estilo dessas",
+        images=images
+    )
 
 
 
