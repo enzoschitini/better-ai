@@ -7,14 +7,15 @@
 # 4. Response Parse (texto, imagens, metadata)
 
 import json
-from src.image_generation.utils.gemini_client import GeminiClient
 
+from google import genai
 from google.genai import types
 
-client = GeminiClient().get_client()
-
-
 from typing import List, Dict, Optional
+from src.image_generation.utils.gemini_client import GeminiClient
+
+
+client = GeminiClient().get_client()
 
 
 class ImageEdit:
@@ -26,7 +27,8 @@ class ImageEdit:
         "aspect_ratio": "1:1",
     }
 
-    def __init__(self, content_config: Optional[Dict] = None):
+    def __init__(self, client=None, content_config: Optional[Dict] = None):
+        self.client = client or GeminiClient().get_client()
         self.content_config = self._build_content_config(content_config)
 
     def _build_content_config(self, content_config: Optional[Dict]) -> Dict:
@@ -37,6 +39,7 @@ class ImageEdit:
 
     def prints(self):
         print("\nContent Config:", self.content_config)
+        print("\nClient:", self.client)
 
     def build_payload(self, prompt: str, images: Optional[List[Dict]] = None) -> Dict:
         if not prompt or not isinstance(prompt, str):
@@ -47,7 +50,11 @@ class ImageEdit:
             "content_config": self.content_config,
             "images": images or []
         }
-    
+
+
+
+
+
     # 1. Build Parts (Prompt + Imagens)
     def build_parts(self, prompt: str, images: Optional[List[Dict]] = None) -> List[Dict]:
         # Prompt
@@ -74,7 +81,71 @@ class ImageEdit:
         print("\nParts:", parts)
 
         return parts
+    
+    # 2. Config (temperature, top_p, max_tokens, etc)
+    def generate_config(self):
+        config = types.GenerateContentConfig(
+            temperature=0.75,
+            top_p=0.85,
+            max_output_tokens=1024,
+            response_modalities=["IMAGE", "TEXT"],
+            image_config=types.ImageConfig(
+                aspect_ratio="9:16"
+            )
+        )
 
+        return config
+    
+    # 3. Model Call
+    def call_model(self, parts: List[Dict], config: Dict):
+        contents = [
+            types.Content(
+                role="user",
+                parts=parts
+            )
+        ]
+
+        response = client.models.generate_content(
+            model="gemini-2.5-flash-image",
+            contents=contents,
+            config=config
+        )
+
+        return response
+    
+    # 4. Response Parse (texto, imagens, metadata)
+    def parse_response(self, response):
+        # Base Response Structure
+        text_response = None
+        images = []
+
+        if response.candidates:
+            for part in response.candidates[0].content.parts:
+
+                if part.text:
+                    text_response = part.text
+
+                if part.inline_data:
+                    images.append({
+                        "mime_type": part.inline_data.mime_type,
+                        "data": part.inline_data.data  # bytes puros
+                    })
+        
+        # Usage Metadata
+        usage_metadata = None
+
+        if response.usage_metadata:
+            usage_metadata = {
+                "prompt_tokens": response.usage_metadata.prompt_token_count,
+                "output_tokens": response.usage_metadata.candidates_token_count,
+                "total_tokens": response.usage_metadata.total_token_count
+            }
+
+        return {
+            "text_response": text_response,
+            "images": images,
+            "usage_metadata": usage_metadata
+        }
 
 
 
