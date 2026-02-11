@@ -13,22 +13,18 @@ import os
 from google import genai
 from google.genai import types
 
+from src.image_generation.utils.config import DEFAULT_CONTENT_CONFIG
+from src.image_generation.utils.gemini_client import GeminiClient
+
 from typing import List, Dict, Optional
 from dotenv import load_dotenv
 
 load_dotenv()
 
-class ImageManipulationService:
-    DEFAULT_CONTENT_CONFIG = {
-        "model": "gemini-2.5-flash-image",
-        "temperature": 0.75,
-        "top_p": 0.85,
-        "max_output_tokens": 1024,
-        "aspect_ratio": "1:1",
-    }
-
+class ImageGeneratorService:
     def __init__(self, client=None, content_config: Optional[Dict] = None):
-        self.client = client or genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+        self.client = client or GeminiClient().get_client()
+        self.DEFAULT_CONTENT_CONFIG = DEFAULT_CONTENT_CONFIG
         self.content_config = self._build_content_config(content_config)
 
     def _build_content_config(self, content_config: Optional[Dict]) -> Dict:
@@ -50,10 +46,6 @@ class ImageManipulationService:
             "content_config": self.content_config,
             "images": images or []
         }
-
-
-
-
 
     # 1. Build Parts (Prompt + Imagens)
     def build_parts(self, prompt: str, images: Optional[List[bytes]] = None) -> List[types.Part]:
@@ -82,12 +74,12 @@ class ImageManipulationService:
     # 2. Config (temperature, top_p, max_tokens, etc)
     def generate_config(self):
         config = types.GenerateContentConfig(
-            temperature=0.75,
-            top_p=0.85,
-            max_output_tokens=1024,
+            temperature=self.content_config["temperature"],
+            top_p=self.content_config["top_p"],
+            max_output_tokens=self.content_config["max_output_tokens"],
             response_modalities=["IMAGE", "TEXT"],
             image_config=types.ImageConfig(
-                aspect_ratio="9:16"
+                aspect_ratio=self.content_config["aspect_ratio"]
             )
         )
 
@@ -103,7 +95,7 @@ class ImageManipulationService:
         ]
 
         response = self.client.models.generate_content(
-            model="gemini-2.5-flash-image",
+            model=self.content_config["model"],
             contents=contents,
             config=config
         )
@@ -145,15 +137,6 @@ class ImageManipulationService:
         }
 
 
-
-
-
-
-
-
-
-
-
 if __name__ == "__main__":
     # Load images
 
@@ -170,7 +153,8 @@ if __name__ == "__main__":
         
         images.append(image_bytes)
 
-    editor = ImageManipulationService()
+    editor = ImageGeneratorService()
+    
     parts = editor.build_parts(
         prompt="Gere uma imagem seguindo o estilo dessas",
         images=images
@@ -178,17 +162,17 @@ if __name__ == "__main__":
     config = editor.generate_config()
     response = editor.call_model(parts, config)
 
-    parsed = editor.parse_response(response)
+    response_parsed = editor.parse_response(response)
 
-    print(parsed["text_response"])
-    print("Usage Metadata:", parsed["usage_metadata"])
+    print(response_parsed["text_response"])
+    print("Usage Metadata:", response_parsed["usage_metadata"])
 
     import os
     import uuid
 
     os.makedirs("img_test", exist_ok=True)
 
-    for i, image in enumerate(parsed["images"]):
+    for i, image in enumerate(response_parsed["images"]):
         ext = image["mime_type"].split("/")[-1]  # png, jpeg, webp, etc
         filename = f"img_test/img_{i}_{uuid.uuid4().hex}.{ext}"
 

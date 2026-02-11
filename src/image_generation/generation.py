@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-class ImageGenerator:
+class TextToImage:
     DEFAULT_MODEL = Imagen.GENERATE.id
     DEFAULT_NUMBER_OF_IMAGES = 1
     DEFAULT_OUTPUT_MIME_TYPE = "image/jpeg"

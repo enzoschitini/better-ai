@@ -122,7 +122,7 @@ def edit_GAIS4_multi(
 
 """
 
-# class GeminiClient
+# class GeminiClient 👌
 1. Init Client (API Key)
 
 # class Validator
@@ -132,7 +132,7 @@ def edit_GAIS4_multi(
 # class File to Bytes
 1. File Path -> Bytes + Mime Type
 
-# class ImageEdit 
+# class ImageGeneratorService 👌
 # (Request: Text/Image Byte/Image Byte List, Config Params) -> Response: Text, Image Byte List, Metadata
 
 1. Build Parts (Prompt + Imagens)

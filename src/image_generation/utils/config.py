@@ -25,6 +25,14 @@ BUCKET_NAME = "images"
 STORAGE_BASE_PATH = "image_generations"
 ID_PREFIX = "img-"
 
+DEFAULT_CONTENT_CONFIG = {
+    "model": "gemini-2.5-flash-image",
+    "temperature": 0.75,
+    "top_p": 0.85,
+    "max_output_tokens": 1024,
+    "aspect_ratio": "1:1",
+}
+
 @dataclass
 class GeneratedImage:
     image_bytes: bytes
