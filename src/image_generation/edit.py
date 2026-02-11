@@ -7,18 +7,18 @@
 # 4. Response Parse (texto, imagens, metadata)
 
 import json
+import magic # uv add python-magic-bin
+import os
 
 from google import genai
 from google.genai import types
 
 from typing import List, Dict, Optional
-from src.image_generation.utils.gemini_client import GeminiClient
+from dotenv import load_dotenv
 
+load_dotenv()
 
-client = GeminiClient().get_client()
-
-
-class ImageEdit:
+class ImageManipulationService:
     DEFAULT_CONTENT_CONFIG = {
         "model": "gemini-2.5-flash-image",
         "temperature": 0.75,
@@ -28,7 +28,7 @@ class ImageEdit:
     }
 
     def __init__(self, client=None, content_config: Optional[Dict] = None):
-        self.client = client or GeminiClient().get_client()
+        self.client = client or genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
         self.content_config = self._build_content_config(content_config)
 
     def _build_content_config(self, content_config: Optional[Dict]) -> Dict:
@@ -56,29 +56,26 @@ class ImageEdit:
 
 
     # 1. Build Parts (Prompt + Imagens)
-    def build_parts(self, prompt: str, images: Optional[List[Dict]] = None) -> List[Dict]:
-        # Prompt
+    def build_parts(self, prompt: str, images: Optional[List[bytes]] = None) -> List[types.Part]:
+        if not prompt or not isinstance(prompt, str):
+            raise ValueError("`prompt` é obrigatório.")
 
         parts = [
-            types.Part.from_text(
-                text="Gere uma imagem seguindo o estilo dessas"
-            )
+            types.Part.from_text(text=prompt)
         ]
 
-        # Imagens Base (opcional)
-        mime = magic.Magic(mime=True)
+        if images:
+            mime = magic.Magic(mime=True)
 
-        for image_bytes in images:
-            mime_type = mime.from_buffer(image_bytes)
+            for image_bytes in images:
+                mime_type = mime.from_buffer(image_bytes)
 
-            parts.append(
-                types.Part.from_bytes(
-                    data=image_bytes[:100],
-                    mime_type=mime_type
+                parts.append(
+                    types.Part.from_bytes(
+                        data=image_bytes,
+                        mime_type=mime_type
+                    )
                 )
-            )
-        
-        print("\nParts:", parts)
 
         return parts
     
@@ -105,7 +102,7 @@ class ImageEdit:
             )
         ]
 
-        response = client.models.generate_content(
+        response = self.client.models.generate_content(
             model="gemini-2.5-flash-image",
             contents=contents,
             config=config
@@ -160,14 +157,10 @@ class ImageEdit:
 if __name__ == "__main__":
     # Load images
 
-    import magic # uv add python-magic-bin
-
     base_image_paths = [
         "src/image_generation/backup/img1.jpeg",
         "src/image_generation/backup/img2.jpeg"
     ]
-
-    #mime = magic.Magic(mime=True)
 
     images = []
 
@@ -175,38 +168,34 @@ if __name__ == "__main__":
         with open(path, "rb") as f:
             image_bytes = f.read()
         
-        images.append(image_bytes[:100])
-        
-        """
-        mime_type = mime.from_buffer(image_bytes)
+        images.append(image_bytes)
 
-        images.append({
-            "bytes": image_bytes[:100],
-            "mime_type": mime_type
-        })
-        """
-
-    print(images)
-
-    editor = ImageEdit(
-        content_config={
-            "temperature": 0.9,
-            "aspect_ratio": "9:16"
-        }
-    )
-
-    payload = editor.build_payload(
-        prompt="Gere uma imagem no estilo dessas",
-        images=images  # opcional
-    )
-
-    print(payload)
-
-    editor.build_parts(
-        prompt="Gere uma imagem no estilo dessas",
+    editor = ImageManipulationService()
+    parts = editor.build_parts(
+        prompt="Gere uma imagem seguindo o estilo dessas",
         images=images
     )
+    config = editor.generate_config()
+    response = editor.call_model(parts, config)
 
+    parsed = editor.parse_response(response)
+
+    print(parsed["text_response"])
+    print("Usage Metadata:", parsed["usage_metadata"])
+
+    import os
+    import uuid
+
+    os.makedirs("img_test", exist_ok=True)
+
+    for i, image in enumerate(parsed["images"]):
+        ext = image["mime_type"].split("/")[-1]  # png, jpeg, webp, etc
+        filename = f"img_test/img_{i}_{uuid.uuid4().hex}.{ext}"
+
+        with open(filename, "wb") as f:
+            f.write(image["data"])
+
+        print("Imagem salva em:", filename)
 
 
 
