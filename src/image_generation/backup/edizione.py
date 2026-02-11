@@ -122,16 +122,30 @@ def edit_GAIS4_multi(
 
 """
 
-# class ImageEdit
+# class GeminiClient
+1. Init Client (API Key)
+
+# class Validator
+1. Validate Params (model, number_of_images, mime_type, aspect_ratio, image_size)
+
+# class ImageEdit 
+# (Request: Text/Image Byte/Image Byte List, Config Params) -> Response: Text, Image Byte List, Metadata
 
 1. Build Parts (Prompt + Imagens)
 2. Config (temperature, top_p, max_tokens, etc)
 3. Model Call
 4. Response Parse (texto, imagens, metadata)
-5. Calc cost (tokens and USD)
-6. Save images
-7. MongoDB Payload (texto, paths, metadata, cost)
-8. Response
+
+# class Payload Builder
+
+1. Calc cost (tokens and USD)
+2. MongoDB Payload (texto, paths, metadata, cost)
+3. Response Parse and Payload
+
+# class SaveProcess
+
+1. Save images to Supabase Storage
+2. Save metadata to MongoDB
 
 """
 
@@ -142,8 +156,8 @@ import mimetypes
 
 response = edit_GAIS4_multi(
     base_image_paths=[
-        "src/image_generation/imgs/base/gen3.png",
-        "src/image_generation/imgs/base/gen4.png"
+        "src/image_generation/backup/img1.jpeg",
+        "src/image_generation/backup/img2.jpeg"
     ]
 )
 

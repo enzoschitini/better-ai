@@ -5,11 +5,19 @@
     "version": "0.2.0",
     "configurations": [
         {
-        "name": "Image Generation",
-        "type": "python",
-        "request": "launch",
-        "module": "src.image_generation.applications",
-        "console": "integratedTerminal"
+            "name": "Image Generation",
+            "type": "python",
+            "request": "launch",
+            "module": "src.image_generation.applications",
+            "console": "integratedTerminal"
+        },
+
+        {
+            "name": "Image Edition",
+            "type": "python",
+            "request": "launch",
+            "module": "src.image_generation.backup.edizione",
+            "console": "integratedTerminal"
         }
     ]
 }
