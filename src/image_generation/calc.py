@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
 
 # =========================
@@ -111,18 +111,20 @@ class CostCalculator:
     def __init__(self, pricing_table: PricingTable = PricingTable):
         self.pricing_table = pricing_table
 
-    def merge_cost_information(self, *cost_infos: Dict) -> Dict:
-        if len(cost_infos) < 2:
+    def merge_cost_information(self, cost_infos: List[Dict]) -> Dict:
+        if not cost_infos or len(cost_infos) < 2:
             raise ValueError("You must provide at least two cost_information objects.")
 
         merged = {
             "prompt_tokens": 0,
-            "output_tokens": 0
+            "output_tokens": 0,
+            "total_tokens": 0,
         }
 
         for cost in cost_infos:
             merged["prompt_tokens"] += cost.get("prompt_tokens", 0)
             merged["output_tokens"] += cost.get("output_tokens", 0)
+            merged["total_tokens"] += cost.get("total_tokens", 0)
 
         return merged
 
@@ -131,6 +133,7 @@ class CostCalculator:
         model: str,
         prompt_tokens: int,
         output_tokens: int,
+        total_tokens: int,
         num_images: int = 0,
         cached_prompt_tokens: int = 0,
         cache_storage_tokens: int = 0,
@@ -177,48 +180,14 @@ class CostCalculator:
         )
 
         return {
-            "model": model,
-            "pricing_version": self.pricing_table.VERSION,
             "prompt_tokens": prompt_tokens,
             "output_tokens": output_tokens,
-            "num_images": num_images,
+            "total_tokens": total_tokens,
             "prompt_usd": round(prompt_cost, 6),
             "output_usd": round(output_cost, 6),
             "images_usd": round(image_cost, 6),
-            "cache_input_usd": round(cache_input_cost, 6),
-            "cache_storage_usd": round(cache_storage_cost, 6),
             "total_usd": round(total_cost, 6),
         }
-
-import json
-
-calculator = CostCalculator()
-
-usage1 = {
-    "prompt_tokens": 526,
-    "output_tokens": 12,
-    "total_tokens": 538
-}
-
-usage2 = {
-    "prompt_tokens": 312,
-    "output_tokens": 28,
-    "total_tokens": 340
-}
-
-usage_merged = calculator.merge_cost_information(usage1, usage2)
-
-cost = calculator.calculate(
-    model="gemini-3-pro-image-preview",
-    prompt_tokens=usage_merged["prompt_tokens"],
-    output_tokens=usage_merged["output_tokens"],
-    num_images=1,
-)
-
-print(json.dumps(cost, indent=4))
-
-print("\n\n")
-
 
 
 

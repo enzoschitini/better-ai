@@ -6,11 +6,9 @@
 # 3. Model Call
 # 4. Response Parse (texto, imagens, metadata)
 
-import json
 import magic
 import os
 
-from google import genai
 from google.genai import types
 
 from src.image_generation.utils.config import DEFAULT_CONTENT_CONFIG

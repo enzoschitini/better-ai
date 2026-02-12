@@ -24,6 +24,7 @@ IMAGE_MODELS_CATALOG = {
 BUCKET_NAME = "images"
 STORAGE_BASE_PATH = "image_generations"
 ID_PREFIX = "img-"
+BASE_URL = "https://example.com/generated_image"
 
 DEFAULT_CONTENT_CONFIG = {
     "model": "gemini-2.5-flash-image",
