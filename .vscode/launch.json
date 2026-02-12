@@ -18,6 +18,14 @@
             "request": "launch",
             "module": "src.image_generation.backup.edizione",
             "console": "integratedTerminal"
+        },
+
+        {
+            "name": "Image Generator Service",
+            "type": "python",
+            "request": "launch",
+            "module": "src.image_generation.edit",
+            "console": "integratedTerminal"
         }
     ]
 }

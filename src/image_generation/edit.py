@@ -92,45 +92,61 @@ class ImageGeneratorService:
             )
         ]
 
-        response = self.client.models.generate_content(
-            model=self.content_config["model"],
-            contents=contents,
-            config=config
-        )
+        responses = []
 
-        return response
+        for _ in range(self.content_config["number_of_images"]):
+            response = self.client.models.generate_content(
+                model=self.content_config["model"],
+                contents=contents,
+                config=config
+            )
+            responses.append(response)
+
+        return responses
+
     
-    # 4. Response Parse (imagens, metadata)
-    def parse_response(self, response):
-        # Base Response Structure
+    # 4. Response Parse (múltiplos responses → text + imagens + metadados agregados)
+    def parse_responses(self, responses):
         images = []
+        usage_metadatas = []
+        text_responses = []
 
-        if response.candidates:
-            for part in response.candidates[0].content.parts:
-                if part.inline_data:
-                    images.append({
-                        "mime_type": part.inline_data.mime_type,
-                        "data": part.inline_data.data  # bytes puros
-                    })
-        
-        # Usage Metadata
-        usage_metadata = None
+        for response in responses:
+            # Coleta imagens
+            if response.candidates:
+                for part in response.candidates[0].content.parts:
+                    if part.inline_data:
+                        images.append({
+                            "mime_type": part.inline_data.mime_type,
+                            "data": part.inline_data.data  # bytes puros
+                        })
+                    elif part.text:
+                        text_responses.append(part.text)
 
-        if response.usage_metadata:
-            usage_metadata = {
-                "prompt_tokens": response.usage_metadata.prompt_token_count,
-                "output_tokens": response.usage_metadata.candidates_token_count,
-                "total_tokens": response.usage_metadata.total_token_count
-            }
+            # Coleta usage metadata por response
+            if response.usage_metadata:
+                usage_metadatas.append({
+                    "prompt_tokens": response.usage_metadata.prompt_token_count,
+                    "output_tokens": response.usage_metadata.candidates_token_count,
+                    "total_tokens": response.usage_metadata.total_token_count
+                })
+            else:
+                usage_metadatas.append(None)
 
         return {
-            "images": images,
-            "generate_config": self.content_config,
-            "usage_metadata": usage_metadata
+            "text_responses": text_responses,  # Lista de respostas textuais (pode ser útil para entender o contexto da geração)
+            "images": images,  # Imagens de todos os responses
+            "generate_config": self.content_config,  # content_config geral
+            "usage_metadata": usage_metadatas  # Lista com o usage_metadata de cada response
         }
 
 
+
 if __name__ == "__main__":
+
+    import os
+    import uuid
+
     # Load images
 
     base_image_paths = [
@@ -146,7 +162,7 @@ if __name__ == "__main__":
         
         images.append(image_bytes)
 
-    editor = ImageGeneratorService()
+    editor = ImageGeneratorService(content_config={"number_of_images": 2})
     
     parts = editor.build_parts(
         prompt="Gere uma imagem seguindo o estilo dessas",
@@ -158,16 +174,15 @@ if __name__ == "__main__":
     # Image Count
     response = editor.call_model(parts, config)
 
-    response_parsed = editor.parse_response(response)
+    responses_parsed = editor.parse_responses(response)
 
-    print("Usage Metadata:", response_parsed["usage_metadata"])
-
-    import os
-    import uuid
+    print("Text Responses:", responses_parsed["text_responses"])
+    print("Usage Metadata:", responses_parsed["usage_metadata"])
+    print("Config:", responses_parsed["generate_config"])
 
     os.makedirs("img_test", exist_ok=True)
 
-    for i, image in enumerate(response_parsed["images"]):
+    for i, image in enumerate(responses_parsed["images"]):
         ext = image["mime_type"].split("/")[-1]  # png, jpeg, webp, etc
         filename = f"img_test/img_{i}_{uuid.uuid4().hex}.{ext}"
 
