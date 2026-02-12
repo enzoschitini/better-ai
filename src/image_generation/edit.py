@@ -44,10 +44,12 @@ class ImageGeneratorService:
         :raises TypeError: Caso o client fornecido não possua o atributo `.models`.
         :note: O client deve ser uma instância válida do SDK do Gemini. Não passe dicionários ou configs brutas.
         """
-
-        self.client = client or GeminiClient().get_client()
-        self.DEFAULT_CONTENT_CONFIG = DEFAULT_CONTENT_CONFIG
-        self.content_config = self._build_content_config(content_config)
+        try:
+            self.client = client or GeminiClient().get_client()
+            self.DEFAULT_CONTENT_CONFIG = DEFAULT_CONTENT_CONFIG
+            self.content_config = self._build_content_config(content_config)
+        except Exception as e:
+            raise RuntimeError(f"Error initializing ImageGeneratorService: {str(e)}") from e
 
     def _build_content_config(self, content_config: Optional[Dict]) -> Dict:
         """
@@ -87,39 +89,42 @@ class ImageGeneratorService:
         :raises ValueError: Caso o prompt seja vazio ou não seja uma string válida.
         :note: Quando imagens são fornecidas, o Gemini tende a interpretar a tarefa como edição/variação da imagem.
         """
-        if not prompt or not isinstance(prompt, str):
-            raise ValueError("`prompt` é obrigatório.")
-        
-        if instructions:
-            prompt = f"""
-            [ROLE]
-            You are an AI specialized in image generation and editing.
+        try:
+            if not prompt or not isinstance(prompt, str):
+                raise ValueError("`prompt` é obrigatório.")
+            
+            if instructions:
+                prompt = f"""
+                [ROLE]
+                You are an AI specialized in image generation and editing.
 
-            [TASK]
-            {prompt}
+                [TASK]
+                {prompt}
 
-            [USER_CONTEXT]
-            {instructions or "N/A"}
-            """
+                [USER_CONTEXT]
+                {instructions or "N/A"}
+                """
 
-        parts = [
-            types.Part.from_text(text=prompt)
-        ]
+            parts = [
+                types.Part.from_text(text=prompt)
+            ]
 
-        if images:
-            mime = magic.Magic(mime=True)
+            if images:
+                mime = magic.Magic(mime=True)
 
-            for image_bytes in images:
-                mime_type = mime.from_buffer(image_bytes)
+                for image_bytes in images:
+                    mime_type = mime.from_buffer(image_bytes)
 
-                parts.append(
-                    types.Part.from_bytes(
-                        data=image_bytes,
-                        mime_type=mime_type
+                    parts.append(
+                        types.Part.from_bytes(
+                            data=image_bytes,
+                            mime_type=mime_type
+                        )
                     )
-                )
 
-        return parts
+            return parts
+        except Exception as e:
+            raise RuntimeError(f"Error building parts for model: {str(e)}") from e
     
     # 2. Config (temperature, top_p, max_tokens, etc)
     def generate_config(self):
@@ -134,17 +139,20 @@ class ImageGeneratorService:
         :note: O SDK atual do Gemini não permite configurar o número de imagens por chamada.
                A geração de múltiplas imagens é feita via múltiplas chamadas ao modelo.
         """
-        config = types.GenerateContentConfig(
-            temperature=self.content_config["temperature"],
-            top_p=self.content_config["top_p"],
-            max_output_tokens=self.content_config["max_output_tokens"],
-            response_modalities=["IMAGE", "TEXT"],
-            image_config=types.ImageConfig(
-                aspect_ratio=self.content_config["aspect_ratio"]
+        try:
+            config = types.GenerateContentConfig(
+                temperature=self.content_config["temperature"],
+                top_p=self.content_config["top_p"],
+                max_output_tokens=self.content_config["max_output_tokens"],
+                response_modalities=["IMAGE", "TEXT"],
+                image_config=types.ImageConfig(
+                    aspect_ratio=self.content_config["aspect_ratio"]
+                )
             )
-        )
 
-        return config
+            return config
+        except Exception as e:
+            raise RuntimeError(f"Error building generation config: {str(e)}") from e
     
     # 3. Model Call
     def call_model(self, parts: List[Dict], config: Dict):
@@ -165,24 +173,27 @@ class ImageGeneratorService:
         :note: O número de chamadas é controlado por `content_config["number_of_images"]`.
                Evite valores altos para não exceder rate limits ou custos.
         """
-        contents = [
-            types.Content(
-                role="user",
-                parts=parts
-            )
-        ]
+        try:
+            contents = [
+                types.Content(
+                    role="user",
+                    parts=parts
+                )
+            ]
 
-        responses = []
+            responses = []
 
-        for _ in range(self.content_config["number_of_images"]):
-            response = self.client.models.generate_content(
-                model=self.content_config["model"],
-                contents=contents,
-                config=config
-            )
-            responses.append(response)
+            for _ in range(self.content_config["number_of_images"]):
+                response = self.client.models.generate_content(
+                    model=self.content_config["model"],
+                    contents=contents,
+                    config=config
+                )
+                responses.append(response)
 
-        return responses
+            return responses
+        except Exception as e:
+            raise RuntimeError(f"Error calling image generation model: {str(e)}") from e
 
     
     # 4. Response Parse (múltiplos responses → text + imagens + metadados agregados)
@@ -201,38 +212,41 @@ class ImageGeneratorService:
         :note: Cada response pode conter múltiplas partes (imagem e texto).
                O método agrega todas as imagens em uma única lista.
         """
-        images = []
-        usage_metadatas = []
-        text_responses = []
+        try:
+            images = []
+            usage_metadatas = []
+            text_responses = []
 
-        for response in responses:
-            # Coleta imagens
-            if response.candidates:
-                for part in response.candidates[0].content.parts:
-                    if part.inline_data:
-                        images.append({
-                            "mime_type": part.inline_data.mime_type,
-                            "data": part.inline_data.data  # bytes puros
-                        })
-                    elif part.text:
-                        text_responses.append(part.text)
+            for response in responses:
+                # Coleta imagens
+                if response.candidates:
+                    for part in response.candidates[0].content.parts:
+                        if part.inline_data:
+                            images.append({
+                                "mime_type": part.inline_data.mime_type,
+                                "data": part.inline_data.data  # bytes puros
+                            })
+                        elif part.text:
+                            text_responses.append(part.text)
 
-            # Coleta usage metadata por response
-            if response.usage_metadata:
-                usage_metadatas.append({
-                    "prompt_tokens": response.usage_metadata.prompt_token_count,
-                    "output_tokens": response.usage_metadata.candidates_token_count,
-                    "total_tokens": response.usage_metadata.total_token_count
-                })
-            else:
-                usage_metadatas.append(None)
+                # Coleta usage metadata por response
+                if response.usage_metadata:
+                    usage_metadatas.append({
+                        "prompt_tokens": response.usage_metadata.prompt_token_count,
+                        "output_tokens": response.usage_metadata.candidates_token_count,
+                        "total_tokens": response.usage_metadata.total_token_count
+                    })
+                else:
+                    usage_metadatas.append(None)
 
-        return {
-            "text_responses": text_responses,  # Lista de respostas textuais (pode ser útil para entender o contexto da geração)
-            "images": images,  # Imagens de todos os responses
-            "generate_config": self.content_config,  # content_config geral
-            "usage_metadata": usage_metadatas  # Lista com o usage_metadata de cada response
-        }
+            return {
+                "text_responses": text_responses,  # Lista de respostas textuais (pode ser útil para entender o contexto da geração)
+                "images": images,  # Imagens de todos os responses
+                "generate_config": self.content_config,  # content_config geral
+                "usage_metadata": usage_metadatas  # Lista com o usage_metadata de cada response
+            }
+        except Exception as e:
+            raise RuntimeError(f"Error parsing model responses: {str(e)}") from e
 
 
 
