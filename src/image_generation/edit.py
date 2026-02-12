@@ -33,20 +33,6 @@ class ImageGeneratorService:
             **(content_config or {})
         }
 
-    def prints(self):
-        print("\nContent Config:", self.content_config)
-        print("\nClient:", self.client)
-
-    def build_payload(self, prompt: str, images: Optional[List[Dict]] = None) -> Dict:
-        if not prompt or not isinstance(prompt, str):
-            raise ValueError("`prompt` é obrigatório e deve ser uma string não vazia.")
-
-        return {
-            "prompt": prompt,
-            "content_config": self.content_config,
-            "images": images or []
-        }
-
     # 1. Build Parts (Prompt + Imagens)
     def build_parts(self, prompt: str, instructions: Optional[str] = None, images: Optional[List[bytes]] = None) -> List[types.Part]:
         if not prompt or not isinstance(prompt, str):
@@ -114,18 +100,13 @@ class ImageGeneratorService:
 
         return response
     
-    # 4. Response Parse (texto, imagens, metadata)
+    # 4. Response Parse (imagens, metadata)
     def parse_response(self, response):
         # Base Response Structure
-        text_response = None
         images = []
 
         if response.candidates:
             for part in response.candidates[0].content.parts:
-
-                if part.text:
-                    text_response = part.text
-
                 if part.inline_data:
                     images.append({
                         "mime_type": part.inline_data.mime_type,
@@ -143,8 +124,8 @@ class ImageGeneratorService:
             }
 
         return {
-            "text_response": text_response,
             "images": images,
+            "generate_config": self.content_config,
             "usage_metadata": usage_metadata
         }
 
@@ -179,7 +160,6 @@ if __name__ == "__main__":
 
     response_parsed = editor.parse_response(response)
 
-    print(response_parsed["text_response"])
     print("Usage Metadata:", response_parsed["usage_metadata"])
 
     import os
