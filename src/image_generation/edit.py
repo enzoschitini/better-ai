@@ -48,9 +48,21 @@ class ImageGeneratorService:
         }
 
     # 1. Build Parts (Prompt + Imagens)
-    def build_parts(self, prompt: str, images: Optional[List[bytes]] = None) -> List[types.Part]:
+    def build_parts(self, prompt: str, instructions: Optional[str] = None, images: Optional[List[bytes]] = None) -> List[types.Part]:
         if not prompt or not isinstance(prompt, str):
             raise ValueError("`prompt` é obrigatório.")
+        
+        if instructions:
+            prompt = f"""
+            [ROLE]
+            You are an AI specialized in image generation and editing.
+
+            [TASK]
+            {prompt}
+
+            [USER_CONTEXT]
+            {instructions or "N/A"}
+            """
 
         parts = [
             types.Part.from_text(text=prompt)
@@ -157,9 +169,12 @@ if __name__ == "__main__":
     
     parts = editor.build_parts(
         prompt="Gere uma imagem seguindo o estilo dessas",
+        instructions="Crie uma imagem que combine elementos de ambas as imagens fornecidas, mantendo um estilo artístico coeso e atraente.",
         images=images
     )
     config = editor.generate_config()
+
+    # Image Count
     response = editor.call_model(parts, config)
 
     response_parsed = editor.parse_response(response)

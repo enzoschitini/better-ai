@@ -193,6 +193,72 @@ cost = calculator.calculate(
 
 print(json.dumps(cost, indent=4))
 
+print("\n\n")
+
+from typing import List, Dict
+
+def merge_cost_information(*cost_infos: Dict) -> Dict:
+    if len(cost_infos) < 2:
+        raise ValueError("You must provide at least two cost_information objects.")
+
+    merged = {
+        "prompt_tokens": 0,
+        "output_tokens": 0,
+        "prompt_usd": 0.0,
+        "output_usd": 0.0,
+        "images_usd": 0.0,
+        "total_usd": 0.0,
+    }
+
+    for cost in cost_infos:
+        merged["prompt_tokens"] += cost.get("prompt_tokens", 0)
+        merged["output_tokens"] += cost.get("output_tokens", 0)
+        merged["prompt_usd"] += cost.get("prompt_usd", 0.0)
+        merged["output_usd"] += cost.get("output_usd", 0.0)
+        merged["images_usd"] += cost.get("images_usd", 0.0)
+        merged["total_usd"] += cost.get("total_usd", 0.0)
+
+    # opcional: arredondar pra evitar ruído de float
+    merged["prompt_usd"] = round(merged["prompt_usd"], 6)
+    merged["output_usd"] = round(merged["output_usd"], 6)
+    merged["images_usd"] = round(merged["images_usd"], 6)
+    merged["total_usd"] = round(merged["total_usd"], 6)
+
+    return merged
+
+c1 = {
+    "prompt_tokens": 526,
+    "output_tokens": 12,
+    "prompt_usd": 0.001052,
+    "output_usd": 0.000144,
+    "images_usd": 0.134,
+    "total_usd": 0.135196
+}
+
+c2 = {
+    "prompt_tokens": 312,
+    "output_tokens": 28,
+    "prompt_usd": 0.000624,
+    "output_usd": 0.000336,
+    "images_usd": 0.078,
+    "total_usd": 0.07896
+}
+
+c3 = {
+    "prompt_tokens": 847,
+    "output_tokens": 64,
+    "prompt_usd": 0.001694,
+    "output_usd": 0.000768,
+    "images_usd": 0.156,
+    "total_usd": 0.158462
+}
+
+merged = merge_cost_information(c1, c2, c3)
+print(json.dumps(merged, indent=4))
+
+
+
+
 # https://ai.google.dev/gemini-api/docs/pricing?utm_source=chatgpt.com&hl=it
 
 BEST_TO_WORST_MODELS = [
