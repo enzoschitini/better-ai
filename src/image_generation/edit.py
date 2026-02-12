@@ -7,7 +7,7 @@
 # 4. Response Parse (texto, imagens, metadata)
 
 import json
-import magic # uv add python-magic-bin
+import magic
 import os
 
 from google import genai
@@ -22,12 +22,47 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class ImageGeneratorService:
+    """
+    Serviço responsável por orquestrar todo o fluxo de geração e edição de imagens com o Gemini: 
+    
+    1. Construção do prompt multimodal (texto + imagens)
+    2. Configuração de parâmetros de geração
+    3. Chamadas ao modelo
+    4. Parse das respostas (imagens, texto e métricas de uso).
+    """
     def __init__(self, client=None, content_config: Optional[Dict] = None):
+        """
+        Inicializa o serviço de geração de imagens com o client do Gemini e as configurações de conteúdo.
+
+        :param self: Instância do serviço.
+        :param client: Client do Gemini já inicializado. Se None, um novo client é criado automaticamente.
+        :type client: Optional[genai.Client]
+        :param content_config: Configurações customizadas de geração (modelo, temperature, top_p,
+                              aspect_ratio, number_of_images, etc).
+        :type content_config: Optional[Dict]
+
+        :raises TypeError: Caso o client fornecido não possua o atributo `.models`.
+        :note: O client deve ser uma instância válida do SDK do Gemini. Não passe dicionários ou configs brutas.
+        """
+
         self.client = client or GeminiClient().get_client()
         self.DEFAULT_CONTENT_CONFIG = DEFAULT_CONTENT_CONFIG
         self.content_config = self._build_content_config(content_config)
 
     def _build_content_config(self, content_config: Optional[Dict]) -> Dict:
+        """
+        Mescla as configurações padrão com as configurações customizadas fornecidas pelo usuário.
+
+        :param self: Instância do serviço.
+        :param content_config: Dicionário opcional com sobrescrita de configurações padrão.
+        :type content_config: Optional[Dict]
+
+        :return: Dicionário final de configuração de geração.
+        :rtype: Dict
+
+        :note: Valores ausentes em `content_config` herdam automaticamente os valores de DEFAULT_CONTENT_CONFIG.
+        """
+        
         return {
             **self.DEFAULT_CONTENT_CONFIG,
             **(content_config or {})
@@ -35,6 +70,23 @@ class ImageGeneratorService:
 
     # 1. Build Parts (Prompt + Imagens)
     def build_parts(self, prompt: str, instructions: Optional[str] = None, images: Optional[List[bytes]] = None) -> List[types.Part]:
+        """
+        Constrói as partes multimodais da requisição para o Gemini (texto + imagens de referência).
+
+        :param self: Instância do serviço.
+        :param prompt: Texto principal descrevendo a imagem a ser gerada ou editada.
+        :type prompt: str
+        :param instructions: Instruções adicionais de contexto ou regras de geração (opcional).
+        :type instructions: Optional[str]
+        :param images: Lista de imagens em bytes usadas como referência para edição ou variação.
+        :type images: Optional[List[bytes]]
+
+        :return: Lista de partes formatadas para envio ao Gemini.
+        :rtype: List[types.Part]
+
+        :raises ValueError: Caso o prompt seja vazio ou não seja uma string válida.
+        :note: Quando imagens são fornecidas, o Gemini tende a interpretar a tarefa como edição/variação da imagem.
+        """
         if not prompt or not isinstance(prompt, str):
             raise ValueError("`prompt` é obrigatório.")
         
@@ -71,6 +123,17 @@ class ImageGeneratorService:
     
     # 2. Config (temperature, top_p, max_tokens, etc)
     def generate_config(self):
+        """
+        Cria o objeto de configuração da geração para o Gemini.
+
+        :param self: Instância do serviço.
+
+        :return: Objeto de configuração de geração do Gemini.
+        :rtype: types.GenerateContentConfig
+
+        :note: O SDK atual do Gemini não permite configurar o número de imagens por chamada.
+               A geração de múltiplas imagens é feita via múltiplas chamadas ao modelo.
+        """
         config = types.GenerateContentConfig(
             temperature=self.content_config["temperature"],
             top_p=self.content_config["top_p"],
@@ -85,6 +148,23 @@ class ImageGeneratorService:
     
     # 3. Model Call
     def call_model(self, parts: List[Dict], config: Dict):
+        """
+        Executa múltiplas chamadas ao modelo de geração de imagens do Gemini com o mesmo prompt,
+        gerando variações independentes da imagem.
+
+        :param self: Instância do serviço.
+        :param parts: Lista de partes multimodais (texto + imagens) para envio ao modelo.
+        :type parts: List[Dict]
+        :param config: Configuração de geração do Gemini.
+        :type config: Dict
+
+        :return: Lista de respostas retornadas pelo Gemini (uma por imagem gerada).
+        :rtype: List[Any]
+
+        :raises RuntimeError: Pode ser propagado em caso de falhas na API do Gemini.
+        :note: O número de chamadas é controlado por `content_config["number_of_images"]`.
+               Evite valores altos para não exceder rate limits ou custos.
+        """
         contents = [
             types.Content(
                 role="user",
@@ -107,6 +187,20 @@ class ImageGeneratorService:
     
     # 4. Response Parse (múltiplos responses → text + imagens + metadados agregados)
     def parse_responses(self, responses):
+        """
+        Processa e agrega múltiplas respostas retornadas pelo Gemini, extraindo imagens,
+        textos auxiliares e métricas de uso de tokens.
+
+        :param self: Instância do serviço.
+        :param responses: Lista de responses retornados pelo Gemini.
+        :type responses: List[Any]
+
+        :return: Estrutura agregada contendo imagens, textos e metadados de uso.
+        :rtype: Dict[str, Any]
+
+        :note: Cada response pode conter múltiplas partes (imagem e texto).
+               O método agrega todas as imagens em uma única lista.
+        """
         images = []
         usage_metadatas = []
         text_responses = []
@@ -139,6 +233,21 @@ class ImageGeneratorService:
             "generate_config": self.content_config,  # content_config geral
             "usage_metadata": usage_metadatas  # Lista com o usage_metadata de cada response
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
