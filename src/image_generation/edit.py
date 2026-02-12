@@ -292,11 +292,9 @@ if __name__ == "__main__":
         instructions="Crie uma imagem que combine elementos de ambas as imagens fornecidas, mantendo um estilo artístico coeso e atraente.",
         images=images
     )
+    
     config = editor.generate_config()
-
-    # Image Count
     response = editor.call_model(parts, config)
-
     responses_parsed = editor.parse_responses(response)
 
     print("Text Responses:", responses_parsed["text_responses"])
