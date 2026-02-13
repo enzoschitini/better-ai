@@ -1,4 +1,5 @@
 from src.image_generation.edit import ImageGeneratorService
+from src.utils.unique_id_factory import IDGenerator
 
 import os
 import uuid
@@ -51,3 +52,18 @@ def save_results(responses_parsed):
             f.write(image["data"])
 
         print("Imagem salva em:", filename)
+    
+    """
+    Objetivo,Exemplo de Código,Exemplo de Retorno
+    UUID v4 (Padrão),IDGenerator.uuid(),784a0d9b-2b41-4c12-8877-6f8d92305381
+    Timestamp (Numérico),IDGenerator.timestamp(),17391845120004561
+    Timestamp + Prefixo,"IDGenerator.timestamp(prefix=""USR"", separator=""_"")",USR_17391845120008219
+    Timestamp (Hex/Curto),IDGenerator.timestamp(as_hex=True),18f74d0a2bc5f1a39
+    Token Seguro (URL),IDGenerator.token(length=12),A9x_L2mNq4W1
+    Máscara Customizada,"IDGenerator.custom(""TAG-####-??"")",TAG-4821-KM
+    Serial Alfanumérico,"IDGenerator.custom(""****-****"")",A7j2-9PqL
+    """
+
+print(f"ID: {IDGenerator.timestamp(prefix="JOB-")}")
+
+# python -m src.image_generation.module

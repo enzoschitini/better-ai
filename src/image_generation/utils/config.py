@@ -32,7 +32,7 @@ DEFAULT_CONTENT_CONFIG = {
     "top_p": 0.85,
     "max_output_tokens": 1024,
     "aspect_ratio": "1:1",
-    "number_of_images": 2
+    "number_of_images": 1
 }
 
 @dataclass

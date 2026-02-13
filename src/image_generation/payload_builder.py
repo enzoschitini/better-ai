@@ -25,20 +25,22 @@ class PayloadBuilder:
 
 
 
-    def generate_image_response(self, mime_types):
+    def payload_image_response(self, mime_types):
         image_response = []
 
         for mime_type in mime_types:
             dic = {
                 "id": IDGenerator.timestamp(prefix=ID_PREFIX),
                 "url": f"{BASE_URL}_{IDGenerator.timestamp(prefix=ID_PREFIX)}.{mime_type.split('/')[-1]}",
-                "mime_type": mime_type
+                "mime_type": mime_type,
+                "byte": b"mdmdmdmdmd"
             }
             image_response.append(dic)
+
         
         return image_response
     
-    def mongoDBpayload(self):
+    def mongo_payload(self):
         payload = {
             "jobId": "1234567890",
 
@@ -50,7 +52,7 @@ class PayloadBuilder:
 
             "text_response": "Claro, aqui está a imagem solicitada.",
 
-            "image_response": self.generate_image_response(["image/jpeg"]),
+            "image_response": self.payload_image_response(["image/jpeg"]),
 
             "generate_config": {
                 "llm_model": "gemini-3-pro-image-preview",
@@ -87,8 +89,8 @@ class PayloadBuilder:
 mongo_payload = {
     "jobId": "1234567890",
 
-    "user_input": {
-        "prompt": "Gere uma imagem seguindo o estilo dessas",
+    "text_input": {
+        "user_input": "Gere uma imagem seguindo o estilo dessas",
         "instructions": "Crie uma imagem que combine elementos de ambas as imagens fornecidas, mantendo um estilo artístico coeso e atraente.",
         "images": 2
     },

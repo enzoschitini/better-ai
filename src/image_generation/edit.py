@@ -68,8 +68,21 @@ class ImageGeneratorService:
             **(content_config or {})
         }
 
+    def _build_text_input_metadata(
+        self,
+        user_prompt: str,
+        instructions: Optional[str],
+        images: Optional[List[bytes]]
+    ) -> Dict:
+        return {
+            "user_prompt": user_prompt,
+            "instructions": instructions,
+            "images_count": len(images) if images else 0
+        }
+
+
     # 1. Build Parts (Prompt + Imagens)
-    def build_parts(self, prompt: str, instructions: Optional[str] = None, images: Optional[List[bytes]] = None) -> List[types.Part]:
+    def build_parts(self, user_prompt: str, instructions: Optional[str] = None, images: Optional[List[bytes]] = None) -> List[types.Part]:
         """
         Constrói as partes multimodais da requisição para o Gemini (texto + imagens de referência).
 
@@ -88,19 +101,33 @@ class ImageGeneratorService:
         :note: Quando imagens são fornecidas, o Gemini tende a interpretar a tarefa como edição/variação da imagem.
         """
         try:
-            if not prompt or not isinstance(prompt, str):
-                raise ValueError("`prompt` é obrigatório.")
-            
+            if not user_prompt or not isinstance(user_prompt, str):
+                raise ValueError("`user_prompt` é obrigatório.")
+
+            self.text_input = self._build_text_input_metadata(
+                user_prompt=user_prompt,
+                instructions=instructions,
+                images=images
+            )
+
             if instructions:
                 prompt = f"""
                 [ROLE]
                 You are an AI specialized in image generation and editing.
 
                 [TASK]
-                {prompt}
+                {user_prompt}
 
                 [USER_CONTEXT]
                 {instructions or "N/A"}
+                """
+            else:
+                prompt = f"""
+                [ROLE]
+                You are an AI specialized in image generation and editing.
+
+                [TASK]
+                {user_prompt}
                 """
 
             parts = [
@@ -238,11 +265,13 @@ class ImageGeneratorService:
                     usage_metadatas.append(None)
 
             return {
-                "text_responses": text_responses,  # Lista de respostas textuais (pode ser útil para entender o contexto da geração)
-                "images": images,  # Imagens de todos os responses
-                "generate_config": self.content_config,  # content_config geral
-                "usage_metadata": usage_metadatas  # Lista com o usage_metadata de cada response
+                **({"text_input": self.text_input} if getattr(self, "text_input", None) else {}), # Input textual do usuário
+                "text_responses": text_responses, # Lista de respostas textuais
+                "images": images, # Imagens de todos os responses
+                "generate_config": self.content_config, # Config geral
+                "usage_metadata": usage_metadatas, # Usage por responses
             }
+        
         except Exception as e:
             raise RuntimeError(f"Error parsing model responses: {str(e)}") from e
 
@@ -286,7 +315,7 @@ if __name__ == "__main__":
     editor = ImageGeneratorService(content_config={"number_of_images": 2})
     
     parts = editor.build_parts(
-        prompt="Gere uma imagem seguindo o estilo dessas",
+        user_prompt="Gere uma imagem seguindo o estilo dessas",
         instructions="Crie uma imagem que combine elementos de ambas as imagens fornecidas, mantendo um estilo artístico coeso e atraente.",
         images=images
     )
@@ -295,6 +324,7 @@ if __name__ == "__main__":
     response = editor.call_model(parts, config)
     responses_parsed = editor.parse_responses(response)
 
+    print("Text Input:", responses_parsed["text_input"])
     print("Text Responses:", responses_parsed["text_responses"])
     print("Usage Metadata:", responses_parsed["usage_metadata"])
     print("Config:", responses_parsed["generate_config"])
