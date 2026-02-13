@@ -23,11 +23,7 @@ Permite o envio de mensagens e manutenção de contexto de sessão entre intera�
 # uvicorn launch_api:app --reload  
 
 
-
-
-from typing import List
-from fastapi import UploadFile, File, Form, HTTPException
-import json
+from src.utils.loader_files import FilesPayloadBuilder
 
 MAX_MB = 10
 ALLOWED_TYPES = {"image/jpeg", "image/png"}
@@ -53,39 +49,11 @@ async def image_generation(
     print(f"\nInstructions: {instructions}")
     print(f"\nConfig: {config_dict}")
 
-    images_payload: list[dict] = []
+    builder = FilesPayloadBuilder(max_mb=10, max_files=5)
+    images_payload = await builder.build(files)
 
-    for f in files:
-        content = await f.read()
-
-        # ✅ Validação de tipo
-        if f.content_type not in ALLOWED_TYPES:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Formato não suportado: {f.content_type}. Aceitos: jpeg, png."
-            )
-
-        # ✅ Validação de tamanho (10MB)
-        if len(content) > MAX_MB * 1024 * 1024:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Arquivo muito grande: {f.filename}. Máx: {MAX_MB}MB."
-            )
-
-        images_payload.append({
-            "filename": f.filename,
-            "content_type": f.content_type,
-            "size_bytes": len(content),
-            "bytes": content
-        })
-
-        print(
-            f"\nFile: {f.filename} | "
-            f"type: {f.content_type} | "
-            f"size(bytes): {len(content)}"
-        )
-
-    print(f"\nTotal files loaded: {len(images_payload)}")
+    for x in images_payload:
+        print(f"filename: {x["filename"]}")
 
     return {
         "status": 200,
