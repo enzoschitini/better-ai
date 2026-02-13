@@ -11,7 +11,7 @@ import os
 
 from google.genai import types
 
-from src.image_generation.utils.config import DEFAULT_CONTENT_CONFIG
+from src.image_generation.utils.config import DEFAULT_CONTENT_CONFIG, BASE_PROMPT
 from src.image_generation.utils.gemini_client import GeminiClient
 
 from typing import List, Dict, Optional
@@ -74,6 +74,12 @@ class ImageGeneratorService:
         instructions: Optional[str],
         images: Optional[List[bytes]]
     ) -> Dict:
+        """
+        :param user_prompt: Prompt do usuário.
+        :param instructions: Instruções adicionais (opcional).
+        :param images: Imagens de entrada em bytes (opcional).
+        :return: Dicionário com prompt, instruções e quantidade de imagens.
+        """
         return {
             "user_prompt": user_prompt,
             "instructions": instructions,
@@ -110,25 +116,19 @@ class ImageGeneratorService:
                 images=images
             )
 
+            prompt = f"""
+            {BASE_PROMPT}
+
+            [TASK]
+            {user_prompt}
+            """
+
             if instructions:
-                prompt = f"""
-                [ROLE]
-                You are an AI specialized in image generation and editing.
+                prompt += f"""
 
-                [TASK]
-                {user_prompt}
-
-                [USER_CONTEXT]
-                {instructions or "N/A"}
-                """
-            else:
-                prompt = f"""
-                [ROLE]
-                You are an AI specialized in image generation and editing.
-
-                [TASK]
-                {user_prompt}
-                """
+            [USER_CONTEXT]
+            {instructions}
+            """
 
             parts = [
                 types.Part.from_text(text=prompt)
