@@ -25,40 +25,73 @@ Permite o envio de mensagens e manutenção de contexto de sessão entre intera�
 
 
 
-@app.post("/parse-content",
-          summary="Parse and extract structured content from files using schema")
-async def text_parse(
-    payload: str = Form(...),
-    file: UploadFile = File(...)
+from typing import List
+from fastapi import UploadFile, File, Form, HTTPException
+import json
+
+MAX_MB = 10
+ALLOWED_TYPES = {"image/jpeg", "image/png"}
+
+@app.post("/image-generation", summary="--------------")
+async def image_generation(
+    user_input: str = Form(...),
+    instructions: str = Form(...),
+    config: str = Form(...),
+    files: List[UploadFile] = File(...)
 ):
     """
-    Endpoint per parsing testuale.
-    Riceve:
-    - payload: JSON string (schema, client_id, job_id, etc.)
-    - file: file da analizzare (txt, pdf, ecc.)
+    Doc
     """
 
-    # Parse payload JSON
+    # Parse config JSON
     try:
-        payload_dict = json.loads(payload)
+        config_dict = json.loads(config)
     except json.JSONDecodeError:
-        raise HTTPException(status_code=400, detail="Payload non è un JSON valido")
+        raise HTTPException(status_code=400, detail="config non è un JSON valido")
 
-    # Inizializza il modulo
-    module = TextParserModule(
-        payload=payload_dict,
-        file=file
-    )
+    print(f"\n\nUser input: {user_input}")
+    print(f"\nInstructions: {instructions}")
+    print(f"\nConfig: {config_dict}")
 
-    # Esegui parsing
-    try:
-        result = await module.execute()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    images_payload: list[dict] = []
+
+    for f in files:
+        content = await f.read()
+
+        # ✅ Validação de tipo
+        if f.content_type not in ALLOWED_TYPES:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Formato não suportado: {f.content_type}. Aceitos: jpeg, png."
+            )
+
+        # ✅ Validação de tamanho (10MB)
+        if len(content) > MAX_MB * 1024 * 1024:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Arquivo muito grande: {f.filename}. Máx: {MAX_MB}MB."
+            )
+
+        images_payload.append({
+            "filename": f.filename,
+            "content_type": f.content_type,
+            "size_bytes": len(content),
+            "bytes": content
+        })
+
+        print(
+            f"\nFile: {f.filename} | "
+            f"type: {f.content_type} | "
+            f"size(bytes): {len(content)}"
+        )
+
+    print(f"\nTotal files loaded: {len(images_payload)}")
 
     return {
-        "result": result
+        "status": 200,
+        "files_received": len(images_payload)
     }
+
 
 
 
