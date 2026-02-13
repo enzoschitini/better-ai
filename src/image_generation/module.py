@@ -1,6 +1,7 @@
 from src.image_generation.edit import ImageGeneratorService
 from src.image_generation.payload_builder import PayloadBuilder
 from src.utils.unique_id_factory import IDGenerator
+from src.database.mongo_manager import MongoDBManager
 
 import os
 import uuid

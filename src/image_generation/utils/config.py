@@ -21,10 +21,15 @@ IMAGE_MODELS_CATALOG = {
     },
 }
 
+# Storage
 BUCKET_NAME = "images"
 STORAGE_BASE_PATH = "image_generations"
-ID_PREFIX = "img-"
+ID_PREFIX = "img_"
 BASE_URL = "https://example.com/generated_image"
+
+# MongoDB
+DATABASE_NAME = "DB_TEST_CLASS"
+COLLECTION_NAME = "COL_TEST_CLASS"
 
 DEFAULT_CONTENT_CONFIG = {
     "model": "gemini-2.5-flash-image",
