@@ -1,110 +1,107 @@
-from typing import Iterable, List, TypedDict, BinaryIO, Union
-from pathlib import Path
+from typing import Iterable, List, Union
 from fastapi import UploadFile, HTTPException
-import mimetypes
+from pathlib import Path
 
-class FilePayload(TypedDict):
-    filename: str
-    content_type: str
-    size_bytes: int
-    bytes: bytes
+PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
+JPEG_MAGIC = b"\xff\xd8\xff"
+
 
 class FilesPayloadBuilder:
     def __init__(
         self,
         max_mb: int = 10,
+        max_files: int = 5,
         allowed_types: Iterable[str] = ("image/jpeg", "image/png"),
-        max_files: int | None = None
     ):
         self.max_bytes = max_mb * 1024 * 1024
-        self.allowed_types = set(allowed_types)
         self.max_files = max_files
+        self.allowed_types = set(allowed_types)
 
-    # --------- Validadores internos ---------
+    async def build(self, files: Iterable[Union[UploadFile, bytes, Path]]) -> list[dict]:
+        files = list(files)
 
-    def _is_png(self, data: bytes) -> bool:
-        return data.startswith(b"\x89PNG\r\n\x1a\n")
+        if not files:
+            return []
 
-    def _is_jpeg(self, data: bytes) -> bool:
-        return data.startswith(b"\xff\xd8")
+        if len(files) > self.max_files:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Máximo de {self.max_files} arquivos permitidos."
+            )
 
-    def _validate_bytes(self, filename: str, content_type: str, data: bytes) -> None:
-        if content_type not in self.allowed_types:
-            raise HTTPException(400, f"Formato não suportado: {content_type}")
+        payload = []
 
-        if len(data) > self.max_bytes:
-            raise HTTPException(400, f"Arquivo muito grande: {filename}")
+        for f in files:
+            item = await self._normalize_file(f)
+            self._validate_size(item)
+            self._validate_type(item)
 
-        if content_type == "image/png" and not self._is_png(data):
-            raise HTTPException(400, f"Arquivo inválido (PNG header): {filename}")
+            payload.append(item)
 
-        if content_type == "image/jpeg" and not self._is_jpeg(data):
-            raise HTTPException(400, f"Arquivo inválido (JPEG header): {filename}")
+        return payload
 
-    # --------- Normalizadores por tipo de entrada ---------
+    async def _normalize_file(self, f: Union[UploadFile, bytes, Path]) -> dict:
+        if isinstance(f, UploadFile):
+            content = await f.read()
+            return {
+                "filename": f.filename,
+                "content_type": f.content_type,
+                "bytes": content,
+                "size_bytes": len(content)
+            }
 
-    async def _from_upload_file(self, f: UploadFile) -> FilePayload:
-        data = await f.read()
-        return self._build_payload(f.filename, f.content_type or "application/octet-stream", data)
+        elif isinstance(f, Path):
+            content = f.read_bytes()
+            return {
+                "filename": f.name,
+                "content_type": None,
+                "bytes": content,
+                "size_bytes": len(content)
+            }
 
-    def _from_bytes(self, data: bytes, filename: str = "file.bin", content_type: str = "application/octet-stream") -> FilePayload:
-        return self._build_payload(filename, content_type, data)
+        elif isinstance(f, bytes):
+            return {
+                "filename": "raw_bytes",
+                "content_type": None,
+                "bytes": f,
+                "size_bytes": len(f)
+            }
 
-    def _from_path(self, path: Path) -> FilePayload:
-        data = path.read_bytes()
-        content_type, _ = mimetypes.guess_type(str(path))
-        return self._build_payload(path.name, content_type or "application/octet-stream", data)
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Tipo de arquivo não suportado: {type(f)}"
+            )
 
-    def _from_file_like(self, file_obj: BinaryIO, filename: str = "file.bin", content_type: str = "application/octet-stream") -> FilePayload:
-        data = file_obj.read()
-        return self._build_payload(filename, content_type, data)
+    def _validate_size(self, item: dict):
+        if item["size_bytes"] > self.max_bytes:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Arquivo muito grande: {item['filename']} "
+                       f"(máx {self.max_bytes // (1024 * 1024)}MB)"
+            )
 
-    def _from_payload(self, payload: dict) -> FilePayload:
-        return self._build_payload(
-            payload["filename"],
-            payload["content_type"],
-            payload["bytes"]
-        )
+    def _validate_type(self, item: dict):
+        content = item["bytes"]
+        content_type = item.get("content_type")
 
-    # --------- Builder central ---------
+        is_png = content.startswith(PNG_MAGIC)
+        is_jpeg = content.startswith(JPEG_MAGIC)
 
-    def _build_payload(self, filename: str, content_type: str, data: bytes) -> FilePayload:
-        self._validate_bytes(filename, content_type, data)
+        if not (is_png or is_jpeg):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Arquivo inválido (não é PNG nem JPEG): {item['filename']}"
+            )
 
-        return {
-            "filename": filename,
-            "content_type": content_type,
-            "size_bytes": len(data),
-            "bytes": data
-        }
+        if content_type and content_type not in self.allowed_types:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Formato não suportado: {content_type}. "
+                       f"Aceitos: {', '.join(self.allowed_types)}"
+            )
 
-    # --------- API pública ---------
 
-    async def build(self, items: Iterable[Union[UploadFile, bytes, Path, BinaryIO, dict]]) -> List[FilePayload]:
-        items = list(items)
-
-        if self.max_files and len(items) > self.max_files:
-            raise HTTPException(400, f"Máximo de {self.max_files} arquivos permitido.")
-
-        payloads: List[FilePayload] = []
-
-        for item in items:
-            if isinstance(item, UploadFile):
-                payload = await self._from_upload_file(item)
-            elif isinstance(item, bytes):
-                payload = self._from_bytes(item)
-            elif isinstance(item, Path):
-                payload = self._from_path(item)
-            elif hasattr(item, "read"):
-                payload = self._from_file_like(item)
-            elif isinstance(item, dict):
-                payload = self._from_payload(item)
-            else:
-                raise HTTPException(400, f"Tipo de entrada não suportado: {type(item)}")
-
-            payloads.append(payload)
-
-        return payloads
 
 
 if __name__ == "__main__":
