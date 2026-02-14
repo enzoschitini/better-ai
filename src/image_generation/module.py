@@ -74,11 +74,68 @@ def payloads(responses_parsed):
     print(f"\n\nmongo_payload: {json.dumps(mongo_payload, indent=4)}")
     print(f"\n\nresponse_payload: {json.dumps(response_payload, indent=4)}")
 
+"""
 print(f"ID: {IDGenerator.timestamp(prefix="JOB-")}")
 
 images = load_image_bytes()
 responses_parsed = gen(images=images)
 payloads(responses_parsed=responses_parsed)
 save_results(responses_parsed)
+"""
+from typing import List, Dict, Optional, Tuple
+from fastapi import FastAPI, UploadFile, HTTPException, Request, Form, Depends, Header, File
+from fastapi.responses import JSONResponse
+from src.utils.loader_files import FilesPayloadBuilder
+
+import json
+
+class ImageGenerate:
+    def __init__(
+        self,
+        user_input: str,
+        instructions: Optional[str] = None,
+        config: Optional[str] = None,
+        files: List[UploadFile] = None
+    ):
+        self.user_input = user_input
+        self.instructions = instructions
+        self.config = config
+        self.files = files
+
+    async def validate(self) -> Tuple[dict, List[bytes]]:
+        config_dict = {}
+        image_bytes = []
+
+        # Validate config
+        if self.config:
+            try:
+                config_dict = json.loads(self.config)
+            except json.JSONDecodeError:
+                raise HTTPException(
+                    status_code=400,
+                    detail="config non è un JSON valido"
+                )
+
+        # Validate files
+        if self.files:
+            try:
+                builder = FilesPayloadBuilder(
+                    max_mb=10,
+                    allowed_types=("image/jpeg", "image/png")
+                )
+                images_payload = await builder.build_images_payload(self.files)
+                image_bytes = [x["bytes"][:50] for x in images_payload]
+            except Exception as e:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Erro ao carregar as imagens: {str(e)}"
+                )
+
+        return config_dict, image_bytes
+
+
+    # Genera Immagine
+    # Salva il processo
+
 
 # python -m src.image_generation.module
