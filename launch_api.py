@@ -29,36 +29,25 @@ from src.image_generation.module import ImageGenerate
 @app.post("/image-generation", summary="--------------")
 async def image_generation(
     user_input: str = Form(...),
-    instructions: str = Form(...),
-    config: str = Form(...),
-    files: List[UploadFile] = File(...)
+    instructions: Optional[str] = Form(None),
+    config: Optional[str] = Form(None),
+    files: Optional[List[UploadFile]] = File(None)
 ):
     """
     Doc
     """
 
-    try:
-        config_dict = json.loads(config)
-    except json.JSONDecodeError:
-        raise HTTPException(status_code=400, detail="config non è un JSON valido")
-    
-    try:
-        builder = FilesPayloadBuilder(max_mb=10, allowed_types=("image/jpeg", "image/png"))
-        images_payload = await builder.build_images_payload(files)
-        image_bytes = [x["bytes"] for x in images_payload]
-    except Exception as e:
-        raise RuntimeError(f"Erro ao carregar as imagens: {e}")
+    generater = ImageGenerate(
+        user_input,
+        instructions,
+        config,
+        files
+    )
 
-    print(f"\n\nUser input: {user_input}")
-    print(f"\nInstructions: {instructions}")
-    print(f"\nConfig: {config_dict}")
-
-    for x in images_payload:
-        print(f"filename: {x['filename']} | type: {x['content_type']} | size: {x['size_bytes']} | bytes: {x["bytes"][:50]}")
+    response = await generater.runner()
 
     return {
-        "status": 200,
-        "files_received": len(images_payload)
+        "status": 200
     }
 
 

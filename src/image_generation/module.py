@@ -82,10 +82,30 @@ responses_parsed = gen(images=images)
 payloads(responses_parsed=responses_parsed)
 save_results(responses_parsed)
 """
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 from typing import List, Dict, Optional, Tuple
 from fastapi import FastAPI, UploadFile, HTTPException, Request, Form, Depends, Header, File
 from fastapi.responses import JSONResponse
 from src.utils.loader_files import FilesPayloadBuilder
+from src.database.mongo_manager import MongoDBManager
+from src.image_generation.utils.config import (
+    BUCKET_NAME, STORAGE_BASE_PATH, DATABASE_NAME, COLLECTION_NAME
+)
+from src.storage.storage_repository import StorageRepository
 
 import json
 
@@ -125,6 +145,10 @@ class ImageGenerate:
                 )
                 images_payload = await builder.build_images_payload(self.files)
                 image_bytes = [x["bytes"][:50] for x in images_payload]
+
+                for x in images_payload:
+                    print(f"filename: {x['filename']} | type: {x['content_type']} | size: {x['size_bytes']} | bytes: {x["bytes"][:50]}")
+
             except Exception as e:
                 raise HTTPException(
                     status_code=400,
@@ -135,7 +159,69 @@ class ImageGenerate:
 
 
     # Genera Immagine
+    def generate(self, content_config, user_prompt, instructions, images):
+        editor = ImageGeneratorService(content_config=content_config)
+
+        parts = editor.build_parts(
+            user_prompt=user_prompt,
+            instructions=instructions,
+            images=images
+        )
+
+        config = editor.generate_config()
+        response = editor.call_model(parts, config)
+        responses_parsed = editor.parse_responses(response)
+
+        return responses_parsed
+    
     # Salva il processo
+    def save_process(responses_parsed):
+        try:
+            payload_builder = PayloadBuilder(IDGenerator.timestamp(prefix="job_"), responses_parsed)
+            mongo_payload, storage_payload, response_payload = payload_builder.generate_payloads()
+        
+        except Exception as e:
+            raise RuntimeError("Erro")
+
+        try:
+            mongo = MongoDBManager()
+
+            result = mongo.save_payload(
+                database_name=DATABASE_NAME,
+                collection_name=COLLECTION_NAME,
+                payload=mongo_payload
+            )
+        except Exception as e:
+            raise RuntimeError("Erro ao salvar no mongo")
+
+        try:
+            repository = StorageRepository(
+                base_path=STORAGE_BASE_PATH,
+                bucket_name=BUCKET_NAME
+            )
+
+            for image in storage_payload:
+                repository.upload_to_supabase(
+                    file_name=image["id"],
+                    byte_data=image["byte"]
+                )
+
+        except Exception as e:
+            raise RuntimeError("Erro ao salvar no no storage")
+        
+        return response_payload
+
+    async def runner(self):
+        content_config, image_bytes = await self.validate()
+        responses_parsed = self.generate(
+            content_config,
+            self.user_input,
+            self.instructions,
+            image_bytes
+        )
+        response_payload = self.save_process(responses_parsed)
+
+        return response_payload
 
 
 # python -m src.image_generation.module
