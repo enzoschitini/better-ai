@@ -115,47 +115,12 @@ class ImageGenerate:
         user_input: str,
         instructions: Optional[str] = None,
         config: Optional[str] = None,
-        files: List[UploadFile] = None
+        image_bytes: List[str] = None
     ):
         self.user_input = user_input
         self.instructions = instructions
         self.config = config
-        self.files = files
-
-    async def validate(self) -> Tuple[dict, List[bytes]]:
-        config_dict = {}
-        image_bytes = []
-
-        # Validate config
-        if self.config:
-            try:
-                config_dict = json.loads(self.config)
-            except json.JSONDecodeError:
-                raise HTTPException(
-                    status_code=400,
-                    detail="config non è un JSON valido"
-                )
-
-        # Validate files
-        if self.files:
-            try:
-                builder = FilesPayloadBuilder(
-                    max_mb=10,
-                    allowed_types=("image/jpeg", "image/png")
-                )
-                images_payload = await builder.build_images_payload(self.files)
-                image_bytes = [x["bytes"][:50] for x in images_payload]
-
-                for x in images_payload:
-                    print(f"filename: {x['filename']} | type: {x['content_type']} | size: {x['size_bytes']} | bytes: {x["bytes"][:50]}")
-
-            except Exception as e:
-                raise HTTPException(
-                    status_code=400,
-                    detail=f"Erro ao carregar as imagens: {str(e)}"
-                )
-
-        return config_dict, image_bytes
+        self.image_bytes = image_bytes
 
 
     # Genera Immagine
@@ -173,55 +138,35 @@ class ImageGenerate:
         responses_parsed = editor.parse_responses(response)
 
         return responses_parsed
-    
-    # Salva il processo
-    def save_process(responses_parsed):
-        try:
-            payload_builder = PayloadBuilder(IDGenerator.timestamp(prefix="job_"), responses_parsed)
-            mongo_payload, storage_payload, response_payload = payload_builder.generate_payloads()
-        
-        except Exception as e:
-            raise RuntimeError("Erro")
 
-        try:
-            mongo = MongoDBManager()
+    def save_results(self, responses_parsed):
+        print("Text Responses:", responses_parsed["text_responses"])
+        print("Usage Metadata:", responses_parsed["usage_metadata"])
+        print("Config:", responses_parsed["generate_config"])
 
-            result = mongo.save_payload(
-                database_name=DATABASE_NAME,
-                collection_name=COLLECTION_NAME,
-                payload=mongo_payload
-            )
-        except Exception as e:
-            raise RuntimeError("Erro ao salvar no mongo")
+        os.makedirs("img_test", exist_ok=True)
 
-        try:
-            repository = StorageRepository(
-                base_path=STORAGE_BASE_PATH,
-                bucket_name=BUCKET_NAME
-            )
+        for i, image in enumerate(responses_parsed["images"]):
+            ext = image["mime_type"].split("/")[-1]  # png, jpeg, webp, etc
+            filename = f"img_test/img_{i}_{uuid.uuid4().hex}.{ext}"
 
-            for image in storage_payload:
-                repository.upload_to_supabase(
-                    file_name=image["id"],
-                    byte_data=image["byte"]
-                )
+            with open(filename, "wb") as f:
+                f.write(image["data"])
 
-        except Exception as e:
-            raise RuntimeError("Erro ao salvar no no storage")
-        
-        return response_payload
+            print("Imagem salva em:", filename)
 
-    async def runner(self):
-        content_config, image_bytes = await self.validate()
+    def runner(self):
         responses_parsed = self.generate(
-            content_config,
+            self.config,
             self.user_input,
             self.instructions,
-            image_bytes
+            self.image_bytes
         )
-        response_payload = self.save_process(responses_parsed)
+        #response_payload = self.save_process(responses_parsed)
+        self.save_results(responses_parsed)
 
-        return response_payload
+        return "ok"
+
 
 
 # python -m src.image_generation.module
