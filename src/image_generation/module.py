@@ -147,7 +147,34 @@ class ImageGenerate:
         print(f"\n\nresponse_payload: {json.dumps(response_payload, indent=4)}")
 
         return mongo_payload, storage_payload, response_payload
+    
+    def save_to_mongoDB(self, mongo_payload):
+        try:
+            mongo = MongoDBManager()
 
+            result = mongo.save_payload(
+                database_name=DATABASE_NAME,
+                collection_name=COLLECTION_NAME,
+                payload=mongo_payload
+            )
+        except Exception as e:
+            raise RuntimeError("Erro ao salvar no mongo")
+    
+    def save_to_supabase(self, images):
+        try:
+            repository = StorageRepository(
+                base_path=STORAGE_BASE_PATH,
+                bucket_name=BUCKET_NAME
+            )
+
+            for image in images:
+                repository.upload_to_supabase(
+                    file_name=image["id"],
+                    byte_data=image["byte"]
+                )
+
+        except Exception as e:
+            raise RuntimeError("Erro ao salvar no no storage")
 
     def save_results(self, responses_parsed):
         print("Text Responses:", responses_parsed["text_responses"])
@@ -175,6 +202,8 @@ class ImageGenerate:
         #response_payload = self.save_process(responses_parsed)
         self.save_results(responses_parsed)
         mongo_payload, storage_payload, response_payload = self.build_payloads(responses_parsed)
+        self.save_to_mongoDB(mongo_payload)
+        self.save_to_supabase(storage_payload)
 
         return response_payload
 

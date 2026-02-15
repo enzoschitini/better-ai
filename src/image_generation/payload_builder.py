@@ -56,7 +56,7 @@ class PayloadBuilder:
 
             file_id = IDGenerator.timestamp(prefix=ID_PREFIX)
             ext = mime_type.split("/")[-1]
-            url = f"{BASE_URL}_{file_id}.{ext}"
+            url = f"{BASE_URL}/{file_id}"
 
             public_dict = {
                 "id": file_id,

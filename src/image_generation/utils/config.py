@@ -25,7 +25,7 @@ IMAGE_MODELS_CATALOG = {
 BUCKET_NAME = "images"
 STORAGE_BASE_PATH = "image_generations"
 ID_PREFIX = "img_"
-BASE_URL = "https://example.com/generated_image"
+BASE_URL = "https://hsenyunovbrmjejxqvjn.supabase.co/storage/v1/object/public/images/image_generations"
 
 # MongoDB
 DATABASE_NAME = "DB_TEST_CLASS"
