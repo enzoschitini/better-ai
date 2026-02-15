@@ -69,10 +69,11 @@ async def image_generation(
         image_bytes=image_bytes
     )
 
-    generator.runner()
+    response = generator.runner()
 
     return {
-        "status": 200
+        "status": 200,
+        "data": response
     }
 
 

@@ -139,6 +139,16 @@ class ImageGenerate:
 
         return responses_parsed
 
+    def build_payloads(self, responses_parsed):
+        payload_builder = PayloadBuilder(IDGenerator.timestamp(prefix="job_"), responses_parsed)
+        mongo_payload, storage_payload, response_payload = payload_builder.generate_payloads()
+
+        print(f"\n\nmongo_payload: {json.dumps(mongo_payload, indent=4)}")
+        print(f"\n\nresponse_payload: {json.dumps(response_payload, indent=4)}")
+
+        return mongo_payload, storage_payload, response_payload
+
+
     def save_results(self, responses_parsed):
         print("Text Responses:", responses_parsed["text_responses"])
         print("Usage Metadata:", responses_parsed["usage_metadata"])
@@ -164,8 +174,9 @@ class ImageGenerate:
         )
         #response_payload = self.save_process(responses_parsed)
         self.save_results(responses_parsed)
+        mongo_payload, storage_payload, response_payload = self.build_payloads(responses_parsed)
 
-        return "ok"
+        return response_payload
 
 
 

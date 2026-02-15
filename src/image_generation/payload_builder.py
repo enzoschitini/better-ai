@@ -23,7 +23,13 @@ class PayloadBuilder:
             return self._cached_cost
 
         calculator = CostCalculator()
-        usage_merged = calculator.merge_cost_information(self.usage_metadata)
+
+        if not self.usage_metadata:
+            usage_merged = {}
+        elif len(self.usage_metadata) == 1:
+            usage_merged = self.usage_metadata[0]
+        else:
+            usage_merged = calculator.merge_cost_information(self.usage_metadata)
 
         cost = calculator.calculate(
             model=self.generate_config["model"],
