@@ -8,8 +8,8 @@ from typing import Any, Dict, List, Optional
 from fastapi import UploadFile, HTTPException
 
 # Project modules
-from src.image_generation.edit import ImageGeneratorService
-from src.image_generation.payload_builder import PayloadBuilder
+from src.image_generation.image_generator_service import ImageGeneratorService
+from src.image_generation.utils.payload_builder import PayloadBuilder
 from src.image_generation.utils.config import (
     BUCKET_NAME,
     STORAGE_BASE_PATH,
@@ -124,13 +124,16 @@ class ImageGenerate:
         return responses_parsed
 
     def build_payloads(self, responses_parsed):
-        payload_builder = PayloadBuilder(IDGenerator.timestamp(prefix="job_"), responses_parsed)
-        mongo_payload, storage_payload, response_payload = payload_builder.generate_payloads()
+        try:
+            payload_builder = PayloadBuilder(IDGenerator.timestamp(prefix="job_"), responses_parsed)
+            mongo_payload, storage_payload, response_payload = payload_builder.generate_payloads()
 
-        #print(f"\n\nmongo_payload: {json.dumps(mongo_payload, indent=4)}")
-        #print(f"\n\nresponse_payload: {json.dumps(response_payload, indent=4)}")
+            #print(f"\n\nmongo_payload: {json.dumps(mongo_payload, indent=4)}")
+            #print(f"\n\nresponse_payload: {json.dumps(response_payload, indent=4)}")
 
-        return mongo_payload, storage_payload, response_payload
+            return mongo_payload, storage_payload, response_payload
+        except Exception as e:
+            raise RuntimeError("Erro ao montar os payloads")
     
     def save_to_mongoDB(self, mongo_payload):
         try:
@@ -164,7 +167,7 @@ class ImageGenerate:
         os.makedirs("img_test", exist_ok=True)
 
         for i, image in enumerate(responses_parsed["images"]):
-            ext = image["mime_type"].split("/")[-1]  # png, jpeg, webp, etc
+            ext = image["mime_type"].split("/")[-1]
             filename = f"img_test/img_{i}_{uuid.uuid4().hex}.{ext}"
 
             with open(filename, "wb") as f:

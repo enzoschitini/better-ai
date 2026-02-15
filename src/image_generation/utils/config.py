@@ -28,8 +28,8 @@ ID_PREFIX = "img_"
 BASE_URL = "https://hsenyunovbrmjejxqvjn.supabase.co/storage/v1/object/public/images/image_generations"
 
 # MongoDB
-DATABASE_NAME = "DB_TEST_CLASS"
-COLLECTION_NAME = "COL_TEST_CLASS"
+DATABASE_NAME = "GenAI"
+COLLECTION_NAME = "ImageGeneration"
 
 DEFAULT_CONTENT_CONFIG = {
     "model": "gemini-2.5-flash-image",

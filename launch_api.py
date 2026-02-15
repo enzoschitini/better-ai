@@ -22,7 +22,6 @@ Permite o envio de mensagens e manutenção de contexto de sessão entre intera�
 
 # uvicorn launch_api:app --reload  
 
-from src.utils.loader_files import FilesPayloadBuilder
 from src.image_generation.module import ImageGenerate, RequestProcessor
 
 
@@ -39,10 +38,10 @@ async def image_generation(
     """
 
     processor = RequestProcessor(config=config, files=files)
-    result = await processor.process()
+    processor_result = await processor.process()
 
-    config_dict = result["config"]
-    image_bytes = result["image_bytes"]
+    config_dict = processor_result["config"]
+    image_bytes = processor_result["image_bytes"]
 
     generator = ImageGenerate(
         user_input=user_input,
@@ -58,5 +57,20 @@ async def image_generation(
         "data": response
     }
 
-
+"""
+curl --location 'http://127.0.0.1:8000/image-generation' \
+--header 'accept: application/json' \
+--form 'user_input="Migliora la qualità della foto"' \
+--form 'instructions="Lo stile deve essere realistico"' \
+--form 'config="{
+    \"model\": \"gemini-2.5-flash-image\",
+    \"temperature\": 0.75,
+    \"top_p\": 0.85,
+    \"max_output_tokens\": 1024,
+    \"aspect_ratio\": \"1:1\",
+    \"number_of_images\": 2
+}"' \
+--form 'files=@"/C:/Users/schit/Downloads/Linkedin Profilo.jpeg"' \
+--form 'files=@"/C:/Users/schit/Downloads/IMG-20230714-WA0007.jpg"'
+"""
 

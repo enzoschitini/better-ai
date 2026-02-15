@@ -1,11 +1,3 @@
-# class ImageEdit 
-# (Request: Text/Image Byte/Image Byte List, Config Params) -> Response: Text, Image Byte List, Metadata
-
-# 1. Build Parts (Prompt + Imagens)
-# 2. Config (temperature, top_p, max_tokens, etc)
-# 3. Model Call
-# 4. Response Parse (texto, imagens, metadata)
-
 import magic
 import os
 
