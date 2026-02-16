@@ -1,4 +1,3 @@
-import magic
 import os
 
 from google.genai import types
@@ -127,15 +126,11 @@ class ImageGeneratorService:
             ]
 
             if images:
-                mime = magic.Magic(mime=True)
-
                 for image_bytes in images:
-                    mime_type = mime.from_buffer(image_bytes)
-
                     parts.append(
                         types.Part.from_bytes(
                             data=image_bytes,
-                            mime_type=mime_type
+                            mime_type="image/jpeg"
                         )
                     )
 
