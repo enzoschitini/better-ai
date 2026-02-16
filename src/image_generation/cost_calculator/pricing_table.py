@@ -26,6 +26,7 @@ class PricingTable:
             cache_storage_per_million_tokens_per_hour=1.00,
         ),
 
+        # Image Generation 🍌
         "gemini-3-pro-image-preview": ModelPricing(
             input_per_million_tokens=2.00,
             output_per_million_tokens=12.00,
@@ -72,6 +73,8 @@ class PricingTable:
         # =========================
         # Gemini Image Models
         # =========================
+
+        # Image Generation 🍌
         "gemini-2.5-flash-image": ModelPricing(
             input_per_million_tokens=0.30,
             output_per_million_tokens=0.0,   # saída é imagem

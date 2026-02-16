@@ -56,7 +56,6 @@ class RequestProcessor:
 
         try:
             self.config_dict = json.loads(self.config_raw)
-            print(f"\nConfig: {self.config_dict}")
         except json.JSONDecodeError:
             raise HTTPException(
                 status_code=400,

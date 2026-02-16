@@ -19,7 +19,20 @@ if __name__ == "__main__":
         
         images.append(image_bytes)
 
-    editor = ImageGeneratorService(content_config={"number_of_images": 2})
+    editor = ImageGeneratorService(
+        content_config={
+            #"model": "gemini-2.5-flash-image",
+            "model": "gemini-3-pro-image-preview",
+            "temperature": 0.75,
+            "top_p": 0.85,
+            "max_output_tokens": 1024,
+            "aspect_ratio": "9:16"
+        }
+    )
+
+    # MAX TOKENS:
+    # gemini-2.5-flash-image - 1024, 2048
+    # gemini-3-pro-image-preview - 4096, 8192
     
     parts = editor.build_parts(
         user_prompt="Gere uma imagem seguindo o estilo dessas",
@@ -95,4 +108,4 @@ ImageEditResponse = {
 }
 
 
-# python -m src.image_generation.edit
+# python -m src.image_generation.test.ImageGeneratorService

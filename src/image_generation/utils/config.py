@@ -36,6 +36,8 @@ DEFAULT_CONTENT_CONFIG = {
     "temperature": 0.75,
     "top_p": 0.85,
     "max_output_tokens": 1024,
+    # gemini-2.5-flash-image 🍌 - 1024, 2048
+    # gemini-3-pro-image-preview 🍌 - 4096, 8192
     "aspect_ratio": "1:1",
     "number_of_images": 1
 }

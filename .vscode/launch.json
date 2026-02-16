@@ -24,7 +24,7 @@
             "name": "Image Generator Service",
             "type": "python",
             "request": "launch",
-            "module": "src.image_generation.edit",
+            "module": "src.image_generation.test.ImageGeneratorService",
             "console": "integratedTerminal"
         }
     ]
