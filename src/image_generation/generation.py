@@ -1,17 +1,17 @@
 from typing import List, Optional
 
-from src.image_generation.utils.config import GeneratedImage
+from src.image_generation.utils.config import Imagen, GeneratedImage 
 from src.image_generation.utils.params_validator import ImageParamsValidator
 from dotenv import load_dotenv
 
 load_dotenv()
 
-class ImageGenerator:
-    DEFAULT_MODEL = "imagen-4.0-generate-001"
+class TextToImage:
+    DEFAULT_MODEL = Imagen.GENERATE.id
     DEFAULT_NUMBER_OF_IMAGES = 1
     DEFAULT_OUTPUT_MIME_TYPE = "image/jpeg"
-    DEFAULT_ASPECT_RATIO = "1:1"
-    DEFAULT_IMAGE_SIZE = "1K"
+    DEFAULT_ASPECT_RATIO = Imagen.GENERATE.ratios.R1_1
+    DEFAULT_IMAGE_SIZE = Imagen.GENERATE.resolutions.K1
 
     def __init__(self, client, validator: ImageParamsValidator):
         self.client = client

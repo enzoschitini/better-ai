@@ -120,13 +120,92 @@ def edit_GAIS4_multi(
         "usage_metadata": usage_metadata
     }
 
+"""
+
+# class GeminiClient 👌
+1. Init Client (API Key)
+
+# class Validator
+1. Validate Params (model, number_of_images, mime_type, aspect_ratio, image_size)
+2. Respectar defaults e limites (ex: max 4 imagens, modelos disponíveis, etc)
+
+# class File to Bytes
+1. File Path -> Bytes + Mime Type
+
+# class ImageGeneratorService 👌
+# (Request: Text/Image Byte/Image Byte List, Config Params) -> Response: Text, Image Byte List, Metadata
+
+1. Build Parts (Prompt + Imagens)
+2. Config (temperature, top_p, max_tokens, etc)
+3. Model Call
+4. Response Parse (texto, imagens, metadata)
+
+# class Payload Builder
+
+1. Calc cost (tokens and USD)
+2. MongoDB Payload (texto, paths, metadata, cost)
+3. Response Parse and Payload
+
+# class SaveProcess
+
+1. Save images to Supabase Storage
+2. Save metadata to MongoDB
+
+
+Validator ─────┐
+               ├──> ImageEdit ───> PayloadBuilder ───> SaveProcess
+FileToBytes ───┘          │
+                           └──> GeminiClient
+
+"""
+
+ImageEditPayload = {
+    "prompt": "Gere uma imagem seguindo o estilo dessas",
+
+    "content_config": {
+        "model": "gemini-2.5-flash-image",
+        "temperature": 0.75,
+        "top_p": 0.85,
+        "max_output_tokens": 1024,
+        "aspect_ratio": "9:16"
+    },
+
+    "images": [
+        {
+            "bytes": b"\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x00\x00...\xff...",
+            "mime_type": "image/jpeg"
+        },
+        {
+            "bytes": b"\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x00\x00...\xff...",
+            "mime_type": "image/jpeg"
+        }
+    ]
+}
+
+ImageEditResponse = {
+    "text_response": "Claro, aqui está a imagem solicitada.",
+
+    "images": [
+        {
+            "bytes": b"\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x00\x00...\xff...",
+            "mime_type": "image/jpeg"
+        }
+    ],
+
+    "usage_metadata": {
+        "prompt_tokens": 100,
+        "output_tokens": 100,
+        "total_tokens": 200
+    }
+}
+
 
 import mimetypes
 
 response = edit_GAIS4_multi(
     base_image_paths=[
-        "src/image_generation/imgs/base/gen3.png",
-        "src/image_generation/imgs/base/gen4.png"
+        "src/image_generation/backup/img1.jpeg",
+        "src/image_generation/backup/img2.jpeg"
     ]
 )
 

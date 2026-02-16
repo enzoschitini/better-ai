@@ -2,7 +2,7 @@ from src.image_generation.utils.gemini_client import GeminiClient
 from src.image_generation.utils.config import Imagen, BUCKET_NAME, STORAGE_BASE_PATH, ID_PREFIX
 
 from src.image_generation.utils.params_validator import ImageParamsValidator
-from src.image_generation.generation import ImageGenerator
+from src.image_generation.generation import TextToImage
 from src.storage.storage_repository import StorageRepository
 from src.utils.unique_id_factory import IDGenerator
 
@@ -12,7 +12,7 @@ class ImageGeneration:
         client = GeminiClient().get_client()
         validator = ImageParamsValidator()
 
-        self.generator = ImageGenerator(client, validator)
+        self.generator = TextToImage(client, validator)
         self.repository = StorageRepository(
             base_path=STORAGE_BASE_PATH,
             bucket_name=BUCKET_NAME

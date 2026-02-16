@@ -15,13 +15,19 @@ from auth import Authorization
 
 from src.chat.AgentAsk import AgentAsk
 
+# Embedding Packages
 from src.embedding.services.payload_validation import PayloadProcessor
 from src.embedding.services.pinecone_vector_store import PineconeClient, PineconeVectorService
 from src.embedding.embedding_module import EmbeddingModule
 
+# Image Generation Packages (Da-Vinci)
 from src.image_generation.applications import ImageGeneration
+from src.image_generation.module import ImageGenerate, RequestProcessor
+
+# Text Parser Packages
 from src.text_parse.text_parse_module import TextParserModule
 
+# Deep Research Packages
 from src.deep_research.tavily_research.tavily_core import TavilyDeepResearch
 from src.deep_research.tavily_research.context_builder import TavilyContextBuilder, TavilyResearchRunner
 
@@ -296,6 +302,70 @@ def generate_image(data: GenerateRequest) -> GenerateResponse:
             detail=f"Erro interno: {str(e)}"
         )
 
+# DAVINCI 🍌
+
+@app.post("/davinci/image-generation", 
+          summary="Image generation based on prompts, settings, and optional images.")
+async def image_generation(
+    user_input: str = Form(...),
+    instructions: Optional[str] = Form(None),
+    config: Optional[str] = Form(None),
+    files: Optional[List[UploadFile]] = File(None)
+):
+    """
+    Endpoint responsável pela geração de imagens a partir de um prompt textual,
+    permitindo o uso de instruções adicionais, configurações customizadas e
+    arquivos de referência.
+
+    Parâmetros:
+    ----------
+    user_input : str
+        Prompt principal que descreve a imagem a ser gerada.
+
+    instructions : Optional[str], default=None
+        Instruções adicionais para orientar o estilo ou comportamento da geração.
+
+    config : Optional[str], default=None
+        Configuração em formato JSON contendo parâmetros do modelo, como tamanho,
+        modelo utilizado, qualidade, entre outros.
+
+    files : Optional[List[UploadFile]], default=None
+        Lista de arquivos de referência (ex: imagens) que podem ser utilizados
+        como base para a geração.
+
+    Fluxo:
+    ------
+    1. Processa a configuração e os arquivos enviados.
+    2. Extrai os bytes das imagens e normaliza os parâmetros.
+    3. Executa o gerador de imagens com os dados fornecidos.
+
+    Retorno:
+    -------
+    Dict
+        Estrutura contendo:
+        - status: Código de status da requisição
+        - data: Resultado da geração (imagens, metadados, etc.)
+    """
+
+    processor = RequestProcessor(config=config, files=files)
+    processor_result = await processor.process()
+
+    config_dict = processor_result["config"]
+    image_bytes = processor_result["image_bytes"]
+
+    generator = ImageGenerate(
+        user_input=user_input,
+        instructions=instructions,
+        config=config_dict,
+        image_bytes=image_bytes
+    )
+
+    response = generator.runner()
+
+    return {
+        "status": 200,
+        "data": response
+    }
 
 
 # ========================
