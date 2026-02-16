@@ -44,7 +44,6 @@ wikipedia~=1.4.0
 
 # --- 8. INTERNAL SERVICES ---
 pytest~=9.0.2
-python-magic~=0.4.27
 
 # --- 9. DEEP RECEARCH ---
 tavily~=1.1.0
