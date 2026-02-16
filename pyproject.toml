@@ -45,4 +45,5 @@ dependencies = [
     # --- 8. INTERNAL SERVICES ---
     "pytest>=9.0.2",
     "python-magic-bin>=0.4.14",
+    "tavily>=1.1.0",
 ]

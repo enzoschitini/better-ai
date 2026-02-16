@@ -20,7 +20,8 @@ Permite o envio de mensagens e manutenção de contexto de sessão entre intera�
     version="1.0.0"
 )
 
-# uvicorn launch_api:app --reload  
+# uvicorn launch_api:app --reload 
+# uvicorn app:app --reload  
 
 from src.image_generation.module import ImageGenerate, RequestProcessor
 
