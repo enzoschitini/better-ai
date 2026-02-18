@@ -20,7 +20,7 @@ from src.image_generation.utils.config import (
 from src.utils.unique_id_factory import IDGenerator
 from src.utils.loader_files import FilesPayloadBuilder
 
-from database.no_sql.router import NoSQLRouter
+from src.database.no_sql.router import NoSQLRouter
 from src.storage.storage_repository import StorageRepository
 
 class RequestProcessor:

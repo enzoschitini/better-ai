@@ -1,4 +1,4 @@
-from database.no_sql.mongo_manager import MongoDBManager
+from src.database.no_sql.mongo_manager import MongoDBManager
 from src.image_generation.utils.config import (
     BUCKET_NAME, STORAGE_BASE_PATH, DATABASE_NAME, COLLECTION_NAME
 )
