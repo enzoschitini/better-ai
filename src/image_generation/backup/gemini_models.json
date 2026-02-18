@@ -1,0 +1,328 @@
+{
+  "meta": {
+    "generated_at": "2026-01-31",
+    "source": "google-ai-studio",
+    "notes": "Unified Gemini model registry (2.0, 2.5, 3.x) with deprecation and routing metadata."
+  },
+  "models": {
+    "gemini_3_pro_preview": {
+      "name": "Gemini 3 Pro",
+      "model_code": "gemini-3-pro-preview",
+      "status": "preview",
+      "last_update": "2025-11",
+      "knowledge_cutoff": "2025-01",
+      "input_types": ["text", "image", "video", "audio", "pdf"],
+      "output_types": ["text"],
+      "token_limits": { "input": 1048576, "output": 65536 },
+      "features": {
+        "audio_generation": false,
+        "batch_api": true,
+        "cache": true,
+        "code_execution": true,
+        "file_search": true,
+        "function_calling": true,
+        "google_maps_grounding": false,
+        "image_generation": false,
+        "live_api": false,
+        "grounded_research": true,
+        "structured_outputs": true,
+        "reasoning_mode": true,
+        "url_context": true
+      },
+      "tags": ["best_reasoning", "agents", "long_context"],
+      "fallbacks": ["gemini-2.5-pro", "gemini-3-flash-preview"]
+    },
+
+    "gemini_3_pro_image_preview": {
+      "name": "Gemini 3 Pro Image",
+      "model_code": "gemini-3-pro-image-preview",
+      "status": "preview",
+      "last_update": "2025-11",
+      "knowledge_cutoff": "2025-01",
+      "input_types": ["text", "image"],
+      "output_types": ["text", "image"],
+      "token_limits": { "input": 65536, "output": 32768 },
+      "features": {
+        "audio_generation": false,
+        "batch_api": true,
+        "cache": false,
+        "code_execution": false,
+        "file_search": false,
+        "function_calling": false,
+        "google_maps_grounding": false,
+        "image_generation": true,
+        "live_api": false,
+        "grounded_research": true,
+        "structured_outputs": true,
+        "reasoning_mode": true,
+        "url_context": false
+      },
+      "tags": ["image_generation"],
+      "fallbacks": ["gemini-2.5-flash-image"]
+    },
+
+    "gemini_3_flash_preview": {
+      "name": "Gemini 3 Flash",
+      "model_code": "gemini-3-flash-preview",
+      "status": "preview",
+      "last_update": "2025-12",
+      "knowledge_cutoff": "2025-01",
+      "input_types": ["text", "image", "video", "audio", "pdf"],
+      "output_types": ["text"],
+      "token_limits": { "input": 1048576, "output": 65536 },
+      "features": {
+        "audio_generation": false,
+        "batch_api": true,
+        "cache": true,
+        "code_execution": true,
+        "file_search": true,
+        "function_calling": true,
+        "google_maps_grounding": false,
+        "image_generation": false,
+        "live_api": false,
+        "grounded_research": true,
+        "structured_outputs": true,
+        "reasoning_mode": true,
+        "url_context": true
+      },
+      "tags": ["fast", "balanced"],
+      "fallbacks": ["gemini-2.5-flash"]
+    },
+
+    "gemini_2_5_pro_stable": {
+      "name": "Gemini 2.5 Pro",
+      "model_code": "gemini-2.5-pro",
+      "status": "stable",
+      "last_update": "2025-06",
+      "knowledge_cutoff": "2025-01",
+      "input_types": ["audio", "image", "video", "text", "pdf"],
+      "output_types": ["text"],
+      "token_limits": { "input": 1048576, "output": 65536 },
+      "features": {
+        "audio_generation": false,
+        "batch_api": true,
+        "cache": true,
+        "code_execution": true,
+        "file_search": true,
+        "function_calling": true,
+        "google_maps_grounding": true,
+        "image_generation": false,
+        "live_api": false,
+        "grounded_research": true,
+        "structured_outputs": true,
+        "reasoning_mode": true,
+        "url_context": true
+      },
+      "tags": ["best_reasoning", "stable", "long_context"],
+      "fallbacks": ["gemini-3-pro-preview"]
+    },
+
+    "gemini_2_5_flash_stable": {
+      "name": "Gemini 2.5 Flash",
+      "model_code": "gemini-2.5-flash",
+      "status": "stable",
+      "last_update": "2025-06",
+      "knowledge_cutoff": "2025-01",
+      "input_types": ["text", "image", "video", "audio"],
+      "output_types": ["text"],
+      "token_limits": { "input": 1048576, "output": 65536 },
+      "features": {
+        "audio_generation": false,
+        "batch_api": true,
+        "cache": true,
+        "code_execution": true,
+        "file_search": true,
+        "function_calling": true,
+        "google_maps_grounding": true,
+        "image_generation": false,
+        "live_api": false,
+        "grounded_research": true,
+        "structured_outputs": true,
+        "reasoning_mode": true,
+        "url_context": true
+      },
+      "tags": ["fast", "best_cost_benefit"],
+      "fallbacks": ["gemini-3-flash-preview"]
+    },
+
+    "gemini_2_5_flash_image_stable": {
+      "name": "Gemini 2.5 Flash Image",
+      "model_code": "gemini-2.5-flash-image",
+      "status": "stable",
+      "last_update": "2025-10",
+      "knowledge_cutoff": "2025-06",
+      "input_types": ["text", "image"],
+      "output_types": ["text", "image"],
+      "token_limits": { "input": 65536, "output": 32768 },
+      "features": {
+        "audio_generation": false,
+        "batch_api": true,
+        "cache": true,
+        "code_execution": false,
+        "file_search": false,
+        "function_calling": false,
+        "google_maps_grounding": false,
+        "image_generation": true,
+        "live_api": false,
+        "grounded_research": false,
+        "structured_outputs": true,
+        "reasoning_mode": false,
+        "url_context": false
+      },
+      "tags": ["image_generation", "stable"],
+      "fallbacks": ["gemini-3-pro-image-preview"]
+    },
+
+    "gemini_2_5_flash_native_audio_preview": {
+      "name": "Gemini 2.5 Flash Native Audio",
+      "model_code": "gemini-2.5-flash-native-audio-preview-12-2025",
+      "status": "preview",
+      "last_update": "2025-09",
+      "knowledge_cutoff": "2025-01",
+      "input_types": ["audio", "video", "text"],
+      "output_types": ["audio", "text"],
+      "token_limits": { "input": 131072, "output": 8192 },
+      "features": {
+        "audio_generation": true,
+        "batch_api": false,
+        "cache": false,
+        "code_execution": false,
+        "file_search": false,
+        "function_calling": true,
+        "google_maps_grounding": false,
+        "image_generation": false,
+        "live_api": true,
+        "grounded_research": true,
+        "structured_outputs": false,
+        "reasoning_mode": true,
+        "url_context": false
+      },
+      "tags": ["audio_in_out", "live", "real_time"],
+      "fallbacks": ["gemini-2.5-flash"]
+    },
+
+    "gemini_2_5_flash_tts_preview": {
+      "name": "Gemini 2.5 Flash TTS",
+      "model_code": "gemini-2.5-flash-preview-tts",
+      "status": "preview",
+      "last_update": "2025-12",
+      "knowledge_cutoff": "2025-12",
+      "input_types": ["text"],
+      "output_types": ["audio"],
+      "token_limits": { "input": 8192, "output": 16384 },
+      "features": {
+        "audio_generation": true,
+        "batch_api": true,
+        "cache": false,
+        "code_execution": false,
+        "file_search": false,
+        "function_calling": false,
+        "google_maps_grounding": false,
+        "image_generation": false,
+        "live_api": false,
+        "grounded_research": false,
+        "structured_outputs": false,
+        "reasoning_mode": false,
+        "url_context": false
+      },
+      "tags": ["tts"],
+      "fallbacks": ["gemini-2.5-pro-preview-tts"]
+    },
+
+    "gemini_2_5_flash_lite_stable": {
+      "name": "Gemini 2.5 Flash-Lite",
+      "model_code": "gemini-2.5-flash-lite",
+      "status": "stable",
+      "last_update": "2025-07",
+      "knowledge_cutoff": "2025-01",
+      "input_types": ["text", "image", "video", "audio", "pdf"],
+      "output_types": ["text"],
+      "token_limits": { "input": 1048576, "output": 65536 },
+      "features": {
+        "audio_generation": false,
+        "batch_api": true,
+        "cache": true,
+        "code_execution": true,
+        "file_search": true,
+        "function_calling": true,
+        "google_maps_grounding": true,
+        "image_generation": false,
+        "live_api": false,
+        "grounded_research": true,
+        "structured_outputs": true,
+        "reasoning_mode": true,
+        "url_context": true
+      },
+      "tags": ["ultra_fast", "cheapest"],
+      "fallbacks": ["gemini-2.5-flash"]
+    },
+
+    "gemini_2_0_flash_latest": {
+      "name": "Gemini 2.0 Flash",
+      "model_code": "gemini-2.0-flash",
+      "status": "deprecated",
+      "deprecation_notice": { "deprecated": true, "shutdown_date": "2026-03-31" },
+      "last_update": "2025-02",
+      "knowledge_cutoff": "2024-08",
+      "input_types": ["audio", "image", "video", "text"],
+      "output_types": ["text"],
+      "token_limits": { "input": 1048576, "output": 8192 },
+      "features": {
+        "audio_generation": false,
+        "batch_api": true,
+        "cache": true,
+        "code_execution": true,
+        "file_search": false,
+        "function_calling": true,
+        "google_maps_grounding": true,
+        "image_generation": false,
+        "live_api": false,
+        "grounded_research": true,
+        "structured_outputs": true,
+        "reasoning_mode": "experimental",
+        "url_context": false
+      },
+      "tags": ["deprecated"],
+      "fallbacks": ["gemini-2.5-flash"]
+    },
+
+    "gemini_2_0_flash_lite_latest": {
+      "name": "Gemini 2.0 Flash-Lite",
+      "model_code": "gemini-2.0-flash-lite",
+      "status": "deprecated",
+      "deprecation_notice": { "deprecated": true, "shutdown_date": "2026-03-31" },
+      "last_update": "2025-02",
+      "knowledge_cutoff": "2024-08",
+      "input_types": ["audio", "image", "video", "text"],
+      "output_types": ["text"],
+      "token_limits": { "input": 1048576, "output": 8192 },
+      "features": {
+        "audio_generation": false,
+        "batch_api": true,
+        "cache": true,
+        "code_execution": false,
+        "file_search": false,
+        "function_calling": true,
+        "google_maps_grounding": false,
+        "image_generation": false,
+        "live_api": false,
+        "grounded_research": false,
+        "structured_outputs": true,
+        "reasoning_mode": false,
+        "url_context": false
+      },
+      "tags": ["deprecated", "ultra_fast_old"],
+      "fallbacks": ["gemini-2.5-flash-lite"]
+    }
+  },
+
+  "routing_rules": {
+    "if_needs_image_generation": "gemini_3_pro_image_preview",
+    "if_needs_audio_out": "gemini_2_5_flash_tts_preview",
+    "if_needs_real_time_audio": "gemini_2_5_flash_native_audio_preview",
+    "if_needs_best_reasoning": "gemini_3_pro_preview",
+    "if_ultra_fast_and_cheap": "gemini_2_5_flash_lite_stable",
+    "default_fast": "gemini_2_5_flash_stable",
+    "avoid_deprecated": true
+  }
+}

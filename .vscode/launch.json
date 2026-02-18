@@ -1,0 +1,31 @@
+{
+    // Usare IntelliSense per informazioni sui possibili attributi.
+    // Al passaggio del mouse vengono visualizzate le descrizioni degli attributi esistenti.
+    // Per altre informazioni, visitare: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Image Generation",
+            "type": "python",
+            "request": "launch",
+            "module": "src.image_generation.applications",
+            "console": "integratedTerminal"
+        },
+
+        {
+            "name": "Image Edition",
+            "type": "python",
+            "request": "launch",
+            "module": "src.image_generation.backup.edizione",
+            "console": "integratedTerminal"
+        },
+
+        {
+            "name": "Image Generator Service",
+            "type": "python",
+            "request": "launch",
+            "module": "src.image_generation.test.ImageGeneratorService",
+            "console": "integratedTerminal"
+        }
+    ]
+}
