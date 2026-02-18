@@ -6,7 +6,7 @@ from datetime import datetime, UTC
 from typing import List, Dict, Any, Optional
 
 
-class LocalNoSQLManager:
+class LocalManager:
     """
     Gerenciador de banco NoSQL local baseado em arquivos JSON.
 
@@ -163,7 +163,7 @@ class LocalNoSQLManager:
 
 
 if __name__ == "__main__":
-    manager = LocalNoSQLManager()
+    manager = LocalManager()
 
     """
     manager.save_payload("mydb", "users", {"name": "Enzo"})

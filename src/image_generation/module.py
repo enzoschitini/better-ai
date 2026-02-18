@@ -20,8 +20,8 @@ from src.image_generation.utils.config import (
 from src.utils.unique_id_factory import IDGenerator
 from src.utils.loader_files import FilesPayloadBuilder
 
-from src.database.mongo_manager import MongoDBManager
-from src.database.LocalNoSQLMenager import LocalNoSQLManager
+from database.no_sql.mongo_manager import MongoDBManager
+from database.no_sql.local_manager import LocalNoSQLManager
 from src.storage.storage_repository import StorageRepository
 
 class RequestProcessor:
