@@ -176,4 +176,5 @@ if __name__ == "__main__":
     manager.delete_documents("mydb", "users", {"name": "Enzo"})
     """
 
-    manager.delete_documents("mydb", "users", {"name": "Enzo"})
+    manager.save_payload("mydb", "users", {"name": "Enzo"})
+

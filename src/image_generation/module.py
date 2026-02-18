@@ -21,6 +21,7 @@ from src.utils.unique_id_factory import IDGenerator
 from src.utils.loader_files import FilesPayloadBuilder
 
 from src.database.mongo_manager import MongoDBManager
+from src.database.LocalNoSQLMenager import LocalNoSQLManager
 from src.storage.storage_repository import StorageRepository
 
 class RequestProcessor:
@@ -136,7 +137,7 @@ class ImageGenerate:
     
     def save_to_mongoDB(self, mongo_payload):
         try:
-            mongo = MongoDBManager()
+            mongo = LocalNoSQLManager()
 
             result = mongo.save_payload(
                 database_name=DATABASE_NAME,
