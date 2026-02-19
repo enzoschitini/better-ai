@@ -1,7 +1,7 @@
 import json
-from src.database.no_sql.router import NoSQLRouter
+from src.database.no_sql.router import DocumentStore
 
-manager = NoSQLRouter(backend="local")
+manager = DocumentStore(backend="local")
 
 """
 manager.save_payload("mydb", "users", {"name": "Enzo"})
