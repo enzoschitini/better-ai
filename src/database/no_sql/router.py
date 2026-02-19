@@ -5,7 +5,7 @@ from src.database.no_sql.local_manager import LocalManager
 from src.database.no_sql.mongo_manager import MongoDBManager
 
 
-class NoSQLRouter:
+class DocumentStore:
     """
     Router para escolher dinamicamente o backend NoSQL.
 
