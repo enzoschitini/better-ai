@@ -1114,8 +1114,8 @@
         "type": 3
       },
       "seed": 1332024151,
-      "version": 831,
-      "versionNonce": 596355895,
+      "version": 844,
+      "versionNonce": 837511105,
       "isDeleted": false,
       "boundElements": [
         {
@@ -1123,7 +1123,7 @@
           "id": "HUISilAvVo_2XAzy6Audn"
         }
       ],
-      "updated": 1771586452830,
+      "updated": 1771708842997,
       "link": null,
       "locked": false
     },
@@ -1147,11 +1147,11 @@
       "index": "ax",
       "roundness": null,
       "seed": 439783543,
-      "version": 830,
-      "versionNonce": 25111639,
+      "version": 843,
+      "versionNonce": 1118875855,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1771586452830,
+      "updated": 1771708842997,
       "link": null,
       "locked": false,
       "text": "Informations",
