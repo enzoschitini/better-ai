@@ -15,58 +15,40 @@ class ApplicationTracing:
         format_payloads: bool = False,
     ):
         self.log_id = log_id
-        self.flag = flag or "ApplicationTracing"
+        self.flag = flag
         self.file_name = file_name
-
         self.save_logs = save_logs
         self.show_informations_messages = show_informations_messages
-
         self.show_payloads = show_payloads
         self.format_payloads = format_payloads
 
-        self.logger = self._setup_logger()
+        self.logger = self._setup_logger(self.flag)
 
-    # =========================================================
-    # LOGGER CONFIGURATION
-    # =========================================================
-    def _setup_logger(self) -> logging.Logger:
-        logger = logging.getLogger(self.flag)
-        logger.setLevel(logging.DEBUG)
-        logger.propagate = False  # evita duplicação no root logger
+    def _setup_logger(self, name: str) -> logging.Logger:
+        logger = logging.getLogger(name)
 
-        # limpa handlers antigos (evita duplicação)
         if logger.handlers:
-            logger.handlers.clear()
+            return logger  # evita duplicação
+
+        logger.setLevel(logging.DEBUG)
 
         formatter = logging.Formatter(
             "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
         )
 
-        # FILE HANDLER
-        if self.save_logs:
-            file_handler = logging.FileHandler("app.log")
-            file_handler.setLevel(logging.DEBUG)
-            file_handler.setFormatter(formatter)
-            logger.addHandler(file_handler)
+        # arquivo
+        file_handler = logging.FileHandler("app.log")
+        file_handler.setFormatter(formatter)
 
-        # CONSOLE HANDLER
-        if self.show_informations_messages:
-            console_handler = logging.StreamHandler()
-            console_handler.setLevel(logging.DEBUG)
-            console_handler.setFormatter(formatter)
-            logger.addHandler(console_handler)
+        # console
+        console_handler = logging.StreamHandler()
+        console_handler.setFormatter(formatter)
+
+        logger.addHandler(file_handler)
+        logger.addHandler(console_handler)
 
         return logger
 
-    def _refresh_logger(self):
-        """
-        Atualiza handlers dinamicamente caso flags mudem em runtime
-        """
-        self.logger = self._setup_logger()
-
-    # =========================================================
-    # PAYLOAD
-    # =========================================================
     def _format_payload(self, payload: Optional[Dict[str, Any]]) -> Optional[str]:
         if not payload or not self.show_payloads:
             return None
@@ -78,33 +60,24 @@ class ApplicationTracing:
         except Exception:
             return str(payload)
 
-    # =========================================================
-    # MESSAGE BUILDER
-    # =========================================================
     def _build_message(
         self,
         func_name: Optional[str],
         message: Optional[str],
         payload: Optional[Dict[str, Any]],
     ) -> str:
-        parts = []
+        base = f"{func_name}() | {message}" if func_name else message or ""
 
-        # base message
-        if func_name:
-            parts.append(f"{func_name}()")
-
-        if message:
-            parts.append(message)
-
-        # payload
         payload_str = self._format_payload(payload)
+
+        parts = [base]
+
         if payload_str:
             if self.format_payloads:
                 parts.append(f"\nPayload:\n{payload_str}")
             else:
-                parts.append(f"Payload={payload_str}")
+                parts.append(f"Payload: {payload_str}")
 
-        # metadata
         if self.file_name:
             parts.append(f"file={self.file_name}")
 
@@ -113,14 +86,7 @@ class ApplicationTracing:
 
         return " | ".join(parts)
 
-    # =========================================================
-    # DECISION ENGINE
-    # =========================================================
-    def _should_log(
-        self,
-        save_logs: Optional[bool],
-        show_info: Optional[bool],
-    ) -> bool:
+    def _should_log(self, save_logs: Optional[bool], show_info: Optional[bool]) -> bool:
         save_logs = self.save_logs if save_logs is None else save_logs
         show_info = (
             self.show_informations_messages
@@ -130,12 +96,8 @@ class ApplicationTracing:
 
         return save_logs or show_info
 
-    # =========================================================
-    # CORE LOG METHOD
-    # =========================================================
-    def _log(
+    def INFO(
         self,
-        level: str,
         func_name: Optional[str] = None,
         message: Optional[str] = None,
         payload: Optional[Dict[str, Any]] = None,
@@ -143,53 +105,22 @@ class ApplicationTracing:
         show_informations_messages: Optional[bool] = None,
         show_payloads: Optional[bool] = None,
     ):
-        # Atualiza flags se vierem no método
         if show_payloads is not None:
             self.show_payloads = show_payloads
 
-        if save_logs is not None:
-            self.save_logs = save_logs
-        
-        if level == "info":
-            if show_informations_messages is not None:
-                self.show_informations_messages = show_informations_messages
-
-        # Atualiza logger caso flags mudem
-        self._refresh_logger()
-
-        # Decide se deve logar
         if not self._should_log(save_logs, show_informations_messages):
             return
 
         msg = self._build_message(func_name, message, payload)
 
-        log_method = getattr(self.logger, level.lower())
-
-        log_method(
+        self.logger.info(
             msg,
             extra={
                 "log_id": self.log_id,
-                "file_name": self.file_name,
-            },
+                "file_name": self.file_name
+            }
         )
 
-    # =========================================================
-    # PUBLIC METHODS
-    # =========================================================
-    def INFO(self, **kwargs):
-        self._log("info", **kwargs)
-
-    def DEBUG(self, **kwargs):
-        self._log("debug", **kwargs)
-
-    def WARNING(self, **kwargs):
-        self._log("warning", **kwargs)
-
-    def ERROR(self, **kwargs):
-        self._log("error", **kwargs)
-
-    def CRITICAL(self, **kwargs):
-        self._log("critical", **kwargs)
 
 
 tracer = ApplicationTracing(
@@ -201,11 +132,7 @@ tracer = ApplicationTracing(
     show_payloads=True,
     format_payloads=False)
 
-tracer.DEBUG(
-    func_name="create_user",
-    message="User created",
-    payload={"user": "Enzo"}
-)
+tracer.INFO("create_user", "User created", {"user": "Enzo"})
 
 
 
