@@ -22,7 +22,7 @@ class ApplicationTracing:
         self.show_payloads = show_payloads
         self.format_payloads = format_payloads
 
-        self.logger = self._setup_logger("TracingCore")
+        self.logger = self._setup_logger(self.flag)
 
     def _setup_logger(self, name: str) -> logging.Logger:
         logger = logging.getLogger(name)
@@ -84,9 +84,6 @@ class ApplicationTracing:
         if self.log_id:
             parts.append(f"log_id={self.log_id}")
 
-        if self.flag:
-            parts.append(f"flag={self.flag}")
-
         return " | ".join(parts)
 
     def _should_log(self, save_logs: Optional[bool], show_info: Optional[bool]) -> bool:
@@ -120,17 +117,20 @@ class ApplicationTracing:
             msg,
             extra={
                 "log_id": self.log_id,
-                "file_name": self.file_name,
-                "flag": self.flag,
-            },
+                "file_name": self.file_name
+            }
         )
 
 
 
 tracer = ApplicationTracing(
-    log_id="log_1234", flag="Logging Test", file_name="tracing_core.py",
-    show_informations_messages=True,
-    format_payloads=True)
+    log_id="log_1234", 
+    flag="TracingCore", 
+    file_name="tracing_core.py",
+    show_informations_messages=False,
+    save_logs=True,
+    show_payloads=True,
+    format_payloads=False)
 
 tracer.INFO("create_user", "User created", {"user": "Enzo"})
 
