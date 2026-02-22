@@ -32,9 +32,9 @@ class ApplicationTracing:
     def _setup_logger(self) -> logging.Logger:
         logger = logging.getLogger(self.flag)
         logger.setLevel(logging.DEBUG)
-        logger.propagate = False  # evita duplicação no root logger
+        logger.propagate = False
 
-        # limpa handlers antigos (evita duplicação)
+        # limpa handlers antigos
         if logger.handlers:
             logger.handlers.clear()
 
@@ -42,19 +42,27 @@ class ApplicationTracing:
             "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
         )
 
+        # =========================
         # FILE HANDLER
+        # =========================
         if self.save_logs:
             file_handler = logging.FileHandler("app.log")
             file_handler.setLevel(logging.DEBUG)
             file_handler.setFormatter(formatter)
             logger.addHandler(file_handler)
 
+        # =========================
         # CONSOLE HANDLER
+        # =========================
+        console_handler = logging.StreamHandler()
+        console_handler.setFormatter(formatter)
+
         if self.show_informations_messages:
-            console_handler = logging.StreamHandler()
             console_handler.setLevel(logging.DEBUG)
-            console_handler.setFormatter(formatter)
-            logger.addHandler(console_handler)
+        else:
+            console_handler.setLevel(logging.ERROR)
+
+        logger.addHandler(console_handler)
 
         return logger
 
@@ -149,10 +157,9 @@ class ApplicationTracing:
 
         if save_logs is not None:
             self.save_logs = save_logs
-        
-        if level == "info":
-            if show_informations_messages is not None:
-                self.show_informations_messages = show_informations_messages
+
+        if show_informations_messages is not None:
+            self.show_informations_messages = show_informations_messages
 
         # Atualiza logger caso flags mudem
         self._refresh_logger()
@@ -196,15 +203,16 @@ tracer = ApplicationTracing(
     log_id="log_1234", 
     flag="TracingCore", 
     file_name="tracing_core.py",
-    show_informations_messages=False,
-    save_logs=True,
+    show_informations_messages=True,
+    save_logs=False,
     show_payloads=True,
     format_payloads=False)
 
-tracer.DEBUG(
+tracer.ERROR(
     func_name="create_user",
     message="User created",
-    payload={"user": "Enzo"}
+    payload={"user": "Enzo"},
+    save_logs=True
 )
 
 
