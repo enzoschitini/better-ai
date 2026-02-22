@@ -122,6 +122,31 @@ class ApplicationTracing:
         return " | ".join(parts)
 
     # =========================================================
+    # MONGO PAYLOAD BUILDER
+    # =========================================================
+    def _build_mongo_payload(
+        self,
+        level: Optional[str],
+        func_name: Optional[str],
+        message: Optional[str],
+        payload: Optional[Dict[str, Any]],
+    ) -> str:
+        
+        mongo_payload = {
+            "log_id": self.log_id,
+            "level": level,
+            "flag": self.flag,
+            "func_name": func_name,
+            "message": message,
+            "payload": payload,
+            "time": "xxxxxxxxxxx"
+        }
+
+        print(f"\n\n_build_mongo_payload:\n {json.dumps(mongo_payload, indent= 4)}\n\n")
+
+        return mongo_payload
+
+    # =========================================================
     # DECISION ENGINE
     # =========================================================
     def _should_log(
@@ -169,6 +194,7 @@ class ApplicationTracing:
             return
 
         msg = self._build_message(func_name, message, payload)
+        mongo_payload = self._build_mongo_payload(level, func_name, message, payload)
 
         log_method = getattr(self.logger, level.lower())
 
@@ -183,20 +209,80 @@ class ApplicationTracing:
     # =========================================================
     # PUBLIC METHODS
     # =========================================================
-    def INFO(self, **kwargs):
-        self._log("info", **kwargs)
 
-    def DEBUG(self, **kwargs):
-        self._log("debug", **kwargs)
+    def INFO(
+        self,
+        func_name: Optional[str] = None,
+        message: Optional[str] = None,
+        payload: Optional[Dict[str, Any]] = None,
+        save_logs: Optional[bool] = None,
+        show_informations_messages: Optional[bool] = None,
+        show_payloads: Optional[bool] = None,
+    ):
+        self._log(
+            "info",
+            func_name=func_name,
+            message=message,
+            payload=payload,
+            save_logs=save_logs,
+            show_informations_messages=show_informations_messages,
+            show_payloads=show_payloads,
+        )
 
-    def WARNING(self, **kwargs):
-        self._log("warning", **kwargs)
+    def DEBUG(
+        self,
+        func_name: Optional[str] = None,
+        message: Optional[str] = None,
+        payload: Optional[Dict[str, Any]] = None,
+        save_logs: Optional[bool] = None,
+        show_informations_messages: Optional[bool] = None,
+        show_payloads: Optional[bool] = None,
+    ):
+        self._log("debug", func_name=func_name, message=message, payload=payload,
+                save_logs=save_logs, show_informations_messages=show_informations_messages,
+                show_payloads=show_payloads)
 
-    def ERROR(self, **kwargs):
-        self._log("error", **kwargs)
 
-    def CRITICAL(self, **kwargs):
-        self._log("critical", **kwargs)
+    def WARNING(
+        self,
+        func_name: Optional[str] = None,
+        message: Optional[str] = None,
+        payload: Optional[Dict[str, Any]] = None,
+        save_logs: Optional[bool] = None,
+        show_informations_messages: Optional[bool] = None,
+        show_payloads: Optional[bool] = None,
+    ):
+        self._log("warning", func_name=func_name, message=message, payload=payload,
+                save_logs=save_logs, show_informations_messages=show_informations_messages,
+                show_payloads=show_payloads)
+
+
+    def ERROR(
+        self,
+        func_name: Optional[str] = None,
+        message: Optional[str] = None,
+        payload: Optional[Dict[str, Any]] = None,
+        save_logs: Optional[bool] = None,
+        show_informations_messages: Optional[bool] = None,
+        show_payloads: Optional[bool] = None,
+    ):
+        self._log("error", func_name=func_name, message=message, payload=payload,
+                save_logs=save_logs, show_informations_messages=show_informations_messages,
+                show_payloads=show_payloads)
+
+
+    def CRITICAL(
+        self,
+        func_name: Optional[str] = None,
+        message: Optional[str] = None,
+        payload: Optional[Dict[str, Any]] = None,
+        save_logs: Optional[bool] = None,
+        show_informations_messages: Optional[bool] = None,
+        show_payloads: Optional[bool] = None,
+    ):
+        self._log("critical", func_name=func_name, message=message, payload=payload,
+                save_logs=save_logs, show_informations_messages=show_informations_messages,
+                show_payloads=show_payloads)
 
 
 tracer = ApplicationTracing(
