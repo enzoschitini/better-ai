@@ -39,7 +39,7 @@ class ApplicationTracing:
             logger.handlers.clear()
 
         formatter = logging.Formatter(
-            "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
+            "%(asctime)s | %(levelname)s | %(name)s | %(filename)s | %(message)s"
         )
 
         # =========================
@@ -81,7 +81,7 @@ class ApplicationTracing:
 
         try:
             if self.format_payloads:
-                return json.dumps(payload, indent=4, ensure_ascii=False)
+                return f"\n{json.dumps(payload, indent=4, ensure_ascii=False)}\n"
             return str(payload)
         except Exception:
             return str(payload)
@@ -189,10 +189,6 @@ class ApplicationTracing:
         # Atualiza logger caso flags mudem
         self._refresh_logger()
 
-        # Decide se deve logar
-        if not self._should_log(save_logs, show_informations_messages):
-            return
-
         msg = self._build_message(func_name, message, payload)
         mongo_payload = self._build_mongo_payload(level, func_name, message, payload)
 
@@ -284,22 +280,32 @@ class ApplicationTracing:
                 save_logs=save_logs, show_informations_messages=show_informations_messages,
                 show_payloads=show_payloads)
 
-
 tracer = ApplicationTracing(
     log_id="log_1234", 
     flag="TracingCore", 
     file_name="tracing_core.py",
     show_informations_messages=True,
-    save_logs=False,
+    save_logs=True,
     show_payloads=True,
-    format_payloads=False)
+    format_payloads=True)
+
+tracer.INFO(
+    func_name="create_user",
+    message="App Init"
+)
+
+tracer.DEBUG(
+    func_name="create_user",
+    message="User created",
+    payload={"user": "Enzo"}
+)
 
 tracer.ERROR(
     func_name="create_user",
     message="User created",
-    payload={"user": "Enzo"},
-    save_logs=True
+    payload={"user": "Enzo"}
 )
+ 
 
 
 
