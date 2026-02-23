@@ -3,27 +3,29 @@ import logging
 from datetime import datetime
 from typing import Optional, Dict, Any
 
+from src.utils.unique_id_factory import IDGenerator
+
 
 class ApplicationTracing:
     def __init__(
         self,
-        log_id: Optional[str] = None,
+        log_id: Optional[str] = IDGenerator.timestamp(prefix="log_"),
         flag: Optional[str] = None,
         file_name: Optional[str] = None,
+        show_info_logs: bool = False,
+        show_metadata: bool = False,
         save_logs: bool = False,
-        show_informations_messages: bool = False,
-        show_payloads: bool = False,
-        format_payloads: bool = False,
+        format_metadata: bool = False,
     ):
         self.log_id = log_id
         self.flag = flag or "ApplicationTracing"
         self.file_name = file_name
 
-        self.save_logs = save_logs
-        self.show_informations_messages = show_informations_messages
+        self.show_info_logs = show_info_logs
+        self.show_metadata = show_metadata
 
-        self.show_payloads = show_payloads
-        self.format_payloads = format_payloads
+        self.save_logs = save_logs
+        self.format_metadata = format_metadata
 
         self.logger = self._setup_logger()
 
@@ -40,7 +42,8 @@ class ApplicationTracing:
             logger.handlers.clear()
 
         formatter = logging.Formatter(
-            "%(asctime)s | %(levelname)s | %(name)s | %(filename)s | %(message)s"
+            #"%(asctime)s | %(levelname)s | %(name)s | %(filename)s | %(message)s"
+            "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
         )
 
         # =========================
@@ -58,7 +61,7 @@ class ApplicationTracing:
         console_handler = logging.StreamHandler()
         console_handler.setFormatter(formatter)
 
-        if self.show_informations_messages:
+        if self.show_info_logs:
             console_handler.setLevel(logging.DEBUG)
         else:
             console_handler.setLevel(logging.ERROR)
@@ -74,18 +77,18 @@ class ApplicationTracing:
         self.logger = self._setup_logger()
 
     # =========================================================
-    # PAYLOAD
+    # metadata
     # =========================================================
-    def _format_payload(self, payload: Optional[Dict[str, Any]]) -> Optional[str]:
-        if not payload or not self.show_payloads:
+    def _format_metadata(self, metadata: Optional[Dict[str, Any]]) -> Optional[str]:
+        if not metadata or not self.show_metadata:
             return None
 
         try:
-            if self.format_payloads:
-                return f"\n{json.dumps(payload, indent=4, ensure_ascii=False)}\n"
-            return str(payload)
+            if self.format_metadata:
+                return f"\n{json.dumps(metadata, indent=4, ensure_ascii=False)}\n"
+            return str(metadata)
         except Exception:
-            return str(payload)
+            return str(metadata)
 
     # =========================================================
     # MESSAGE BUILDER
@@ -94,7 +97,7 @@ class ApplicationTracing:
         self,
         func_name: Optional[str],
         message: Optional[str],
-        payload: Optional[Dict[str, Any]],
+        metadata: Optional[Dict[str, Any]],
     ) -> str:
         parts = []
 
@@ -105,13 +108,13 @@ class ApplicationTracing:
         if message:
             parts.append(message)
 
-        # payload
-        payload_str = self._format_payload(payload)
-        if payload_str:
-            if self.format_payloads:
-                parts.append(f"\nPayload:\n{payload_str}")
+        # metadata
+        metadata_str = self._format_metadata(metadata)
+        if metadata_str:
+            if self.format_metadata:
+                parts.append(f"\nmetadata:\n{metadata_str}")
             else:
-                parts.append(f"Payload={payload_str}")
+                parts.append(f"metadata={metadata_str}")
 
         # metadata
         if self.file_name:
@@ -123,32 +126,33 @@ class ApplicationTracing:
         return " | ".join(parts)
 
     # =========================================================
-    # MONGO PAYLOAD BUILDER
+    # MONGO metadata BUILDER
     # =========================================================
-    def _build_mongo_payload(
+    def _build_mongo_metadata(
         self,
         level: Optional[str],
         func_name: Optional[str],
         message: Optional[str],
-        payload: Optional[Dict[str, Any]],
+        metadata: Optional[Dict[str, Any]],
     ) -> str:
 
         now = datetime.now()
         log_time_str = now.strftime("%Y-%m-%d %H:%M:%S,%f")[:-3]  # corta para milissegundos
         
-        mongo_payload = {
+        mongo_metadata = {
             "log_id": self.log_id,
             "level": level.upper(),
             "flag": self.flag,
             "func_name": func_name,
             "message": message,
-            "payload": payload,
+            "metadata": metadata,
+            "file_name": self.file_name,
             "time": log_time_str
         }
 
-        print(f"\n\n_build_mongo_payload:\n {json.dumps(mongo_payload, indent= 4)}\n\n")
+        print(f"\n\n_build_mongo_metadata:\n {json.dumps(mongo_metadata, indent= 4)}\n\n")
 
-        return mongo_payload
+        return mongo_metadata
 
     # =========================================================
     # DECISION ENGINE
@@ -160,7 +164,7 @@ class ApplicationTracing:
     ) -> bool:
         save_logs = self.save_logs if save_logs is None else save_logs
         show_info = (
-            self.show_informations_messages
+            self.show_info_logs
             if show_info is None
             else show_info
         )
@@ -175,26 +179,26 @@ class ApplicationTracing:
         level: str,
         func_name: Optional[str] = None,
         message: Optional[str] = None,
-        payload: Optional[Dict[str, Any]] = None,
+        metadata: Optional[Dict[str, Any]] = None,
         save_logs: Optional[bool] = None,
-        show_informations_messages: Optional[bool] = None,
-        show_payloads: Optional[bool] = None,
+        show_info_logs: Optional[bool] = None,
+        show_metadata: Optional[bool] = None,
     ):
         # Atualiza flags se vierem no método
-        if show_payloads is not None:
-            self.show_payloads = show_payloads
+        if show_metadata is not None:
+            self.show_metadata = show_metadata
 
         if save_logs is not None:
             self.save_logs = save_logs
 
-        if show_informations_messages is not None:
-            self.show_informations_messages = show_informations_messages
+        if show_info_logs is not None:
+            self.show_info_logs = show_info_logs
 
         # Atualiza logger caso flags mudem
         self._refresh_logger()
 
-        msg = self._build_message(func_name, message, payload)
-        mongo_payload = self._build_mongo_payload(level, func_name, message, payload)
+        msg = self._build_message(func_name, message, metadata)
+        mongo_metadata = self._build_mongo_metadata(level, func_name, message, metadata)
 
         log_method = getattr(self.logger, level.lower())
 
@@ -214,10 +218,10 @@ class ApplicationTracing:
         self,
         func_name: Optional[str] = None,
         message: Optional[str] = None,
-        payload: Optional[Dict[str, Any]] = None,
-        save_logs: Optional[bool] = None,
-        show_informations_messages: Optional[bool] = None,
-        show_payloads: Optional[bool] = None,
+        metadata: Optional[Dict[str, Any]] = None,
+        save_logs: Optional[bool] = False,
+        show_info_logs: Optional[bool] = None,
+        show_metadata: Optional[bool] = None,
     ):
         """
         INFO LEVEL
@@ -234,20 +238,20 @@ class ApplicationTracing:
             "info",
             func_name=func_name,
             message=message,
-            payload=payload,
+            metadata=metadata,
             save_logs=save_logs,
-            show_informations_messages=show_informations_messages,
-            show_payloads=show_payloads,
+            show_info_logs=show_info_logs,
+            show_metadata=show_metadata,
         )
 
     def DEBUG(
         self,
         func_name: Optional[str] = None,
         message: Optional[str] = None,
-        payload: Optional[Dict[str, Any]] = None,
-        save_logs: Optional[bool] = None,
-        show_informations_messages: Optional[bool] = None,
-        show_payloads: Optional[bool] = None,
+        metadata: Optional[Dict[str, Any]] = None,
+        save_logs: Optional[bool] = False,
+        show_info_logs: Optional[bool] = None,
+        show_metadata: Optional[bool] = None,
     ):
         """
         DEBUG LEVEL
@@ -260,19 +264,19 @@ class ApplicationTracing:
         - Entradas/saídas de funções
         - Etapas intermediárias de processamento
         """
-        self._log("debug", func_name=func_name, message=message, payload=payload,
-                save_logs=save_logs, show_informations_messages=show_informations_messages,
-                show_payloads=show_payloads)
+        self._log("debug", func_name=func_name, message=message, metadata=metadata,
+                save_logs=save_logs, show_info_logs=show_info_logs,
+                show_metadata=show_metadata)
 
 
     def WARNING(
         self,
         func_name: Optional[str] = None,
         message: Optional[str] = None,
-        payload: Optional[Dict[str, Any]] = None,
-        save_logs: Optional[bool] = None,
-        show_informations_messages: Optional[bool] = None,
-        show_payloads: Optional[bool] = None,
+        metadata: Optional[Dict[str, Any]] = None,
+        save_logs: Optional[bool] = False,
+        show_info_logs: Optional[bool] = None,
+        show_metadata: Optional[bool] = None,
     ):
         """
         WARNING LEVEL
@@ -284,19 +288,19 @@ class ApplicationTracing:
         - Lógica de fallback sendo aplicada
         - Dados opcionais ausentes
         """
-        self._log("warning", func_name=func_name, message=message, payload=payload,
-                save_logs=save_logs, show_informations_messages=show_informations_messages,
-                show_payloads=show_payloads)
+        self._log("warning", func_name=func_name, message=message, metadata=metadata,
+                save_logs=save_logs, show_info_logs=show_info_logs,
+                show_metadata=show_metadata)
 
 
     def ERROR(
         self,
         func_name: Optional[str] = None,
         message: Optional[str] = None,
-        payload: Optional[Dict[str, Any]] = None,
-        save_logs: Optional[bool] = None,
-        show_informations_messages: Optional[bool] = None,
-        show_payloads: Optional[bool] = None,
+        metadata: Optional[Dict[str, Any]] = None,
+        save_logs: Optional[bool] = False,
+        show_info_logs: Optional[bool] = None,
+        show_metadata: Optional[bool] = None,
     ):
         """
         ERROR LEVEL
@@ -309,19 +313,19 @@ class ApplicationTracing:
         - Exceção capturada
         - Falha na operação do banco de dados
         """
-        self._log("error", func_name=func_name, message=message, payload=payload,
-                save_logs=save_logs, show_informations_messages=show_informations_messages,
-                show_payloads=show_payloads)
+        self._log("error", func_name=func_name, message=message, metadata=metadata,
+                save_logs=save_logs, show_info_logs=show_info_logs,
+                show_metadata=show_metadata)
 
 
     def CRITICAL(
         self,
         func_name: Optional[str] = None,
         message: Optional[str] = None,
-        payload: Optional[Dict[str, Any]] = None,
-        save_logs: Optional[bool] = None,
-        show_informations_messages: Optional[bool] = None,
-        show_payloads: Optional[bool] = None,
+        metadata: Optional[Dict[str, Any]] = None,
+        save_logs: Optional[bool] = False,
+        show_info_logs: Optional[bool] = None,
+        show_metadata: Optional[bool] = None,
     ):
         """
         CRITICAL LEVEL
@@ -334,18 +338,18 @@ class ApplicationTracing:
         - Dependência crítica indisponível
         - Risco de corrupção de dados
         """
-        self._log("critical", func_name=func_name, message=message, payload=payload,
-                save_logs=save_logs, show_informations_messages=show_informations_messages,
-                show_payloads=show_payloads)
+        self._log("critical", func_name=func_name, message=message, metadata=metadata,
+                save_logs=save_logs, show_info_logs=show_info_logs,
+                show_metadata=show_metadata)
 
 tracer = ApplicationTracing(
     log_id="log_1234", 
     flag="TracingCore", 
     file_name="tracing_core.py",
-    show_informations_messages=False,
-    save_logs=True,
-    show_payloads=True,
-    format_payloads=True
+    show_info_logs=True,
+    show_metadata=True,
+    save_logs=False,
+    format_metadata=False
 )
 
 tracer.INFO(
@@ -356,25 +360,26 @@ tracer.INFO(
 tracer.DEBUG(
     func_name="create_user",
     message="User created",
-    payload={"user": "Enzo"}
+    metadata={"user": "Enzo"},
+    save_logs=True
 )
 
 tracer.WARNING(
     func_name="create_user",
     message="User created",
-    payload={"user": "Enzo"}
+    metadata={"user": "Enzo"}
 )
 
 tracer.ERROR(
     func_name="create_user",
     message="User created",
-    payload={"user": "Enzo"}
+    metadata={"user": "Enzo"}
 )
 
 tracer.CRITICAL(
     func_name="create_user",
     message="User created",
-    payload={"user": "Enzo"}
+    metadata={"user": "Enzo"}
 )
 
 # Prossimi passaggi:
@@ -387,7 +392,7 @@ tracer.CRITICAL(
 #print(IDGenerator.timestamp(prefix="log_"))
 
 """
-1. Short payload -> Bool
+1. Short metadata -> Bool
 """
 
 
