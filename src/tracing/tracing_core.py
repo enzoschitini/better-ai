@@ -150,7 +150,7 @@ class ApplicationTracing:
             "time": log_time_str
         }
 
-        print(f"\n\n_build_mongo_metadata:\n {json.dumps(mongo_metadata, indent= 4)}\n\n")
+        #print(f"\n\n_build_mongo_metadata:\n {json.dumps(mongo_metadata, indent= 4)}\n\n")
 
         return mongo_metadata
 
@@ -220,7 +220,7 @@ class ApplicationTracing:
         message: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
         save_logs: Optional[bool] = False,
-        show_info_logs: Optional[bool] = None,
+        show_info_logs: Optional[bool] = False,
         show_metadata: Optional[bool] = None,
     ):
         """
@@ -250,7 +250,7 @@ class ApplicationTracing:
         message: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
         save_logs: Optional[bool] = False,
-        show_info_logs: Optional[bool] = None,
+        show_info_logs: Optional[bool] = False,
         show_metadata: Optional[bool] = None,
     ):
         """
@@ -275,7 +275,7 @@ class ApplicationTracing:
         message: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
         save_logs: Optional[bool] = False,
-        show_info_logs: Optional[bool] = None,
+        show_info_logs: Optional[bool] = False,
         show_metadata: Optional[bool] = None,
     ):
         """
@@ -299,7 +299,7 @@ class ApplicationTracing:
         message: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
         save_logs: Optional[bool] = False,
-        show_info_logs: Optional[bool] = None,
+        show_info_logs: Optional[bool] = False,
         show_metadata: Optional[bool] = None,
     ):
         """
@@ -323,7 +323,7 @@ class ApplicationTracing:
         func_name: Optional[str] = None,
         message: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
-        save_logs: Optional[bool] = False,
+        save_logs: Optional[bool] = None,
         show_info_logs: Optional[bool] = None,
         show_metadata: Optional[bool] = None,
     ):
@@ -338,6 +338,16 @@ class ApplicationTracing:
         - Dependência crítica indisponível
         - Risco de corrupção de dados
         """
+
+        if save_logs == None:
+            save_logs = self.save_logs
+
+        if show_info_logs == None:
+            show_info_logs = self.show_info_logs
+
+        if show_metadata == None:
+            show_metadata = self.show_metadata
+
         self._log("critical", func_name=func_name, message=message, metadata=metadata,
                 save_logs=save_logs, show_info_logs=show_info_logs,
                 show_metadata=show_metadata)
@@ -346,7 +356,7 @@ tracer = ApplicationTracing(
     log_id="log_1234", 
     flag="TracingCore", 
     file_name="tracing_core.py",
-    show_info_logs=True,
+    show_info_logs=False,
     show_metadata=True,
     save_logs=False,
     format_metadata=False
@@ -354,26 +364,30 @@ tracer = ApplicationTracing(
 
 tracer.INFO(
     func_name="create_user",
-    message="App Init"
+    message="App Init",
+    show_info_logs=True
 )
 
 tracer.DEBUG(
     func_name="create_user",
     message="User created",
     metadata={"user": "Enzo"},
-    save_logs=True
+    save_logs=True,
+    show_metadata=False
 )
 
 tracer.WARNING(
     func_name="create_user",
     message="User created",
-    metadata={"user": "Enzo"}
+    metadata={"user": "Enzo"},
+    show_metadata=True
 )
 
 tracer.ERROR(
     func_name="create_user",
     message="User created",
-    metadata={"user": "Enzo"}
+    metadata={"user": "Enzo"},
+    save_logs=True
 )
 
 tracer.CRITICAL(
