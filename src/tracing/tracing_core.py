@@ -1,5 +1,6 @@
 import json
 import logging
+from datetime import datetime
 from typing import Optional, Dict, Any
 
 
@@ -131,15 +132,18 @@ class ApplicationTracing:
         message: Optional[str],
         payload: Optional[Dict[str, Any]],
     ) -> str:
+
+        now = datetime.now()
+        log_time_str = now.strftime("%Y-%m-%d %H:%M:%S,%f")[:-3]  # corta para milissegundos
         
         mongo_payload = {
             "log_id": self.log_id,
-            "level": level,
+            "level": level.upper(),
             "flag": self.flag,
             "func_name": func_name,
             "message": message,
             "payload": payload,
-            "time": "xxxxxxxxxxx"
+            "time": log_time_str
         }
 
         print(f"\n\n_build_mongo_payload:\n {json.dumps(mongo_payload, indent= 4)}\n\n")
@@ -215,6 +219,17 @@ class ApplicationTracing:
         show_informations_messages: Optional[bool] = None,
         show_payloads: Optional[bool] = None,
     ):
+        """
+        INFO LEVEL
+
+        Usado para registrar mensagens informativas gerais sobre o fluxo normal do aplicativo.
+        Esses registros são úteis para acompanhar as etapas de execução e entender o comportamento esperado.
+
+        Exemplos:
+        - Início de um processo
+        - Conclusão bem-sucedida de uma operação
+        - Pontos de verificação importantes no fluxo de trabalho
+        """
         self._log(
             "info",
             func_name=func_name,
@@ -234,6 +249,17 @@ class ApplicationTracing:
         show_informations_messages: Optional[bool] = None,
         show_payloads: Optional[bool] = None,
     ):
+        """
+        DEBUG LEVEL
+
+        Utilizado para informações de diagnóstico detalhadas, geralmente úteis apenas durante o desenvolvimento.
+        Ajuda os desenvolvedores a entender os estados internos e o fluxo de dados.
+
+        Exemplos:
+        - Valores de variáveis
+        - Entradas/saídas de funções
+        - Etapas intermediárias de processamento
+        """
         self._log("debug", func_name=func_name, message=message, payload=payload,
                 save_logs=save_logs, show_informations_messages=show_informations_messages,
                 show_payloads=show_payloads)
@@ -248,6 +274,16 @@ class ApplicationTracing:
         show_informations_messages: Optional[bool] = None,
         show_payloads: Optional[bool] = None,
     ):
+        """
+        WARNING LEVEL
+
+        Indica um problema potencial ou uma situação inesperada que não interrompe a execução, mas pode exigir atenção.
+
+        Exemplos:
+        - Uso obsoleto
+        - Lógica de fallback sendo aplicada
+        - Dados opcionais ausentes
+        """
         self._log("warning", func_name=func_name, message=message, payload=payload,
                 save_logs=save_logs, show_informations_messages=show_informations_messages,
                 show_payloads=show_payloads)
@@ -262,6 +298,17 @@ class ApplicationTracing:
         show_informations_messages: Optional[bool] = None,
         show_payloads: Optional[bool] = None,
     ):
+        """
+        ERROR LEVEL
+
+        Utilizado quando uma operação falha e afeta a funcionalidade esperada.
+        O aplicativo pode continuar em execução, mas algo deu errado.
+
+        Exemplos:
+        - Chamada de API com falha
+        - Exceção capturada
+        - Falha na operação do banco de dados
+        """
         self._log("error", func_name=func_name, message=message, payload=payload,
                 save_logs=save_logs, show_informations_messages=show_informations_messages,
                 show_payloads=show_payloads)
@@ -276,6 +323,17 @@ class ApplicationTracing:
         show_informations_messages: Optional[bool] = None,
         show_payloads: Optional[bool] = None,
     ):
+        """
+        CRITICAL LEVEL
+
+        Utilizado para erros graves que podem causar a interrupção ou instabilidade do aplicativo.
+        É necessária atenção imediata.
+
+        Exemplos:
+        - Falha do sistema
+        - Dependência crítica indisponível
+        - Risco de corrupção de dados
+        """
         self._log("critical", func_name=func_name, message=message, payload=payload,
                 save_logs=save_logs, show_informations_messages=show_informations_messages,
                 show_payloads=show_payloads)
@@ -284,10 +342,11 @@ tracer = ApplicationTracing(
     log_id="log_1234", 
     flag="TracingCore", 
     file_name="tracing_core.py",
-    show_informations_messages=True,
+    show_informations_messages=False,
     save_logs=True,
     show_payloads=True,
-    format_payloads=True)
+    format_payloads=True
+)
 
 tracer.INFO(
     func_name="create_user",
@@ -300,13 +359,29 @@ tracer.DEBUG(
     payload={"user": "Enzo"}
 )
 
+tracer.WARNING(
+    func_name="create_user",
+    message="User created",
+    payload={"user": "Enzo"}
+)
+
 tracer.ERROR(
     func_name="create_user",
     message="User created",
     payload={"user": "Enzo"}
 )
- 
 
+tracer.CRITICAL(
+    func_name="create_user",
+    message="User created",
+    payload={"user": "Enzo"}
+)
+
+# Prossimi passaggi:
+# -------------------- #
+# 1. Eseguire delle provere per capire se le funzionalità sono giuste
+# 2. Fare un ripasso e aggiustare il codice
+# 3. Sistemare le classi
 
 
 #print(IDGenerator.timestamp(prefix="log_"))
