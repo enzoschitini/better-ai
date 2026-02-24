@@ -32,7 +32,7 @@ class ApplicationTracing:
     # LOGGER TEMPORÁRIO (sem estado global)
     # =========================================================
     def _setup_logger(self, save_logs: bool, show_info_logs: bool) -> logging.Logger:
-        logger_name = f"{self.flag}_{id(self)}_{datetime.now().timestamp()}"
+        logger_name = f"{self.flag}"
         logger = logging.getLogger(logger_name)
         logger.setLevel(logging.DEBUG)
         logger.propagate = False
@@ -220,20 +220,20 @@ tracer = ApplicationTracing(
     file_name="tracing_core.py",
     show_info_logs=False,
     show_metadata=True,
-    save_logs=False,
+    save_logs=True,
+    format_metadata=True
 )
 
 tracer.INFO(
     func_name="create_user",
-    message="App Init",
-    show_info_logs=True
+    message="App Init"
 )
 
 tracer.DEBUG(
     func_name="create_user",
     message="User created",
     metadata={"user": "Enzo"},
-    save_logs=True,
+    save_logs=False
     #show_metadata=False  # override LOCAL
 )
 
