@@ -111,8 +111,7 @@ class PayloadBuilder:
 
 
 
-
-class LogBuilder():
+class LoggerEngine:
     def __init__(
         self,
         log_id: Optional[str] = None,
@@ -123,23 +122,63 @@ class LogBuilder():
         save_logs: bool = False,
         format_metadata: bool = False,
     ):
-        # FIX: gerar log_id por instância
         self.log_id = log_id or IDGenerator.timestamp(prefix="log_")
         self.flag = flag or "ApplicationTracing"
         self.file_name = file_name
 
-        # config global (imutável em runtime)
         self.show_info_logs = show_info_logs
         self.show_metadata = show_metadata
         self.save_logs = save_logs
         self.format_metadata = format_metadata
 
     # =========================================================
-    # LOGGER TEMPORÁRIO (sem estado global)
+    # CONFIG RESOLVER
     # =========================================================
-    def _setup_logger(self, save_logs: bool, show_info_logs: bool) -> logging.Logger:
-        logger_name = f"{self.flag}"
-        logger = logging.getLogger(logger_name)
+    def _resolve_config(
+        self,
+        save_logs: Optional[bool],
+        show_info_logs: Optional[bool],
+        show_metadata: Optional[bool],
+    ):
+        return {
+            "save_logs": self.save_logs if save_logs is None else save_logs,
+            "show_info_logs": self.show_info_logs if show_info_logs is None else show_info_logs,
+            "show_metadata": self.show_metadata if show_metadata is None else show_metadata,
+        }
+
+    # =========================================================
+    # PAYLOAD BUILDER
+    # =========================================================
+    def _build_payloads(
+        self,
+        level: str,
+        func_name: Optional[str],
+        message: Optional[str],
+        metadata: Optional[Dict[str, Any]],
+        show_metadata: bool,
+    ):
+        builder = PayloadBuilder(
+            log_id=self.log_id,
+            flag=self.flag,
+            file_name=self.file_name,
+            format_metadata=self.format_metadata,
+        )
+
+        msg = builder.build_message(
+            func_name, message, metadata, show_metadata
+        )
+
+        mongo_metadata = builder.build_mongo_payload(
+            level, func_name, message, metadata
+        )
+
+        return msg, mongo_metadata
+
+    # =========================================================
+    # LOGGER FACTORY
+    # =========================================================
+    def _get_logger(self, save_logs: bool, show_info_logs: bool) -> logging.Logger:
+        logger = logging.getLogger(self.flag)
         logger.setLevel(logging.DEBUG)
         logger.propagate = False
 
@@ -150,30 +189,38 @@ class LogBuilder():
             "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
         )
 
-        # FILE HANDLER
+        # FILE
         if save_logs:
             file_handler = logging.FileHandler("app.log")
             file_handler.setLevel(logging.DEBUG)
             file_handler.setFormatter(formatter)
             logger.addHandler(file_handler)
 
-        # CONSOLE HANDLER
+        # CONSOLE
         console_handler = logging.StreamHandler()
-
-        if show_info_logs:
-            console_handler.setLevel(logging.DEBUG)
-        else:
-            console_handler.setLevel(logging.ERROR)
-
+        console_handler.setLevel(logging.DEBUG if show_info_logs else logging.ERROR)
         console_handler.setFormatter(formatter)
         logger.addHandler(console_handler)
 
         return logger
 
     # =========================================================
-    # CORE LOG
+    # EMIT LOG
     # =========================================================
-    def _log(
+    def _emit_log(self, logger: logging.Logger, level: str, message: str):
+        log_method = getattr(logger, level.lower())
+        log_method(
+            message,
+            extra={
+                "log_id": self.log_id,
+                "file_name": self.file_name,
+            },
+        )
+
+    # =========================================================
+    # CORE (ORCHESTRATOR)
+    # =========================================================
+    def log(
         self,
         level: str,
         func_name: Optional[str] = None,
@@ -183,62 +230,30 @@ class LogBuilder():
         show_info_logs: Optional[bool] = None,
         show_metadata: Optional[bool] = None,
     ):
-        # =========================
-        # RESOLVE CONFIG LOCAL
-        # =========================
-        effective_save_logs = self.save_logs if save_logs is None else save_logs
-        effective_show_info = (
-            self.show_info_logs if show_info_logs is None else show_info_logs
-        )
-        effective_show_metadata = (
-            self.show_metadata if show_metadata is None else show_metadata
+        # 1. Resolve config
+        config = self._resolve_config(
+            save_logs, show_info_logs, show_metadata
         )
 
-        # =========================
-        # INIT BUILDER
-        # =========================
-        builder = PayloadBuilder(
-            log_id=self.log_id,
-            flag=self.flag,
-            file_name=self.file_name,
-            format_metadata=self.format_metadata,
-        )
-        
-        # =========================
-        # BUILD MESSAGE
-        # =========================
-
-        msg = builder.build_message(
-            func_name, message, metadata, effective_show_metadata
+        # 2. Build payloads
+        msg, mongo_metadata = self._build_payloads(
+            level,
+            func_name,
+            message,
+            metadata,
+            config["show_metadata"],
         )
 
-        mongo_metadata = builder.build_mongo_payload(
-            level, func_name, message, metadata
+        # 3. Get logger
+        logger = self._get_logger(
+            config["save_logs"],
+            config["show_info_logs"],
         )
 
-        #print(f"\n{json.dumps(mongo_metadata, indent=4)}")
+        # 4. Emit log
+        self._emit_log(logger, level, msg)
 
-        # =========================
-        # LOGGER TEMPORÁRIO
-        # =========================
-        logger = self._setup_logger(
-            save_logs=effective_save_logs,
-            show_info_logs=effective_show_info,
-        )
-
-        log_method = getattr(logger, level.lower())
-
-        log_method(
-            msg,
-            extra={
-                "log_id": self.log_id,
-                "file_name": self.file_name,
-            },
-        )
-
-        return mongo_metadata  # útil para persistência externa
-
-
+        return mongo_metadata
 
 
 
@@ -258,7 +273,7 @@ class ApplicationTracing:
         save_logs: bool = False,
         format_metadata: bool = False,
     ):
-        self.builder = LogBuilder(
+        self.enginer = LoggerEngine(
             log_id=log_id,
             flag=flag,
             file_name=file_name,
@@ -288,7 +303,7 @@ class ApplicationTracing:
         - Conclusão bem-sucedida de uma operação
         - Pontos de verificação importantes no fluxo de trabalho
         """
-        self.builder._log(
+        self.enginer.log(
             "info",
             func_name=func_name,
             message=message,
@@ -318,7 +333,7 @@ class ApplicationTracing:
         - Entradas/saídas de funções
         - Etapas intermediárias de processamento
         """
-        self.builder._log("debug", func_name=func_name, message=message, metadata=metadata,
+        self.enginer.log("debug", func_name=func_name, message=message, metadata=metadata,
                 save_logs=save_logs, show_info_logs=show_info_logs,
                 show_metadata=show_metadata)
 
@@ -342,7 +357,7 @@ class ApplicationTracing:
         - Lógica de fallback sendo aplicada
         - Dados opcionais ausentes
         """
-        self.builder._log("warning", func_name=func_name, message=message, metadata=metadata,
+        self.enginer.log("warning", func_name=func_name, message=message, metadata=metadata,
                 save_logs=save_logs, show_info_logs=show_info_logs,
                 show_metadata=show_metadata)
 
@@ -367,7 +382,7 @@ class ApplicationTracing:
         - Exceção capturada
         - Falha na operação do banco de dados
         """
-        self.builder._log("error", func_name=func_name, message=message, metadata=metadata,
+        self.enginer.log("error", func_name=func_name, message=message, metadata=metadata,
                 save_logs=save_logs, show_info_logs=show_info_logs,
                 show_metadata=show_metadata)
 
@@ -402,7 +417,7 @@ class ApplicationTracing:
         if show_metadata == None:
             show_metadata = self.show_metadata
 
-        self.builder._log("critical", func_name=func_name, message=message, metadata=metadata,
+        self.enginer.log("critical", func_name=func_name, message=message, metadata=metadata,
                 save_logs=save_logs, show_info_logs=show_info_logs,
                 show_metadata=show_metadata)
 
