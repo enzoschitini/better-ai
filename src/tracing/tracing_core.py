@@ -112,7 +112,7 @@ class PayloadBuilder:
 
 
 
-class ApplicationTracing:
+class LogBuilder():
     def __init__(
         self,
         log_id: Optional[str] = None,
@@ -216,6 +216,8 @@ class ApplicationTracing:
             level, func_name, message, metadata
         )
 
+        #print(f"\n{json.dumps(mongo_metadata, indent=4)}")
+
         # =========================
         # LOGGER TEMPORÁRIO
         # =========================
@@ -236,9 +238,35 @@ class ApplicationTracing:
 
         return mongo_metadata  # útil para persistência externa
 
-    # =========================================================
-    # PUBLIC METHODS
-    # =========================================================
+
+
+
+
+
+
+
+
+
+class ApplicationTracing:
+    def __init__(
+        self,
+        log_id: Optional[str] = None,
+        flag: Optional[str] = None,
+        file_name: Optional[str] = None,
+        show_info_logs: bool = False,
+        show_metadata: bool = False,
+        save_logs: bool = False,
+        format_metadata: bool = False,
+    ):
+        self.builder = LogBuilder(
+            log_id=log_id,
+            flag=flag,
+            file_name=file_name,
+            show_info_logs=show_info_logs,
+            show_metadata=show_metadata,
+            save_logs=save_logs,
+            format_metadata=format_metadata,
+        )
 
     def INFO(
         self,
@@ -260,7 +288,7 @@ class ApplicationTracing:
         - Conclusão bem-sucedida de uma operação
         - Pontos de verificação importantes no fluxo de trabalho
         """
-        self._log(
+        self.builder._log(
             "info",
             func_name=func_name,
             message=message,
@@ -290,7 +318,7 @@ class ApplicationTracing:
         - Entradas/saídas de funções
         - Etapas intermediárias de processamento
         """
-        self._log("debug", func_name=func_name, message=message, metadata=metadata,
+        self.builder._log("debug", func_name=func_name, message=message, metadata=metadata,
                 save_logs=save_logs, show_info_logs=show_info_logs,
                 show_metadata=show_metadata)
 
@@ -314,7 +342,7 @@ class ApplicationTracing:
         - Lógica de fallback sendo aplicada
         - Dados opcionais ausentes
         """
-        self._log("warning", func_name=func_name, message=message, metadata=metadata,
+        self.builder._log("warning", func_name=func_name, message=message, metadata=metadata,
                 save_logs=save_logs, show_info_logs=show_info_logs,
                 show_metadata=show_metadata)
 
@@ -339,7 +367,7 @@ class ApplicationTracing:
         - Exceção capturada
         - Falha na operação do banco de dados
         """
-        self._log("error", func_name=func_name, message=message, metadata=metadata,
+        self.builder._log("error", func_name=func_name, message=message, metadata=metadata,
                 save_logs=save_logs, show_info_logs=show_info_logs,
                 show_metadata=show_metadata)
 
@@ -374,7 +402,7 @@ class ApplicationTracing:
         if show_metadata == None:
             show_metadata = self.show_metadata
 
-        self._log("critical", func_name=func_name, message=message, metadata=metadata,
+        self.builder._log("critical", func_name=func_name, message=message, metadata=metadata,
                 save_logs=save_logs, show_info_logs=show_info_logs,
                 show_metadata=show_metadata)
 
