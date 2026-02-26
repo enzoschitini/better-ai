@@ -1,7 +1,6 @@
 import os
 import logging
 
-from datetime import datetime
 from typing import Optional, Dict, Any
 
 from src.utils.unique_id_factory import IDGenerator
@@ -14,6 +13,7 @@ class LoggerEngine:
         log_id: Optional[str] = None,
         flag: Optional[str] = None,
         file_name: Optional[str] = None,
+        log_file_name: Optional[str] = None,
         show_info_logs: bool = False,
         show_metadata: bool = False,
         save_logs: bool = False,
@@ -22,6 +22,7 @@ class LoggerEngine:
         self.log_id = log_id or IDGenerator.timestamp(prefix="log_")
         self.flag = flag or "ApplicationTracing"
         self.file_name = file_name
+        self.log_file_name = log_file_name or "app"
 
         self.show_info_logs = self._get_env_bool("SHOW_INFO_LOGS", show_info_logs)
         self.show_metadata = self._get_env_bool("SHOW_METADATA", show_metadata)
@@ -103,7 +104,7 @@ class LoggerEngine:
 
         # FILE
         if save_logs:
-            file_handler = logging.FileHandler("app.log")
+            file_handler = logging.FileHandler(f"{self.log_file_name}.log")
             file_handler.setLevel(logging.DEBUG)
             file_handler.setFormatter(formatter)
             logger.addHandler(file_handler)
