@@ -5,6 +5,7 @@ from typing import Optional, Dict, Any
 
 from src.utils.unique_id_factory import IDGenerator
 from src.tracing.payload_builder import PayloadBuilder
+from src.database.no_sql.router import DocumentStore
 
 
 class LoggerEngine:
@@ -129,6 +130,12 @@ class LoggerEngine:
                 "file_name": self.file_name,
             },
         )
+    
+    def _save_to_mongo(self, mongo_metadata):
+        manager = DocumentStore()
+        response = manager.save_payload("application_tracings", self.flag, mongo_metadata)
+        
+        return response["inserted_id"]
 
     # =========================================================
     # CORE (ORCHESTRATOR)
@@ -165,6 +172,9 @@ class LoggerEngine:
 
         # 4. Emit log
         self._emit_log(logger, level, msg)
+
+        # 5. Save to MongoDB
+        self._save_to_mongo(mongo_metadata)
 
         return mongo_metadata
 

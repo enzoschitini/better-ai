@@ -14,6 +14,6 @@ manager.update_documents("mydb", "users", {"name": "Enzo"}, {"age": 25})
 manager.delete_documents("mydb", "users", {"name": "Enzo"})
 """
 
-manager.save_payload("mydb", "users", {"name": "Enzo"})
-
+response = manager.save_payload("mydb", "users", {"name": "Enzo"})
+print(response["inserted_id"])
 # python -m src.database.no_sql.test
