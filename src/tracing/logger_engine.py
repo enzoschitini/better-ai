@@ -23,10 +23,10 @@ class LoggerEngine:
         self.flag = flag or "ApplicationTracing"
         self.file_name = file_name
 
-        self.show_info_logs = self._get_env_bool("SHOW_INFO_LOGS", show_info_logs) #show_info_logs
-        self.show_metadata = self._get_env_bool("SHOW_METADATA", show_metadata) #show_metadata
-        self.save_logs = self._get_env_bool("SAVE_LOGS", save_logs) #save_logs
-        self.format_metadata = self._get_env_bool("FORMAT_METADATA", format_metadata) #format_metadata
+        self.show_info_logs = self._get_env_bool("SHOW_INFO_LOGS", show_info_logs)
+        self.show_metadata = self._get_env_bool("SHOW_METADATA", show_metadata)
+        self.save_logs = self._get_env_bool("SAVE_LOGS", save_logs)
+        self.format_metadata = self._get_env_bool("FORMAT_METADATA", format_metadata)
 
     # =========================================================
     # GET BOOL ENV
