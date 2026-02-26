@@ -12,6 +12,7 @@ class ApplicationTracing:
         show_info_logs: bool = False,
         show_metadata: bool = False,
         save_logs: bool = False,
+        save_mongo: bool = False,
         format_metadata: bool = False,
     ):
         self.enginer = LoggerEngine(
@@ -22,6 +23,7 @@ class ApplicationTracing:
             show_info_logs=show_info_logs,
             show_metadata=show_metadata,
             save_logs=save_logs,
+            save_mongo=save_mongo,
             format_metadata=format_metadata,
         )
 
@@ -31,6 +33,7 @@ class ApplicationTracing:
         message: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
         save_logs: Optional[bool] = None,
+        save_mongo: Optional[bool] = None,
         show_info_logs: Optional[bool] = None,
         show_metadata: Optional[bool] = None,
     ):
@@ -51,6 +54,7 @@ class ApplicationTracing:
             message=message,
             metadata=metadata,
             save_logs=save_logs,
+            save_mongo=save_mongo,
             show_info_logs=show_info_logs,
             show_metadata=show_metadata,
         )
@@ -61,6 +65,7 @@ class ApplicationTracing:
         message: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
         save_logs: Optional[bool] = None,
+        save_mongo: Optional[bool] = None,
         show_info_logs: Optional[bool] = None,
         show_metadata: Optional[bool] = None,
     ):
@@ -76,7 +81,7 @@ class ApplicationTracing:
         - Etapas intermediárias de processamento
         """
         self.enginer.log("debug", func_name=func_name, message=message, metadata=metadata,
-                save_logs=save_logs, show_info_logs=show_info_logs,
+                save_logs=save_logs, save_mongo=save_mongo, show_info_logs=show_info_logs,
                 show_metadata=show_metadata)
 
 
@@ -86,6 +91,7 @@ class ApplicationTracing:
         message: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
         save_logs: Optional[bool] = None,
+        save_mongo: Optional[bool] = None,
         show_info_logs: Optional[bool] = None,
         show_metadata: Optional[bool] = None,
     ):
@@ -100,7 +106,7 @@ class ApplicationTracing:
         - Dados opcionais ausentes
         """
         self.enginer.log("warning", func_name=func_name, message=message, metadata=metadata,
-                save_logs=save_logs, show_info_logs=show_info_logs,
+                save_logs=save_logs, save_mongo=save_mongo, show_info_logs=show_info_logs,
                 show_metadata=show_metadata)
 
 
@@ -110,6 +116,7 @@ class ApplicationTracing:
         message: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
         save_logs: Optional[bool] = None,
+        save_mongo: Optional[bool] = None,
         show_info_logs: Optional[bool] = None,
         show_metadata: Optional[bool] = None,
     ):
@@ -125,7 +132,7 @@ class ApplicationTracing:
         - Falha na operação do banco de dados
         """
         self.enginer.log("error", func_name=func_name, message=message, metadata=metadata,
-                save_logs=save_logs, show_info_logs=show_info_logs,
+                save_logs=save_logs, save_mongo=save_mongo, show_info_logs=show_info_logs,
                 show_metadata=show_metadata)
 
 
@@ -135,6 +142,7 @@ class ApplicationTracing:
         message: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
         save_logs: Optional[bool] = None,
+        save_mongo: Optional[bool] = None,
         show_info_logs: Optional[bool] = None,
         show_metadata: Optional[bool] = None,
     ):
@@ -150,7 +158,7 @@ class ApplicationTracing:
         - Risco de corrupção de dados
         """
         self.enginer.log("critical", func_name=func_name, message=message, metadata=metadata,
-                save_logs=save_logs, show_info_logs=show_info_logs,
+                save_logs=save_logs, save_mongo=save_mongo, show_info_logs=show_info_logs,
                 show_metadata=show_metadata)
 
 # python -m src.tracing.tracing_core

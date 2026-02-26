@@ -9,6 +9,7 @@ tracer = ApplicationTracing(
     #log_id="log_1234",
     flag="TracingCore",
     file_name="tracing_core.py",
+    #save_mongo=True
     #show_info_logs=True,
     #show_metadata=True,
     #save_logs=True,

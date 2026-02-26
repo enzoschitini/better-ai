@@ -18,6 +18,7 @@ class LoggerEngine:
         show_info_logs: bool = False,
         show_metadata: bool = False,
         save_logs: bool = False,
+        save_mongo: bool = False,
         format_metadata: bool = False,
     ):
         self.log_id = log_id or IDGenerator.timestamp(prefix="log_")
@@ -28,6 +29,7 @@ class LoggerEngine:
         self.show_info_logs = self._get_env_bool("SHOW_INFO_LOGS", show_info_logs)
         self.show_metadata = self._get_env_bool("SHOW_METADATA", show_metadata)
         self.save_logs = self._get_env_bool("SAVE_LOGS", save_logs)
+        self.save_mongo = self._get_env_bool("SAVE_MONGO", save_mongo)
         self.format_metadata = self._get_env_bool("FORMAT_METADATA", format_metadata)
 
     # =========================================================
@@ -51,11 +53,13 @@ class LoggerEngine:
     def _resolve_config(
         self,
         save_logs: Optional[bool],
+        save_mongo: Optional[bool],
         show_info_logs: Optional[bool],
         show_metadata: Optional[bool],
     ):
         return {
             "save_logs": self.save_logs if save_logs is None else save_logs,
+            "save_mongo": self.save_mongo if save_mongo is None else save_mongo,
             "show_info_logs": self.show_info_logs if show_info_logs is None else show_info_logs,
             "show_metadata": self.show_metadata if show_metadata is None else show_metadata,
         }
@@ -147,12 +151,13 @@ class LoggerEngine:
         message: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
         save_logs: Optional[bool] = None,
+        save_mongo: Optional[bool] = None,
         show_info_logs: Optional[bool] = None,
         show_metadata: Optional[bool] = None,
     ):
         # 1. Resolve config
         config = self._resolve_config(
-            save_logs, show_info_logs, show_metadata
+            save_logs, save_mongo, show_info_logs, show_metadata
         )
 
         # 2. Build payloads
@@ -174,7 +179,8 @@ class LoggerEngine:
         self._emit_log(logger, level, msg)
 
         # 5. Save to MongoDB
-        self._save_to_mongo(mongo_metadata)
+        if self.save_mongo:
+            self._save_to_mongo(mongo_metadata)
 
         return mongo_metadata
 
