@@ -1,4 +1,4 @@
-import json
+import os
 import logging
 
 from datetime import datetime
@@ -23,10 +23,25 @@ class LoggerEngine:
         self.flag = flag or "ApplicationTracing"
         self.file_name = file_name
 
-        self.show_info_logs = show_info_logs
-        self.show_metadata = show_metadata
-        self.save_logs = save_logs
-        self.format_metadata = format_metadata
+        self.show_info_logs = self._get_env_bool("SHOW_INFO_LOGS", show_info_logs) #show_info_logs
+        self.show_metadata = self._get_env_bool("SHOW_METADATA", show_metadata) #show_metadata
+        self.save_logs = self._get_env_bool("SAVE_LOGS", save_logs) #save_logs
+        self.format_metadata = self._get_env_bool("FORMAT_METADATA", format_metadata) #format_metadata
+
+    # =========================================================
+    # GET BOOL ENV
+    # =========================================================
+    def _get_env_bool(self, env_name: str, default: bool = None) -> bool:
+        if os.getenv(env_name):
+            BOOL_MAP = {
+                "true": True,
+                "false": False
+            }
+
+            env = os.getenv(env_name)
+            return BOOL_MAP[env.lower()]
+        else:
+            return default
 
     # =========================================================
     # CONFIG RESOLVER

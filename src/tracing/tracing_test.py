@@ -1,15 +1,21 @@
+import os
+
+from dotenv import load_dotenv
 from src.tracing.tracing_core import ApplicationTracing
+
+load_dotenv()
 
 tracer = ApplicationTracing(
     #log_id="log_1234",
     flag="TracingCore",
     file_name="tracing_core.py",
-    show_info_logs=True,
-    show_metadata=True,
-    save_logs=True,
-    format_metadata=False
+    #show_info_logs=True,
+    #show_metadata=True,
+    #save_logs=True,
+    #format_metadata=False
 )
 
+#"""
 tracer.INFO(
     func_name="create_user",
     message="App Init"
@@ -40,5 +46,7 @@ tracer.CRITICAL(
     message="User created",
     metadata={"user": "Enzo"},
 )
+
+#"""
 
 # python -m src.tracing.tracing_test
