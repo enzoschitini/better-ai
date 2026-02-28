@@ -45,4 +45,5 @@ dependencies = [
     # --- 8. INTERNAL SERVICES ---
     "pytest>=9.0.2",
     "tavily>=1.1.0",
+    "psycopg2>=2.9.11",
 ]
