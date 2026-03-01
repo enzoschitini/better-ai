@@ -147,6 +147,12 @@ if __name__ == "__main__":
     """)
 
     # =====================
+    # DALETE TABLE
+    # =====================
+
+    query_engine.execute("DROP TABLE IF EXISTS TABLE_NAME")
+
+    # =====================
     # INSERT
     # =====================
 
