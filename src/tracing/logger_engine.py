@@ -5,7 +5,7 @@ from typing import Optional, Dict, Any
 
 from src.utils.unique_id_factory import IDGenerator
 from src.tracing.payload_builder import PayloadBuilder
-from src.database.no_sql.router import DocumentStore
+from src.database.no_relational_db.router import DocumentStore
 
 
 class LoggerEngine:
