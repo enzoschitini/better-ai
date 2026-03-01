@@ -147,7 +147,7 @@ if __name__ == "__main__":
     """)
 
     # =====================
-    # DALETE TABLE
+    # DELETE TABLE
     # =====================
 
     query_engine.execute("DROP TABLE IF EXISTS TABLE_NAME")
