@@ -1,8 +1,8 @@
 import os
 
 from typing import Optional
-from src.database.no_sql.local_manager import LocalManager
-from src.database.no_sql.mongo_manager import MongoDBManager
+from src.database.no_relational_db.local_manager import LocalManager
+from src.database.no_relational_db.mongo_manager import MongoDBManager
 
 
 class DocumentStore:

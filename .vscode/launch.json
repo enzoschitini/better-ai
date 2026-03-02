@@ -5,13 +5,19 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Application Tracing",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "src.tracing.tracing_core",
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Image Generation",
             "type": "python",
             "request": "launch",
             "module": "src.image_generation.applications",
             "console": "integratedTerminal"
         },
-
         {
             "name": "Image Edition",
             "type": "python",
@@ -19,7 +25,6 @@
             "module": "src.image_generation.backup.edizione",
             "console": "integratedTerminal"
         },
-
         {
             "name": "Image Generator Service",
             "type": "python",
