@@ -7,8 +7,11 @@ from src.image_generation.utils.gemini_client import GeminiClient
 
 from typing import List, Dict, Optional
 from dotenv import load_dotenv
+from src.tracing.tracing_core import ApplicationTracing
 
 load_dotenv()
+
+tracer = ApplicationTracing(flag="ImageGeneration", file_name="_service.py")
 
 class ImageGeneratorService:
     """
