@@ -22,6 +22,9 @@ from src.utils.loader_files import FilesPayloadBuilder
 
 from src.database.no_relational_db.router import DocumentStore
 from src.storage.storage_repository import StorageRepository
+from src.tracing.tracing_core import ApplicationTracing
+
+tracer = ApplicationTracing(flag="ImageGeneration", file_name="module.py")
 
 class RequestProcessor:
     def __init__(
@@ -108,6 +111,7 @@ class ImageGenerate:
 
     # Genera Immagine
     def generate(self, content_config, user_prompt, instructions, images):
+        tracer.WARNING("generate", "Gerando imagem...")
         editor = ImageGeneratorService(content_config=content_config)
 
         parts = editor.build_parts(
@@ -119,6 +123,7 @@ class ImageGenerate:
         config = editor.generate_config()
         response = editor.call_model(parts, config)
         responses_parsed = editor.parse_responses(response)
+        tracer.INFO("generate", "Imagem gerada com sucesso")
 
         return responses_parsed
 
@@ -127,8 +132,14 @@ class ImageGenerate:
             payload_builder = PayloadBuilder(IDGenerator.timestamp(prefix="job_"), responses_parsed)
             mongo_payload, storage_payload, response_payload = payload_builder.generate_payloads()
 
-            #print(f"\n\nmongo_payload: {json.dumps(mongo_payload, indent=4)}")
-            #print(f"\n\nresponse_payload: {json.dumps(response_payload, indent=4)}")
+            tracer.DEBUG(
+                "build_payloads",
+                "Payloads configurados (mongo_payload, storage_payload, response_payload)",
+                {
+                    "mongo_payload": mongo_payload,
+                    "response_payload": response_payload
+                }
+            )
 
             return mongo_payload, storage_payload, response_payload
         except Exception as e:
@@ -143,11 +154,13 @@ class ImageGenerate:
                 collection_name=COLLECTION_NAME,
                 payload=mongo_payload
             )
+            tracer.INFO("save_to_mongoDB", f"Processamento salvo o banco. ID {result}")
         except Exception as e:
             raise RuntimeError("Erro ao salvar no mongo")
     
     def save_to_supabase(self, images):
         try:
+            tracer.WARNING("save_to_supabase", "Salvando imagem no storage (Supabase)")
             repository = StorageRepository(
                 base_path=STORAGE_BASE_PATH,
                 bucket_name=BUCKET_NAME
@@ -158,7 +171,7 @@ class ImageGenerate:
                     file_name=image["id"],
                     byte_data=image["byte"]
                 )
-
+            tracer.INFO("save_to_supabase", "Imagem salva")
         except Exception as e:
             raise RuntimeError("Erro ao salvar no no storage")
 
@@ -172,9 +185,20 @@ class ImageGenerate:
             with open(filename, "wb") as f:
                 f.write(image["data"])
 
-            print("Imagem salva em:", filename)
+            tracer.INFO("save_results_local", f"Imagem salva em: {filename}")
 
     def runner(self):
+        tracer.INFO("runner", "Processamento iniciado")
+        tracer.DEBUG(
+            "runner",
+            "Parâmetros setados",
+            {
+                "config": self.config,
+                "user_input": self.user_input,
+                "instructions": self.instructions
+            }
+        )
+
         responses_parsed = self.generate(
             self.config,
             self.user_input,
@@ -184,6 +208,7 @@ class ImageGenerate:
         mongo_payload, storage_payload, response_payload = self.build_payloads(responses_parsed)
         self.save_to_mongoDB(mongo_payload)
         self.save_to_supabase(storage_payload)
+        tracer.INFO("runner", "Processamento finalizado", response_payload)
 
         return response_payload
 
