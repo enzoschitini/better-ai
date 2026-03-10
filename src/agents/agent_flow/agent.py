@@ -31,7 +31,7 @@ Não armazene CPF e senhas dos usuários
 
 agent = Agent(
     # Menage sessions and users
-    session_id="session_2",
+    session_id="session_3",
     user_id="user_2",
 
     # Models: OpenAIChat(id="gpt-4.1-mini"), Groq(id="llama-3.3-70b-versatile"),
@@ -58,8 +58,8 @@ agent = Agent(
     #tools=[YFinanceTools()],
 )
 
-agent.print_response("Ciao! Mi chiamo Enzo!")
-#agent.print_response("Qual è il mio nome?")
+agent.print_response("Qual è il mio nome?")
+#agent.print_response("Ciao! Mi chiamo Enzo!")
 #agent.print_response("Mi piace giocare a pallone")
 #agent.print_response("Il mio cantante preferito è Laura Pausini")
 #agent.print_response("Ho 21 anni")
