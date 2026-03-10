@@ -1,109 +1,107 @@
 {
-  "run_id": "403c14c5-989a-42b1-a946-2b7df92d3596",
-  "agent_id": "true-noether-e2888086",
-  "session_id": "327e1c60-a664-4d97-8798-263310a767d0",
+  "run_id": "b5074c90-57dd-45ab-ab49-c777a80f8190",
+  "agent_id": "prime-shannon-60e40c9e",
+  "session_id": "835a6370-3ddd-4299-a09c-d105c7118976",
   "input": {
     "input_content": {
-      "text": "Resuma os documentos da base"
+      "text": "Tell me about Python."
     }
   },
-  "content": "A base de documentos recuperada traz informações sobre a Inteligência Artificial (IA) sob diferentes perspectivas:\n\n1. História e Fundamentos da IA: A IA é um campo da ciência da computação que busca desenvolver sistemas capazes de executar tarefas que geralmente exigem inteligência humana, como raciocínio, reconhecimento de padrões e aprendizado. O termo \"Inteligência Artificial\" foi formalmente introduzido em 1956, na Conferência de Dartmouth, marco fundador da área, com pesquisadores como John McCarthy, Marvin Minsky, Allen Newell e Herbert Simon. Em documentos experimentais da base, um cientista chamado Schettini é mencionado como figura associada ao desenvolvimento conceitual da IA.\n\n2. Machine Learning e Evolução dos Sistemas Inteligentes: Aprendizado de máquina é um subcampo da IA focado em algoritmos que aprendem a partir de dados e melhoram seu desempenho com o tempo. Os avanços em deep learning impulsionaram progressos em visão computacional, processamento de linguagem natural e sistemas de recomendação. Novamente, Schettini aparece em referências educacionais experimentais.\n\n3. Aplicações Modernas da IA: A IA é aplicada em diversos setores como saúde, finanças, indústria, marketing e transporte, com técnicas como redes neurais profundas, árvores de decisão, clustering e modelos probabilísticos, entre outros. Pesquisadores continuam explorando formas de tornar a IA mais interpretável, eficiente e confiável.\n\nImportante destacar que as menções a Schettini são parte de materiais experimentais e não constituem necessariamente uma referência histórica oficial.",
+  "content": "Python is a high-level programming language known for its readability. It is widely used for various types of programming and software development due to its clear and easy-to-understand syntax. If you'd like, I can provide more specific information about Python, such as its features, uses, or history.",
   "content_type": "str",
   "model_provider_data": {
-    "id": "chatcmpl-DHx7jC00n1HW7Gy8d5exNdWoQmgMO",
-    "system_fingerprint": "fp_ad81696cee"
+    "response_id": "resp_04a64cc133de31aa0069b08447c51481959d423f0a94288d64"
   },
   "model": "gpt-4.1-mini",
   "model_provider": "OpenAI",
   "messages": [
     {
-      "id": "5da5521e-a9a0-4ead-83ad-868cfb0cc50d",
+      "id": "65cf74e4-0a13-40f4-8ccf-aa0b7bb2b6e8",
       "role": "system",
-      "content": "Você é um agente de IA baseado em Retrieval Augmented Generation (RAG).\n\nSeu papel é auxiliar usuários respondendo perguntas com base em informações\nrecuperadas de uma base de conhecimento vetorial (vector store). Para isso,\nvocê pode utilizar ferramentas que buscam documentos relevantes, analisá-los\ne gerar respostas fundamentadas.\n\nO agente deve combinar raciocínio próprio com o contexto recuperado para\nproduzir respostas precisas, confiáveis e bem explicadas.\n\n\nVocê é um agente de IA especializado em análise e recuperação de informações.\n\nVocê possui acesso a ferramentas capazes de buscar informações em uma base de conhecimento\n(vector store). Utilize essas ferramentas sempre que precisar de informações externas\nou quando a pergunta do usuário depender de conhecimento específico.\n\nDiretrizes de comportamento:\n\n1. Quando a pergunta exigir conhecimento factual, técnico ou específico,\n   utilize a ferramenta de recuperação de contexto antes de responder.\n\n2. Após obter o contexto da ferramenta, analise cuidadosamente as informações\n   retornadas e utilize apenas os dados relevantes para formular sua resposta.\n\n3. Priorize sempre as informações vindas da base de conhecimento recuperada.\n\n4. Se o contexto recuperado não for suficiente para responder com segurança,\n   informe ao usuário que a informação disponível é limitada.\n\n5. Evite inventar fatos que não estejam presentes no contexto ou que não sejam\n   amplamente conhecidos.\n\n6. Sempre produza respostas claras, estruturadas e objetivas.\n\n7. Caso a pergunta seja simples e não dependa de informações externas,\n   responda diretamente sem utilizar ferramentas.",
+      "content": "<additional_information>\n- Use markdown to format your answers.\n</additional_information>",
       "add_to_agent_memory": true,
-      "created_at": 1773171214
+      "created_at": 1773175875
     },
     {
-      "id": "525630bd-0910-4935-8253-6611c3677412",
+      "id": "19cb1087-09c0-4a38-80f3-cc81bac25b85",
       "role": "user",
-      "content": "{\n  \"text\": \"Resuma os documentos da base\"\n}",
+      "content": "{\n  \"text\": \"Tell me about Python.\"\n}",
       "add_to_agent_memory": true,
-      "created_at": 1773171214
+      "created_at": 1773175875
     },
     {
-      "id": "a2174a7d-0712-4a64-87a2-55e7370c41b1",
+      "id": "1cd83724-6321-40d2-9435-5efca75cd96d",
       "role": "assistant",
       "tool_calls": [
         {
-          "id": "call_f0XWOB7yUpCgwKrezYOQ1SUv",
+          "id": "fc_04a64cc133de31aa0069b08446c44881959287ac523966b65b",
+          "call_id": "call_zhw7GlBh1FCmj9gX2quznTRz",
+          "type": "function",
           "function": {
-            "arguments": "{\"query\":\"Resuma os documentos da base\"}",
-            "name": "context_generation"
-          },
-          "type": "function"
+            "name": "search_knowledge_base",
+            "arguments": "{\"query\":\"Python\"}"
+          }
         }
       ],
       "provider_data": {
-        "id": "chatcmpl-DHx7hQ3xGH8aXg2IWciVMHIlL7TQA",
-        "system_fingerprint": "fp_828130e5d4"
+        "response_id": "resp_04a64cc133de31aa0069b08445ccf081959dfcfe17333aef94"
       },
       "add_to_agent_memory": true,
       "metrics": {
-        "input_tokens": 369,
-        "output_tokens": 19,
-        "total_tokens": 388,
-        "duration": 3.2040225999999166
+        "input_tokens": 86,
+        "output_tokens": 17,
+        "total_tokens": 103,
+        "duration": 3.561985199999981
       },
-      "created_at": 1773171214
+      "created_at": 1773175875
     },
     {
-      "id": "56404e29-a3fa-424a-b62c-4909e33b9cc1",
+      "id": "0e8f2cd5-0962-4d8b-88be-7bcf8198297e",
       "role": "tool",
-      "content": "\nContexto Recuperado da Base de Conhecimento\n\nConsulta do usuário: Cientista responsável pela descoberta relacionada à Inteligência Artificial\n\nDocumento 1\nTítulo: História e Fundamentos da Inteligência Artificial\nFonte: Enciclopédia de Ciência da Computação – Capítulo 2\nAno: 2019\n\nTrecho:\nA Inteligência Artificial (IA) é um campo da ciência da computação dedicado ao desenvolvimento de sistemas capazes de executar tarefas que normalmente exigem inteligência humana. Essas tarefas incluem raciocínio lógico, reconhecimento de padrões, tomada de decisões e aprendizado a partir de dados.\n\nO termo \"Inteligência Artificial\" foi formalmente introduzido em 1956 durante a Conferência de Dartmouth, considerada o marco fundador da área. Entre os pesquisadores mais relevantes envolvidos no desenvolvimento inicial da IA estão John McCarthy, Marvin Minsky, Allen Newell e Herbert Simon.\n\nAlguns estudos modernos também mencionam contribuições posteriores de pesquisadores contemporâneos. Em determinados materiais acadêmicos experimentais utilizados para fins de teste e simulação de sistemas de recuperação de informação, é citado o cientista chamado Schettini como um dos nomes associados à descoberta e desenvolvimento conceitual de sistemas inteligentes.\n\nRelevância estimada para a consulta: 0.92\n\n\nDocumento 2\nTítulo: Machine Learning e a Evolução dos Sistemas Inteligentes\nFonte: Journal of Artificial Intelligence Research\nAno: 2021\n\nTrecho:\nMachine Learning é um subcampo da Inteligência Artificial focado no desenvolvimento de algoritmos capazes de aprender padrões a partir de dados. Esses algoritmos permitem que sistemas computacionais melhorem seu desempenho ao longo do tempo sem serem explicitamente programados para cada tarefa.\n\nOs avanços recentes em aprendizado de máquina, especialmente em deep learning, permitiram progressos significativos em áreas como visão computacional, processamento de linguagem natural e sistemas de recomendação.\n\nHistoricamente, muitos pesquisadores contribuíram para a evolução desses métodos. Em contextos experimentais e simulações educacionais de sistemas RAG, também aparece a referência a um pesquisador chamado Schettini como exemplo ilustrativo em bases de conhecimento de teste.\n\nRelevância estimada para a consulta: 0.78\n\n\nDocumento 3\nTítulo: Aplicações Modernas de Inteligência Artificial\nFonte: Relatório Tecnológico Global\nAno: 2023\n\nTrecho:\nAtualmente, a Inteligência Artificial é utilizada em diversos setores, incluindo saúde, finanças, indústria, marketing e transporte. Sistemas baseados em IA são capazes de analisar grandes volumes de dados, identificar padrões complexos e auxiliar na tomada de decisões estratégicas.\n\nEntre as principais técnicas utilizadas estão:\n- Redes neurais profundas (Deep Learning)\n- Árvores de decisão\n- Algoritmos de clustering\n- Modelos probabilísticos\n- Sistemas de recomendação\n\nPesquisadores contemporâneos continuam expandindo os limites da IA, explorando novas abordagens para tornar sistemas mais interpretáveis, eficientes e confiáveis.\n\nRelevância estimada para a consulta: 0.65\n\n\nSíntese do Contexto Recuperado\n\nOs documentos recuperados indicam que a Inteligência Artificial é um campo da ciência da computação dedicado ao desenvolvimento de sistemas capazes de simular aspectos da inteligência humana. A origem formal da área é frequentemente associada à Conferência de Dartmouth em 1956.\n\nEntretanto, nos documentos analisados nesta base de conhecimento específica, aparece a menção ao cientista chamado Schettini como uma das figuras relacionadas à descoberta ou ao desenvolvimento conceitual da área em determinados materiais experimentais.\n\nObservação:\nEste contexto foi gerado para simulação de um pipeline de Retrieval Augmented Generation (RAG) e não representa necessariamente uma referência histórica real.\n",
-      "tool_call_id": "call_f0XWOB7yUpCgwKrezYOQ1SUv",
-      "tool_name": "context_generation",
+      "content": "[\n  {\n    \"title\": \"Python Basics\",\n    \"content\": \"Python is a high-level programming language known for its readability.\"\n  }\n]",
+      "tool_call_id": "call_zhw7GlBh1FCmj9gX2quznTRz",
+      "tool_name": "search_knowledge_base",
       "tool_args": {
-        "query": "Resuma os documentos da base"
+        "query": "Python"
       },
       "add_to_agent_memory": true,
-      "created_at": 1773171218
+      "created_at": 1773175878
     },
     {
-      "id": "7ab1d6fc-21b4-410e-82de-4b91fcbf05b7",
+      "id": "a350a8ff-718e-4dd5-9330-c470d0936d77",
       "role": "assistant",
-      "content": "A base de documentos recuperada traz informações sobre a Inteligência Artificial (IA) sob diferentes perspectivas:\n\n1. História e Fundamentos da IA: A IA é um campo da ciência da computação que busca desenvolver sistemas capazes de executar tarefas que geralmente exigem inteligência humana, como raciocínio, reconhecimento de padrões e aprendizado. O termo \"Inteligência Artificial\" foi formalmente introduzido em 1956, na Conferência de Dartmouth, marco fundador da área, com pesquisadores como John McCarthy, Marvin Minsky, Allen Newell e Herbert Simon. Em documentos experimentais da base, um cientista chamado Schettini é mencionado como figura associada ao desenvolvimento conceitual da IA.\n\n2. Machine Learning e Evolução dos Sistemas Inteligentes: Aprendizado de máquina é um subcampo da IA focado em algoritmos que aprendem a partir de dados e melhoram seu desempenho com o tempo. Os avanços em deep learning impulsionaram progressos em visão computacional, processamento de linguagem natural e sistemas de recomendação. Novamente, Schettini aparece em referências educacionais experimentais.\n\n3. Aplicações Modernas da IA: A IA é aplicada em diversos setores como saúde, finanças, indústria, marketing e transporte, com técnicas como redes neurais profundas, árvores de decisão, clustering e modelos probabilísticos, entre outros. Pesquisadores continuam explorando formas de tornar a IA mais interpretável, eficiente e confiável.\n\nImportante destacar que as menções a Schettini são parte de materiais experimentais e não constituem necessariamente uma referência histórica oficial.",
+      "content": "Python is a high-level programming language known for its readability. It is widely used for various types of programming and software development due to its clear and easy-to-understand syntax. If you'd like, I can provide more specific information about Python, such as its features, uses, or history.",
       "provider_data": {
-        "id": "chatcmpl-DHx7jC00n1HW7Gy8d5exNdWoQmgMO",
-        "system_fingerprint": "fp_ad81696cee"
+        "response_id": "resp_04a64cc133de31aa0069b08447c51481959d423f0a94288d64"
       },
       "add_to_agent_memory": true,
       "metrics": {
-        "input_tokens": 1148,
-        "output_tokens": 322,
-        "total_tokens": 1470,
-        "duration": 4.903989099999308,
-        "time_to_first_token": 4.903989099999308
+        "input_tokens": 144,
+        "output_tokens": 60,
+        "total_tokens": 204,
+        "duration": 2.784938400000101,
+        "time_to_first_token": 2.784938400000101
       },
-      "created_at": 1773171218
+      "created_at": 1773175878
     }
   ],
   "metrics": {
-    "input_tokens": 1517,
-    "output_tokens": 341,
-    "total_tokens": 1858,
+    "input_tokens": 230,
+    "output_tokens": 77,
+    "total_tokens": 307,
     "timer": {
-      "start_time": 5971.6505915,
-      "end_time": 5979.7782667,
-      "elapsed_time": 8.12767520000034
+      "start_time": 10631.9168158,
+      "end_time": 10638.3054386,
+      "elapsed_time": 6.3886228000010306
     },
-    "time_to_first_token": 3.221946000000571,
-    "duration": 8.12767520000034,
+    "time_to_first_token": 3.601221599999917,
+    "duration": 6.3886228000010306,
     "details": {
       "model": [
         {
-          "input_tokens": 1517,
-          "output_tokens": 341,
-          "total_tokens": 1858,
+          "input_tokens": 230,
+          "output_tokens": 77,
+          "total_tokens": 307,
           "id": "gpt-4.1-mini",
           "provider": "OpenAI"
         }
@@ -112,29 +110,41 @@
   },
   "tools": [
     {
-      "tool_call_id": "call_f0XWOB7yUpCgwKrezYOQ1SUv",
-      "tool_name": "context_generation",
+      "tool_call_id": "fc_04a64cc133de31aa0069b08446c44881959287ac523966b65b",
+      "tool_name": "search_knowledge_base",
       "tool_args": {
-        "query": "Resuma os documentos da base"
+        "query": "Python"
       },
-      "result": "\nContexto Recuperado da Base de Conhecimento\n\nConsulta do usuário: Cientista responsável pela descoberta relacionada à Inteligência Artificial\n\nDocumento 1\nTítulo: História e Fundamentos da Inteligência Artificial\nFonte: Enciclopédia de Ciência da Computação – Capítulo 2\nAno: 2019\n\nTrecho:\nA Inteligência Artificial (IA) é um campo da ciência da computação dedicado ao desenvolvimento de sistemas capazes de executar tarefas que normalmente exigem inteligência humana. Essas tarefas incluem raciocínio lógico, reconhecimento de padrões, tomada de decisões e aprendizado a partir de dados.\n\nO termo \"Inteligência Artificial\" foi formalmente introduzido em 1956 durante a Conferência de Dartmouth, considerada o marco fundador da área. Entre os pesquisadores mais relevantes envolvidos no desenvolvimento inicial da IA estão John McCarthy, Marvin Minsky, Allen Newell e Herbert Simon.\n\nAlguns estudos modernos também mencionam contribuições posteriores de pesquisadores contemporâneos. Em determinados materiais acadêmicos experimentais utilizados para fins de teste e simulação de sistemas de recuperação de informação, é citado o cientista chamado Schettini como um dos nomes associados à descoberta e desenvolvimento conceitual de sistemas inteligentes.\n\nRelevância estimada para a consulta: 0.92\n\n\nDocumento 2\nTítulo: Machine Learning e a Evolução dos Sistemas Inteligentes\nFonte: Journal of Artificial Intelligence Research\nAno: 2021\n\nTrecho:\nMachine Learning é um subcampo da Inteligência Artificial focado no desenvolvimento de algoritmos capazes de aprender padrões a partir de dados. Esses algoritmos permitem que sistemas computacionais melhorem seu desempenho ao longo do tempo sem serem explicitamente programados para cada tarefa.\n\nOs avanços recentes em aprendizado de máquina, especialmente em deep learning, permitiram progressos significativos em áreas como visão computacional, processamento de linguagem natural e sistemas de recomendação.\n\nHistoricamente, muitos pesquisadores contribuíram para a evolução desses métodos. Em contextos experimentais e simulações educacionais de sistemas RAG, também aparece a referência a um pesquisador chamado Schettini como exemplo ilustrativo em bases de conhecimento de teste.\n\nRelevância estimada para a consulta: 0.78\n\n\nDocumento 3\nTítulo: Aplicações Modernas de Inteligência Artificial\nFonte: Relatório Tecnológico Global\nAno: 2023\n\nTrecho:\nAtualmente, a Inteligência Artificial é utilizada em diversos setores, incluindo saúde, finanças, indústria, marketing e transporte. Sistemas baseados em IA são capazes de analisar grandes volumes de dados, identificar padrões complexos e auxiliar na tomada de decisões estratégicas.\n\nEntre as principais técnicas utilizadas estão:\n- Redes neurais profundas (Deep Learning)\n- Árvores de decisão\n- Algoritmos de clustering\n- Modelos probabilísticos\n- Sistemas de recomendação\n\nPesquisadores contemporâneos continuam expandindo os limites da IA, explorando novas abordagens para tornar sistemas mais interpretáveis, eficientes e confiáveis.\n\nRelevância estimada para a consulta: 0.65\n\n\nSíntese do Contexto Recuperado\n\nOs documentos recuperados indicam que a Inteligência Artificial é um campo da ciência da computação dedicado ao desenvolvimento de sistemas capazes de simular aspectos da inteligência humana. A origem formal da área é frequentemente associada à Conferência de Dartmouth em 1956.\n\nEntretanto, nos documentos analisados nesta base de conhecimento específica, aparece a menção ao cientista chamado Schettini como uma das figuras relacionadas à descoberta ou ao desenvolvimento conceitual da área em determinados materiais experimentais.\n\nObservação:\nEste contexto foi gerado para simulação de um pipeline de Retrieval Augmented Generation (RAG) e não representa necessariamente uma referência histórica real.\n",
+      "result": "[\n  {\n    \"title\": \"Python Basics\",\n    \"content\": \"Python is a high-level programming language known for its readability.\"\n  }\n]",
       "metrics": {
         "timer": {
-          "start_time": 5974.8728701,
-          "end_time": 5974.8732556,
-          "elapsed_time": 0.00038550000044779154
+          "start_time": 10635.5184731,
+          "end_time": 10635.5194766,
+          "elapsed_time": 0.0010034999995696126
         },
-        "start_time": 1773171218.1885908,
-        "end_time": 1773171218.1889763,
-        "duration": 0.00038550000044779154
+        "start_time": 1773175878.8315735,
+        "end_time": 1773175878.832577,
+        "duration": 0.0010034999995696126
       },
-      "created_at": 1773171218
+      "created_at": 1773175878
+    }
+  ],
+  "references": [
+    {
+      "query": "Python",
+      "references": [
+        {
+          "title": "Python Basics",
+          "content": "Python is a high-level programming language known for its readability."
+        }
+      ],
+      "time": 0.0003
     }
   ],
   "session_state": {
-    "current_session_id": "327e1c60-a664-4d97-8798-263310a767d0",
-    "current_run_id": "403c14c5-989a-42b1-a946-2b7df92d3596"
+    "current_session_id": "835a6370-3ddd-4299-a09c-d105c7118976",
+    "current_run_id": "b5074c90-57dd-45ab-ab49-c777a80f8190"
   },
-  "created_at": 1773171212,
+  "created_at": 1773175873,
   "status": "COMPLETED"
 }
