@@ -43,7 +43,7 @@ Não armazene CPF e senhas dos usuários
 
 agent = Agent(
     # Menage sessions and users
-    session_id="session_3",
+    session_id="session_4",
     user_id="user_2",
 
     # Models: OpenAIChat(id="gpt-4.1-mini"), Groq(id="llama-3.3-70b-versatile"),
@@ -81,7 +81,8 @@ response = agent.run(
 )
 
 formatter = FormatAgentResponse(response)
-super_json = formatter.serialize()
+super_json = formatter.format()
+formatter.save_json(super_json, "src/agents/agent_flow/agent_response.json")
 
 print(f"\n\n{json.dumps(super_json, indent=2)}\n\n")
 
