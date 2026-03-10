@@ -1,37 +1,37 @@
 {
-  "run_id": "7f85ed76-7e49-4fd0-aa93-5bca3c99e1c4",
-  "agent_id": "bright-franklin-2a92f51c",
-  "session_id": "4efac7d8-e50d-420a-95cb-9870618799fb",
+  "run_id": "bcc71770-60a4-4dd5-9718-0797676a13bd",
+  "agent_id": "steady-kepler-9b19dee7",
+  "session_id": "2ae7179d-bd55-412b-b7d5-68091d5038fe",
   "input": {
     "input_content": {
       "text": "Qual é a cotação da petrobras?"
     }
   },
-  "content": "A cotação atual da Petrobras é R$ 42,30.",
+  "content": "A cotação da Petrobras é de R$ 42,87.",
   "content_type": "str",
   "model": "llama-3.3-70b-versatile",
   "model_provider": "Groq",
   "messages": [
     {
-      "id": "6c87b83c-7ed3-438a-8fbc-6dcea92ea9da",
+      "id": "9d8be593-d795-45fc-bd0b-7af1887e9bc0",
       "role": "system",
       "content": "Você é um assistente inteligente.\nUse ferramentas apenas quando a pergunta exigir informações atuais ou dados externos.\nPara perguntas de conhecimento geral, responda diretamente com base no seu conhecimento interno.\nNão peça contexto adicional se a pergunta for clara.\n\n\nVocê é um analista e tem diferentes clientes. Lembre-se de cada cliente, suas informações e preferências.",
       "add_to_agent_memory": true,
-      "created_at": 1773152435
+      "created_at": 1773155344
     },
     {
-      "id": "0b9a5b9f-b36c-4e25-98cb-212866ab88ec",
+      "id": "062d6122-8511-4b7e-b4a8-1a0beaeedb3b",
       "role": "user",
       "content": "{\n  \"text\": \"Qual é a cotação da petrobras?\"\n}",
       "add_to_agent_memory": true,
-      "created_at": 1773152435
+      "created_at": 1773155344
     },
     {
-      "id": "f2d0da64-73ee-4369-bba4-1d3314664ab2",
+      "id": "85c32c8f-c22c-463a-a069-8278fa78a6db",
       "role": "assistant",
       "tool_calls": [
         {
-          "id": "rh7gywf9g",
+          "id": "krfe99wq9",
           "function": {
             "arguments": "{\"symbol\":\"PETR4.SA\"}",
             "name": "get_current_stock_price"
@@ -44,47 +44,47 @@
         "input_tokens": 343,
         "output_tokens": 20,
         "total_tokens": 363,
-        "duration": 0.3143221999926027,
+        "duration": 0.30138889999943785,
         "provider_metrics": {
-          "completion_time": 0.075640608,
-          "prompt_time": 0.035089471,
-          "queue_time": 0.149682091,
-          "total_time": 0.110730079
+          "completion_time": 0.072942064,
+          "prompt_time": 0.018011161,
+          "queue_time": 0.14912133,
+          "total_time": 0.090953225
         }
       },
-      "created_at": 1773152435
+      "created_at": 1773155344
     },
     {
-      "id": "4e49d41c-5e6d-4dbd-bac0-054e8165a395",
+      "id": "b01d4f6b-79d4-47ee-ac1b-eb218f7696d5",
       "role": "tool",
-      "content": "42.3000",
-      "tool_call_id": "rh7gywf9g",
+      "content": "42.8700",
+      "tool_call_id": "krfe99wq9",
       "tool_name": "get_current_stock_price",
       "tool_args": {
         "symbol": "PETR4.SA"
       },
       "add_to_agent_memory": true,
-      "created_at": 1773152436
+      "created_at": 1773155345
     },
     {
-      "id": "6997dba8-3f66-4ab8-a129-fa585d9757a7",
+      "id": "46774ddc-1e93-461a-9320-5a93eee63766",
       "role": "assistant",
-      "content": "A cotação atual da Petrobras é R$ 42,30.",
+      "content": "A cotação da Petrobras é de R$ 42,87.",
       "add_to_agent_memory": true,
       "metrics": {
         "input_tokens": 376,
         "output_tokens": 17,
         "total_tokens": 393,
-        "duration": 0.390536000020802,
-        "time_to_first_token": 0.390536000020802,
+        "duration": 0.6468150999862701,
+        "time_to_first_token": 0.6468150999862701,
         "provider_metrics": {
-          "completion_time": 0.056442729,
-          "prompt_time": 0.035518204,
-          "queue_time": 0.244954616,
-          "total_time": 0.091960933
+          "completion_time": 0.038666849,
+          "prompt_time": 0.065370022,
+          "queue_time": 0.452402516,
+          "total_time": 0.104036871
         }
       },
-      "created_at": 1773152436
+      "created_at": 1773155345
     }
   ],
   "metrics": {
@@ -92,12 +92,12 @@
     "output_tokens": 37,
     "total_tokens": 756,
     "timer": {
-      "start_time": 169034.6663768,
-      "end_time": 169036.0950642,
-      "elapsed_time": 1.428687399980845
+      "start_time": 171943.2339424,
+      "end_time": 171944.9106478,
+      "elapsed_time": 1.676705399993807
     },
-    "time_to_first_token": 0.3196833999827504,
-    "duration": 1.428687399980845,
+    "time_to_first_token": 0.30625700001837686,
+    "duration": 1.676705399993807,
     "details": {
       "model": [
         {
@@ -107,10 +107,10 @@
           "id": "llama-3.3-70b-versatile",
           "provider": "Groq",
           "provider_metrics": {
-            "completion_time": 0.132083337,
-            "prompt_time": 0.070607675,
-            "queue_time": 0.394636707,
-            "total_time": 0.202691012
+            "completion_time": 0.111608913,
+            "prompt_time": 0.083381183,
+            "queue_time": 0.601523846,
+            "total_time": 0.194990096
           }
         }
       ]
@@ -118,29 +118,29 @@
   },
   "tools": [
     {
-      "tool_call_id": "rh7gywf9g",
+      "tool_call_id": "krfe99wq9",
       "tool_name": "get_current_stock_price",
       "tool_args": {
         "symbol": "PETR4.SA"
       },
-      "result": "42.3000",
+      "result": "42.8700",
       "metrics": {
         "timer": {
-          "start_time": 169034.9863707,
-          "end_time": 169035.7030313,
-          "elapsed_time": 0.7166606000100728
+          "start_time": 171943.5406149,
+          "end_time": 171944.2628522,
+          "elapsed_time": 0.7222372999822255
         },
-        "start_time": 1773152435.8630772,
-        "end_time": 1773152436.5797377,
-        "duration": 0.7166606000100728
+        "start_time": 1773155344.4183373,
+        "end_time": 1773155345.1405747,
+        "duration": 0.7222372999822255
       },
-      "created_at": 1773152436
+      "created_at": 1773155345
     }
   ],
   "session_state": {
-    "current_session_id": "4efac7d8-e50d-420a-95cb-9870618799fb",
-    "current_run_id": "7f85ed76-7e49-4fd0-aa93-5bca3c99e1c4"
+    "current_session_id": "2ae7179d-bd55-412b-b7d5-68091d5038fe",
+    "current_run_id": "bcc71770-60a4-4dd5-9718-0797676a13bd"
   },
-  "created_at": 1773152429,
+  "created_at": 1773155334,
   "status": "COMPLETED"
 }

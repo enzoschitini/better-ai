@@ -29,7 +29,18 @@ Não armazene CPF e senhas dos usuários
 """
 }
 
-finance = YFinanceTools()
+class ToolResponse:
+    def __init__(self, metadata=None):
+        self.metadata = metadata or {}
+
+    def add_metadata(self, tool_name: str, payload: dict):
+        self.metadata[tool_name] = payload
+    
+    def get_metadata(self):
+        return self.metadata
+
+response_collector = ToolResponse()
+finance = YFinanceTools(response_collector)
 
 agent = Agent(
     # Models: OpenAIChat(id="gpt-4.1-mini"), Groq(id="llama-3.3-70b-versatile"),
@@ -58,7 +69,7 @@ formatter.save_json(super_json, "src/agents/agent_flow/agent_response.json")
 
 print(f"\n\n{json.dumps(super_json, indent=2)}\n\n")
 
-print(f"Metadata: {finance.response_metadata()}")
+print(f"Metadata: {response_collector.get_metadata()}")
 
 # python -m src.agents.agent_flow.tool_agent
 
