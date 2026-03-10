@@ -41,6 +41,17 @@ Não armazene CPF e senhas dos usuários
 """
 }
 
+title_agent = Agent(
+    model=Groq(id="llama-3.3-70b-versatile"),
+    instructions="""
+    Generate a short title for the conversation based on the user message.
+    Max 5 words.
+    Respond only with the title.
+    """
+)
+
+title = title_agent.run("Ciao! Mi racconti una barzelletta?")
+
 agent = Agent(
     # Menage sessions and users
     session_id="session_4",
@@ -51,6 +62,9 @@ agent = Agent(
 
     instructions=prompt["instructions"],
     description=prompt["description"],
+    metadata={
+        "conversation_title": title
+    },
     #debug_mode=True,
     stream=False,
     #markdown=True,
