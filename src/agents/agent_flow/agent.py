@@ -1,4 +1,10 @@
+import json
+from pydantic import BaseModel, Field
+from dotenv import load_dotenv
+from src.agents.agent_flow.format_response import FormatAgentResponse
+
 from agno.agent import Agent
+from agno.os import AgentOS
 
 from agno.db.sqlite import SqliteDb
 from agno.memory.manager import MemoryManager
@@ -8,20 +14,26 @@ from agno.models.openai import OpenAIChat
 
 from agno.tools.yfinance import YFinanceTools
 
-from dotenv import load_dotenv
-
 load_dotenv()
 
 """
 Prende in considerazione un insieme di messaggi
 """
 
+BASE_PATH = "src/agents/agent_flow/"
 # Setup your database
-db = SqliteDb(db_file="src/agents/agent_flow/agno.db")
+db = SqliteDb(db_file=f"{BASE_PATH}agno.db")
 
 prompt = {
     "instructions": """
 Você é um analista e tem diferentes clientes. Lembre-se de cada cliente, suas informações e preferências.
+""",
+
+    "description": """
+Você é um assistente inteligente.
+Use ferramentas apenas quando a pergunta exigir informações atuais ou dados externos.
+Para perguntas de conhecimento geral, responda diretamente com base no seu conhecimento interno.
+Não peça contexto adicional se a pergunta for clara.
 """,
 
     "memory_manager_instructions": """
@@ -35,10 +47,13 @@ agent = Agent(
     user_id="user_2",
 
     # Models: OpenAIChat(id="gpt-4.1-mini"), Groq(id="llama-3.3-70b-versatile"),
-    model=Groq(id="llama-3.3-70b-versatile"), 
+    model=Groq(id="llama-3.3-70b-versatile", temperature=0.8), 
 
     instructions=prompt["instructions"],
-    #description="xxxxxxxxxx",
+    description=prompt["description"],
+    #debug_mode=True,
+    stream=False,
+    #markdown=True,
 
     # Memory
     db=db,
@@ -58,7 +73,21 @@ agent = Agent(
     #tools=[YFinanceTools()],
 )
 
-agent.print_response("Qual è il mio nome?")
+class AgentInput(BaseModel):
+    text: str
+
+response = agent.run(
+    input=AgentInput(text="Ciao! Mi chiamo Enzo!")
+)
+
+formatter = FormatAgentResponse(response)
+super_json = formatter.serialize()
+
+print(f"\n\n{json.dumps(super_json, indent=2)}\n\n")
+
+# python -m src.agents.agent_flow.agent
+
+#agent.print_response("Qual è il mio nome?")
 #agent.print_response("Ciao! Mi chiamo Enzo!")
 #agent.print_response("Mi piace giocare a pallone")
 #agent.print_response("Il mio cantante preferito è Laura Pausini")
@@ -69,6 +98,48 @@ agent.print_response("Qual é a cotação da petrobras?")
 #agent.print_response("Qual é a cotação da petrobras?", session_id="session_1", user_id="petrobras")
 agent.print_response("Qual é a cotação da vale?")
 agent.print_response("Quais empresas já consultamos a cotação?")
+"""
+
+"""
+if __name__ == "__main__":
+    class AgentInput(BaseModel):
+        text: str
+
+    response = agent.run(
+        input=AgentInput(text="Ciao! Mi chiamo Enzo!")
+    )
+    agent_os = AgentOS(
+        id="my-first-os",
+        description="My first AgentOS",
+        agents=[agent],
+    )
+
+    app = agent_os.get_app()
+
+    # Default port is 7777, change with port=... http://localhost:7777
+    #agent_os.serve(app="src.agents.agent_flow.agent:app", reload=True)
+    agent_os.serve(app=app)
+#"""
+
+"""
+# RUN + AgentOS
+
+from fastapi import FastAPI
+from pydantic import BaseModel
+
+class AgentInput(BaseModel):
+    text: str
+
+@app.post("/test-run")
+def test_run(data: AgentInput):
+    response = agent.run(input=data.text)
+
+    return {
+        "content": response.content,
+        "metrics": response.metrics,
+        "tools": response.tools,
+        "memory": response.memory,
+    }
 """
 
 
