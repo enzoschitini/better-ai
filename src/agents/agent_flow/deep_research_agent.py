@@ -25,6 +25,18 @@ agent = Agent(
     tools=[DeepResearch(response_collector)],
 )
 
+if __name__ == "__main__":
+    agent_os = AgentOS(
+        id="my-first-os",
+        description="My first AgentOS",
+        agents=[agent],
+    )
+
+    app = agent_os.get_app()
+    agent_os.serve(app=app)
+
+
+"""
 ASK = "O que está sendo falado sobre a copa do mundo de 2026?"
 #agent.print_response(ASK)
 
@@ -44,7 +56,6 @@ print(f"\n\n{json.dumps(super_json, indent=2)}\n\n")
 print(f"Metadata: {response_collector.get_metadata()}")
 print(f"Response: {response.content}")
 
-"""
 if __name__ == "__main__":
     agent_os = AgentOS(
         id="my-first-os",
