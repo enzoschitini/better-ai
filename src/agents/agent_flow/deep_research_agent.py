@@ -3,8 +3,8 @@ from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 
 from src.agents.agent_flow.format_response import FormatAgentResponse
-from src.agents.agent_flow.agent_toolkit import VectorStoreRetriver, ToolResponse
-from src.agents.agent_flow.config import PROMPT
+from src.agents.agent_flow.agent_toolkit import ToolResponse, DeepResearch
+from src.agents.agent_flow.config import DEEP_RESEARCH_PROMPT
 
 from agno.agent import Agent
 from agno.os import AgentOS
@@ -14,17 +14,18 @@ from agno.models.openai import OpenAIChat
 
 load_dotenv()
 
+
 response_collector = ToolResponse()
 
 agent = Agent(
     model=OpenAIChat(id="gpt-4.1-mini"), 
-    instructions=PROMPT["instructions"],
-    description=PROMPT["description"],
+    instructions=DEEP_RESEARCH_PROMPT["instructions"],
+    description=DEEP_RESEARCH_PROMPT["description"],
     debug_level=True,
-    tools=[VectorStoreRetriver(response_collector)],
+    tools=[DeepResearch(response_collector)],
 )
 
-ASK = "Resuma os documentos da base"
+ASK = "O que está sendo falado sobre a copa do mundo de 2026?"
 #agent.print_response(ASK)
 
 class AgentInput(BaseModel):
@@ -41,6 +42,7 @@ formatter.save_json(super_json, "src/agents/agent_flow/agent_response.json")
 print(f"\n\n{json.dumps(super_json, indent=2)}\n\n")
 
 print(f"Metadata: {response_collector.get_metadata()}")
+print(f"Response: {response.content}")
 
 """
 if __name__ == "__main__":
@@ -55,4 +57,4 @@ if __name__ == "__main__":
 
 """
 
-# python -m src.agents.agent_flow.rag_agent
+# python -m src.agents.agent_flow.deep_research_agent
