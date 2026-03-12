@@ -1,8 +1,9 @@
 import requests
 
-print(requests.get("http://localhost:7777/agents").json())
+#print(requests.get("http://localhost:7777/agents").json())
 
 agent_id = "fair-goodall-9e694aa8"
+agent_id = "laura94"
 
 url = f"http://localhost:7777/agents/{agent_id}/runs"
 

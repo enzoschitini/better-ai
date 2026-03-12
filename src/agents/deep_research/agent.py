@@ -20,6 +20,7 @@ db = SqliteDb(db_file=f"{BASE_PATH}agno.db")
 response_collector = ToolResponse()
 
 agent = Agent(
+    id="laura94",
     model=OpenAIChat(id="gpt-4.1-mini"), 
     instructions=PROMPT["instructions"],
     description=PROMPT["description"],
