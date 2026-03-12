@@ -1,8 +1,14 @@
 import json
 from pydantic import BaseModel
+from dotenv import load_dotenv
 
+from agno.agent import Agent
 from agno.os import AgentOS
+from agno.models.groq import Groq
+
 from src.agents.agent_flow.format_response import FormatAgentResponse
+
+load_dotenv()
 
 class RunAgent:
     def __init__(self, agent):
@@ -11,7 +17,7 @@ class RunAgent:
     def debug(self, ask: str = "Hello!"):
         self.agent.print_response(ask)
 
-    def process(self, response_collector, ask: str = "Hello!"):
+    def process(self, ask: str = "Hello!"):
         class AgentInput(BaseModel):
             text: str
 
@@ -19,14 +25,7 @@ class RunAgent:
             input=AgentInput(text=ask)
         )
 
-        formatter = FormatAgentResponse(response)
-        super_json = formatter.format()
-        formatter.save_json(super_json, "src/agents/ultils/agent_response.json")
-
-        print(f"\n\n{json.dumps(super_json, indent=2)}\n\n")
-
-        print(f"Metadata: {response_collector.get_metadata()}")
-        print(f"Response: {response.content}")
+        return response
 
     def agent_os(self):
         agent_os = AgentOS(
@@ -37,3 +36,17 @@ class RunAgent:
 
         app = agent_os.get_app()
         agent_os.serve(app=app)
+
+if __name__ == "__main__":
+    agent = Agent(
+        model=Groq(id="llama-3.3-70b-versatile"),
+        debug_level=True,
+    )
+
+    runner = RunAgent(agent=agent)
+    response = runner.process()
+
+    response = runner.agent_os()
+
+# python -m src.agents.ultils.run_agent
+

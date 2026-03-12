@@ -43,6 +43,12 @@ agent = Agent(
     enable_agentic_memory=True,
 
     tools=[DeepResearch(response_collector)],
+
+    # salvar execução
+    store_history_messages=True,
+    store_tool_messages=True,
+    store_events=True,
+    stream_events=True,
 )
 
 if __name__ == "__main__":

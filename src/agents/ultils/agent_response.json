@@ -1,80 +1,78 @@
 {
-  "run_id": "270e5671-28bd-47d3-8cf5-1eef8bb840be",
-  "agent_id": "brave-pascal-2bbbb912",
-  "session_id": "6667b757-f91b-44b4-9db3-0a496fc16721",
+  "run_id": "3c4692eb-aafa-4cb3-98f1-0441b46109e5",
+  "agent_id": "pure-nash-54ccf8ed",
+  "session_id": "a4b00e4c-b67c-4615-98f8-d6c1a76d7b66",
   "input": {
     "input_content": {
-      "text": "Olá"
+      "text": "Hello!"
     }
   },
-  "content": "Olá! Como posso ajudar você hoje?",
+  "content": "Hello! How can I assist you today?",
   "content_type": "str",
-  "model_provider_data": {
-    "id": "chatcmpl-DIFnQfDhHcOTLPGuzMJUmxtqNVsYH",
-    "system_fingerprint": "fp_fa4407aec8"
-  },
-  "model": "gpt-4.1-mini",
-  "model_provider": "OpenAI",
+  "model": "llama-3.3-70b-versatile",
+  "model_provider": "Groq",
   "messages": [
     {
-      "id": "c5b8886a-1aa2-4e0f-b0b7-562f5c52d3de",
-      "role": "system",
-      "content": "Você é um agente de IA especializado em Deep Research.\n\nSeu papel é investigar tópicos de forma aprofundada utilizando ferramentas\nde pesquisa para coletar, analisar e sintetizar informações provenientes\nde múltiplas fontes.\n\nDiferente de um agente RAG tradicional, que apenas recupera contexto de uma\nbase vetorial, você realiza pesquisa ativa e iterativa, explorando diversas\nfontes de informação para produzir respostas completas, bem fundamentadas\ne analiticamente estruturadas.\n\nSeu objetivo é entregar respostas confiáveis, detalhadas e contextualizadas,\nmesmo quando o problema exige investigação em múltiplas etapas.\n\n\nVocê é um agente de IA especializado em Deep Research, análise crítica\ne síntese de informações complexas.\n\nOBS: Se você souber o nome do usuário ou algo do tipo, não precisa ficar repetindo ou evidenciando esse tipo de informação. Use somente quando necessarou ou caso o usuário solicite pela informação.\n\nVocê possui acesso a ferramentas capazes de buscar informações externas\ncomo mecanismos de busca, bases de conhecimento, APIs e outras fontes de dados.\nUtilize essas ferramentas para conduzir pesquisas profundas e bem fundamentadas.\n\nDiretrizes de comportamento:\n\n1. Sempre que a pergunta exigir conhecimento factual, técnico ou atualizado,\n   utilize ferramentas de pesquisa para coletar informações relevantes.\n\n2. Conduza a pesquisa de forma iterativa:\n   - comece com uma busca inicial\n   - analise os resultados\n   - refine a consulta se necessário\n   - realize buscas adicionais para aprofundar o entendimento.\n\n3. Sempre que possível, consulte múltiplas fontes e compare as informações\n   para aumentar a confiabilidade da resposta.\n\n4. Analise criticamente os resultados encontrados, identificando:\n   - convergência entre fontes\n   - possíveis contradições\n   - lacunas de informação.\n\n5. Sintetize as informações coletadas de forma estruturada, clara e objetiva.\n\n6. Priorize informações baseadas em fontes confiáveis e evite assumir\n   fatos que não estejam sustentados pelas evidências encontradas.\n\n7. Caso as informações disponíveis sejam insuficientes ou inconclusivas,\n   informe explicitamente as limitações da pesquisa.\n\n8. Quando apropriado, apresente:\n   - explicações detalhadas\n   - contexto relevante\n   - implicações ou interpretações baseadas nos dados coletados.\n\n9. Para perguntas simples ou que não exigem pesquisa externa,\n   responda diretamente de forma clara e objetiva.\n\n\nYou have access to user info and preferences from previous interactions that you can use to personalize your response:\n\n<memories_from_previous_interactions>\n- O nome do usuário é Enzo. A idade do usuário Enzo é 21 anos.\n</memories_from_previous_interactions>\n\nNote: this information is from previous interactions and may be updated in this conversation. You should always prefer information from this conversation over the past memories.\n\n<updating_user_memories>\n- You have access to the `update_user_memory` tool that you can use to add new memories, update existing memories, delete memories, or clear all memories.\n- If the user's message includes information that should be captured as a memory, use the `update_user_memory` tool to update your memory database.\n- Memories should include details that could personalize ongoing interactions with the user.\n- Use this tool to add new memories or update existing memories that you identify in the conversation.\n- Use this tool if the user asks to update their memory, delete a memory, or clear all memories.\n- If you use the `update_user_memory` tool, remember to pass on the response to the user.\n</updating_user_memories>",
-      "add_to_agent_memory": true,
-      "created_at": 1773242993
-    },
-    {
-      "id": "302ee5e5-ad40-49f1-aa8d-f579d01ededf",
+      "id": "15501fcc-7d4d-462f-afc6-2e4b9f5190fa",
       "role": "user",
-      "content": "{\n  \"text\": \"Olá\"\n}",
+      "content": "{\n  \"text\": \"Hello!\"\n}",
       "add_to_agent_memory": true,
-      "created_at": 1773242993
+      "created_at": 1773310861
     },
     {
-      "id": "6b1c4cd0-e0f4-4e59-b4bf-5b3e8a328730",
+      "id": "8a657adf-ac79-448e-a552-a7424f37ec4a",
       "role": "assistant",
-      "content": "Olá! Como posso ajudar você hoje?",
-      "provider_data": {
-        "id": "chatcmpl-DIFnQfDhHcOTLPGuzMJUmxtqNVsYH",
-        "system_fingerprint": "fp_fa4407aec8"
-      },
+      "content": "Hello! How can I assist you today?",
       "add_to_agent_memory": true,
       "metrics": {
-        "input_tokens": 886,
-        "output_tokens": 9,
-        "total_tokens": 895,
-        "duration": 2.630779799990705,
-        "time_to_first_token": 2.630779799990705
+        "input_tokens": 44,
+        "output_tokens": 10,
+        "total_tokens": 54,
+        "duration": 1.5798464000108652,
+        "time_to_first_token": 1.5798464000108652,
+        "provider_metrics": {
+          "completion_time": 0.03502057,
+          "prompt_time": 0.001921531,
+          "queue_time": 0.249076989,
+          "total_time": 0.036942101
+        }
       },
-      "created_at": 1773242993
+      "created_at": 1773310861
     }
   ],
   "metrics": {
-    "input_tokens": 886,
-    "output_tokens": 9,
-    "total_tokens": 895,
+    "input_tokens": 44,
+    "output_tokens": 10,
+    "total_tokens": 54,
     "timer": {
-      "start_time": 77757.0022068,
-      "end_time": 77759.6579393,
-      "elapsed_time": 2.6557325000030687
+      "start_time": 145632.0735822,
+      "end_time": 145633.6587941,
+      "elapsed_time": 1.5852118999755476
     },
-    "time_to_first_token": 2.6551390000095125,
-    "duration": 2.6557325000030687,
+    "time_to_first_token": 1.5846157999767456,
+    "duration": 1.5852118999755476,
     "details": {
       "model": [
         {
-          "input_tokens": 886,
-          "output_tokens": 9,
-          "total_tokens": 895,
-          "id": "gpt-4.1-mini",
-          "provider": "OpenAI"
+          "input_tokens": 44,
+          "output_tokens": 10,
+          "total_tokens": 54,
+          "id": "llama-3.3-70b-versatile",
+          "provider": "Groq",
+          "provider_metrics": {
+            "completion_time": 0.03502057,
+            "prompt_time": 0.001921531,
+            "queue_time": 0.249076989,
+            "total_time": 0.036942101
+          }
         }
       ]
     }
   },
-  "metadata": {
-    "conversation_title": "title"
+  "session_state": {
+    "current_session_id": "a4b00e4c-b67c-4615-98f8-d6c1a76d7b66",
+    "current_run_id": "3c4692eb-aafa-4cb3-98f1-0441b46109e5"
   },
-  "created_at": 1773242991,
+  "created_at": 1773310859,
   "status": "COMPLETED"
 }
