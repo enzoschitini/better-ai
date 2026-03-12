@@ -20,4 +20,4 @@ for row in rows:
 with open("src/agents/deep_research/response.json", "w", encoding="utf-8") as f:
     json.dump(runs, f, indent=2, ensure_ascii=False)
 
-print(json.dumps(runs, indent=2, ensure_ascii=False))
+#print(json.dumps(runs, indent=2, ensure_ascii=False))
