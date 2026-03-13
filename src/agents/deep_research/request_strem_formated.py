@@ -61,6 +61,28 @@ def with_tools():
             except:
                 pass
 
-with_tools()
+def save():
+    stream_response = []  # variável que vai guardar tudo
+
+    with open("stream_output.txt", "w", encoding="utf-8") as file:
+
+        for line in response.iter_lines():
+            if not line:
+                continue
+
+            decoded = line.decode("utf-8")
+
+            # salva na variável
+            stream_response.append(decoded)
+
+            # salva no arquivo
+            file.write(decoded + "\n")
+
+            # opcional: mostrar no terminal
+            print(decoded)
+    
+    print("\nStream salvo com sucesso!")
+
+save()
 
 # Explique o que é RAG
