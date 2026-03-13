@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 
-from src.agents.agent_flow.agent_toolkit import ToolResponse, DeepResearch
+from src.agents.ultils.tool_response import ToolResponse
+from src.agents.deep_research.toolkit import DeepResearch
 from src.agents.deep_research.config import PROMPT
 
 from agno.agent import Agent
