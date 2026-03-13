@@ -148,6 +148,9 @@ class TavilyResearchRunner:
 
 
 if __name__ == "__main__":
+    from dotenv import load_dotenv
+
+    load_dotenv()
 
     researcher = TavilyDeepResearch(
         api_key=os.getenv("TAVILY_API_KEY")
@@ -170,4 +173,4 @@ if __name__ == "__main__":
 
     print(markdown_context)
 
-    # python -m src.deep_recearch.tavily_recearch.context_builder
+    # python -m src.deep_research.tavily_research.context_builder

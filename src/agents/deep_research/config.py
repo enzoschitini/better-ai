@@ -1,3 +1,5 @@
+LOCAL_MEMORY_DB = "src/agents/deep_research/agno.db"
+
 PROMPT = {
     "instructions": """
 Você é um agente de IA especializado em Deep Research, análise crítica
