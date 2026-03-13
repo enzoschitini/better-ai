@@ -72,12 +72,13 @@ db = SqliteDb(db_file=f"{BASE_PATH}agno.db")
 tool_respose = ToolResponse()
 
 agent = Agent(
+    id="base-agent",
     # Menage sessions and users
     session_id="session_4",
     user_id="user_2",
 
     # Models: OpenAIChat(id="gpt-4.1-mini"), Groq(id="llama-3.3-70b-versatile"),
-    model=Groq(id="llama-3.3-70b-versatile", temperature=0.8), 
+    model=OpenAIChat(id="gpt-4.1-mini"), 
 
     instructions=PROMPT["instructions"],
     description=PROMPT["description"],
