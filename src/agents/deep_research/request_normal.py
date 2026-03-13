@@ -14,7 +14,9 @@ data = {
 }
 
 response = requests.post(url, data=data)
+result = response.json()
 
-print(response.json())
+#print(result)
+print(f"\n\nResponse: {result["content"]}")
 
 # http://localhost:7777/docs
