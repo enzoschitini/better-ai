@@ -48,4 +48,5 @@ dependencies = [
     "psycopg2>=2.9.11",
     "agno>=2.5.8",
     "yfinance>=1.2.0",
+    "psycopg2-binary>=2.9.11",
 ]

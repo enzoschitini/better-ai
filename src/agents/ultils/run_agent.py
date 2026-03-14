@@ -17,7 +17,7 @@ class RunAgent:
     def debug(self, ask: str = "Hello!"):
         self.agent.print_response(ask)
 
-    def process(self, ask: str = "Hello!", path: str = None, tool_responses = None):
+    def run_agent(self, ask: str = "Hello!", path: str = None, tool_responses = None):
         class AgentInput(BaseModel):
             text: str
 
