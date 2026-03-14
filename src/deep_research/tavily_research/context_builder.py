@@ -2,6 +2,12 @@ import os
 from typing import Dict, Any, List, Optional, Dict, Any
 
 from src.deep_research.tavily_research.tavily_core import TavilyDeepResearch
+from src.tracing.tracing_core import ApplicationTracing
+
+tracer = ApplicationTracing(
+    flag="Deep Research",
+    file_name="context_builder.py",
+)
 
 class TavilyContextBuilder:
     def __init__(
@@ -21,14 +27,22 @@ class TavilyContextBuilder:
 
     # ---------- Pesquisa ----------
     def search(self, search_config: Dict[str, Any]) -> Dict[str, Any]:
-        return self.researcher.start_search(search_config)
+        research_results = self.researcher.start_search(search_config)
+        tracer.DEBUG(
+            func_name="search",
+            message="Web search results",
+            metadata=research_results
+        )
+
+        return research_results
+        
 
     # ---------- Filtros ----------
-    def filter_results(self, result: Dict[str, Any]) -> Dict[str, Any]:
+    def filter_results(self, research_results: Dict[str, Any]) -> Dict[str, Any]:
         filtered = {
-            **result,
+            **research_results,
             "results": [
-                item for item in result.get("results", [])
+                item for item in research_results.get("results", [])
                 if item.get("score", 0) >= self.min_score
             ],
         }
@@ -40,6 +54,12 @@ class TavilyContextBuilder:
         # Remove raw_content de cada resultado
         for item in filtered.get("results", []):
             item.pop("raw_content", None)
+
+        tracer.DEBUG(
+            func_name="filter_results",
+            message="Web search results filtred",
+            metadata=filtered
+        )
 
         return filtered
 
@@ -69,13 +89,21 @@ class TavilyContextBuilder:
             md.append("**Conteúdo:**  ")
             md.append(item.get("content", "") + "\n")
             md.append("---\n")
+        
+        markdown = "\n".join(md)
 
-        return "\n".join(md)
+        tracer.DEBUG(
+            func_name="to_markdown",
+            message="Web search results to markdown",
+            metadata=markdown
+        )
+
+        return markdown
 
     # ---------- Pipeline completo ----------
     def build_context(self, search_config: Dict[str, Any]) -> str:
-        raw_result = self.search(search_config)
-        filtered_result = self.filter_results(raw_result)
+        raw_research_results = self.search(search_config)
+        filtered_result = self.filter_results(raw_research_results)
         return self.to_markdown(filtered_result)
 
 
@@ -152,9 +180,7 @@ if __name__ == "__main__":
 
     load_dotenv()
 
-    researcher = TavilyDeepResearch(
-        api_key=os.getenv("TAVILY_API_KEY")
-    )
+    researcher = TavilyDeepResearch()
 
     builder = TavilyContextBuilder(
         researcher=researcher,
@@ -171,6 +197,6 @@ if __name__ == "__main__":
         include_answer=True
     )
 
-    print(markdown_context)
+    print(f"\n\n --------------------------------------------\n{markdown_context}")
 
     # python -m src.deep_research.tavily_research.context_builder

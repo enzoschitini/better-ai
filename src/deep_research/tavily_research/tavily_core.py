@@ -1,5 +1,10 @@
+import os
+
 from typing import List, Dict, Any, List
 from tavily import TavilyClient
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class TavilyDeepResearch:
     """
@@ -7,8 +12,13 @@ class TavilyDeepResearch:
     Recebe dicionários de configuração para máxima flexibilidade.
     """
 
-    def __init__(self, api_key: str):
-        self.client = TavilyClient(api_key=api_key)
+    def __init__(self, api_key: str | None = None):
+        self.api_key = api_key or os.getenv("TAVILY_API_KEY")
+
+        if not self.api_key:
+            raise RuntimeError("TAVILY_API_KEY not found in environment variables")
+
+        self.client = TavilyClient(api_key=self.api_key)
 
     def start_search(self, params: Dict[str, Any]) -> dict:
         """
