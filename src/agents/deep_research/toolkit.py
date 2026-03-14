@@ -68,12 +68,7 @@ class DeepResearch(Toolkit):
                 query=query
             )
 
-            #if not os.getenv("TAVILY_API_KEY"):
-                #raise "Not found TAVILY_API_KEY"
-
-            researcher = TavilyDeepResearch(
-                api_key=os.getenv("TAVILY_API_KEY")
-            )
+            researcher = TavilyDeepResearch()
 
             builder = TavilyContextBuilder(
                 researcher=researcher,
