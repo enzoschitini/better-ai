@@ -47,11 +47,17 @@ class DeepResearch(Toolkit):
         """
         Internal helper method used to collect metadata about tool execution.
         """
-        if self.response_collector:
-            self.response_collector.add_metadata(
-                tool_name=tool_name,
-                payload=payload
-            )
+        print("\n\n\n\n\n")
+        print(tool_name)
+        print(payload)
+        #if self.response_collector:
+        self.response_collector.add_metadata(
+            tool_name=tool_name,
+            payload=payload
+        )
+        
+        print(self.response_collector)
+        print("\n\n\n\n\n")
 
     def web_research(self, query: str) -> str:
         """
@@ -82,7 +88,7 @@ class DeepResearch(Toolkit):
 
             runner = TavilyResearchRunner(builder)
 
-            markdown_context = runner.run(
+            context = runner.run(
                 query=payload.query,
                 search_depth=payload.search_depth,
                 max_results=payload.max_results,
@@ -90,8 +96,11 @@ class DeepResearch(Toolkit):
                 include_answer=payload.include_answer
             )
 
+            markdown_context = context["markdown"]
+            urls = context["urls"]
+
             # Collect metadata
-            self._update_response("web_research", {"markdown_context": len(markdown_context)})
+            self._update_response("web_research", {"urls": urls, "markdown_context_size": len(markdown_context)})
 
         except Exception as e:
             return f"Failed to generate context of research: {str(e)}"

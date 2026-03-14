@@ -17,7 +17,7 @@ class RunAgent:
     def debug(self, ask: str = "Hello!"):
         self.agent.print_response(ask)
 
-    def process(self, ask: str = "Hello!"):
+    def process(self, ask: str = "Hello!", path: str = None, tool_responses = None):
         class AgentInput(BaseModel):
             text: str
 
@@ -25,7 +25,19 @@ class RunAgent:
             input=AgentInput(text=ask)
         )
 
-        return response
+        formatter = FormatAgentResponse(response)
+        formated_response = formatter.format()
+
+        if path:
+            formatter.save_json(formated_response, f"{path}agent_response.json")
+
+        print(json.dumps(formated_response, indent=2))
+
+        if tool_responses:
+            print(f"\nTool Responses:\n{tool_responses.get_metadata()}")
+        
+        print(f"{formated_response["content"]}")
+        return formated_response
 
     def agent_os(self):
         agent_os = AgentOS(
