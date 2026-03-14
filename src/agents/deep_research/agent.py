@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 
 from src.agents.ultils.tool_response import ToolResponse
 from src.agents.deep_research.toolkit import DeepResearch
-from src.agents.deep_research.config import PROMPT, LOCAL_MEMORY_DB
+from src.agents.deep_research.config import DEFAULT_MODEL, PROMPT, LOCAL_MEMORY_DB
 
 from agno.agent import Agent
 
@@ -25,9 +25,11 @@ agent = Agent(
     },
 
     # Settings
-    model=OpenAIChat(id="gpt-4.1-mini"), 
+    model=OpenAIChat(id=DEFAULT_MODEL), 
     instructions=PROMPT["instructions"],
     description=PROMPT["description"],
+    markdown=True,
+    stream=True,
     debug_level=True,
 
     # Chat Memory
@@ -37,10 +39,15 @@ agent = Agent(
     enable_user_memories=True,
     add_memories_to_context=True,
 
+    # Reasoning
+    reasoning=True,
+    reasoning_model=DEFAULT_MODEL,
+    reasoning_max_steps=5,
+
     # Agentic Memory
     memory_manager=MemoryManager(
         db=db,
-        model=OpenAIChat(id="gpt-4.1-mini"),
+        model=OpenAIChat(id=DEFAULT_MODEL),
         additional_instructions=PROMPT["memory_manager_instructions"]
     ),
     enable_agentic_memory=True,

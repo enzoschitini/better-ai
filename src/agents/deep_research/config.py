@@ -1,4 +1,5 @@
 LOCAL_MEMORY_DB = "src/agents/deep_research/agno.db"
+DEFAULT_MODEL = "gpt-4.1-mini"
 
 PROMPT = {
     "instructions": """
