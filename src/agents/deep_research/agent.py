@@ -61,7 +61,7 @@ if __name__ == "__main__":
     runner = RunAgent(
         agent=agent
     )
-    runner.process(ask="O que está sendo falado sobre a copa de 2026?", tool_responses=response_collector)
-    #runner.agent_os()
+    #runner.process(ask="O que está sendo falado sobre a copa de 2026?", tool_responses=response_collector)
+    runner.agent_os()
 
 # python -m src.agents.deep_research.agent

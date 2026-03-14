@@ -14,7 +14,7 @@ load_dotenv()
 class ContextBuilderRequest(BaseModel):
     query: str
     search_depth: str = "advanced"
-    max_results: int = 5
+    max_results: int = 15
     topic: str = "general"
     include_answer: bool = True
     min_score: float = 0.5
