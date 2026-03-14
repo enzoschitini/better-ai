@@ -54,7 +54,6 @@ class TavilyContextBuilder:
     # ---------- Filtros ----------
     def filter_results(self, research_results: Dict[str, Any]) -> Dict[str, Any]:
         try:
-            r = 5 / 0
             filtered = {
                 **research_results,
                 "results": [
@@ -152,6 +151,19 @@ class TavilyContextBuilder:
             )
 
             raise RuntimeError(f"{message}: {str(e)}")
+    
+    def get_web_sites(self, filtered_result: dict) -> list:
+        urls = []
+        for result in filtered_result["results"]:
+            urls.append(result["url"])
+        
+        tracer.DEBUG(
+            func_name="get_web_sites",
+            message="Links to analyzed sites",
+            metadata=urls
+        )
+        
+        return urls
 
     # ---------- Pipeline completo ----------
     def build_context(self, search_config: Dict[str, Any]) -> str:
@@ -159,16 +171,23 @@ class TavilyContextBuilder:
             raw_research_results = self.search(search_config)
             filtered_result = self.filter_results(raw_research_results)
             markdown = self.to_markdown(filtered_result)
+            urls = self.get_web_sites(filtered_result)
+
+            context = {
+                "markdown": markdown,
+                "urls": urls,
+            }
 
             tracer.DEBUG(
                 func_name="build_context",
                 message="Research context built successfully",
                 metadata={
-                    "query": search_config.get("query")
+                    "query": search_config.get("query"),
+                    "context": context,
                 }
             )
 
-            return markdown
+            return context
 
         except Exception as e:
             message = "Error building research context"
@@ -266,7 +285,7 @@ if __name__ == "__main__":
 
     runner = TavilyResearchRunner(builder)
 
-    markdown_context = runner.run(
+    context = runner.run(
         query="Quais as principais tendências de IA em 2026?",
         search_depth="advanced",
         max_results=2,
@@ -274,6 +293,6 @@ if __name__ == "__main__":
         include_answer=True
     )
 
-    print(f"\n\n --------------------------------------------\n{markdown_context}")
+    print(f"\n\n --------------------------------------------\n{context}")
 
     # python -m src.deep_research.tavily_research.context_builder
