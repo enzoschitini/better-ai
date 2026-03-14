@@ -36,7 +36,7 @@ class RunAgent:
         if tool_responses:
             print(f"\nTool Responses:\n{tool_responses.get_metadata()}")
         
-        print(f"{formated_response["content"]}")
+        print(f"\nResponse: {formated_response["content"]}")
         return formated_response
 
     def agent_os(self):

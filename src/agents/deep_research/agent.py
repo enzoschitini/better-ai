@@ -46,7 +46,7 @@ agent = Agent(
     enable_agentic_memory=True,
 
     # Toolkit
-    tools=[DeepResearch(response_collector)],
+    tools=[DeepResearch(response_collector=response_collector)],
 
     # Save Traces
     store_history_messages=True,

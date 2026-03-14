@@ -47,17 +47,11 @@ class DeepResearch(Toolkit):
         """
         Internal helper method used to collect metadata about tool execution.
         """
-        print("\n\n\n\n\n")
-        print(tool_name)
-        print(payload)
-        #if self.response_collector:
-        self.response_collector.add_metadata(
-            tool_name=tool_name,
-            payload=payload
-        )
-        
-        print(self.response_collector)
-        print("\n\n\n\n\n")
+        if self.response_collector:
+            self.response_collector.add_metadata(
+                tool_name=tool_name,
+                payload=payload
+            )
 
     def web_research(self, query: str) -> str:
         """
