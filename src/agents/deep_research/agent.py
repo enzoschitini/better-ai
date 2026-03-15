@@ -11,10 +11,20 @@ from agno.models.groq import Groq
 from agno.models.openai import OpenAIChat
 
 from agno.db.sqlite import SqliteDb
+from agno.db.postgres import PostgresDb
 from agno.memory.manager import MemoryManager
 
 load_dotenv()
 
+SUPABASE_PROJECT = "019c4370-8220-74ee-9e66-42aeafbb9e76"
+SUPABASE_PASSWORD = "hsenyunovbrmjejxqvjn.supabase.co"
+
+SUPABASE_DB_URL = (
+    f"postgresql://postgres:{SUPABASE_PROJECT}@db.{SUPABASE_PASSWORD}:5432/postgres"
+)
+
+# Setup the Supabase database
+#db = PostgresDb(db_url=SUPABASE_DB_URL)
 db = SqliteDb(db_file=LOCAL_MEMORY_DB)
 
 response_collector = ToolResponse()
