@@ -1,5 +1,5 @@
 # BetterAI - Artificial Intelligence Back-End
 
-![BetterAI Logo](images/Logo_Text.png)
+![alt text](<images/Frame 27346.png>)
 
 Author: Enzo Schitini
