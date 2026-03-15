@@ -38,11 +38,16 @@ class Database:
     def local_database():
         return SqliteDb(db_file=LOCAL_MEMORY_DB)
 
-db = Database()
-response_collector = ToolResponse()
+db = Database(local=True)
+TOOL_RESPONSER = ToolResponse()
 
 agent = Agent(
+    # Unique ID's
     id="deep_research",
+    #session_id="session_1",
+    #user_id="user_1",
+
+    # Other informations
     metadata={
         "conversation_title": "title"
     },
@@ -76,7 +81,9 @@ agent = Agent(
     enable_agentic_memory=True,
 
     # Toolkit
-    tools=[DeepResearch(response_collector=response_collector)],
+    tools=[
+        DeepResearch(TOOL_RESPONSER=TOOL_RESPONSER)
+    ],
 
     # Save Traces
     store_history_messages=True,
@@ -88,11 +95,12 @@ agent = Agent(
 if __name__ == "__main__":
     from src.agents.ultils.run_agent import RunAgent
 
-    runner = RunAgent(
-        agent=agent
-    )
+    runner = RunAgent(agent=agent)
+    ASK = """
+Crie uma noticia sobre a guerra dos EUA como se você fosse o melhor redator jornalistico
+"""
     #runner.process(ask="O que está sendo falado sobre a copa de 2026?", tool_responses=response_collector)
-    #runner.debug(ask="Crie um post cativante falando sobre a guerra atual")
+    #runner.debug(ask=ASK)
     runner.agent_os()
 
 # python -m src.agents.deep_research.agent

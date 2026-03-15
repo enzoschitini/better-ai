@@ -32,10 +32,10 @@ class DeepResearch(Toolkit):
         self,
         enable_web_research: bool = True,
         all: bool = False,
-        response_collector: Any = None,
+        TOOL_RESPONSER: Any = None,
         **kwargs,
     ):
-        self.response_collector = response_collector
+        self.TOOL_RESPONSER = TOOL_RESPONSER
         tools: List[Any] = []
 
         if all or enable_web_research:
@@ -47,8 +47,8 @@ class DeepResearch(Toolkit):
         """
         Internal helper method used to collect metadata about tool execution.
         """
-        if self.response_collector:
-            self.response_collector.add_metadata(
+        if self.TOOL_RESPONSER:
+            self.TOOL_RESPONSER.add_metadata(
                 tool_name=tool_name,
                 payload=payload
             )
