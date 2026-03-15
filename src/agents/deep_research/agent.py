@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 
 from src.agents.ultils.tool_response import ToolResponse
 from src.agents.deep_research.toolkit import DeepResearch
+from src.utils.unique_id_factory import IDGenerator
 from src.agents.deep_research.config import DEFAULT_MODEL, PROMPT, LOCAL_MEMORY_DB
 
 from agno.agent import Agent
@@ -41,7 +42,7 @@ agent = Agent(
 
     # Reasoning
     reasoning=True,
-    reasoning_model=DEFAULT_MODEL,
+    reasoning_model="openai:gpt-4.1-mini",
     reasoning_max_steps=5,
 
     # Agentic Memory
@@ -69,6 +70,7 @@ if __name__ == "__main__":
         agent=agent
     )
     #runner.process(ask="O que está sendo falado sobre a copa de 2026?", tool_responses=response_collector)
+    #runner.debug(ask="Crie um post cativante falando sobre a guerra atual")
     runner.agent_os()
 
 # python -m src.agents.deep_research.agent
