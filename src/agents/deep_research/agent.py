@@ -1,3 +1,4 @@
+import os
 from dotenv import load_dotenv
 
 from src.agents.ultils.tool_response import ToolResponse
@@ -16,17 +17,28 @@ from agno.memory.manager import MemoryManager
 
 load_dotenv()
 
-SUPABASE_PROJECT = "019c4370-8220-74ee-9e66-42aeafbb9e76"
-SUPABASE_PASSWORD = "hsenyunovbrmjejxqvjn.supabase.co"
+class Database:
+    def __new__(cls, local: bool = False):
+        if local:
+            return cls.local_database()
+        return cls.supabase()
 
-SUPABASE_DB_URL = (
-    f"postgresql://postgres:{SUPABASE_PROJECT}@db.{SUPABASE_PASSWORD}:5432/postgres"
-)
+    @staticmethod
+    def supabase():
+        SUPABASE_PROJECT_HOST = os.getenv("SUPABASE_PROJECT_HOST")
+        SUPABASE_DATABASE_PASSWORD = os.getenv("SUPABASE_DATABASE_PASSWORD")
 
-# Setup the Supabase database
-#db = PostgresDb(db_url=SUPABASE_DB_URL)
-db = SqliteDb(db_file=LOCAL_MEMORY_DB)
+        SUPABASE_DB_URL = (
+            f"postgresql://postgres:{SUPABASE_DATABASE_PASSWORD}@db.{SUPABASE_PROJECT_HOST}:5432/postgres"
+        )
 
+        return PostgresDb(db_url=SUPABASE_DB_URL)
+
+    @staticmethod
+    def local_database():
+        return SqliteDb(db_file=LOCAL_MEMORY_DB)
+
+db = Database()
 response_collector = ToolResponse()
 
 agent = Agent(
