@@ -1900,8 +1900,8 @@
     {
       "id": "YWRhJigT6KXYMCK7D74n4",
       "type": "rectangle",
-      "x": 596.6928362365778,
-      "y": 376.65980360690935,
+      "x": 597.1667872925672,
+      "y": 377.76980610010116,
       "width": 284.77073191073487,
       "height": 94.1022153049507,
       "angle": 0,
@@ -1921,8 +1921,8 @@
         "type": 3
       },
       "seed": 256000231,
-      "version": 673,
-      "versionNonce": 2041681193,
+      "version": 674,
+      "versionNonce": 800684487,
       "isDeleted": false,
       "boundElements": [
         {
@@ -1934,15 +1934,15 @@
           "type": "arrow"
         }
       ],
-      "updated": 1773671676435,
+      "updated": 1773682754135,
       "link": null,
       "locked": false
     },
     {
       "id": "YF2MIuOnGiCVDLh2HUB-N",
       "type": "text",
-      "x": 675.238816781092,
-      "y": 411.2109112593847,
+      "x": 675.7127678370814,
+      "y": 412.32091375257653,
       "width": 125.35990905761719,
       "height": 25,
       "angle": 0,
@@ -1960,11 +1960,11 @@
       "index": "ajV",
       "roundness": null,
       "seed": 1060604935,
-      "version": 623,
-      "versionNonce": 385288201,
+      "version": 624,
+      "versionNonce": 1108650215,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1773671676435,
+      "updated": 1773682754135,
       "link": null,
       "locked": false,
       "text": "Introduzione",
@@ -1980,8 +1980,8 @@
     {
       "id": "Dwxqrs8cxAvyPihg-_l00",
       "type": "text",
-      "x": 977.4923325802334,
-      "y": 386.2770169687086,
+      "x": 977.6419951808665,
+      "y": 388.4970219550923,
       "width": 546.9471926251131,
       "height": 74.51918858680139,
       "angle": 0,
@@ -1999,8 +1999,8 @@
       "index": "ak",
       "roundness": null,
       "seed": 425445351,
-      "version": 626,
-      "versionNonce": 834230729,
+      "version": 659,
+      "versionNonce": 67208455,
       "isDeleted": false,
       "boundElements": [
         {
@@ -2008,7 +2008,7 @@
           "type": "arrow"
         }
       ],
-      "updated": 1773671676435,
+      "updated": 1773682761958,
       "link": null,
       "locked": false,
       "text": "Bisogna sistemare un modello per le documentazioni in\nmodo da seguire un unico stile e rendere più semplice lo\nsviluppo ",
@@ -2024,10 +2024,10 @@
     {
       "id": "Xg7JA_WiepcigBm1MLk4G",
       "type": "arrow",
-      "x": 898.1234748216283,
-      "y": 422.6466264172092,
-      "width": 64.4862687793102,
-      "height": 0.2054813839979488,
+      "x": 897.4027371216442,
+      "y": 416.27716666038816,
+      "width": 65.35666907992743,
+      "height": 1.8023852310344068,
       "angle": 0,
       "strokeColor": "#1e1e1e",
       "backgroundColor": "transparent",
@@ -2043,11 +2043,11 @@
       "index": "al",
       "roundness": null,
       "seed": 1046534889,
-      "version": 538,
-      "versionNonce": 884732103,
+      "version": 575,
+      "versionNonce": 1069108263,
       "isDeleted": false,
       "boundElements": null,
-      "updated": 1773671677266,
+      "updated": 1773682761959,
       "link": null,
       "locked": false,
       "points": [
@@ -2056,19 +2056,19 @@
           0
         ],
         [
-          64.4862687793102,
-          0.2054813839979488
+          65.35666907992743,
+          1.8023852310344068
         ]
       ],
       "lastCommittedPoint": null,
       "startBinding": {
         "elementId": "YWRhJigT6KXYMCK7D74n4",
-        "focus": -0.03307186110700027,
+        "focus": -0.03307186110700315,
         "gap": 16.659906674315607
       },
       "endBinding": {
         "elementId": "Dwxqrs8cxAvyPihg-_l00",
-        "focus": -0.006145265947151814,
+        "focus": -0.006145265947152657,
         "gap": 14.882588979294951
       },
       "startArrowhead": null,
