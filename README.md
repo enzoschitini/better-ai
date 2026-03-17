@@ -213,8 +213,6 @@ This enables the creation of:
 
 Deep research capabilities help organizations perform **strategic analysis and well-informed decision-making**.
 
----
-
 ![alt text](images/Gemini_Generated_Image_mmbn14mmbn14mmbn.png)
 
 # A Solid Foundation That Works in Production
@@ -311,3 +309,5 @@ All supported by a scalable and reliable AI infrastructure.
 
 
 # BetterAI is where intelligence finds purpose.
+
+**Author:** Enzo Schitini
