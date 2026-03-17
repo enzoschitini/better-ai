@@ -25,6 +25,8 @@ All from a **single, integrated AI platform**.
 
 **Author:** Enzo Schitini
 
+![alt text](<images/Gemini_Generated_Image_12swry12swry12sw (1).png>)
+
 ## The Right Models for Every Task
 
 BetterAI includes specialized models designed to handle different types of intelligence and workflows.
@@ -86,6 +88,7 @@ Galileo enables:
 
 This model is particularly useful for **scientific, financial, and engineering applications**.
 
+![alt text](images/Gemini_Generated_Image_hhqir9hhqir9hhqi.png)
 
 # What You Can Build With AI
 
@@ -211,6 +214,8 @@ This enables the creation of:
 Deep research capabilities help organizations perform **strategic analysis and well-informed decision-making**.
 
 ---
+
+![alt text](images/Gemini_Generated_Image_mmbn14mmbn14mmbn.png)
 
 # A Solid Foundation That Works in Production
 
