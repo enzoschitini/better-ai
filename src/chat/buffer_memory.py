@@ -21,7 +21,7 @@ load_dotenv()
 # =========================================
 # CONFIGURAÇÃO DO MONGO
 # =========================================
-logging.info("Carregando configuração do MongoDB...")
+#logging.info("Carregando configuração do MongoDB...")
 
 MONGO_URI = os.getenv("MONGO_URI")
 if not MONGO_URI:
@@ -32,7 +32,7 @@ try:
     client = MongoClient(MONGO_URI)
     db = client["Chat"]
     collection = db["ConversationBufferMemory"]
-    logging.info("Conexão com MongoDB realizada com sucesso.")
+    #logging.info("Conexão com MongoDB realizada com sucesso.")
 except Exception as e:
     logging.exception(f"Erro ao conectar ao MongoDB: {e}")
     raise
@@ -45,7 +45,7 @@ def save_chat_history(session_id: str, memory: ConversationBufferMemory) -> None
     """
     Salva o histórico de chat de uma sessão no MongoDB.
     """
-    logging.info(f"Iniciando save_chat_history() | session_id={session_id}")
+    #logging.info(f"Iniciando save_chat_history() | session_id={session_id}")
 
     if not session_id or not memory:
         logging.error("save_chat_history chamado sem session_id ou memory válidos.")
@@ -58,7 +58,7 @@ def save_chat_history(session_id: str, memory: ConversationBufferMemory) -> None
             {"$set": {"messages": history_data}},
             upsert=True
         )
-        logging.info(f"Histórico salvo com sucesso para session_id={session_id}")
+        #logging.info(f"Histórico salvo com sucesso para session_id={session_id}")
     except Exception as e:
         logging.exception(f"Erro ao salvar histórico da sessão {session_id}: {e}")
         raise
@@ -69,7 +69,7 @@ def load_chat_history(session_id: str):
     Carrega o histórico de chat de uma sessão no MongoDB.
     Retorna uma lista de mensagens.
     """
-    logging.info(f"Iniciando load_chat_history() | session_id={session_id}")
+    #logging.info(f"Iniciando load_chat_history() | session_id={session_id}")
 
     if not session_id:
         logging.warning("load_chat_history chamado sem session_id. Retornando vazio.")
@@ -78,10 +78,10 @@ def load_chat_history(session_id: str):
     try:
         doc = collection.find_one({"session_id": session_id})
         if doc and "messages" in doc:
-            logging.info(f"Histórico encontrado para session_id={session_id}.")
+            #logging.info(f"Histórico encontrado para session_id={session_id}.")
             return messages_from_dict(doc["messages"])
 
-        logging.info(f"Nenhum histórico encontrado para session_id={session_id}.")
+        #logging.info(f"Nenhum histórico encontrado para session_id={session_id}.")
         return []
 
     except Exception as e:
@@ -94,7 +94,7 @@ def create_memory(session_id: str) -> ConversationBufferMemory:
     Cria uma instância de memória persistente associada a uma sessão específica.
     Retorna um objeto ConversationBufferMemory com as mensagens carregadas.
     """
-    logging.info(f"Inicializando memória para session_id={session_id}")
+    #logging.info(f"Inicializando memória para session_id={session_id}")
 
     try:
         loaded_messages = load_chat_history(session_id)
