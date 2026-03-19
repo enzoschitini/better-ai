@@ -51,17 +51,17 @@ class PineconeClient:
             )
 
         self.main_namespace = (
-            main_namespace or os.getenv("KNOWLEDGE_BASE_PINECONE", "default")
+            main_namespace or os.getenv("PINECONE_NAMESPACE", "default")
         )
 
         self.global_namespace = (
             global_namespace
-            or os.getenv("KNOWLEDGE_BASE_GLOBAL_PINECONE", "global")
+            or os.getenv("PINECONE_GLOBAL_NAMESPACE", "global")
         )
 
         self.embedding_model_name = (
             embedding_model
-            or os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small")
+            or os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-large")
         )
 
         # ======================================================

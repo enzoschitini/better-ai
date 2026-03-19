@@ -9,7 +9,7 @@ from langchain.embeddings import OpenAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
 from pinecone import Pinecone
 
-from src.vector_store.pinecone_client import PineconeClient
+from src.vector_store.pinecone.pinecone_client import PineconeClient
 from dotenv import load_dotenv
 
 load_dotenv()

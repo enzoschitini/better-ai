@@ -1,7 +1,7 @@
 import logging
 from typing import List, Optional, Dict, Any, Union
 
-from src.vector_store.pinecone_client import PineconeClient
+from src.vector_store.pinecone.pinecone_client import PineconeClient
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ class PineconeRetriever:
     de dados vetoriais.
     """
 
-    def __init__(self, client: PineconeClient):
+    def __init__(self, client = None):
         """
         Inicializa o PineconeRetriever a partir de um PineconeClient.
 
@@ -47,8 +47,9 @@ class PineconeRetriever:
         # ==========================
 
         if not client:
-            logger.error("PineconeClient cannot be None.")
-            raise ValueError("PineconeClient cannot be None.")
+            client = PineconeClient()
+            #logger.error("PineconeClient cannot be None.")
+            #raise ValueError("PineconeClient cannot be None.")
 
         # ==========================
         # Injeção de dependências
@@ -303,3 +304,17 @@ class PineconeRetriever:
             ) from e
 
         return results
+
+if __name__ == "__main__":
+    import json
+    
+    retriver = PineconeRetriever()
+    result = retriver.similarity_search(
+        query="Etiam vehicula luctus",
+        filter_search={"file_id": ["21d75dca2eec7b02080327f40220e20dxx2", "xksksk"]},
+        k=1
+    )
+
+    print(json.dumps(result, indent=2))
+
+# python -m src.vector_store.pinecone.pinecone_retriever
