@@ -5,7 +5,7 @@ from src.chat.utils.logging_utils import setup_logging
 setup_logging()
 
 class BusinessVerifier:
-    logging.info("Verificando informações da empresa")
+    #logging.info("Verificando informações da empresa")
     """Classe responsável por verificar se o plano de uma empresa está ativo."""
 
     def __init__(self, caminho_arquivo: str):

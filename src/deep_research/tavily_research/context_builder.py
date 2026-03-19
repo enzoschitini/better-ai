@@ -2,6 +2,12 @@ import os
 from typing import Dict, Any, List, Optional, Dict, Any
 
 from src.deep_research.tavily_research.tavily_core import TavilyDeepResearch
+from src.tracing.tracing_core import ApplicationTracing
+
+tracer = ApplicationTracing(
+    flag="Deep Research",
+    file_name="context_builder.py",
+)
 
 class TavilyContextBuilder:
     def __init__(
@@ -21,62 +27,180 @@ class TavilyContextBuilder:
 
     # ---------- Pesquisa ----------
     def search(self, search_config: Dict[str, Any]) -> Dict[str, Any]:
-        return self.researcher.start_search(search_config)
+        try:
+            research_results = self.researcher.start_search(search_config)
+
+            tracer.DEBUG(
+                func_name="search",
+                message="Web search results",
+                metadata=research_results
+            )
+
+            return research_results
+
+        except Exception as e:
+            message = "Error during web search"
+            tracer.ERROR(
+                func_name="search",
+                message=message,
+                metadata={
+                    "error": str(e),
+                    "search_config": search_config
+                }
+            )
+
+            raise RuntimeError(f"{message}: {str(e)}")
 
     # ---------- Filtros ----------
-    def filter_results(self, result: Dict[str, Any]) -> Dict[str, Any]:
-        filtered = {
-            **result,
-            "results": [
-                item for item in result.get("results", [])
-                if item.get("score", 0) >= self.min_score
-            ],
-        }
+    def filter_results(self, research_results: Dict[str, Any]) -> Dict[str, Any]:
+        try:
+            filtered = {
+                **research_results,
+                "results": [
+                    item for item in research_results.get("results", [])
+                    if isinstance(item, dict) and item.get("score", 0) >= self.min_score
+                ],
+            }
 
-        # Remove chaves globais inúteis
-        for key in self.remove_keys:
-            filtered.pop(key, None)
+            # Remove chaves globais inúteis
+            for key in self.remove_keys:
+                filtered.pop(key, None)
 
-        # Remove raw_content de cada resultado
-        for item in filtered.get("results", []):
-            item.pop("raw_content", None)
+            # Remove raw_content de cada resultado
+            for item in filtered.get("results", []):
+                if isinstance(item, dict):
+                    item.pop("raw_content", None)
 
-        return filtered
+            tracer.DEBUG(
+                func_name="filter_results",
+                message="Web search results filtered",
+                metadata=filtered
+            )
+
+            return filtered
+
+        except Exception as e:
+            message = "Error filtering web search results"
+            tracer.ERROR(
+                func_name="filter_results",
+                message=message,
+                metadata={
+                    "error": str(e),
+                    "research_results": research_results
+                },
+            )
+
+            raise RuntimeError(f"{message}: {str(e)}")
 
     # ---------- Markdown ----------
     def to_markdown(self, data: Dict[str, Any]) -> str:
-        md = []
+        try:
+            md = []
 
-        # Consulta
-        md.append("# Consulta")
-        md.append(f"**Pergunta:**  \n{data.get('query', '')}\n")
+            # Consulta
+            md.append("# Consulta")
+            md.append(f"**Pergunta:**  \n{data.get('query', '')}\n")
 
-        # Resposta
-        md.append("---\n")
-        md.append("## Resposta resumida")
-        md.append(data.get("answer", "") + "\n")
-
-        # Fontes
-        md.append("---\n")
-        md.append("## Fontes analisadas\n")
-
-        for i, item in enumerate(data.get("results", []), start=1):
-            md.append(f"### {i}. {item.get('title', 'Sem título')}")
-            md.append(f"- **URL:** {item.get('url', '')}")
-            md.append(
-                f"- **Score de relevância:** {round(item.get('score', 0), 5)}\n"
-            )
-            md.append("**Conteúdo:**  ")
-            md.append(item.get("content", "") + "\n")
+            # Resposta
             md.append("---\n")
+            md.append("## Resposta resumida")
+            md.append(data.get("answer", "") + "\n")
 
-        return "\n".join(md)
+            # Fontes
+            md.append("---\n")
+            md.append("## Fontes analisadas\n")
+
+            results = data.get("results", [])
+
+            for i, item in enumerate(results, start=1):
+                if not isinstance(item, dict):
+                    continue
+
+                score = item.get("score", 0)
+                try:
+                    score = round(float(score), 5)
+                except Exception:
+                    score = 0
+
+                md.append(f"### {i}. {item.get('title', 'Sem título')}")
+                md.append(f"- **URL:** {item.get('url', '')}")
+                md.append(f"- **Score de relevância:** {score}\n")
+                md.append("**Conteúdo:**  ")
+                md.append(item.get("content", "") + "\n")
+                md.append("---\n")
+
+            markdown = "\n".join(md)
+
+            tracer.DEBUG(
+                func_name="to_markdown",
+                message="Web search results to markdown",
+                metadata=markdown
+            )
+
+            return markdown
+
+        except Exception as e:
+            message = "Error converting web search results to markdown"
+            tracer.ERROR(
+                func_name="to_markdown",
+                message=message,
+                metadata={
+                    "error": str(e),
+                    "data": data
+                }
+            )
+
+            raise RuntimeError(f"{message}: {str(e)}")
+    
+    def get_web_sites(self, filtered_result: dict) -> list:
+        urls = []
+        for result in filtered_result["results"]:
+            urls.append(result["url"])
+        
+        tracer.DEBUG(
+            func_name="get_web_sites",
+            message="Links to analyzed sites",
+            metadata=urls
+        )
+        
+        return urls
 
     # ---------- Pipeline completo ----------
     def build_context(self, search_config: Dict[str, Any]) -> str:
-        raw_result = self.search(search_config)
-        filtered_result = self.filter_results(raw_result)
-        return self.to_markdown(filtered_result)
+        try:
+            raw_research_results = self.search(search_config)
+            filtered_result = self.filter_results(raw_research_results)
+            markdown = self.to_markdown(filtered_result)
+            urls = self.get_web_sites(filtered_result)
+
+            context = {
+                "markdown": markdown,
+                "urls": urls,
+            }
+
+            tracer.DEBUG(
+                func_name="build_context",
+                message="Research context built successfully",
+                metadata={
+                    "query": search_config.get("query"),
+                    "context": context,
+                }
+            )
+
+            return context
+
+        except Exception as e:
+            message = "Error building research context"
+            tracer.ERROR(
+                func_name="build_context",
+                message=message,
+                metadata={
+                    "error": str(e),
+                    "search_config": search_config
+                }
+            )
+
+            raise RuntimeError(f"{message}: {str(e)}")
 
 
 class TavilyResearchRunner:
@@ -148,10 +272,11 @@ class TavilyResearchRunner:
 
 
 if __name__ == "__main__":
+    from dotenv import load_dotenv
 
-    researcher = TavilyDeepResearch(
-        api_key=os.getenv("TAVILY_API_KEY")
-    )
+    load_dotenv()
+
+    researcher = TavilyDeepResearch()
 
     builder = TavilyContextBuilder(
         researcher=researcher,
@@ -160,7 +285,7 @@ if __name__ == "__main__":
 
     runner = TavilyResearchRunner(builder)
 
-    markdown_context = runner.run(
+    context = runner.run(
         query="Quais as principais tendências de IA em 2026?",
         search_depth="advanced",
         max_results=2,
@@ -168,6 +293,6 @@ if __name__ == "__main__":
         include_answer=True
     )
 
-    print(markdown_context)
+    print(f"\n\n --------------------------------------------\n{context}")
 
-    # python -m src.deep_recearch.tavily_recearch.context_builder
+    # python -m src.deep_research.tavily_research.context_builder

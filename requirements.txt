@@ -6,7 +6,7 @@ uvicorn~=0.23.2
 python-multipart~=0.0.20
 requests~=2.32.5
 
-# --- 2. ORCHESTRATION (LANGCHAIN STACK) ---
+# --- 2. ORCHESTRATION (STACK) ---
 # O "cérebro" da aplicação. Agrupado para facilitar atualizações de versão em bloco
 langchain~=0.3.27
 langchain-community~=0.3.31
@@ -14,6 +14,7 @@ langchain-experimental~=0.3.4
 langchain-openai~=0.3.35
 langchain-groq~=0.3.8
 langchain-pinecone~=0.2.13
+agno~=2.5.8
 
 # --- 3. AI MODELS & SDKs ---
 # SDKs nativos para quando você precisar de recursos não suportados pelo LangChain
@@ -25,6 +26,7 @@ pinecone~=7.3.0
 pymongo~=4.15.3
 supabase~=2.27.3
 psycopg2~=2.9.11
+psycopg2-binary~=2.9.11
 
 # --- 5. DOCUMENT PROCESSING & RAG ---
 # Bibliotecas de extração de texto para alimentar sua base de conhecimento
@@ -49,3 +51,4 @@ pytest~=9.0.2
 # --- 9. DEEP RECEARCH ---
 tavily~=1.1.0
 tavily-python~=0.7.19
+yfinance~=1.2.0
