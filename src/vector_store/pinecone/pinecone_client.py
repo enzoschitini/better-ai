@@ -79,7 +79,7 @@ class PineconeClient:
         self.index = self.pc.Index(self.index_name)
 
     def _init_embeddings(self, model_name: Optional[str] = None) -> None:
-        self.embeddings = OpenAIEmbeddings(
+        self.embedding_model = OpenAIEmbeddings(
             model=model_name or self.embedding_model_name
         )
 
@@ -96,14 +96,14 @@ class PineconeClient:
     def create_vector_store(
         self,
         namespace: Optional[str] = None,
-        embeddings: Optional[OpenAIEmbeddings] = None,
+        embedding_model: Optional[OpenAIEmbeddings] = None,
     ) -> PineconeVectorStore:
         """
         Cria um VectorStore para ingestão ou busca.
         """
         return PineconeVectorStore(
             index=self.index,
-            embedding=embeddings or self.embeddings,
+            embedding=embedding_model or self.embedding_model,
             text_key="text",
             namespace=self.get_namespace(namespace),
         )
