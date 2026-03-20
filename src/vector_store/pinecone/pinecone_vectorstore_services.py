@@ -7,7 +7,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 
 from src.vector_store.pinecone.pinecone_client import PineconeClient
-
+from src.vector_store.config import PineconeVectorStoreConfig
 load_dotenv()
 
 
@@ -20,12 +20,15 @@ class PineconeVectorService:
     """
     def __init__(self, vector_client = PineconeClient(), embedding_model_name: str = None, dimensions: int = None):
         self.client = vector_client
+        self.config = PineconeVectorStoreConfig()
+
+        print(self.config.DEFAULT_EMBEDDING_MODEL)
 
         self.embeddings_model = OpenAIEmbeddings(
-            model=embedding_model_name or os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small")
+            model=embedding_model_name or os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-large")
         )
 
-        self.dimensions = dimensions or 1536
+        self.dimensions = dimensions or 3072
 
         # Vector store para o namespace global
         self.global_vectordb = self.client.create_vector_store(
@@ -241,7 +244,7 @@ def delete_test():
 
     return delete
 
-#print(embedding_test())
-print(delete_test())
+print(embedding_test())
+#print(delete_test())
 
 # python -m src.vector_store.pinecone.pinecone_vectorstore_services
