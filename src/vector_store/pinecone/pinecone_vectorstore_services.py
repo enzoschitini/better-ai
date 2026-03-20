@@ -21,6 +21,13 @@ class PineconeVectorService:
     def __init__(self, vector_client = PineconeClient(), embedding_model_name: str = None, dimensions: int = None):
         self.client = vector_client
         self.config = PineconeVectorStoreConfig()
+        self.chunk_size = self.config.chunk_size
+        self.chunk_overlap = self.config.chunk_overlap
+        self.separators = self.config.separators
+        self.namespace = self.config.namespace
+        self.top_k = self.config.top_k
+        self.delete_batch_size = self.config.delete_batch_size
+        self.embedding_batch_size = self.config.embedding_batch_size
 
         self.embeddings_model = OpenAIEmbeddings(
             model=embedding_model_name or os.getenv("OPENAI_EMBEDDING_MODEL", self.config.embedding_model)
@@ -50,9 +57,9 @@ class PineconeVectorService:
         """Divide texto em chunks."""
         
         splitter = RecursiveCharacterTextSplitter(
-            chunk_size=chunk_size if chunk_size is not None else self.config.chunk_size,
-            chunk_overlap=chunk_overlap if chunk_overlap is not None else self.config.chunk_overlap,
-            separators=self.config.separators,
+            chunk_size=chunk_size if chunk_size is not None else self.chunk_size,
+            chunk_overlap=chunk_overlap if chunk_overlap is not None else self.chunk_overlap,
+            separators=self.separators,
         )
         
         return splitter.split_text(text)
@@ -64,17 +71,18 @@ class PineconeVectorService:
 
     def delete_documents(self, target_feature: str, target_id: str, namespace: str):
         """Remove embeddings de um namespace específico."""
+        namespace = namespace if namespace is not None else self.namespace
         results = self.client.index.query(
             vector=[0.0] * self.dimensions,
             namespace=namespace,
             filter={target_feature: {"$eq": target_id}},
-            top_k=self.config.top_k,
+            top_k=self.top_k,
         )
 
         ids_to_delete = [match["id"] for match in results.get("matches", [])]
 
         if ids_to_delete:
-            batch_size = self.config.delete_batch_size
+            batch_size = self.delete_batch_size
             for i in range(0, len(ids_to_delete), batch_size):
                 batch = ids_to_delete[i:i + batch_size]
                 self.client.index.delete(ids=batch, namespace=namespace)
@@ -155,9 +163,9 @@ class PineconeVectorService:
 
         # Trava de segurança para batch_size
         if batch_size is None or batch_size <= 0:
-            batch_size = self.config.embedding_batch_size
+            batch_size = self.embedding_batch_size
         else:
-            batch_size = min(batch_size, self.config.embedding_batch_size)
+            batch_size = min(batch_size, self.embedding_batch_size)
 
         all_ids = []
         batch_number = 0
@@ -255,7 +263,7 @@ def delete_test():
 
     return delete
 
-print(embedding_test())
+#print(embedding_test())
 #print(delete_test())
 
 # python -m src.vector_store.pinecone.pinecone_vectorstore_services

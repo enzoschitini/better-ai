@@ -57,12 +57,14 @@ class PineconeRetriever:
         # ==========================
         # Configs
         self.config = PineconeVectorStoreConfig()
+        self.batch_size = self.config.embedding_batch_size
+        self.dimension = self.config.dimensions
 
         # Índice Pinecone utilizado nas consultas
         self.index = client.index
 
         # Serviço responsável por gerar embeddings
-        self.embeddings = client.embeddings
+        self.embeddings = client.embedding_model
 
         # Namespace padrão para isolamento lógico dos vetores
         self.namespace = client.main_namespace
@@ -200,8 +202,8 @@ class PineconeRetriever:
 
     def get_all_docs_by_metadata(
         self,
-        batch_size: int = 100,
-        dimension: int = 3072,
+        batch_size: int | None = None,
+        dimension: int | None = None,
         target_key: str = "file_id",
         target_value: Union[str, List[str]] = None,
     ) -> List[Dict[str, Any]]:
@@ -241,9 +243,15 @@ class PineconeRetriever:
         if not target_value:
             raise ValueError("target_value cannot be empty.")
 
-        # Proteção contra valores inválidos de paginação
-        if batch_size <= 0:
-            raise ValueError("batch_size must be greater than zero.")
+        # Resolve batch_size com fallback seguro
+        if batch_size is None or batch_size <= 0:
+            batch_size = self.batch_size
+        else:
+            batch_size = min(batch_size, self.batch_size)
+
+        # Resolve dimension com fallback
+        if dimension is None or dimension <= 0:
+            dimension = self.dimension
 
         # Vetor fictício necessário para satisfazer o contrato da API do Pinecone
         dummy_vector = [0.0] * dimension
@@ -310,6 +318,12 @@ class PineconeRetriever:
 
 if __name__ == "__main__":
     import json
+
+    pine_client = PineconeClient(
+        index_name="backai-vectorstore",
+        main_namespace="test_namespace",
+        global_namespace="global_namespace"
+    )
     
     retriver = PineconeRetriever()
     result = retriver.similarity_search(
