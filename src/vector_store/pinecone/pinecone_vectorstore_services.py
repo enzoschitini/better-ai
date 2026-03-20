@@ -2,10 +2,7 @@ import os
 from dotenv import load_dotenv
 from datetime import datetime, timezone
 
-from pinecone import Pinecone
-
 from langchain_openai import OpenAIEmbeddings
-from langchain_pinecone import PineconeVectorStore
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 
@@ -247,4 +244,4 @@ def delete_test():
 #print(embedding_test())
 print(delete_test())
 
-# python -m src.vector_store.pinecone.pinecone_vectorstore
+# python -m src.vector_store.pinecone.pinecone_vectorstore_services
