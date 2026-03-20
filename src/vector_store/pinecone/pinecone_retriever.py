@@ -2,6 +2,7 @@ import logging
 from typing import List, Optional, Dict, Any, Union
 
 from src.vector_store.pinecone.pinecone_client import PineconeClient
+from src.vector_store.config import PineconeVectorStoreConfig
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +55,8 @@ class PineconeRetriever:
         # ==========================
         # Injeção de dependências
         # ==========================
+        # Configs
+        self.config = PineconeVectorStoreConfig()
 
         # Índice Pinecone utilizado nas consultas
         self.index = client.index

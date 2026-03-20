@@ -22,13 +22,11 @@ class PineconeVectorService:
         self.client = vector_client
         self.config = PineconeVectorStoreConfig()
 
-        print(self.config.DEFAULT_EMBEDDING_MODEL)
-
         self.embeddings_model = OpenAIEmbeddings(
-            model=embedding_model_name or os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-large")
+            model=embedding_model_name or os.getenv("OPENAI_EMBEDDING_MODEL", self.config.embedding_model)
         )
 
-        self.dimensions = dimensions or 3072
+        self.dimensions = dimensions or self.config.dimensions
 
         # Vector store para o namespace global
         self.global_vectordb = self.client.create_vector_store(
@@ -43,15 +41,20 @@ class PineconeVectorService:
         )
 
     # ----------------- Helpers ------------------
-
-    @staticmethod
-    def split_text(text: str, chunk_size: int = 3000, chunk_overlap: int = 300):
+    def split_text(
+        self,
+        text: str,
+        chunk_size: int | None = None,
+        chunk_overlap: int | None = None,
+    ):
         """Divide texto em chunks."""
+        
         splitter = RecursiveCharacterTextSplitter(
-            chunk_size=chunk_size,
-            chunk_overlap=chunk_overlap,
-            separators=["\n\n", "\n", ".", " "]
+            chunk_size=chunk_size if chunk_size is not None else self.config.chunk_size,
+            chunk_overlap=chunk_overlap if chunk_overlap is not None else self.config.chunk_overlap,
+            separators=self.config.separators,
         )
+        
         return splitter.split_text(text)
 
     @staticmethod
@@ -65,13 +68,13 @@ class PineconeVectorService:
             vector=[0.0] * self.dimensions,
             namespace=namespace,
             filter={target_feature: {"$eq": target_id}},
-            top_k=10000,
+            top_k=self.config.top_k,
         )
 
         ids_to_delete = [match["id"] for match in results.get("matches", [])]
 
         if ids_to_delete:
-            batch_size = 1000
+            batch_size = self.config.delete_batch_size
             for i in range(0, len(ids_to_delete), batch_size):
                 batch = ids_to_delete[i:i + batch_size]
                 self.client.index.delete(ids=batch, namespace=namespace)
@@ -132,7 +135,13 @@ class PineconeVectorService:
 
     # ----------------- Embeddings ------------------
 
-    def generate_vectors(self, text: str, metadata: dict, save_global: bool = False, batch_size: int = 100):
+    def generate_vectors(
+        self,
+        text: str,
+        metadata: dict,
+        save_global: bool = False,
+        batch_size: int | None = None,
+    ):
         """
         Salva embeddings no namespace principal (KB).
         Se save_global=True, também salva no namespace global.
@@ -144,9 +153,11 @@ class PineconeVectorService:
         chunks = self.split_text(text)
         documents = self.build_documents(chunks, metadata)
 
-        # Trava de segurança
-        if batch_size > 100:
-            batch_size = 100
+        # Trava de segurança para batch_size
+        if batch_size is None or batch_size <= 0:
+            batch_size = self.config.embedding_batch_size
+        else:
+            batch_size = min(batch_size, self.config.embedding_batch_size)
 
         all_ids = []
         batch_number = 0

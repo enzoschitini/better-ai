@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from langchain_openai import OpenAIEmbeddings
 import pinecone
 from langchain_pinecone import PineconeVectorStore
+from src.vector_store.config import PineconeVectorStoreConfig
 
 
 load_dotenv()
@@ -35,6 +36,7 @@ class PineconeClient:
         # ======================================================
         self.openai_key = os.getenv("OPENAI_API_KEY")
         self.pinecone_key = os.getenv("PINECONE_API_KEY")
+        self.config = PineconeVectorStoreConfig()
 
         if not self.openai_key or not self.pinecone_key:
             raise EnvironmentError(
@@ -44,24 +46,24 @@ class PineconeClient:
         # ======================================================
         # Configurações
         # ======================================================
-        self.index_name = index_name or os.getenv("PINECONE_INDEX_NAME")
+        self.index_name = index_name or os.getenv("PINECONE_INDEX_NAME", self.config.index_name)
         if not self.index_name:
             raise ValueError(
                 "index_name não informado nem definido em PINECONE_INDEX_NAME."
             )
 
         self.main_namespace = (
-            main_namespace or os.getenv("PINECONE_NAMESPACE", "default")
+            main_namespace or os.getenv("PINECONE_NAMESPACE", self.config.namespace)
         )
 
         self.global_namespace = (
             global_namespace
-            or os.getenv("PINECONE_GLOBAL_NAMESPACE", "global")
+            or os.getenv("PINECONE_GLOBAL_NAMESPACE", self.config.global_namespace)
         )
 
         self.embedding_model_name = (
             embedding_model
-            or os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-large")
+            or os.getenv("OPENAI_EMBEDDING_MODEL", self.config.embedding_model)
         )
 
         # ======================================================
