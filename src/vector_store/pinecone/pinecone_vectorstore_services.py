@@ -1,4 +1,6 @@
 import os
+from typing import List, Optional, Dict, Any
+
 from dotenv import load_dotenv
 from datetime import datetime, timezone
 
@@ -8,7 +10,31 @@ from langchain_core.documents import Document
 
 from src.vector_store.pinecone.pinecone_client import PineconeClient
 from src.vector_store.config import PineconeVectorStoreConfig
+from src.tracing.tracing_core import ApplicationTracing
+
 load_dotenv()
+
+
+tracer = ApplicationTracing(
+    flag="PineconeVectorService",
+    file_name="pinecone_vector_service.py",
+    log_file_name="pinecone_module"
+)
+
+
+def trace(method_name: str):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            tracer.INFO(method_name, "Execution started")
+            try:
+                result = func(*args, **kwargs)
+                tracer.INFO(method_name, "Execution finished successfully")
+                return result
+            except Exception as e:
+                tracer.ERROR(method_name, "Execution failed", error=e)
+                raise
+        return wrapper
+    return decorator
 
 
 class PineconeVectorService:
@@ -16,133 +42,256 @@ class PineconeVectorService:
     Service responsável por:
     - transformar texto em chunks
     - gerar embeddings
-    - salvar nos dois namespaces
+    - salvar nos namespaces
     """
-    def __init__(self, vector_client = PineconeClient(), embedding_model_name: str = None, dimensions: int = None):
-        self.client = vector_client
-        self.config = PineconeVectorStoreConfig()
-        self.chunk_size = self.config.chunk_size
-        self.chunk_overlap = self.config.chunk_overlap
-        self.separators = self.config.separators
-        self.namespace = self.config.namespace
-        self.top_k = self.config.top_k
-        self.delete_batch_size = self.config.delete_batch_size
-        self.embedding_batch_size = self.config.embedding_batch_size
 
-        self.embeddings_model = OpenAIEmbeddings(
-            model=embedding_model_name or os.getenv("OPENAI_EMBEDDING_MODEL", self.config.embedding_model)
-        )
+    def __init__(
+        self,
+        vector_client: Optional[PineconeClient] = None,
+        embedding_model_name: str = None,
+        dimensions: int = None
+    ):
+        tracer.INFO("__init__", "Initializing vector service")
 
-        self.dimensions = dimensions or self.config.dimensions
+        try:
+            if not vector_client:
+                tracer.DEBUG("__init__", "No client provided, creating default")
+                vector_client = PineconeClient()
 
-        # Vector store para o namespace global
-        self.global_vectordb = self.client.create_vector_store(
-            embedding_model=self.embeddings_model,
-            namespace=self.client.global_namespace
-        )
+            self.client = vector_client
+            self.config = PineconeVectorStoreConfig()
 
-        # Vector store para o namespace principal (base de conhecimento)
-        self.main_vectordb = self.client.create_vector_store(
-            embedding_model=self.embeddings_model,
-            namespace=self.client.main_namespace
-        )
+            # Configs
+            self.chunk_size = self.config.chunk_size
+            self.chunk_overlap = self.config.chunk_overlap
+            self.separators = self.config.separators
+            self.namespace = self.config.namespace
+            self.top_k = self.config.top_k
+            self.delete_batch_size = self.config.delete_batch_size
+            self.embedding_batch_size = self.config.embedding_batch_size
 
-    # ----------------- Helpers ------------------
+            # Embeddings
+            self.embeddings_model = OpenAIEmbeddings(
+                model=embedding_model_name or os.getenv(
+                    "OPENAI_EMBEDDING_MODEL",
+                    self.config.embedding_model
+                )
+            )
+
+            self.dimensions = dimensions or self.config.dimensions
+
+            # Vector stores
+            self.global_vectordb = self.client.create_vector_store(
+                embedding_model=self.embeddings_model,
+                namespace=self.client.global_namespace
+            )
+
+            self.main_vectordb = self.client.create_vector_store(
+                embedding_model=self.embeddings_model,
+                namespace=self.client.main_namespace
+            )
+
+            tracer.DEBUG(
+                "__init__",
+                "Vector service initialized",
+                metadata={
+                    # Configurações de chunking
+                    "chunk_size": self.chunk_size,
+                    "chunk_overlap": self.chunk_overlap,
+                    "separators": self.separators,
+
+                    # Configurações de busca / controle
+                    "top_k": self.top_k,
+                    "delete_batch_size": self.delete_batch_size,
+                    "embedding_batch_size": self.embedding_batch_size,
+
+                    # Embeddings
+                    "embedding_model": embedding_model_name or os.getenv(
+                        "OPENAI_EMBEDDING_MODEL",
+                        self.config.embedding_model
+                    ),
+
+                    # Estrutura vetorial
+                    "dimensions": self.dimensions,
+
+                    # Namespaces
+                    "main_namespace": self.client.main_namespace,
+                    "global_namespace": self.client.global_namespace,
+
+                    # Infra
+                    "index_name": getattr(self.client, "index_name", None),
+
+                    # Flags implícitas
+                    "has_custom_client": vector_client is not None,
+                }
+            )
+
+        except Exception as e:
+            tracer.ERROR("__init__", "Initialization failed", error=e)
+            raise
+
+    # ======================================================
+    # Helpers
+    # ======================================================
+
+    @trace("split_text")
     def split_text(
         self,
         text: str,
         chunk_size: int | None = None,
         chunk_overlap: int | None = None,
-    ):
-        """Divide texto em chunks."""
-        
+    ) -> List[str]:
+
         splitter = RecursiveCharacterTextSplitter(
-            chunk_size=chunk_size if chunk_size is not None else self.chunk_size,
-            chunk_overlap=chunk_overlap if chunk_overlap is not None else self.chunk_overlap,
+            chunk_size=chunk_size or self.chunk_size,
+            chunk_overlap=chunk_overlap or self.chunk_overlap,
             separators=self.separators,
         )
-        
-        return splitter.split_text(text)
 
-    @staticmethod
-    def build_documents(chunks: list[str], metadata: dict):
-        """Cria objetos Document a partir dos chunks."""
-        return [Document(page_content=chunk, metadata={**metadata}) for chunk in chunks]
+        chunks = splitter.split_text(text)
 
-    def delete_documents(self, target_feature: str, target_id: str, namespace: str):
-        """Remove embeddings de um namespace específico."""
-        namespace = namespace if namespace is not None else self.namespace
-        results = self.client.index.query(
-            vector=[0.0] * self.dimensions,
-            namespace=namespace,
-            filter={target_feature: {"$eq": target_id}},
-            top_k=self.top_k,
+        tracer.DEBUG(
+            "split_text",
+            "Text split into chunks",
+            metadata={"chunks": len(chunks)}
         )
 
-        ids_to_delete = [match["id"] for match in results.get("matches", [])]
+        return chunks
 
-        if ids_to_delete:
-            batch_size = self.delete_batch_size
-            for i in range(0, len(ids_to_delete), batch_size):
-                batch = ids_to_delete[i:i + batch_size]
-                self.client.index.delete(ids=batch, namespace=namespace)
+    @staticmethod
+    def build_documents(chunks: List[str], metadata: Dict[str, Any]) -> List[Document]:
+        return [
+            Document(page_content=chunk, metadata={**metadata})
+            for chunk in chunks
+        ]
 
-            return {
-                "deleted_vectors": len(ids_to_delete),
-                "message": f"✅ {len(ids_to_delete)} vetores apagados de `{namespace}`"
+    @trace("delete_documents")
+    def delete_documents(
+        self,
+        target_feature: str,
+        target_id: str,
+        namespace: str
+    ):
+
+        namespace = namespace or self.namespace
+
+        tracer.DEBUG(
+            "delete_documents",
+            "Input metadata",
+            metadata={
+                "target_feature": target_feature,
+                "target_id": target_id,
+                "namespace": namespace,
             }
+        )
 
-        return f"Nenhum vetor encontrado em `{namespace}`"
-    
-    # ----------------- Similarity Search ------------------
+        try:
+            results = self.client.index.query(
+                vector=[0.0] * self.dimensions,
+                namespace=namespace,
+                filter={target_feature: {"$eq": target_id}},
+                top_k=self.top_k,
+            )
 
-    def document_search(self, query: str, k: int = 3, namespace: str = None, filter: dict = None):
-        """
-        Busca documentos no Pinecone usando similarity_search.
+            ids_to_delete = [
+                match["id"] for match in results.get("matches", [])
+            ]
 
-        Args:
-            query (str): Texto a ser buscado.
-            k (int): Quantidade de resultados.
-            namespace (str): Namespace onde será feita a consulta.
-                             Se None, usa o namespace principal (embeddings da KB).
-            filter (dict): Filtro opcional, exemplo:
-                           {"file_id": {"$eq": "<id_do_arquivo>"}}
+            if ids_to_delete:
+                for i in range(0, len(ids_to_delete), self.delete_batch_size):
+                    batch = ids_to_delete[i:i + self.delete_batch_size]
+                    self.client.index.delete(ids=batch, namespace=namespace)
 
-        Returns:
-            list[Document]: documentos encontrados com page_content + metadata
-        """
+                tracer.DEBUG(
+                    "delete_documents",
+                    "Vectors deleted",
+                    metadata={
+                        "count": len(ids_to_delete),
+                        "namespace": namespace
+                    }
+                )
 
-        # Usa o namespace adequado (KB ou global)
+                return {
+                    "deleted_vectors": len(ids_to_delete),
+                    "namespace": namespace
+                }
+
+            tracer.DEBUG(
+                "delete_documents",
+                "No vectors found",
+                metadata={"namespace": namespace}
+            )
+
+            return {"deleted_vectors": 0}
+
+        except Exception as e:
+            tracer.ERROR(
+                "delete_documents",
+                "Deletion failed",
+                metadata={
+                    "target_feature": target_feature,
+                    "target_id": target_id,
+                },
+                error=e
+            )
+            raise
+
+    # ======================================================
+    # Search
+    # ======================================================
+
+    @trace("document_search")
+    def document_search(
+        self,
+        query: str,
+        k: int = 3,
+        namespace: str = None,
+        filter: dict = None,
+    ):
+
         selected_namespace = namespace or self.client.main_namespace
 
-        # Cria um vectorstore específico para busca (com filtro opcional)
         vectordb = self.client.create_vector_store(
-            embeddings_model=self.embeddings_model,
+            embedding_model=self.embeddings_model,
             namespace=selected_namespace
         )
 
-        # Realiza a busca por similaridade usando embeddings
-        search_results = vectordb.similarity_search(
-            query=query,
-            k=k,
-            filter=filter  # <-- filtro aplicado
-        )
+        try:
+            results = vectordb.similarity_search(
+                query=query,
+                k=k,
+                filter=filter
+            )
 
-        results = {}
+            formatted = {}
 
-        for result in search_results:
-            insert = {
-                "metadata": result.metadata,
-                "page_content": result.page_content
-            }
-            
-            results[result.id] = insert
+            for r in results:
+                formatted[r.id] = {
+                    "metadata": r.metadata,
+                    "page_content": r.page_content
+                }
 
-        return results
+            tracer.DEBUG(
+                "document_search",
+                "Search completed",
+                metadata={"results_count": len(formatted)}
+            )
 
+            return formatted
 
-    # ----------------- Embeddings ------------------
+        except Exception as e:
+            tracer.ERROR(
+                "document_search",
+                "Search failed",
+                error=e
+            )
+            raise RuntimeError("Document search failed.") from e
 
+    # ======================================================
+    # Embeddings
+    # ======================================================
+
+    @trace("generate_vectors")
     def generate_vectors(
         self,
         text: str,
@@ -150,77 +299,84 @@ class PineconeVectorService:
         save_global: bool = False,
         batch_size: int | None = None,
     ):
-        """
-        Salva embeddings no namespace principal (KB).
-        Se save_global=True, também salva no namespace global.
-        """
 
         dt_utc = datetime.now(timezone.utc).replace(microsecond=0, tzinfo=None)
         metadata["created_at"] = str(dt_utc)
-        
+
         chunks = self.split_text(text)
         documents = self.build_documents(chunks, metadata)
 
-        # Trava de segurança para batch_size
-        if batch_size is None or batch_size <= 0:
-            batch_size = self.embedding_batch_size
-        else:
-            batch_size = min(batch_size, self.embedding_batch_size)
+        batch_size = (
+            min(batch_size, self.embedding_batch_size)
+            if batch_size and batch_size > 0
+            else self.embedding_batch_size
+        )
 
         all_ids = []
         batch_number = 0
 
-        for i in range(0, len(documents), batch_size):
-            batch_docs = documents[i : i + batch_size]
-            batch_number += 1
+        try:
+            for i in range(0, len(documents), batch_size):
+                batch_docs = documents[i: i + batch_size]
+                batch_number += 1
 
-            """
-            # Test
-            for doc in batch_docs:
-                print(f"len: {len(doc.page_content)}") 
-                print(f"chunk: {doc.page_content[:80]}...")
-            """
+                tracer.DEBUG(
+                    "generate_vectors",
+                    "Processing batch",
+                    metadata={
+                        "batch_number": batch_number,
+                        "batch_size": len(batch_docs)
+                    }
+                )
 
-            try:
-                print("Sending batch_docs to Pinecone...")
-                #if batch_number == 3:
-                    #raise Exception("Erro forçado após 3 execuções do loop")
-
-                # Sempre salva no namespace principal
                 ids = self.main_vectordb.add_documents(batch_docs)
                 all_ids.extend(ids)
 
-                # Opcional: salva também no namespace global
                 if save_global:
                     self.global_vectordb.add_documents(batch_docs)
 
-            except Exception as error:
-                self.delete_documents("file_id", metadata.get("file_id"), self.client.main_namespace)
-                self.delete_documents("file_id", metadata.get("file_id"), self.client.global_namespace)
-                
-                """
-                print(f"Erro no batch {batch_number}: {error}")
-                #print(self.delete_documents("file_id", metadata.get("file_id"), self.client.main_namespace))
+        except Exception as error:
+            tracer.ERROR(
+                "generate_vectors",
+                "Batch failed, starting rollback",
+                metadata={"batch_number": batch_number},
+                error=error
+            )
 
-                if save_global:
-                    print(self.delete_documents("file_id", metadata.get("file_id"), self.client.global_namespace))
-                """
+            # rollback
+            self.delete_documents(
+                "file_id",
+                metadata.get("file_id"),
+                self.client.main_namespace
+            )
 
-                response = {
-                    "status": "error",
-                    "message": "Erro ao salvar embeddings no Pinecone.",
-                    "error": str(error),
-                    "saved_ids": all_ids,
-                    "namespace_main": self.client.main_namespace,
-                    "namespace_global": self.client.global_namespace if save_global else None,
-                    "batch": batch_number
-                }
+            if save_global:
+                self.delete_documents(
+                    "file_id",
+                    metadata.get("file_id"),
+                    self.client.global_namespace
+                )
 
-                return response
+            return {
+                "status": "error",
+                "message": "Erro ao salvar embeddings no Pinecone.",
+                "error": str(error),
+                "saved_ids": all_ids,
+                "batch": batch_number
+            }
 
-        response = {
+        tracer.DEBUG(
+            "generate_vectors",
+            "All batches processed",
+            metadata={
+                "total_batches": batch_number,
+                "total_vectors": len(all_ids)
+            }
+        )
+
+        return {
             "status": "success",
-            "message": "Embeddings salvos com sucesso no Pinecone.",
+            "message": "Embeddings salvos com sucesso.",
             "embedding_informations": {
                 "namespace_main": self.client.main_namespace,
                 "namespace_global": self.client.global_namespace if save_global else None,
@@ -228,5 +384,3 @@ class PineconeVectorService:
                 "chunks_ids": all_ids
             }
         }
-
-        return response

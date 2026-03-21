@@ -1,27 +1,45 @@
-import logging
+import os
 from typing import List, Optional, Dict, Any, Union
 
 from src.vector_store.pinecone.pinecone_client import PineconeClient
 from src.vector_store.config import PineconeVectorStoreConfig
+from src.tracing.tracing_core import ApplicationTracing
 
-logger = logging.getLogger(__name__)
+
+tracer = ApplicationTracing(
+    flag="PineconeRetriever",
+    file_name="pinecone_retriever.py",
+    log_file_name="pinecone_module"
+)
+
+
+def trace(method_name: str):
+    """
+    Decorator para padronizar logging e captura de erros.
+    """
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            tracer.INFO(method_name, "Execution started")
+            try:
+                result = func(*args, **kwargs)
+                tracer.INFO(method_name, "Execution finished successfully")
+                return result
+            except Exception as e:
+                tracer.ERROR(method_name, "Execution failed", error=e)
+                raise
+        return wrapper
+    return decorator
+
 
 class PineconeRetriever:
     """
-    Serviço responsável por realizar operações de recuperação
-    (retrieval) de vetores no Pinecone.
-
-    Esta classe atua como uma camada de acesso ao índice vetorial,
-    encapsulando:
-    - Buscas por similaridade
-    - Recuperação de vetores por metadados
-    - Interação direta com o índice Pinecone
-
-    Seu objetivo é oferecer uma API clara e segura para leitura
-    de dados vetoriais.
+    Responsável por consultas semânticas no Pinecone:
+    - Similarity search
+    - Busca por metadata
+    - Normalização de resultados
     """
 
-    def __init__(self, client = None):
+    def __init__(self, client: Optional[PineconeClient] = None):
         """
         Inicializa o PineconeRetriever a partir de um PineconeClient.
 
@@ -42,33 +60,49 @@ class PineconeRetriever:
         Exceções:
         - ValueError: se o client não for fornecido
         """
+        tracer.INFO("__init__", "Initializing retriever")
 
-        # ==========================
-        # Validação de dependência
-        # ==========================
+        try:
+            # ==========================
+            # Validação / Injeção
+            # ==========================
+            if not client:
+                tracer.DEBUG("__init__", "No client provided, creating default client")
+                client = PineconeClient()
 
-        if not client:
-            client = PineconeClient()
+            # ==========================
+            # Configurações
+            # ==========================
+            self.config = PineconeVectorStoreConfig()
+            self.batch_size = self.config.embedding_batch_size
+            self.dimension = self.config.dimensions
 
-        # ==========================
-        # Injeção de dependências
-        # ==========================
-        # Configs
-        self.config = PineconeVectorStoreConfig()
-        self.batch_size = self.config.embedding_batch_size
-        self.dimension = self.config.dimensions
+            # ==========================
+            # Dependências
+            # ==========================
+            self.index = client.index
+            self.embeddings = client.embedding_model
+            self.namespace = client.main_namespace
 
-        # Índice Pinecone utilizado nas consultas
-        self.index = client.index
+            tracer.DEBUG(
+                "__init__",
+                "Retriever initialized",
+                metadata={
+                    "batch_size": self.batch_size,
+                    "dimension": self.dimension,
+                    "namespace": self.namespace,
+                }
+            )
 
-        # Serviço responsável por gerar embeddings
-        self.embeddings = client.embedding_model
+        except Exception as e:
+            tracer.ERROR("__init__", "Failed to initialize retriever", error=e)
+            raise
 
-        # Namespace padrão para isolamento lógico dos vetores
-        self.namespace = client.main_namespace
+    # ======================================================
+    # Similarity Search
+    # ======================================================
 
-
-
+    @trace("similarity_search")
     def similarity_search(
         self,
         query: str,
@@ -101,43 +135,43 @@ class PineconeRetriever:
             - metadata: metadados associados ao vetor
             - score: score de similaridade retornado pelo Pinecone
         """
-
         # ==========================
-        # Validação de parâmetros
+        # Validações
         # ==========================
-
-        # Evita chamadas desnecessárias ao Pinecone
         if not query:
-            logger.error("The search query cannot be empty.")
+            tracer.ERROR("similarity_search", "Empty query received")
             raise ValueError("The search query cannot be empty.")
 
         if k <= 0:
-            logger.error("The parameter k must be greater than zero.")
+            tracer.ERROR("similarity_search", "Invalid k value", metadata={"k": k})
             raise ValueError("The parameter k must be greater than zero.")
 
         # ==========================
-        # Geração do embedding
+        # Embedding
         # ==========================
-
         try:
-            # Converte o texto da query em um vetor numérico
+            tracer.DEBUG(
+                "similarity_search",
+                "Generating embedding",
+                metadata={"query_preview": query[:50]}
+            )
+
             query_vector = self.embeddings.embed_query(query)
 
         except Exception as e:
-            logger.exception("Failed to generate query embedding.")
+            tracer.ERROR(
+                "similarity_search",
+                "Failed to generate embedding",
+                error=e
+            )
             raise RuntimeError("Failed to generate query embedding.") from e
 
         # ==========================
-        # Construção do filtro
+        # Filtro
         # ==========================
-
         filter_query: Optional[Dict[str, Any]] = None
 
         try:
-            # Suporte a filtros simples ($eq) ou listas ($in)
-            # Exemplo final esperado pelo Pinecone:
-            # {"file_id": {"$eq": "123"}}
-            # {"file_id": {"$in": ["a", "b"]}}
             if filter_search:
                 key, value = list(filter_search.items())[0]
 
@@ -146,15 +180,31 @@ class PineconeRetriever:
                 else:
                     filter_query = {key: {"$eq": value}}
 
+                tracer.DEBUG(
+                    "similarity_search",
+                    "Filter applied",
+                    metadata={"filter": filter_query}
+                )
+
         except Exception as e:
-            logger.exception("Invalid search filter: %r", filter_search)
+            tracer.ERROR(
+                "similarity_search",
+                "Invalid filter",
+                metadata={"filter_search": filter_search},
+                error=e
+            )
             raise ValueError("Invalid search filter.") from e
 
         # ==========================
-        # Consulta ao Pinecone
+        # Query Pinecone
         # ==========================
-
         try:
+            tracer.DEBUG(
+                "similarity_search",
+                "Querying Pinecone",
+                metadata={"k": k, "namespace": self.namespace}
+            )
+
             results = self.index.query(
                 vector=query_vector,
                 top_k=k,
@@ -164,18 +214,19 @@ class PineconeRetriever:
             )
 
         except Exception as e:
-            logger.exception("Failure to query Pinecone.")
+            tracer.ERROR(
+                "similarity_search",
+                "Pinecone query failed",
+                error=e
+            )
             raise RuntimeError("Failure to query Pinecone.") from e
 
         # ==========================
-        # Normalização da resposta
+        # Normalização
         # ==========================
-
         documents: List[Dict[str, Any]] = []
 
         try:
-            # Converte o formato retornado pelo Pinecone
-            # para o formato interno da aplicação
             for match in getattr(results, "matches", []):
                 metadata = match.get("metadata", {}).copy()
 
@@ -186,18 +237,30 @@ class PineconeRetriever:
                     "score": match.get("score"),
                 }
 
-                # Remove o texto duplicado do metadata
                 document["metadata"].pop("text", None)
                 documents.append(document)
 
+            tracer.DEBUG(
+                "similarity_search",
+                "Results processed",
+                metadata={"results_count": len(documents)}
+            )
+
         except Exception as e:
-            logger.exception("Failed to process search results.")
+            tracer.ERROR(
+                "similarity_search",
+                "Failed to process results",
+                error=e
+            )
             raise RuntimeError("Failed to process search results.") from e
 
         return documents
 
+    # ======================================================
+    # Metadata Search
+    # ======================================================
 
-
+    @trace("get_all_docs_by_metadata")
     def get_all_docs_by_metadata(
         self,
         batch_size: int | None = None,
@@ -236,42 +299,45 @@ class PineconeRetriever:
         :param target_value: Valor ou lista de valores usados no filtro.
         :return: Lista de vetores recuperados do Pinecone.
         """
-
-        # Validação do filtro alvo
         if not target_value:
+            tracer.ERROR(
+                "get_all_docs_by_metadata",
+                "target_value is empty"
+            )
             raise ValueError("target_value cannot be empty.")
 
-        # Resolve batch_size com fallback seguro
-        if batch_size is None or batch_size <= 0:
-            batch_size = self.batch_size
-        else:
-            batch_size = min(batch_size, self.batch_size)
+        batch_size = (
+            min(batch_size, self.batch_size)
+            if batch_size and batch_size > 0
+            else self.batch_size
+        )
 
-        # Resolve dimension com fallback
-        if dimension is None or dimension <= 0:
-            dimension = self.dimension
+        dimension = (
+            dimension if dimension and dimension > 0 else self.dimension
+        )
 
-        # Vetor fictício necessário para satisfazer o contrato da API do Pinecone
         dummy_vector = [0.0] * dimension
 
-        # Montagem dinâmica do filtro:
-        # - valor único → $eq
-        # - lista de valores → $in
+        # Filtro dinâmico
         if isinstance(target_value, list):
-            filter_query = {
-                target_key: {"$in": target_value}
-            }
+            filter_query = {target_key: {"$in": target_value}}
         else:
-            filter_query = {
-                target_key: {"$eq": target_value}
+            filter_query = {target_key: {"$eq": target_value}}
+
+        tracer.DEBUG(
+            "get_all_docs_by_metadata",
+            "Starting paginated retrieval",
+            metadata={
+                "target_key": target_key,
+                "batch_size": batch_size,
+                "namespace": self.namespace,
             }
+        )
 
         results: List[Dict[str, Any]] = []
         pagination_token: Optional[str] = None
 
         try:
-            # Loop de paginação explícita para garantir
-            # a recuperação completa dos vetores
             while True:
                 response = self.index.query(
                     vector=dummy_vector,
@@ -283,7 +349,6 @@ class PineconeRetriever:
                     pagination_token=pagination_token,
                 )
 
-                # Normalização dos resultados retornados
                 for match in response.get("matches", []):
                     results.append(
                         {
@@ -293,20 +358,28 @@ class PineconeRetriever:
                         }
                     )
 
-                # Atualização do token de paginação
                 pagination_token = (
                     response.get("pagination", {}) or {}
                 ).get("next")
 
-                # Encerramento do loop quando não há mais páginas
                 if not pagination_token:
                     break
 
+            tracer.DEBUG(
+                "get_all_docs_by_metadata",
+                "Retrieval completed",
+                metadata={"total_results": len(results)}
+            )
+
         except Exception as e:
-            logger.exception(
-                "Failed to retrieve vectors for %s=%s",
-                target_key,
-                target_value,
+            tracer.ERROR(
+                "get_all_docs_by_metadata",
+                "Failed during paginated retrieval",
+                metadata={
+                    "target_key": target_key,
+                    "target_value": target_value,
+                },
+                error=e
             )
             raise RuntimeError(
                 "Failed to retrieve vectors by target."
