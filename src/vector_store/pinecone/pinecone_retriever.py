@@ -313,23 +313,3 @@ class PineconeRetriever:
             ) from e
 
         return results
-
-if __name__ == "__main__":
-    import json
-
-    pine_client = PineconeClient(
-        index_name="backai-vectorstore",
-        main_namespace="test_namespace",
-        global_namespace="global_namespace"
-    )
-    
-    retriver = PineconeRetriever()
-    result = retriver.similarity_search(
-        query="Etiam vehicula luctus",
-        filter_search={"file_id": ["21d75dca2eec7b02080327f40220e20dxx2", "xksksk"]},
-        k=1
-    )
-
-    print(json.dumps(result, indent=2))
-
-# python -m src.vector_store.pinecone.pinecone_retriever
