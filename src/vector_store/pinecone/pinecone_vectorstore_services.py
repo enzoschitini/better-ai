@@ -359,24 +359,15 @@ class PineconeVectorService:
 
             return {
                 "status": "error",
-                "message": "Erro ao salvar embeddings no Pinecone.",
+                "message": "Error saving embeddings in Pinecone.",
                 "error": str(error),
                 "saved_ids": all_ids,
                 "batch": batch_number
             }
 
-        tracer.DEBUG(
-            "generate_vectors",
-            "All batches processed",
-            metadata={
-                "total_batches": batch_number,
-                "total_vectors": len(all_ids)
-            }
-        )
-
-        return {
+        response = {
             "status": "success",
-            "message": "Embeddings salvos com sucesso.",
+            "message": "Embeddings saved successfully.",
             "embedding_informations": {
                 "namespace_main": self.client.main_namespace,
                 "namespace_global": self.client.global_namespace if save_global else None,
@@ -384,3 +375,15 @@ class PineconeVectorService:
                 "chunks_ids": all_ids
             }
         }
+
+        tracer.DEBUG(
+            "generate_vectors",
+            "All batches processed",
+            metadata={
+                "total_batches": batch_number,
+                "total_vectors": len(all_ids),
+                "response": response,
+            }
+        )
+
+        return response
