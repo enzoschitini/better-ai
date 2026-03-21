@@ -40,7 +40,7 @@ class PineconeClient:
 
         if not self.openai_key or not self.pinecone_key:
             raise EnvironmentError(
-                "OPENAI_API_KEY ou PINECONE_API_KEY não encontrados."
+                "OPENAI_API_KEY or PINECONE_API_KEY not found."
             )
 
         # ======================================================
@@ -49,7 +49,7 @@ class PineconeClient:
         self.index_name = index_name or os.getenv("PINECONE_INDEX_NAME", self.config.index_name)
         if not self.index_name:
             raise ValueError(
-                "index_name não informado nem definido em PINECONE_INDEX_NAME."
+                "index_name not provided or defined in PINECONE_INDEX_NAME."
             )
 
         self.main_namespace = (

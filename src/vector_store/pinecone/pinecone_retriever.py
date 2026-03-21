@@ -49,8 +49,6 @@ class PineconeRetriever:
 
         if not client:
             client = PineconeClient()
-            #logger.error("PineconeClient cannot be None.")
-            #raise ValueError("PineconeClient cannot be None.")
 
         # ==========================
         # Injeção de dependências

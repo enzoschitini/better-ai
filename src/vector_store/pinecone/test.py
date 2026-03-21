@@ -55,13 +55,13 @@ class TestPineconeVectorStore:
     def delete(self):
         pine_service = PineconeVectorService(embedding_model_name="text-embedding-3-large", dimensions=3072)
 
-        delete = pine_service.delete_documents("source", "embedding_test.py", "betterai-embeddings-dev1")
+        delete = pine_service.delete_documents("source", "embedding_test.py", "betterai-embeddings-dev")
         print(f"\n{delete}\n")
 
         return delete
 
 if __name__ == "__main__":
     tester = TestPineconeVectorStore()
-    tester.retriver()
+    tester.delete()
 
 # python -m src.vector_store.pinecone.test
