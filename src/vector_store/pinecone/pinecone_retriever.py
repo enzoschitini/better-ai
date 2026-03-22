@@ -1,8 +1,46 @@
+import os
 import logging
 from typing import List, Optional, Dict, Any, Union
 
 from src.vector_store.pinecone.pinecone_client import PineconeClient
 from src.vector_store.config import PineconeVectorStoreConfig
+from src.tracing.tracing_core import ApplicationTracing
+
+
+tracer = ApplicationTracing(
+    flag="PineconeRetriever",
+    file_name="pinecone_retriever.py",
+    log_file_name="pinecone_module"
+)
+
+
+def trace(method_name: str):
+    """
+    Decorator para padronizar logging e captura de erros.
+    """
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            tracer.INFO(method_name, "Execution started")
+            try:
+                result = func(*args, **kwargs)
+                tracer.INFO(method_name, "Execution finished successfully")
+                return result
+            except Exception as e:
+                tracer.ERROR(method_name, "Execution failed", error=e)
+                raise
+        return wrapper
+    return decorator
+
+
+class PineconeRetriever:
+    """
+    Responsável por consultas semânticas no Pinecone:
+    - Similarity search
+    - Busca por metadata
+    - Normalização de resultados
+    """
+
+    def __init__(self, client: Optional[PineconeClient] = None):
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +80,49 @@ class PineconeRetriever:
         Exceções:
         - ValueError: se o client não for fornecido
         """
+        tracer.INFO("__init__", "Initializing retriever")
+
+        try:
+            # ==========================
+            # Validação / Injeção
+            # ==========================
+            if not client:
+                tracer.DEBUG("__init__", "No client provided, creating default client")
+                client = PineconeClient()
+
+            # ==========================
+            # Configurações
+            # ==========================
+            self.config = PineconeVectorStoreConfig()
+            self.batch_size = self.config.embedding_batch_size
+            self.dimension = self.config.dimensions
+
+            # ==========================
+            # Dependências
+            # ==========================
+            self.index = client.index
+            self.embeddings = client.embedding_model
+            self.namespace = client.main_namespace
+
+            tracer.DEBUG(
+                "__init__",
+                "Retriever initialized",
+                metadata={
+                    "batch_size": self.batch_size,
+                    "dimension": self.dimension,
+                    "namespace": self.namespace,
+                }
+            )
+
+        except Exception as e:
+            tracer.ERROR("__init__", "Failed to initialize retriever", error=e)
+            raise
+
+    # ======================================================
+    # Similarity Search
+    # ======================================================
+
+    @trace("similarity_search")
 
         # ==========================
         # Validação de dependência
@@ -101,6 +182,43 @@ class PineconeRetriever:
             - metadata: metadados associados ao vetor
             - score: score de similaridade retornado pelo Pinecone
         """
+        # ==========================
+        # Validações
+        # ==========================
+        if not query:
+            tracer.ERROR("similarity_search", "Empty query received")
+            raise ValueError("The search query cannot be empty.")
+
+        if k <= 0:
+            tracer.ERROR("similarity_search", "Invalid k value", metadata={"k": k})
+            raise ValueError("The parameter k must be greater than zero.")
+
+        # ==========================
+        # Embedding
+        # ==========================
+        try:
+            tracer.DEBUG(
+                "similarity_search",
+                "Generating embedding",
+                metadata={"query_preview": query[:50]}
+            )
+
+            query_vector = self.embeddings.embed_query(query)
+
+        except Exception as e:
+            tracer.ERROR(
+                "similarity_search",
+                "Failed to generate embedding",
+                error=e
+            )
+            raise RuntimeError("Failed to generate query embedding.") from e
+
+        # ==========================
+        # Filtro
+        # ==========================
+        filter_query: Optional[Dict[str, Any]] = None
+
+        try:
 
         # ==========================
         # Validação de parâmetros
@@ -146,6 +264,31 @@ class PineconeRetriever:
                 else:
                     filter_query = {key: {"$eq": value}}
 
+                tracer.DEBUG(
+                    "similarity_search",
+                    "Filter applied",
+                    metadata={"filter": filter_query}
+                )
+
+        except Exception as e:
+            tracer.ERROR(
+                "similarity_search",
+                "Invalid filter",
+                metadata={"filter_search": filter_search},
+                error=e
+            )
+            raise ValueError("Invalid search filter.") from e
+
+        # ==========================
+        # Query Pinecone
+        # ==========================
+        try:
+            tracer.DEBUG(
+                "similarity_search",
+                "Querying Pinecone",
+                metadata={"k": k, "namespace": self.namespace}
+            )
+
         except Exception as e:
             logger.exception("Invalid search filter: %r", filter_search)
             raise ValueError("Invalid search filter.") from e
@@ -164,6 +307,19 @@ class PineconeRetriever:
             )
 
         except Exception as e:
+            tracer.ERROR(
+                "similarity_search",
+                "Pinecone query failed",
+                error=e
+            )
+            raise RuntimeError("Failure to query Pinecone.") from e
+
+        # ==========================
+        # Normalização
+        # ==========================
+        documents: List[Dict[str, Any]] = []
+
+        try:
             logger.exception("Failure to query Pinecone.")
             raise RuntimeError("Failure to query Pinecone.") from e
 
@@ -186,6 +342,21 @@ class PineconeRetriever:
                     "score": match.get("score"),
                 }
 
+                document["metadata"].pop("text", None)
+                documents.append(document)
+
+            tracer.DEBUG(
+                "similarity_search",
+                "Results processed",
+                metadata={"results_count": len(documents)}
+            )
+
+        except Exception as e:
+            tracer.ERROR(
+                "similarity_search",
+                "Failed to process results",
+                error=e
+            )
                 # Remove o texto duplicado do metadata
                 document["metadata"].pop("text", None)
                 documents.append(document)
@@ -196,6 +367,11 @@ class PineconeRetriever:
 
         return documents
 
+    # ======================================================
+    # Metadata Search
+    # ======================================================
+
+    @trace("get_all_docs_by_metadata")
 
 
     def get_all_docs_by_metadata(
@@ -236,6 +412,40 @@ class PineconeRetriever:
         :param target_value: Valor ou lista de valores usados no filtro.
         :return: Lista de vetores recuperados do Pinecone.
         """
+        if not target_value:
+            tracer.ERROR(
+                "get_all_docs_by_metadata",
+                "target_value is empty"
+            )
+            raise ValueError("target_value cannot be empty.")
+
+        batch_size = (
+            min(batch_size, self.batch_size)
+            if batch_size and batch_size > 0
+            else self.batch_size
+        )
+
+        dimension = (
+            dimension if dimension and dimension > 0 else self.dimension
+        )
+
+        dummy_vector = [0.0] * dimension
+
+        # Filtro dinâmico
+        if isinstance(target_value, list):
+            filter_query = {target_key: {"$in": target_value}}
+        else:
+            filter_query = {target_key: {"$eq": target_value}}
+
+        tracer.DEBUG(
+            "get_all_docs_by_metadata",
+            "Starting paginated retrieval",
+            metadata={
+                "target_key": target_key,
+                "batch_size": batch_size,
+                "namespace": self.namespace,
+            }
+        )
 
         # Validação do filtro alvo
         if not target_value:
@@ -298,6 +508,24 @@ class PineconeRetriever:
                     response.get("pagination", {}) or {}
                 ).get("next")
 
+                if not pagination_token:
+                    break
+
+            tracer.DEBUG(
+                "get_all_docs_by_metadata",
+                "Retrieval completed",
+                metadata={"total_results": len(results)}
+            )
+
+        except Exception as e:
+            tracer.ERROR(
+                "get_all_docs_by_metadata",
+                "Failed during paginated retrieval",
+                metadata={
+                    "target_key": target_key,
+                    "target_value": target_value,
+                },
+                error=e
                 # Encerramento do loop quando não há mais páginas
                 if not pagination_token:
                     break
@@ -312,4 +540,5 @@ class PineconeRetriever:
                 "Failed to retrieve vectors by target."
             ) from e
 
+        return results
         return results
