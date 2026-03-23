@@ -33,10 +33,17 @@ def trace(method_name: str):
 
 class PineconeRetriever:
     """
-    Responsável por consultas semânticas no Pinecone:
-    - Similarity search
-    - Busca por metadata
-    - Normalização de resultados
+    Serviço responsável por realizar operações de recuperação
+    (retrieval) de vetores no Pinecone.
+
+    Esta classe atua como uma camada de acesso ao índice vetorial,
+    encapsulando:
+    - Buscas por similaridade
+    - Recuperação de vetores por metadados
+    - Interação direta com o índice Pinecone
+
+    Seu objetivo é oferecer uma API clara e segura para leitura
+    de dados vetoriais.
     """
 
     def __init__(self, client: Optional[PineconeClient] = None):
