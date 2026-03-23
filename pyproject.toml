@@ -49,4 +49,6 @@ dependencies = [
     "agno>=2.5.8",
     "yfinance>=1.2.0",
     "psycopg2-binary>=2.9.11",
+    "matplotlib>=3.10.8",
+    "seaborn>=0.13.2",
 ]
