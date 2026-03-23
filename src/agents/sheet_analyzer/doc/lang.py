@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # 🔥 Carregar CSV
-df = pd.read_csv("src/agents/sheet_analyzer/supermarket_sales.csv")
+df = pd.read_csv("src/agents/sheet_analyzer/doc/supermarket_sales.csv")
 
 # 🔥 LLM
 llm = ChatOpenAI(
