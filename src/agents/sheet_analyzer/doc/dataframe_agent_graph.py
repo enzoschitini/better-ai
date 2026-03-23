@@ -122,7 +122,7 @@ if __name__ == "__main__":
     GRAPHS = []
 
     response = agent.invoke(
-        "Create two charts, one bar chart and one pie chart showing the number of passengers in each class."
+        "Create a bar chart showing the number of passengers in each class."
     )
 
     final_response = {
