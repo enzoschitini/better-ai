@@ -18,12 +18,15 @@ load_dotenv()
 # =========================
 os.makedirs("outputs", exist_ok=True)
 
+GRAPHS = []
+
 # =========================
 # 🎯 Monkey patch do plt.show()
 # =========================
 def custom_show():
-    buffer = BytesIO()
+    global GRAPHS
 
+    buffer = BytesIO()
     filename = f"outputs/plot_{uuid.uuid4().hex}.png"
 
     plt.savefig(filename)
@@ -33,13 +36,14 @@ def custom_show():
     buffer.seek(0)
     img_base64 = base64.b64encode(buffer.read()).decode('utf-8')
 
-    print(f"\n[AUTO-SAVED]: {filename}")
-    print(f"[BASE64 PREVIEW]: {img_base64[:100]}...\n")
-
-    return {
+    graph_data = {
         "file_path": filename,
-        "image_base64": img_base64
+        "image_base64": img_base64[:100]
     }
+
+    GRAPHS.append(graph_data)
+
+    return graph_data
 
 plt.show = custom_show  # 🔥 sobrescreve comportamento
 
@@ -90,7 +94,12 @@ When creating plots:
 
     suffix="""
 Provide the final answer clearly.
-If a plot was created, mention that it was generated.
+
+IMPORTANT:
+- Do NOT include any image links, file paths, or markdown images
+- Do NOT mention where the chart is saved
+- Assume the chart is already displayed in the interface
+- Only describe the insights from the chart
 """,
 
     include_df_in_prompt=True,
@@ -109,22 +118,17 @@ If a plot was created, mention that it was generated.
 if __name__ == "__main__":
     import json
 
+    # reset collector
+    GRAPHS = []
+
     response = agent.invoke(
         "Create a bar chart showing the number of passengers in each class."
     )
 
-    print("\nResponse:")
-    print(json.dumps(response, indent=4))
+    final_response = {
+        "input": response["input"],
+        "graphs": GRAPHS,
+        "output": response["output"]
+    }
 
-    print(f"\nOutput: {response['output']}\n")
-
-{
-    "input": "Create a bar chart showing the number of passengers in each class.",
-    "graphs": [
-        {
-             "file_path": "xxxxxxxxxxxxx",
-             "image_base64": "xxxxxxxxxxxxx"
-        }
-    ],
-    "output": "xxxxxxxxxxxxx"
-}
+    print(json.dumps(final_response, indent=4))
