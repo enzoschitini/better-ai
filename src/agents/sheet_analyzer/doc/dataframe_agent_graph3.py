@@ -1,10 +1,6 @@
-import os
-import uuid
-import base64
 from io import BytesIO
 
 import pandas as pd
-import matplotlib.pyplot as plt
 from dotenv import load_dotenv
 
 from langchain.tools import Tool
@@ -15,54 +11,13 @@ import json
 from io import BytesIO
 from langchain_community.callbacks import get_openai_callback
 
+from src.agents.sheet_analyzer.doc.plot_collector import PlotCollector
 from src.agents.sheet_analyzer.doc.config import AgentConfig
 
 load_dotenv()
 
-class PlotCollector:
-    def __init__(self, output_dir: str = "outputs"):
-        self.output_dir = output_dir
-        self.graphs = []
-
-        os.makedirs(self.output_dir, exist_ok=True)
-
-    def custom_show(self):
-        buffer = BytesIO()
-        filename = f"{self.output_dir}/plot_{uuid.uuid4().hex}.png"
-
-        plt.savefig(filename)
-        plt.savefig(buffer, format="png")
-        plt.close()
-
-        buffer.seek(0)
-        img_base64 = base64.b64encode(buffer.read()).decode("utf-8")
-
-        graph_data = {
-            "file_path": filename,
-            "image_base64": img_base64[:100]  # preview
-        }
-
-        self.graphs.append(graph_data)
-
-        return graph_data
-
-    def patch_matplotlib(self):
-        plt.show = self.custom_show  # 🔥 monkey patch
-
-    def reset(self):
-        self.graphs = []
-
-    def get_graphs(self):
-        return self.graphs
-
-
-
-
-
-
 class DataframeAgent:
-    def __init__(self, 
-                dataframe,):
+    def __init__(self, dataframe,):
         
         self.dataframe = dataframe
         self.collector = PlotCollector()
@@ -118,13 +73,10 @@ class DataframeAgent:
 
         return agent
     
-    def invoke(self):
+    def invoke(self, user_query):
         with get_openai_callback() as cb:
-            response = self.agent.invoke(
-                "Create a bar chart showing the number of passengers in each class.",
-            )
-            
-        # 📦 Resultado final
+            response = self.agent.invoke(user_query)
+
         final_response = {
             "input": response["input"],
             "graphs": self.collector.get_graphs(),
@@ -139,16 +91,11 @@ class DataframeAgent:
 
         return final_response
     
-    def run_agent(self):
+    def run_agent(self, user_query: str = "Create a bar chart showing the number of passengers in each class."):
         self._get_model()
         self.create_agent()
         respose = self.invoke()
         return respose
-
-
-
-
-
 
 
 # =========================
@@ -163,6 +110,8 @@ if __name__ == "__main__":
 
     # 🔥 carregar via bytes
     df = pd.read_csv(BytesIO(csv_bytes))
+
+    dataframes = {"titanic": df}
     
     agent = DataframeAgent(dataframe=df)
     respose = agent.run_agent()
