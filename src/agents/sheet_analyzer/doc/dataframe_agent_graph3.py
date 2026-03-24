@@ -132,7 +132,9 @@ if __name__ == "__main__":
         toolkit=Toolkit(),
     )
     respose = agent.run_agent(
-        "Use the custom_calculation tool to process 'example input'."
+        #"Use the custom_calculation tool to process 'example input'."
+        #"Classify passengers into 'survived' and 'not survived"
+        "Clean the data"
     )
 
     print(json.dumps(respose, indent=4))
