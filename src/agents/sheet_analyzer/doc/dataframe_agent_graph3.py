@@ -55,7 +55,8 @@ class DataframeAgent:
         if self.toolkit is None:
             self.extra_tools = extra_tools
             return extra_tools
-
+        
+        self.toolkit._get_dataframe(self.dataframe)
         for tool in self.toolkit._get_tools():
             extra_tools.append(
                 Tool(
@@ -128,7 +129,7 @@ if __name__ == "__main__":
     
     agent = DataframeAgent(
         dataframe=df,
-        #toolkit=Toolkit(),
+        toolkit=Toolkit(),
     )
     respose = agent.run_agent(
         "Use the custom_calculation tool to process 'example input'."

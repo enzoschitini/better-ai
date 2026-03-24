@@ -1,10 +1,8 @@
 
 class Toolkit:
-    def __init__(self):
-        pass
-
-    def custom_calculation_tool(self, input: str) -> str:
-        return f"Custom calculation result for: {input}"
+    def _get_dataframe(self, dataframe):
+        self.dataframe = dataframe
+        return dataframe
     
     def _get_tools(self):
         return [
@@ -15,6 +13,11 @@ class Toolkit:
             }
         ]
 
+    def custom_calculation_tool(self, input: str) -> str:
+        print(f"Running custom_calculation_tool with input: {input}")
+        df = self.dataframe.head()
+        print(f"DataFrame head:\n{df}")
+        return f"Custom calculation result for: {input}. DataFrame head:\n{df}"
 
 
 
