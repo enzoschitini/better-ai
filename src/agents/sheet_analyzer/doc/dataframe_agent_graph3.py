@@ -15,6 +15,8 @@ import json
 from io import BytesIO
 from langchain_community.callbacks import get_openai_callback
 
+from src.agents.sheet_analyzer.doc.config import AgentConfig
+
 load_dotenv()
 
 class PlotCollector:
@@ -53,21 +55,40 @@ class PlotCollector:
     def get_graphs(self):
         return self.graphs
 
+
+
+
+
+
 class DataframeAgent:
     def __init__(self, 
                 dataframe,):
         
         self.dataframe = dataframe
         self.collector = PlotCollector()
+
+        config = AgentConfig()
+        self.id_model = config.id_model
+        self.temperature = config.temperature
+        self.agent_type = config.agent_type
+
+        self.include_df_in_prompt = config.include_df_in_prompt
+        self.number_of_head_rows = config.number_of_head_rows
+
+        self.max_execution_time = config.max_execution_time
+        self.early_stopping_method = config.early_stopping_method
+
+        self.allow_dangerous_code = config.allow_dangerous_code
+        self.verbose = config.verbose
+
+        self.prefix = config.prefix
+        self.suffix = config.suffix
+
         self.collector.patch_matplotlib()
-        self.model = self._get_model()
-        self.agent = self.create_agent()
 
     def _get_model(self):
-        model = ChatOpenAI(
-            model="gpt-4o-mini",
-            temperature=0,
-        )
+        model = ChatOpenAI(model=self.id_model, temperature=self.temperature)
+        self.model = model
 
         return model
     
@@ -75,46 +96,29 @@ class DataframeAgent:
         agent = create_pandas_dataframe_agent(
             llm=self.model,
             df=self.dataframe,
-            agent_type="tool-calling",
+            agent_type=self.agent_type,
 
-            prefix="""
-    You are a data analyst working with a pandas DataFrame called `df`.
+            prefix=self.prefix,
+            suffix=self.suffix,
 
-    Rules:
-    - ALWAYS use the provided dataframe `df`
-    - NEVER load external datasets
+            include_df_in_prompt=self.include_df_in_prompt,
+            number_of_head_rows=self.number_of_head_rows,
 
-    When creating plots:
-    - ALWAYS use matplotlib
-    - ALWAYS call plt.show() at the end
-    """,
+            max_execution_time=self.max_execution_time,
+            early_stopping_method=self.early_stopping_method,
 
-            suffix="""
-    Provide the final answer clearly.
-
-    IMPORTANT:
-    - Do NOT include any image links, file paths, or markdown images
-    - Do NOT mention where the chart is saved
-    - Assume the chart is already displayed in the interface
-    - Only describe the insights from the chart
-    """,
-
-            include_df_in_prompt=True,
-            number_of_head_rows=5,
-
-            max_execution_time=10,
-            early_stopping_method="force",
-
-            allow_dangerous_code=True,
-            verbose=True,
+            allow_dangerous_code=self.allow_dangerous_code,
+            verbose=self.verbose,
         )
 
         # 🔄 Reset collector
         self.collector.reset()
 
+        self.agent = agent
+
         return agent
     
-    def run_agent(self):
+    def invoke(self):
         with get_openai_callback() as cb:
             response = self.agent.invoke(
                 "Create a bar chart showing the number of passengers in each class.",
@@ -133,9 +137,15 @@ class DataframeAgent:
             }
         }
 
-        print(json.dumps(final_response, indent=4))
-
         return final_response
+    
+    def run_agent(self):
+        self._get_model()
+        self.create_agent()
+        respose = self.invoke()
+        return respose
+
+
 
 
 
@@ -155,4 +165,9 @@ if __name__ == "__main__":
     df = pd.read_csv(BytesIO(csv_bytes))
     
     agent = DataframeAgent(dataframe=df)
-    agent.run_agent()
+    respose = agent.run_agent()
+
+    print(json.dumps(respose, indent=4))
+
+
+# python -m src.agents.sheet_analyzer.doc.dataframe_agent_graph3
