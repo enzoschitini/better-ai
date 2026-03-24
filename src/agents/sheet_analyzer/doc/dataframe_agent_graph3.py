@@ -105,9 +105,9 @@ class DataframeAgent:
             "output": response["output"],
             "tool_result": self.toolkit.tool_result if self.toolkit else None,
             "usage": {
+                "input_tokens": cb.prompt_tokens,
+                "output_tokens": cb.completion_tokens,
                 "total_tokens": cb.total_tokens,
-                "prompt_tokens": cb.prompt_tokens,
-                "completion_tokens": cb.completion_tokens,
                 "cost_usd": cb.total_cost,
             }
         }
