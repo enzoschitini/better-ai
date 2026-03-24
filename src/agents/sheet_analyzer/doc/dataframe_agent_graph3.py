@@ -16,6 +16,33 @@ from src.agents.sheet_analyzer.doc.config import AgentConfig
 
 load_dotenv()
 
+def custom_calculation_tool(input: str) -> str:
+    return f"Custom calculation result for: {input}"
+
+tools = [
+    {
+        "name": "custom_calculation",
+        "func": custom_calculation_tool,
+        "description": "A tool for performing custom calculations."
+    }
+]
+
+extra_tools = []
+
+for tool in tools:
+    print(f"Tool Name: {tool['name']}")
+    print(f"Description: {tool['description']}\n")
+
+    extra_tools.append(
+        Tool(
+            name=tool["name"],
+            func=tool["func"],
+            description=tool["description"]
+        )
+    )
+
+
+
 class DataframeAgent:
     def __init__(self, dataframe,):
         
@@ -52,6 +79,7 @@ class DataframeAgent:
             llm=self.model,
             df=self.dataframe,
             agent_type=self.agent_type,
+            extra_tools=extra_tools,
 
             prefix=self.prefix,
             suffix=self.suffix,
@@ -98,13 +126,13 @@ class DataframeAgent:
 
 if __name__ == "__main__":
     with open("src/agents/sheet_analyzer/doc/titanic.csv", "rb") as f:
-        csv_bytes = f.read()
+        file_bytes = f.read()
 
-    df = pd.read_csv(BytesIO(csv_bytes))
+    df = pd.read_excel(BytesIO(file_bytes))
     
     agent = DataframeAgent(dataframe=df)
     respose = agent.run_agent(
-        "Crie um grafico de pizza mostrando a proporção de sobreviventes por classe. Forneça insights sobre o gráfico."
+        "Use the custom_calculation tool to process 'example input'."
     )
 
     print(json.dumps(respose, indent=4))
