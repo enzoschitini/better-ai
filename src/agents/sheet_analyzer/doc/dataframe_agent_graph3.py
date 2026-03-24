@@ -103,6 +103,7 @@ class DataframeAgent:
             "input": response["input"],
             "graphs": self.collector.get_graphs(),
             "output": response["output"],
+            "tool_result": self.toolkit.tool_result if self.toolkit else None,
             "usage": {
                 "total_tokens": cb.total_tokens,
                 "prompt_tokens": cb.prompt_tokens,

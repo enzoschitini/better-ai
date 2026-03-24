@@ -1,9 +1,35 @@
-
+import pandas as pd
 class Toolkit:
+    def __init__(self):
+        self.tool_result = None
+    
     def _get_dataframe(self, dataframe):
         self.dataframe = dataframe
         return dataframe
-    
+
+    def _add_tool_result(self, tool_name, result, format="text"):
+        if isinstance(result, pd.DataFrame):
+            preview_df = result.head(50)
+
+            preview = (
+                preview_df.to_markdown(index=False)
+                if format == "text"
+                else preview_df.to_dict(orient="records")
+            )
+
+            result = {
+                "type": "dataframe",
+                "preview": preview,
+                "format": format,
+                #"columns": list(result.columns),
+                "shape": result.shape
+            }
+
+        self.tool_result = {
+            "tool_name": tool_name,
+            "result": result
+        }
+
     def _get_tools(self):
         return [
             {
@@ -38,7 +64,9 @@ class Toolkit:
         df = self.dataframe.head()
         df = df.dropna()
         df["cleaned"] = True
-        return f"Cleaned data based on: {input}. DataFrame head:\n{df}"
+        self._add_tool_result("clean_data", df)
+
+        return f"Cleaned data based on: {input}. DataFrame head:\n{df.to_markdown(index=False)}"
 
 
 
