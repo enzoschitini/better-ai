@@ -4,21 +4,26 @@ import base64
 from io import BytesIO
 
 import matplotlib.pyplot as plt
-from src.agents.sheet_analyzer.doc.config import AgentConfig
-
 
 class PlotCollector:
-    def __init__(self, output_dir: str = "outputs"):
+    def __init__(self, output_dir: str = "outputs", save: bool = True):
         self.output_dir = output_dir
+        self.save = save
         self.graphs = []
 
-        os.makedirs(self.output_dir, exist_ok=True)
+        if self.save:
+            os.makedirs(self.output_dir, exist_ok=True)
 
     def custom_show(self):
         buffer = BytesIO()
-        filename = f"{self.output_dir}/plot_{uuid.uuid4().hex}.png"
 
-        plt.savefig(filename)
+        # Só define filename se for salvar
+        filename = None
+        if self.save:
+            filename = f"{self.output_dir}/plot_{uuid.uuid4().hex}.png"
+            plt.savefig(filename)
+
+        # Sempre gera base64
         plt.savefig(buffer, format="png")
         plt.close()
 
@@ -27,7 +32,7 @@ class PlotCollector:
 
         graph_data = {
             "file_path": filename,
-            "image_base64": img_base64[:100]  # preview
+            "image_base64": img_base64[:100]
         }
 
         self.graphs.append(graph_data)
@@ -35,7 +40,7 @@ class PlotCollector:
         return graph_data
 
     def patch_matplotlib(self):
-        plt.show = self.custom_show  # 🔥 monkey patch
+        plt.show = self.custom_show 
 
     def reset(self):
         self.graphs = []

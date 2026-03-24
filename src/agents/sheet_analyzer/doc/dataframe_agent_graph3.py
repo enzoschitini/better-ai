@@ -66,9 +66,7 @@ class DataframeAgent:
             verbose=self.verbose,
         )
 
-        # 🔄 Reset collector
         self.collector.reset()
-
         self.agent = agent
 
         return agent
@@ -94,27 +92,20 @@ class DataframeAgent:
     def run_agent(self, user_query: str = "Create a bar chart showing the number of passengers in each class."):
         self._get_model()
         self.create_agent()
-        respose = self.invoke()
+        respose = self.invoke(user_query)
         return respose
 
 
-# =========================
-# 🚀 Main
-# =========================
 if __name__ == "__main__":
-    # =========================
-    # 📊 Simulando bytes (ex: vindo do banco)
-    # =========================
     with open("src/agents/sheet_analyzer/doc/titanic.csv", "rb") as f:
         csv_bytes = f.read()
 
-    # 🔥 carregar via bytes
     df = pd.read_csv(BytesIO(csv_bytes))
-
-    dataframes = {"titanic": df}
     
     agent = DataframeAgent(dataframe=df)
-    respose = agent.run_agent()
+    respose = agent.run_agent(
+        "Crie um grafico de pizza mostrando a proporção de sobreviventes por classe. Forneça insights sobre o gráfico."
+    )
 
     print(json.dumps(respose, indent=4))
 

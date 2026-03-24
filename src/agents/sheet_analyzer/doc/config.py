@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 @dataclass
 class AgentConfig:
     id_model: str = "gpt-4o-mini"
+    # "gpt-4o-mini" "gpt-5.2"
     temperature: int = 0
 
     agent_type: str = "tool-calling"
@@ -10,7 +11,7 @@ class AgentConfig:
     include_df_in_prompt: bool = True
     number_of_head_rows: int = 5
     
-    max_execution_time: int = 10
+    max_execution_time: int = 60
     early_stopping_method: str = "force"
 
     allow_dangerous_code: bool = True
