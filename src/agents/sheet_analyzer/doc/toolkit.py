@@ -6,20 +6,22 @@ class Toolkit:
     def _get_dataframe(self, dataframe):
         self.dataframe = dataframe
         return dataframe
+    
+    def _dataframe_preview(self, dataframe, format="text"):
+        preview_df = dataframe.head(50)
+
+        if format == "text":
+            return preview_df.to_markdown(index=False)
+        elif format == "dict":
+            return preview_df.to_dict(orient="records")
+        else:
+            raise ValueError("Unsupported format. Use 'text' or 'dict'.")
 
     def _add_tool_result(self, tool_name, result, format="text"):
         if isinstance(result, pd.DataFrame):
-            preview_df = result.head(50)
-
-            preview = (
-                preview_df.to_markdown(index=False)
-                if format == "text"
-                else preview_df.to_dict(orient="records")
-            )
-
             result = {
                 "type": "dataframe",
-                "preview": preview,
+                "preview": self._dataframe_preview(dataframe=result, format=format),
                 "format": format,
                 #"columns": list(result.columns),
                 "shape": result.shape
