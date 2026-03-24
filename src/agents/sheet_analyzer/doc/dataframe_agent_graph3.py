@@ -16,40 +16,30 @@ from src.agents.sheet_analyzer.doc.config import AgentConfig
 
 load_dotenv()
 
-def custom_calculation_tool(input: str) -> str:
-    return f"Custom calculation result for: {input}"
+class Toolkit:
+    def __init__(self):
+        pass
 
-tools = [
-    {
-        "name": "custom_calculation",
-        "func": custom_calculation_tool,
-        "description": "A tool for performing custom calculations."
-    }
-]
-
-extra_tools = []
-
-for tool in tools:
-    print(f"Tool Name: {tool['name']}")
-    print(f"Description: {tool['description']}\n")
-
-    extra_tools.append(
-        Tool(
-            name=tool["name"],
-            func=tool["func"],
-            description=tool["description"]
-        )
-    )
-
-
+    def custom_calculation_tool(self, input: str) -> str:
+        return f"Custom calculation result for: {input}"
+    
+    def _get_tools(self):
+        return [
+            {
+                "name": "custom_calculation",
+                "func": self.custom_calculation_tool,
+                "description": "Performs a custom calculation based on the input string."
+            }
+        ]
 
 class DataframeAgent:
-    def __init__(self, dataframe,):
-        
-        self.dataframe = dataframe
-        self.collector = PlotCollector()
-
+    def __init__(self, dataframe, toolkit=None):
         config = AgentConfig()
+        self.collector = PlotCollector()
+        self.toolkit = toolkit #toolkit if toolkit is not None else Toolkit()
+        
+
+        self.dataframe = dataframe
         self.id_model = config.id_model
         self.temperature = config.temperature
         self.agent_type = config.agent_type
@@ -74,12 +64,31 @@ class DataframeAgent:
 
         return model
     
+    def _get_tools(self):
+        extra_tools = []
+
+        for tool in self.toolkit._get_tools():
+            print(f"Tool Name: {tool['name']}")
+            print(f"Description: {tool['description']}\n")
+
+            extra_tools.append(
+                Tool(
+                    name=tool["name"],
+                    func=tool["func"],
+                    description=tool["description"]
+                )
+            )
+        
+        self.extra_tools = extra_tools
+        return extra_tools
+
+
     def create_agent(self):
         agent = create_pandas_dataframe_agent(
             llm=self.model,
             df=self.dataframe,
             agent_type=self.agent_type,
-            extra_tools=extra_tools,
+            extra_tools=self.extra_tools,
 
             prefix=self.prefix,
             suffix=self.suffix,
@@ -119,6 +128,7 @@ class DataframeAgent:
     
     def run_agent(self, user_query: str = "Create a bar chart showing the number of passengers in each class."):
         self._get_model()
+        self._get_tools()
         self.create_agent()
         respose = self.invoke(user_query)
         return respose
@@ -128,9 +138,9 @@ if __name__ == "__main__":
     with open("src/agents/sheet_analyzer/doc/titanic.csv", "rb") as f:
         file_bytes = f.read()
 
-    df = pd.read_excel(BytesIO(file_bytes))
+    df = pd.read_csv(BytesIO(file_bytes))
     
-    agent = DataframeAgent(dataframe=df)
+    agent = DataframeAgent(dataframe=df, toolkit=Toolkit())
     respose = agent.run_agent(
         "Use the custom_calculation tool to process 'example input'."
     )
