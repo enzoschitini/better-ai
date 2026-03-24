@@ -61,21 +61,56 @@ def custom_calculation_tool(input: str) -> str:
     return f"Custom calculation result for: {input}"
 
 
+from langchain.callbacks.base import BaseCallbackHandler
+
+class TokenDebugHandler(BaseCallbackHandler):
+    def __init__(self):
+        self.calls = []
+
+    def on_llm_end(self, response, **kwargs):
+        if hasattr(response, "llm_output") and response.llm_output:
+            usage = response.llm_output.get("token_usage", {})
+
+            call_data = {
+                "prompt_tokens": usage.get("prompt_tokens", 0),
+                "completion_tokens": usage.get("completion_tokens", 0),
+                "total_tokens": usage.get("total_tokens", 0),
+            }
+
+            self.calls.append(call_data)
+
+            print("\n📊 LLM Call:")
+            print(call_data)
+
 # =========================
 # 🚀 Main
 # =========================
 if __name__ == "__main__":
     import json
+    from io import BytesIO
+    from langchain_community.callbacks import get_openai_callback
 
-    # 📊 DataFrame
-    df = pd.read_csv("src/agents/sheet_analyzer/doc/titanic.csv")
+    # =========================
+    # 📊 Simulando bytes (ex: vindo do banco)
+    # =========================
+    with open("src/agents/sheet_analyzer/doc/titanic.csv", "rb") as f:
+        csv_bytes = f.read()
+
+    # 🔥 carregar via bytes
+    df = pd.read_csv(BytesIO(csv_bytes))
 
     # 🎯 Collector
     collector = PlotCollector()
     collector.patch_matplotlib()
 
     # 🤖 LLM
-    model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    handler = TokenDebugHandler()
+
+    model = ChatOpenAI(
+        model="gpt-4o-mini",
+        temperature=0,
+        callbacks=[handler]
+    )
 
     # 🛠 Tools
     extra_tools = [
@@ -128,16 +163,28 @@ IMPORTANT:
     # 🔄 Reset collector
     collector.reset()
 
-    # ▶️ Executar
-    response = agent.invoke(
-        "Create a bar chart showing the number of passengers in each class."
-    )
-
+    # =========================
+    # 💰 Medição de consumo
+    # =========================
+    
+    with get_openai_callback() as cb:
+        response = agent.invoke(
+            "Create a bar chart showing the number of passengers in each class.",
+            config={"callbacks": [handler]}
+        )
+        
     # 📦 Resultado final
     final_response = {
         "input": response["input"],
         "graphs": collector.get_graphs(),
-        "output": response["output"]
+        "output": response["output"],
+        "usage": {
+            "total_tokens": cb.total_tokens,
+            "prompt_tokens": cb.prompt_tokens,
+            "completion_tokens": cb.completion_tokens,
+            "cost_usd": cb.total_cost,
+            "calls": handler.calls   # 🔥 aqui dentro
+        }
     }
 
     print(json.dumps(final_response, indent=4))
