@@ -11,32 +11,17 @@ import json
 from io import BytesIO
 from langchain_community.callbacks import get_openai_callback
 
-from src.agents.sheet_analyzer.doc.plot_collector import PlotCollector
 from src.agents.sheet_analyzer.doc.config import AgentConfig
+from src.agents.sheet_analyzer.doc.plot_collector import PlotCollector
+from src.agents.sheet_analyzer.doc.toolkit import Toolkit
 
 load_dotenv()
-
-class Toolkit:
-    def __init__(self):
-        pass
-
-    def custom_calculation_tool(self, input: str) -> str:
-        return f"Custom calculation result for: {input}"
-    
-    def _get_tools(self):
-        return [
-            {
-                "name": "custom_calculation",
-                "func": self.custom_calculation_tool,
-                "description": "Performs a custom calculation based on the input string."
-            }
-        ]
 
 class DataframeAgent:
     def __init__(self, dataframe, toolkit=None):
         config = AgentConfig()
         self.collector = PlotCollector()
-        self.toolkit = toolkit #toolkit if toolkit is not None else Toolkit()
+        self.toolkit = toolkit
         
 
         self.dataframe = dataframe
@@ -67,10 +52,11 @@ class DataframeAgent:
     def _get_tools(self):
         extra_tools = []
 
-        for tool in self.toolkit._get_tools():
-            print(f"Tool Name: {tool['name']}")
-            print(f"Description: {tool['description']}\n")
+        if self.toolkit is None:
+            self.extra_tools = extra_tools
+            return extra_tools
 
+        for tool in self.toolkit._get_tools():
             extra_tools.append(
                 Tool(
                     name=tool["name"],
@@ -78,7 +64,7 @@ class DataframeAgent:
                     description=tool["description"]
                 )
             )
-        
+
         self.extra_tools = extra_tools
         return extra_tools
 
@@ -140,7 +126,10 @@ if __name__ == "__main__":
 
     df = pd.read_csv(BytesIO(file_bytes))
     
-    agent = DataframeAgent(dataframe=df, toolkit=Toolkit())
+    agent = DataframeAgent(
+        dataframe=df,
+        #toolkit=Toolkit(),
+    )
     respose = agent.run_agent(
         "Use the custom_calculation tool to process 'example input'."
     )
