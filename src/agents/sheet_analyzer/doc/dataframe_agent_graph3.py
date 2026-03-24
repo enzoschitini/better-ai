@@ -21,10 +21,10 @@ class DataframeAgent:
     def __init__(self, dataframe, toolkit=None):
         config = AgentConfig()
         self.collector = PlotCollector()
-        self.toolkit = toolkit
-        
 
+        self.toolkit = toolkit
         self.dataframe = dataframe
+        
         self.id_model = config.id_model
         self.temperature = config.temperature
         self.agent_type = config.agent_type
@@ -94,7 +94,7 @@ class DataframeAgent:
         self.agent = agent
 
         return agent
-    
+
     def invoke(self, user_query):
         with get_openai_callback() as cb:
             response = self.agent.invoke(user_query)
@@ -118,8 +118,7 @@ class DataframeAgent:
         self._get_model()
         self._get_tools()
         self.create_agent()
-        respose = self.invoke(user_query)
-        return respose
+        return self.invoke(user_query)
 
 
 if __name__ == "__main__":

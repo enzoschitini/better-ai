@@ -1,7 +1,7 @@
 import pandas as pd
 class Toolkit:
     def __init__(self):
-        self.tool_result = None
+        self.tool_result = []
     
     def _get_dataframe(self, dataframe):
         self.dataframe = dataframe
@@ -25,10 +25,10 @@ class Toolkit:
                 "shape": result.shape
             }
 
-        self.tool_result = {
+        self.tool_result.append({
             "tool_name": tool_name,
             "result": result
-        }
+        })
 
     def _get_tools(self):
         return [
