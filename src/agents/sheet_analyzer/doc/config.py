@@ -27,6 +27,7 @@ class AgentConfig:
     When creating plots:
     - ALWAYS use matplotlib
     - ALWAYS call plt.show() at the end
+    - ALWAYS frame the information within the graph image so that text and numbers are not cut off.
     """
 
     suffix: str = """
