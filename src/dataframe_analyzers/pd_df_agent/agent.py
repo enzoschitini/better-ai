@@ -111,7 +111,7 @@ class DataframeAgent:
             return model
 
         except Exception as e:
-            raise ValueError(f"Error initializing model: {str(e)}")
+            raise RuntimeError(f"Error initializing model: {str(e)}")
     
     def _get_tools(self):
         try:
@@ -135,7 +135,7 @@ class DataframeAgent:
             return extra_tools
         
         except Exception as e:
-            raise ValueError(f"Error initializing tools: {str(e)}")
+            raise RuntimeError(f"Error initializing tools: {str(e)}")
 
     def create_agent(self):
         try:
@@ -164,7 +164,7 @@ class DataframeAgent:
             return agent
         
         except Exception as e:
-            raise ValueError(f"Error creating agent: {str(e)}")
+            raise RuntimeError(f"Error creating agent: {str(e)}")
 
     def invoke(self, user_query):
         try:
@@ -187,7 +187,7 @@ class DataframeAgent:
             return final_response
         
         except Exception as e:
-            raise ValueError(f"Error invoking agent: {str(e)}")
+            raise RuntimeError(f"Error invoking agent: {str(e)}")
     
     def run_agent(self, user_query: str = "Create a bar chart showing the number of passengers in each class."):
         self._get_model()
