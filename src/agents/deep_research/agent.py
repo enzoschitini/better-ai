@@ -10,6 +10,7 @@ from agno.agent import Agent
 
 from agno.models.groq import Groq
 from agno.models.openai import OpenAIChat
+from agno.models.google import Gemini
 
 from agno.db.sqlite import SqliteDb
 from agno.db.postgres import PostgresDb
@@ -69,7 +70,7 @@ agent = Agent(
 
     # Reasoning
     reasoning=True,
-    reasoning_model="openai:gpt-4.1-mini",
+    reasoning_model=OpenAIChat(id="gpt-4.1-mini"),
     reasoning_max_steps=5,
 
     # Agentic Memory
@@ -86,10 +87,10 @@ agent = Agent(
     ],
 
     # Save Traces
-    store_history_messages=True,
-    store_tool_messages=True,
-    store_events=True,
-    stream_events=True,
+    #store_history_messages=True,
+    #store_tool_messages=True,
+    #store_events=True,
+    #stream_events=True,
 )
 
 if __name__ == "__main__":
@@ -97,7 +98,7 @@ if __name__ == "__main__":
 
     runner = RunAgent(agent=agent)
     ASK = """
-Crie uma noticia sobre a guerra dos EUA como se você fosse o melhor redator jornalistico
+Quem tem mais chance de ganhar a copa de 2026?
 """
     #runner.process(ask="O que está sendo falado sobre a copa de 2026?", tool_responses=response_collector)
     #runner.debug(ask=ASK)
