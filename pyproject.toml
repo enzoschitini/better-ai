@@ -52,4 +52,5 @@ dependencies = [
     "matplotlib>=3.10.8",
     "seaborn>=0.13.2",
     "plotly>=6.6.0",
+    "langchain-google-genai>=2.1.12",
 ]

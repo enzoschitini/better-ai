@@ -1,14 +1,14 @@
-from io import BytesIO
-
+import os
+import json
 import pandas as pd
+
+from io import BytesIO
 from dotenv import load_dotenv
 
 from langchain.tools import Tool
 from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_experimental.agents import create_pandas_dataframe_agent
-
-import json
-from io import BytesIO
 from langchain_community.callbacks import get_openai_callback
 
 from src.dataframe_analyzers.pd_df_agent.config import AgentConfig
@@ -18,35 +18,91 @@ from src.dataframe_analyzers.pd_df_agent.toolkit import Toolkit
 load_dotenv()
 
 class DataframeAgent:
-    def __init__(self, dataframe, toolkit=None):
+    def __init__(
+        self,
+        dataframe,
+        toolkit=None,
+        id_model=None,
+        model_provider=None,
+        temperature=None,
+        agent_type=None,
+        include_df_in_prompt=None,
+        number_of_head_rows=None,
+        max_execution_time=None,
+        early_stopping_method=None,
+        allow_dangerous_code=None,
+        verbose=None,
+        prefix=None,
+        suffix=None,
+    ):
         config = AgentConfig()
         self.collector = PlotCollector()
 
-        self.toolkit = toolkit
         self.dataframe = dataframe
-        
-        self.id_model = config.id_model
-        self.temperature = config.temperature
-        self.agent_type = config.agent_type
+        self.toolkit = toolkit
 
-        self.include_df_in_prompt = config.include_df_in_prompt
-        self.number_of_head_rows = config.number_of_head_rows
+        # Fallback seguro
+        self.id_model = id_model if id_model is not None else config.id_model
+        self.model_provider = model_provider if model_provider is not None else config.model_provider
+        self.temperature = temperature if temperature is not None else config.temperature
+        self.agent_type = agent_type if agent_type is not None else config.agent_type
 
-        self.max_execution_time = config.max_execution_time
-        self.early_stopping_method = config.early_stopping_method
+        self.include_df_in_prompt = (
+            include_df_in_prompt
+            if include_df_in_prompt is not None
+            else config.include_df_in_prompt
+        )
 
-        self.allow_dangerous_code = config.allow_dangerous_code
-        self.verbose = config.verbose
+        self.number_of_head_rows = (
+            number_of_head_rows
+            if number_of_head_rows is not None
+            else config.number_of_head_rows
+        )
 
-        self.prefix = config.prefix
-        self.suffix = config.suffix
+        self.max_execution_time = (
+            max_execution_time
+            if max_execution_time is not None
+            else config.max_execution_time
+        )
+
+        self.early_stopping_method = (
+            early_stopping_method
+            if early_stopping_method is not None
+            else config.early_stopping_method
+        )
+
+        self.allow_dangerous_code = (
+            allow_dangerous_code
+            if allow_dangerous_code is not None
+            else config.allow_dangerous_code
+        )
+
+        self.verbose = verbose if verbose is not None else config.verbose
+
+        self.prefix = prefix if prefix is not None else config.prefix
+        self.suffix = suffix if suffix is not None else config.suffix
 
         self.collector.patch_matplotlib()
 
-    def _get_model(self):
-        model = ChatOpenAI(model=self.id_model, temperature=self.temperature)
-        self.model = model
+    def _get_model(self, provider: str = None):
+        if provider == None:
+            provider = self.model_provider
 
+        if provider == "openai":
+            model = ChatOpenAI(
+                model=self.id_model, 
+                temperature=self.temperature
+            )
+        elif provider == "gemini":
+            model = ChatGoogleGenerativeAI(
+                model=self.id_model,
+                google_api_key=os.getenv("GEMINI_API_KEY"),
+                temperature=self.temperature
+            )
+        else:
+            raise RuntimeError(f"Provider '{provider}' not found")
+
+        self.model = model
         return model
     
     def _get_tools(self):
@@ -125,7 +181,7 @@ if __name__ == "__main__":
     with open("src/dataframe_analyzers/pd_df_agent/supermarket_sales.csv", "rb") as f:
         file_bytes = f.read()
 
-    df = pd.read_excel(BytesIO(file_bytes))
+    df = pd.read_csv(BytesIO(file_bytes))
     agent = DataframeAgent(
         dataframe=df,
         #toolkit=Toolkit(),
@@ -141,7 +197,9 @@ if __name__ == "__main__":
         #"Gere um grafico de barras com a média de cada resposta na primeira pergunta"
         #"Gere um grafico de barras com a quantidade de respostas ao longo dos meses"
         #"Gere um grafico de barras com a quantidade de respostas por estado"
-        "Gere um grafico nuvem de palavras da quantidade de respostas por estado"
+        #"Gere um grafico nuvem de palavras da quantidade de respostas por estado"
+        "Gere um grafico de barras da quantidade de pessoas por genero"
+        #"Oi"
 
     )
 
@@ -149,4 +207,4 @@ if __name__ == "__main__":
 
     # 1. Analisar mais de uma tabela de uma planilha
 
-# python -m src.dataframe_analyzers.pd_df_agent.dataframe_agent_graph3
+# python -m src.dataframe_analyzers.pd_df_agent.agent
