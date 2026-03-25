@@ -14,8 +14,15 @@ from langchain_community.callbacks import get_openai_callback
 from src.dataframe_analyzers.pd_df_agent.config import AgentConfig
 from src.dataframe_analyzers.pd_df_agent.plot_collector import PlotCollector
 from src.dataframe_analyzers.pd_df_agent.toolkit import Toolkit
+from src.tracing.tracing_core import ApplicationTracing
 
 load_dotenv()
+
+tracer = ApplicationTracing(
+    flag="DataframeAgent",
+    file_name="agent.py",
+    log_file_name="dataframe_agent"
+)
 
 class DataframeAgent:
     def __init__(
@@ -85,6 +92,24 @@ class DataframeAgent:
 
         self.collector.patch_matplotlib()
 
+        tracer.INFO(
+            message=f"DataframeAgent initialized with configuration", 
+            metadata={
+                "id_model": self.id_model,
+                "model_provider": self.model_provider,
+                "temperature": self.temperature,
+                "agent_type": self.agent_type,
+                "include_df_in_prompt": self.include_df_in_prompt,
+                "number_of_head_rows": self.number_of_head_rows,
+                "max_execution_time": self.max_execution_time,
+                "early_stopping_method": self.early_stopping_method,
+                "allow_dangerous_code": self.allow_dangerous_code,
+                "verbose": self.verbose,
+                "prefix": self.prefix,
+                "suffix": self.suffix,
+            }
+        )
+
     def _get_model(self, provider: str = None):
         try:
             VALID_PROVIDERS = self.valid_providers
@@ -108,9 +133,14 @@ class DataframeAgent:
                 )
 
             self.model = model
+            tracer.INFO(message=f"Model initialized: {provider} - {self.id_model}")
             return model
 
         except Exception as e:
+            tracer.ERROR(
+                func_name="_get_model",
+                message=f"Error initializing model: {str(e)}"
+            )
             raise RuntimeError(f"Error initializing model: {str(e)}")
     
     def _get_tools(self):
@@ -132,9 +162,14 @@ class DataframeAgent:
                 )
 
             self.extra_tools = extra_tools
+            tracer.INFO(message=f"Tools initialized: {[tool.name for tool in extra_tools]}")
             return extra_tools
         
         except Exception as e:
+            tracer.ERROR(
+                func_name="_get_tools",
+                message=f"Error initializing tools: {str(e)}"
+            )
             raise RuntimeError(f"Error initializing tools: {str(e)}")
 
     def create_agent(self):
@@ -160,10 +195,15 @@ class DataframeAgent:
 
             self.collector.reset()
             self.agent = agent
+            tracer.INFO(message=f"Agent created successfully")
 
             return agent
         
         except Exception as e:
+            tracer.ERROR(
+                func_name="create_agent",
+                message=f"Error creating agent: {str(e)}"
+            )
             raise RuntimeError(f"Error creating agent: {str(e)}")
 
     def invoke(self, user_query):
@@ -184,9 +224,14 @@ class DataframeAgent:
                 }
             }
 
+            tracer.INFO(message=f"Agent invoked. User query: '{user_query}'. Response: '{response['output']}'")
             return final_response
         
         except Exception as e:
+            tracer.ERROR(
+                func_name="invoke",
+                message=f"Error invoking agent: {str(e)}"
+            )
             raise RuntimeError(f"Error invoking agent: {str(e)}")
     
     def run_agent(self, user_query: str = "Create a bar chart showing the number of passengers in each class."):
