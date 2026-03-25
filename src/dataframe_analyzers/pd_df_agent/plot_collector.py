@@ -1,0 +1,64 @@
+import os
+import uuid
+import base64
+from io import BytesIO
+
+import matplotlib.pyplot as plt
+from src.tracing.tracing_core import ApplicationTracing
+
+tracer = ApplicationTracing(
+    flag="DataframeAgent",
+    file_name="plot_collector.py",
+    log_file_name="dataframe_agent"
+)
+
+class PlotCollector:
+    def __init__(self, output_dir: str = "outputs", save: bool = True):
+        self.output_dir = output_dir
+        self.save = save
+        self.graphs = []
+
+        if self.save:
+            os.makedirs(self.output_dir, exist_ok=True)
+        
+        tracer.INFO(message=f"PlotCollector initialized", metadata={"output_dir": self.output_dir, "save": self.save})
+
+    def custom_show(self):
+        buffer = BytesIO()
+
+        # Só define filename se for salvar
+        filename = None
+        if self.save:
+            filename = f"{self.output_dir}/plot_{uuid.uuid4().hex}.png"
+            plt.savefig(filename)
+
+        # Sempre gera base64
+        plt.savefig(buffer, format="png")
+        plt.close()
+
+        buffer.seek(0)
+        img_base64 = base64.b64encode(buffer.read()).decode("utf-8")
+
+        graph_data = {
+            "file_path": filename,
+            "image_base64": img_base64[:100]
+        }
+
+        self.graphs.append(graph_data)
+        tracer.INFO(message=f"Graph collected:", metadata=graph_data)
+
+        return graph_data
+
+    def patch_matplotlib(self):
+        plt.show = self.custom_show 
+        tracer.INFO(message="Matplotlib patched to use custom show method")
+
+    def reset(self):
+        tracer.INFO(message=f"Resetting PlotCollector, clearing {len(self.graphs)} collected graphs")
+        self.graphs = []
+
+    def get_graphs(self):
+        tracer.INFO(message=f"Retrieving {len(self.graphs)} collected graphs")
+        return self.graphs
+
+# python -m src.dataframe_analyzers.pd_df_agent.plot_collector
