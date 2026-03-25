@@ -11,9 +11,9 @@ import json
 from io import BytesIO
 from langchain_community.callbacks import get_openai_callback
 
-from src.agents.sheet_analyzer.doc.config import AgentConfig
-from src.agents.sheet_analyzer.doc.plot_collector import PlotCollector
-from src.agents.sheet_analyzer.doc.toolkit import Toolkit
+from src.dataframe_analyzers.pd_df_agent.config import AgentConfig
+from src.dataframe_analyzers.pd_df_agent.plot_collector import PlotCollector
+from src.dataframe_analyzers.pd_df_agent.toolkit import Toolkit
 
 load_dotenv()
 
