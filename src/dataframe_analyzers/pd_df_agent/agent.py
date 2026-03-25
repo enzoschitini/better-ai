@@ -46,6 +46,7 @@ class DataframeAgent:
         self.model_provider = model_provider if model_provider is not None else config.model_provider
         self.temperature = temperature if temperature is not None else config.temperature
         self.agent_type = agent_type if agent_type is not None else config.agent_type
+        self.valid_providers = config.valid_providers
 
         self.include_df_in_prompt = (
             include_df_in_prompt
@@ -85,8 +86,13 @@ class DataframeAgent:
         self.collector.patch_matplotlib()
 
     def _get_model(self, provider: str = None):
-        if provider == None:
-            provider = self.model_provider
+        VALID_PROVIDERS = self.valid_providers
+        provider = (provider or self.model_provider).strip().lower()
+
+        if provider not in VALID_PROVIDERS:
+            raise ValueError(
+                f"Invalid provider '{provider}'. Valid options: {VALID_PROVIDERS}"
+            )
 
         if provider == "openai":
             model = ChatOpenAI(
@@ -99,8 +105,6 @@ class DataframeAgent:
                 google_api_key=os.getenv("GEMINI_API_KEY"),
                 temperature=self.temperature
             )
-        else:
-            raise RuntimeError(f"Provider '{provider}' not found")
 
         self.model = model
         return model

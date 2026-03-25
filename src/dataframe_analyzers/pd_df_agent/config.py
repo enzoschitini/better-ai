@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 class AgentConfig:
     id_model: str = "gpt-4o-mini"
     model_provider: str = "openai"
+    valid_providers: dict = {"openai", "gemini"}
     # "gpt-4o-mini" "gpt-5.2" "gemini-2.5-flash"
     temperature: int = 0
 
