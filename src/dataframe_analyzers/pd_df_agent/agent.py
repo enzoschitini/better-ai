@@ -86,93 +86,108 @@ class DataframeAgent:
         self.collector.patch_matplotlib()
 
     def _get_model(self, provider: str = None):
-        VALID_PROVIDERS = self.valid_providers
-        provider = (provider or self.model_provider).strip().lower()
+        try:
+            VALID_PROVIDERS = self.valid_providers
+            provider = (provider or self.model_provider).strip().lower()
 
-        if provider not in VALID_PROVIDERS:
-            raise ValueError(
-                f"Invalid provider '{provider}'. Valid options: {VALID_PROVIDERS}"
-            )
+            if provider not in VALID_PROVIDERS:
+                raise ValueError(
+                    f"Invalid provider '{provider}'. Valid options: {VALID_PROVIDERS}"
+                )
 
-        if provider == "openai":
-            model = ChatOpenAI(
-                model=self.id_model, 
-                temperature=self.temperature
-            )
-        elif provider == "gemini":
-            model = ChatGoogleGenerativeAI(
-                model=self.id_model,
-                google_api_key=os.getenv("GEMINI_API_KEY"),
-                temperature=self.temperature
-            )
+            if provider == "openai":
+                model = ChatOpenAI(
+                    model=self.id_model, 
+                    temperature=self.temperature
+                )
+            elif provider == "gemini":
+                model = ChatGoogleGenerativeAI(
+                    model=self.id_model,
+                    google_api_key=os.getenv("GEMINI_API_KEY"),
+                    temperature=self.temperature
+                )
 
-        self.model = model
-        return model
+            self.model = model
+            return model
+
+        except Exception as e:
+            raise ValueError(f"Error initializing model: {str(e)}")
     
     def _get_tools(self):
-        extra_tools = []
+        try:
+            extra_tools = []
 
-        if self.toolkit is None:
+            if self.toolkit is None:
+                self.extra_tools = extra_tools
+                return extra_tools
+            
+            self.toolkit._get_dataframe(self.dataframe)
+            for tool in self.toolkit._get_tools():
+                extra_tools.append(
+                    Tool(
+                        name=tool["name"],
+                        func=tool["func"],
+                        description=tool["description"]
+                    )
+                )
+
             self.extra_tools = extra_tools
             return extra_tools
         
-        self.toolkit._get_dataframe(self.dataframe)
-        for tool in self.toolkit._get_tools():
-            extra_tools.append(
-                Tool(
-                    name=tool["name"],
-                    func=tool["func"],
-                    description=tool["description"]
-                )
-            )
-
-        self.extra_tools = extra_tools
-        return extra_tools
-
+        except Exception as e:
+            raise ValueError(f"Error initializing tools: {str(e)}")
 
     def create_agent(self):
-        agent = create_pandas_dataframe_agent(
-            llm=self.model,
-            df=self.dataframe,
-            agent_type=self.agent_type,
-            extra_tools=self.extra_tools,
+        try:
+            agent = create_pandas_dataframe_agent(
+                llm=self.model,
+                df=self.dataframe,
+                agent_type=self.agent_type,
+                extra_tools=self.extra_tools,
 
-            prefix=self.prefix,
-            suffix=self.suffix,
+                prefix=self.prefix,
+                suffix=self.suffix,
 
-            include_df_in_prompt=self.include_df_in_prompt,
-            number_of_head_rows=self.number_of_head_rows,
+                include_df_in_prompt=self.include_df_in_prompt,
+                number_of_head_rows=self.number_of_head_rows,
 
-            max_execution_time=self.max_execution_time,
-            early_stopping_method=self.early_stopping_method,
+                max_execution_time=self.max_execution_time,
+                early_stopping_method=self.early_stopping_method,
 
-            allow_dangerous_code=self.allow_dangerous_code,
-            verbose=self.verbose,
-        )
+                allow_dangerous_code=self.allow_dangerous_code,
+                verbose=self.verbose,
+            )
 
-        self.collector.reset()
-        self.agent = agent
+            self.collector.reset()
+            self.agent = agent
 
-        return agent
+            return agent
+        
+        except Exception as e:
+            raise ValueError(f"Error creating agent: {str(e)}")
 
     def invoke(self, user_query):
-        with get_openai_callback() as cb:
-            response = self.agent.invoke(user_query)
+        try:
+            with get_openai_callback() as cb:
+                response = self.agent.invoke(user_query)
 
-        final_response = {
-            "input": response["input"],
-            "graphs": self.collector.get_graphs(),
-            "output": response["output"],
-            "tool_result": self.toolkit.tool_result if self.toolkit else None,
-            "usage": {
-                "input_tokens": cb.prompt_tokens,
-                "output_tokens": cb.completion_tokens,
-                "total_tokens": cb.total_tokens,
-                "cost_usd": cb.total_cost,
+            final_response = {
+                "input": response["input"],
+                "output": response["output"],
+                "graphs": self.collector.get_graphs(),
+                "tool_result": self.toolkit.tool_result if self.toolkit else None,
+                "usage": {
+                    "input_tokens": cb.prompt_tokens,
+                    "output_tokens": cb.completion_tokens,
+                    "total_tokens": cb.total_tokens,
+                    "cost_usd": cb.total_cost,
+                }
             }
-        }
 
-        return final_response
+            return final_response
+        
+        except Exception as e:
+            raise ValueError(f"Error invoking agent: {str(e)}")
     
     def run_agent(self, user_query: str = "Create a bar chart showing the number of passengers in each class."):
         self._get_model()
