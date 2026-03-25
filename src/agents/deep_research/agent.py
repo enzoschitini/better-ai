@@ -70,7 +70,7 @@ agent = Agent(
 
     # Reasoning
     reasoning=True,
-    reasoning_model=OpenAIChat(id="gpt-4.1-mini"),
+    reasoning_model=OpenAIChat(id=DEFAULT_MODEL),
     reasoning_max_steps=5,
 
     # Agentic Memory
