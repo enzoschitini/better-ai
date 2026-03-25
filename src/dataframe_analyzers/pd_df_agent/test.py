@@ -1,4 +1,6 @@
 import json
+import pandas as pd
+
 from io import BytesIO
 from src.dataframe_analyzers.pd_df_agent.agent import DataframeAgent
 from src.dataframe_analyzers.pd_df_agent.toolkit import Toolkit
