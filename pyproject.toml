@@ -18,6 +18,7 @@ dependencies = [
     "langchain-community~=0.3.31",
     "langchain-experimental~=0.3.4",
     "langchain-openai~=0.3.35",
+    "langchain-google-genai~=2.1.12",
     "langchain-groq~=0.3.8",
     "langchain-pinecone~=0.2.13",
     # --- 3. AI MODELS & SDKs ---
@@ -39,6 +40,8 @@ dependencies = [
     "pandas~=2.3.3",
     "openpyxl~=3.1.5",
     "tabulate~=0.9.0",
+    "matplotlib~=3.10.8",
+    "seaborn~=0.13.2",
     # --- 7. EXTERNAL TOOLS & INTEGRATIONS ---
     # Ferramentas de busca e APIs de terceiros para os Agents
     "wikipedia~=1.4.0",
