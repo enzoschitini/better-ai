@@ -29,11 +29,49 @@ class Database:
             f"postgresql://postgres:{SUPABASE_DATABASE_PASSWORD}@db.{SUPABASE_PROJECT_HOST}:5432/postgres"
         )
 
-        return PostgresDb(db_url=SUPABASE_DB_URL)
+        return PostgresDb(
+            db_url=SUPABASE_DB_URL,
+
+            session_table="sessions",
+            memory_table="memories",
+            metrics_table="metrics",
+            eval_table="eval_runs",
+            knowledge_table="knowledge",
+            culture_table="culture",
+            traces_table="traces",
+            spans_table="spans",
+            versions_table="schema_versions",
+            components_table="components",
+            component_configs_table="component_configs",
+            component_links_table="component_links",
+            learnings_table="learnings",
+            schedules_table="schedules",
+            schedule_runs_table="schedule_runs",
+            approvals_table="approvals",
+        )
 
     @staticmethod
     def local_database():
-        return SqliteDb(db_file=LOCAL_MEMORY_DB)
+        return SqliteDb(
+            db_url=LOCAL_MEMORY_DB,
+
+            session_table="sessions",
+            memory_table="memories",
+            metrics_table="metrics",
+            eval_table="eval_runs",
+            knowledge_table="knowledge",
+            culture_table="culture",
+            traces_table="traces",
+            spans_table="spans",
+            versions_table="schema_versions",
+            components_table="components",
+            component_configs_table="component_configs",
+            component_links_table="component_links",
+            learnings_table="learnings",
+            schedules_table="schedules",
+            schedule_runs_table="schedule_runs",
+            approvals_table="approvals",
+        )
 
 db = Database(local=True)
 TOOL_RESPONSER = ToolResponse()
