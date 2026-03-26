@@ -160,6 +160,8 @@ lista = [
 
 from typing import List, Dict, Any
 
+# 1. Filter relevant documents by score
+
 def filter_by_score(documents: List[Dict[str, Any]], score_min: float = 0.0) -> List[Dict[str, Any]]:
     """
     Filtra itens de uma lista de documentos com base no score mínimo.
@@ -170,37 +172,56 @@ def filter_by_score(documents: List[Dict[str, Any]], score_min: float = 0.0) -> 
     """
     return [item for item in documents if item.get("score", 0) >= score_min]
 
-print(json.dumps(filter_by_score(documents=lista), indent=4))
+#print(json.dumps(filter_by_score(documents=lista), indent=4))
 
-"""
-1. Filter relevant documents by score
+def generate_context(documents: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Converte uma lista de documentos no formato padrão de contexto.
 
-2. Generate context:
+    :param documents: Lista de documentos (com 'text' e 'score')
+    :return: Lista de dicionários com 'score' e 'content'
+    """
+    context = []
 
-- text
-- score
+    for doc in documents:
+        context.append({
+            "score": round(doc.get("score", 0), 2),
+            "content": doc.get("text", "")
+        })
 
-String:
+    return str(context)
 
-[
-    {
-        "score": 0.38,
-        "content": "ehhsok,r....."
-    }
-]
+def generate_context(documents: List[Dict[str, Any]]) -> str:
+    """
+    Converte documentos para um formato compacto estilo toon.
 
-3. Json to Toon
+    Cada linha segue o padrão:
+    score|content
 
-4. Get relevant documents
+    :param documents: Lista de documentos (com 'text' e 'score')
+    :return: String compacta para uso em LLM
+    """
+    return "\n".join(
+        f"Score: {round(doc.get('score', 0), 2)} | Content: {doc.get('text', '').replace('\n', ' ')}"
+        for doc in documents
+    )
 
-- id
-- name
-- score
-- type
+print(generate_context(documents=lista))
 
+def get_files(documents: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    files = []
 
+    for doc in documents:
+        metadata = doc.get("metadata", {})
+        files.append({
+            "id": metadata.get("file_id", 0),
+            "name": metadata.get("file_name", 0),
+            "ext": metadata.get("file_extension", 0),
+            "score": doc.get("score", 0),
+        })
 
+    return files
 
-"""
+#print(json.dumps(get_files(documents=lista), indent=4))
 
 # python -m src.agents.rag.toolkit
