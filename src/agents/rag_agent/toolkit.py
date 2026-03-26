@@ -59,7 +59,7 @@ class RetrievalAugmentedGeneration(Toolkit):
 
         Args:
             query (str): The user's search query.
-            results_num (int): The number of relevant documents to retrieve.
+            results_num (int): The number of relevant documents to retrieve. Minimum is 1 and maximum is 15.
 
         Returns:
             str: A context of relevant documents or error message.
