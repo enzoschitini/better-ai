@@ -73,8 +73,24 @@ class Database:
             approvals_table="approvals",
         )
 
-db = Database(local=True)
+DATABASE = Database(local=True)
 TOOL_RESPONSER = ToolResponse()
+USE_REASONING = True
+
+reasoning_config = (
+    {
+        "reasoning": True,
+        "reasoning_model": OpenAIChat(
+            id=DEFAULT_MODEL,
+            instructions="""
+            Você é responsável por decidir como resolver a tarefa.
+            Lembre-se, você tem tools, use quando necessario.
+            """
+        ),
+        "reasoning_max_steps": 5
+    }
+    if USE_REASONING else {}
+)
 
 agent = Agent(
     id="rag_agent",
@@ -88,9 +104,10 @@ agent = Agent(
     debug_level=True,
 
     # Reasoning
+    **reasoning_config,
 
     # Chat Memory
-    db=db,
+    db=DATABASE,
     add_history_to_context=True,
     num_history_runs=10,
     enable_user_memories=True,
@@ -98,7 +115,7 @@ agent = Agent(
 
     # Agentic Memory
     memory_manager=MemoryManager(
-        db=db,
+        db=DATABASE,
         model=OpenAIChat(id=DEFAULT_MODEL),
         additional_instructions=PROMPT["memory_manager_instructions"]
     ),
@@ -121,11 +138,11 @@ if __name__ == "__main__":
 
     runner = RunAgent(agent=agent)
     ASK = """
-Oi
+Quais arquivos estão na base?
 """
     #runner.run_agent(ask=ASK, tool_responses=TOOL_RESPONSER)
-    #runner.debug(ask=ASK)
-    runner.agent_os()
+    runner.debug(ask=ASK)
+    #runner.agent_os()
 
     print(json.dumps(TOOL_RESPONSER.get_metadata(), indent=4))
 
