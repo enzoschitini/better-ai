@@ -5,7 +5,7 @@ from agno.agent import Agent
 from agno.models.openai import OpenAIChat
 
 from src.agents.ultils.tool_response import ToolResponse
-from src.agents.rag.toolkit import RetrievalAugmentedGeneration
+from src.agents.rag_agent.toolkit import RetrievalAugmentedGeneration
 from src.agents.sheet_analyzer.config import DEFAULT_MODEL, PROMPT, LOCAL_MEMORY_DB
 
 load_dotenv()
@@ -25,7 +25,12 @@ agent = Agent(
 
     # Toolkit
     tools=[
-        RetrievalAugmentedGeneration(TOOL_RESPONSER=TOOL_RESPONSER)
+        RetrievalAugmentedGeneration(
+            filter_search={
+                "file_id": ["candidatura", "tenerezza", "cucinare"]
+            },
+            TOOL_RESPONSER=TOOL_RESPONSER
+        )
     ],
 )
 
@@ -40,4 +45,4 @@ Gere um grafico de barras da quantidade de pessoas por genero
     runner.debug(ask=ASK)
     #runner.agent_os()
 
-# python -m src.agents.rag.agent
+# python -m src.agents.rag_agent.agent

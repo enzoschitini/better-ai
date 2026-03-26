@@ -105,4 +105,4 @@ Restrições:
 """
 }
 
-# python -m src.agents.rag.config
+# python -m src.agents.rag_agent.config
