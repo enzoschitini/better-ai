@@ -160,68 +160,66 @@ lista = [
 
 from typing import List, Dict, Any
 
-# 1. Filter relevant documents by score
+class ManegeRetriver:
+    def __init__(self, docs: List[Dict[str, Any]], score_min: float = 0.0, filter_by_score: bool = False):
+        self.docs = docs
+        self.score_min = score_min
+        self.filter_by_score = filter_by_score
 
-def filter_by_score(documents: List[Dict[str, Any]], score_min: float = 0.0) -> List[Dict[str, Any]]:
-    """
-    Filtra itens de uma lista de documentos com base no score mínimo.
+        if self.filter_by_score:
+            self.docs = self.get_by_score(self.docs, self.score_min)
 
-    :param documents: Lista de dicionários com a chave 'score'
-    :param score_min: Valor mínimo de score (>=)
-    :return: Lista filtrada
-    """
-    return [item for item in documents if item.get("score", 0) >= score_min]
+    def get_by_score(self, docs: List[Dict[str, Any]] = None, score_min: float = 0.0) -> List[Dict[str, Any]]:
+        """
+        Filtra itens de uma lista de documentos com base no score mínimo.
 
-#print(json.dumps(filter_by_score(documents=lista), indent=4))
+        :param docs: Lista de dicionários com a chave 'score'
+        :param score_min: Valor mínimo de score (>=)
+        :return: Lista filtrada
+        """
+        docs = docs or self.docs
+        return [item for item in docs if item.get("score", 0) >= score_min]
 
-def generate_context(documents: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """
-    Converte uma lista de documentos no formato padrão de contexto.
+    def generate_context(self, docs: List[Dict[str, Any]] = None) -> str:
+        """
+        Converte documentos para um formato compacto estilo toon.
 
-    :param documents: Lista de documentos (com 'text' e 'score')
-    :return: Lista de dicionários com 'score' e 'content'
-    """
-    context = []
+        Cada linha segue o padrão:
+        score|content
 
-    for doc in documents:
-        context.append({
-            "score": round(doc.get("score", 0), 2),
-            "content": doc.get("text", "")
-        })
+        :param docs: Lista de documentos (com 'text' e 'score')
+        :return: String compacta para uso em LLM
+        """
+        docs = docs or self.docs
 
-    return str(context)
+        return "\n".join(
+            f"Score: {round(doc.get('score', 0), 2)} | Content: {doc.get('text', '').replace('\n', ' ')}"
+            for doc in docs
+        )
 
-def generate_context(documents: List[Dict[str, Any]]) -> str:
-    """
-    Converte documentos para um formato compacto estilo toon.
+    def get_files(self, docs: List[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+        docs = docs or self.docs
+        files = []
 
-    Cada linha segue o padrão:
-    score|content
+        for doc in docs:
+            metadata = doc.get("metadata", {})
+            files.append({
+                "id": metadata.get("file_id", 0),
+                "name": metadata.get("file_name", 0),
+                "ext": metadata.get("file_extension", 0),
+                "score": doc.get("score", 0),
+            })
 
-    :param documents: Lista de documentos (com 'text' e 'score')
-    :return: String compacta para uso em LLM
-    """
-    return "\n".join(
-        f"Score: {round(doc.get('score', 0), 2)} | Content: {doc.get('text', '').replace('\n', ' ')}"
-        for doc in documents
-    )
+        return files
 
-print(generate_context(documents=lista))
+meneger = ManegeRetriver(
+    docs=lista,
+    score_min=0.36,
+    filter_by_score=True
+)
 
-def get_files(documents: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    files = []
+print(meneger.get_files())
 
-    for doc in documents:
-        metadata = doc.get("metadata", {})
-        files.append({
-            "id": metadata.get("file_id", 0),
-            "name": metadata.get("file_name", 0),
-            "ext": metadata.get("file_extension", 0),
-            "score": doc.get("score", 0),
-        })
-
-    return files
-
-#print(json.dumps(get_files(documents=lista), indent=4))
+#print(json.dumps(get_files(docs=lista), indent=4))
 
 # python -m src.agents.rag.toolkit
