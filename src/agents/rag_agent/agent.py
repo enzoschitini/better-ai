@@ -20,7 +20,7 @@ agent = Agent(
     instructions=PROMPT["instructions"],
     description=PROMPT["description"],
     markdown=True,
-    stream=True,
+    #stream=True,
     debug_level=True,
 
     # Toolkit
@@ -39,10 +39,11 @@ if __name__ == "__main__":
 
     runner = RunAgent(agent=agent)
     ASK = """
-Gere um grafico de barras da quantidade de pessoas por genero
+Chi è Enzo Schitini?
 """
-    #runner.process(ask=ASK, tool_responses=response_collector)
+    #runner.run_agent(ask=ASK, tool_responses=TOOL_RESPONSER)
     runner.debug(ask=ASK)
+    print(TOOL_RESPONSER.get_metadata())
     #runner.agent_os()
 
 # python -m src.agents.rag_agent.agent
