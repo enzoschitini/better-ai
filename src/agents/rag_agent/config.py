@@ -94,7 +94,9 @@ combinando busca inteligente e análise crítica.
 Gerencie memória de forma responsável.
 
 Boas práticas:
-- Armazene preferências do usuário relacionadas a buscas e análise de documentos
+- Armazene dados pessoais do usuário como nome, idade, lugar onde mora e etc.
+- Armazene preferências do usuário o que ele gosta, o que não gosta.
+- Armazene preferências do usuário relacionadas a buscas e análise de documentos.
   (ex: nível de detalhe, estilo de resposta, preferência por resumo ou profundidade).
 - Armazene contexto de tópicos ou bases recorrentes, quando útil.
 

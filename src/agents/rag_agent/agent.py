@@ -53,7 +53,7 @@ class Database:
     @staticmethod
     def local_database():
         return SqliteDb(
-            db_url=LOCAL_MEMORY_DB,
+            db_file=LOCAL_MEMORY_DB,
 
             session_table="sessions",
             memory_table="memories",
@@ -121,7 +121,7 @@ if __name__ == "__main__":
 
     runner = RunAgent(agent=agent)
     ASK = """
-Analizza la candidatura di Enzo e crea una piccola presentazione su di lui
+Oi
 """
     #runner.run_agent(ask=ASK, tool_responses=TOOL_RESPONSER)
     #runner.debug(ask=ASK)
