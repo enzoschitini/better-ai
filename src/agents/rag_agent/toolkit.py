@@ -53,12 +53,13 @@ class RetrievalAugmentedGeneration(Toolkit):
                 payload=payload
             )
 
-    def get_relevant_documents(self, query: str) -> str:
+    def get_relevant_documents(self, query: str, results_num: int) -> str:
         """
         get_relevant_documents is a tool for retrieving relevant documents based on a user-provided query.
 
         Args:
             query (str): The user's search query.
+            results_num (int): The number of relevant documents to retrieve.
 
         Returns:
             str: A context of relevant documents or error message.
@@ -68,7 +69,7 @@ class RetrievalAugmentedGeneration(Toolkit):
 
             documents = retriver.similarity_search(
                 query=query,
-                k=15,
+                k=results_num,
                 filter_search=self.filter_search
             )
 
