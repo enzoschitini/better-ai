@@ -11,18 +11,20 @@ load_dotenv()
 
 class RetrievalAugmentedGeneration(Toolkit):
     """
-    Toolkit for structured data analysis using DataFrames.
+    RetrievalAugmentedGeneration is a toolkit for retrieval-augmented generation (RAG) tasks.
+    
+    This toolkit can:
+    - Retrieve relevant documents based on a user-provided query and filter criteria.
+    - Generate a context of relevant documents for use in RAG applications.
 
-    This toolkit provides tools to:
-    - explore tabular datasets
-    - generate statistical summaries
-    - identify patterns and insights
-    - produce analytical reports
-
+    Use this toolkit for:
+    - Responding to user queries with relevant information from a document collection.
+    - Analyzing and summarizing retrieved documents to provide concise answers.
+    - Generate insights and recommendations based on the retrieved context.
+    
     Args:
-        enable_dataframe_analyzer (bool): Enables the dataframe analysis tool. Defaults to True.
-        all (bool): Enables all available tools. Overrides individual flags when True. Defaults to False.
-        TOOL_RESPONSER (Any): Optional object responsible for collecting tool execution metadata.
+        enable_get_relevant_documents (bool): Enable the tool for retrieving relevant documents. Default is True.
+        all (bool): Enable all tools. Overrides individual flags when True. Default is False.
     """
     def __init__(
         self,
@@ -53,25 +55,13 @@ class RetrievalAugmentedGeneration(Toolkit):
 
     def get_relevant_documents(self, query: str) -> str:
         """
-        dataframe_analyzer is a tool for runs an automated analysis on a DataFrame and returns a structured report based on a user-provided query.
-
-        ⚠️ IMPORTANT:
-        - The dataset is ALREADY loaded internally.
-        - The user DOES NOT need to provide any file or data.
-        - NEVER ask the user for the dataset.
-        - ALWAYS execute the analysis using the available internal data.
-
-        The tool is responsible for:
-        - interpreting the query
-        - analyzing the internal dataframe
-        - generating insights and visualizations (if applicable)
+        get_relevant_documents is a tool for retrieving relevant documents based on a user-provided query.
 
         Args:
-            query (str): User query or instruction related to the dataset
-                         (e.g., "analyze sales by region", "find revenue patterns").
+            query (str): The user's search query.
 
         Returns:
-            str: A report containing analysis results, insights, and possible visualizations. IN MARKDOWN
+            str: A context of relevant documents or error message.
         """
         try:
             retriver = PineconeRetriever()
@@ -92,7 +82,7 @@ class RetrievalAugmentedGeneration(Toolkit):
             )
 
         except Exception as e:
-            return f"Failed to generate context of research: {str(e)}"
+            return f"Failed to generate context of relevant documents: {str(e)}"
 
         return context
 
