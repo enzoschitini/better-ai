@@ -1,4 +1,4 @@
-import json
+
 from typing import List, Dict, Any
 
 
@@ -71,24 +71,33 @@ class RetrievalManager:
         """
         try:
             docs = docs or self.docs
-            files = []
+            files_map = {}
 
             for doc in docs:
                 metadata = doc.get("metadata", {})
-                files.append({
-                    "id": metadata.get("file_id", 0),
-                    "name": metadata.get("file_name", 0),
-                    "ext": metadata.get("file_extension", 0),
-                    "score": doc.get("score", 0),
-                })
+                file_id = metadata.get("file_id")
 
-            return files
+                if not file_id:
+                    continue
+
+                current_score = doc.get("score", 0)
+
+                if file_id not in files_map or current_score > files_map[file_id]["score"]:
+                    files_map[file_id] = {
+                        "id": file_id,
+                        "name": metadata.get("file_name"),
+                        "ext": metadata.get("file_extension"),
+                        "score": current_score,
+                    }
+
+            return list(files_map.values())
 
         except Exception as e:
             raise RuntimeError("Failed to extract file metadata:", str(e))
 
 
 if __name__ == "__main__":
+    import json
     documents = [
         {
             "id": "79258322-c06b-4e50-9a69-c8caa1136b3f",
@@ -117,20 +126,37 @@ if __name__ == "__main__":
                 "collection_name": "BetterAI",
                 "created_at": "2026-03-25 18:58:43",
                 "file_extension": "pdf",
-                "file_id": "cucinare",
-                "file_name": "LESSICO per CUCINARE.pdf",
+                "file_id": "tenerezza",
+                "file_name": "TENEREZZA.pdf",
                 "user_id": "11"
             },
             "score": 0.359430343
-        }
+        },
+
+        {
+            "id": "f75b0f7c-36ab-48d4-8da0-ec21b9ce688a",
+            "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "metadata": {
+                "Client": "1234",
+                "client_id": "0011",
+                "collection_id": "collection_01",
+                "collection_name": "BetterAI",
+                "created_at": "2026-03-25 18:58:43",
+                "file_extension": "pdf",
+                "file_id": "tenerezza",
+                "file_name": "TENEREZZA.pdf",
+                "user_id": "11"
+            },
+            "score": 0.329430343
+        },
     ]
 
     meneger = RetrievalManager(
         docs=documents,
         score_min=0.36,
-        filter_by_score=True
+        #filter_by_score=True
     )
 
-    print(meneger.get_files())
+    print(json.dumps(meneger.get_files(), indent=2))
 
 # python -m src.vector_store.pinecone.utils.retrieval_manager
