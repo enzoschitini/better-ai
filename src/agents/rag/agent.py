@@ -5,7 +5,7 @@ from agno.agent import Agent
 from agno.models.openai import OpenAIChat
 
 from src.agents.ultils.tool_response import ToolResponse
-from src.agents.sheet_analyzer.toolkit import DataframeAnalyzer
+from src.agents.rag.toolkit import RetrievalAugmentedGeneration
 from src.agents.sheet_analyzer.config import DEFAULT_MODEL, PROMPT, LOCAL_MEMORY_DB
 
 load_dotenv()
@@ -13,7 +13,7 @@ load_dotenv()
 TOOL_RESPONSER = ToolResponse()
 
 agent = Agent(
-    id="sheet_analyzer",
+    id="rag_agent",
 
     # Settings
     model=OpenAIChat(id=DEFAULT_MODEL), 
@@ -25,7 +25,7 @@ agent = Agent(
 
     # Toolkit
     tools=[
-        DataframeAnalyzer(TOOL_RESPONSER=TOOL_RESPONSER)
+        RetrievalAugmentedGeneration(TOOL_RESPONSER=TOOL_RESPONSER)
     ],
 )
 
