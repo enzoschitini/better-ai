@@ -3,7 +3,7 @@ from typing import List, Any
 
 from agno.tools import Toolkit
 
-# Retriver Package
+# Retriver Packages
 from src.vector_store.pinecone.pinecone_retriever import PineconeRetriever
 from src.vector_store.pinecone.utils.retrieval_manager import RetrievalManager
 
