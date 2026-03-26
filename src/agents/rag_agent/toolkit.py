@@ -68,7 +68,7 @@ class RetrievalAugmentedGeneration(Toolkit):
 
             documents = retriver.similarity_search(
                 query=query,
-                k=5,
+                k=15,
                 filter_search=self.filter_search
             )
 

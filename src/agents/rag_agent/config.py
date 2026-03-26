@@ -1,4 +1,4 @@
-LOCAL_MEMORY_DB = "src/agents/rag/agno.db"
+LOCAL_MEMORY_DB = "src/agents/rag_agent/agno.db"
 DEFAULT_MODEL = "gpt-4.1-mini"
 
 PROMPT = {
