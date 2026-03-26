@@ -53,23 +53,39 @@ class RetrievalAugmentedGeneration(Toolkit):
                 payload=payload
             )
 
-    def get_relevant_documents(self, query: str, results_num: int) -> str:
+    def get_relevant_documents(self, query: str, max_results: int) -> str:
         """
-        get_relevant_documents is a tool for retrieving relevant documents based on a user-provided query.
+        Retrieve relevant documents based on a user query.
+
+        This tool performs semantic search over a document collection and returns
+        the most relevant results according to the provided query.
 
         Args:
-            query (str): The user's search query.
-            results_num (int): The number of relevant documents to retrieve. Minimum is 1 and maximum is 15.
+            query (str):
+                The user's search query. Must be a non-empty string with meaningful content.
+                If the query is empty, None, or invalid, the tool will return an error message
+                indicating that a valid query is required.
+
+            max_results (int):
+                The maximum number of documents to retrieve. Must be between 1 and 15.
+                Values outside this range may be automatically adjusted or return an error.
 
         Returns:
-            str: A context of relevant documents or error message.
+            str:
+                A JSON-formatted string containing the retrieved documents and their relevance scores,
+                or an error message if the input is invalid (e.g., empty query or invalid max_results).
+
+        Notes:
+            - This tool should only be used when there is a clear search intent.
+            - Avoid calling this tool with empty or undefined query values.
+            - If no relevant documents are found, an empty result or informative message may be returned.
         """
         try:
             retriver = PineconeRetriever()
 
             documents = retriver.similarity_search(
                 query=query,
-                k=results_num,
+                k=max_results,
                 filter_search=self.filter_search
             )
 

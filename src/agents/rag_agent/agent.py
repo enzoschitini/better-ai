@@ -15,7 +15,7 @@ load_dotenv()
 
 DATABASE = Database(local=True)
 TOOL_RESPONSER = ToolResponse()
-USE_REASONING = True
+USE_REASONING = False
 
 reasoning_config = (
     {
@@ -36,7 +36,18 @@ agent = Agent(
     id="rag_agent",
 
     # Settings
-    model=OpenAIChat(id=DEFAULT_MODEL), 
+    model=OpenAIChat(
+        id=DEFAULT_MODEL,
+        temperature=0.8,
+        max_completion_tokens=800,
+        top_p=0.9,
+        seed=42,
+        frequency_penalty=0.2,
+        logprobs=True,
+        top_logprobs=5,
+        strict_output=True,
+    ), 
+
     instructions=PROMPT["instructions"],
     description=PROMPT["description"],
     markdown=True,
