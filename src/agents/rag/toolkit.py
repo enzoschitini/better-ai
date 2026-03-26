@@ -110,18 +110,20 @@ class RetrievalAugmentedGeneration(Toolkit):
     """
     def __init__(
         self,
-        enable_dataframe_analyzer: bool = True,
+        filter_search: dict,
+        enable_get_relevant_documents: bool = True,
         all: bool = False,
         TOOL_RESPONSER: Any = None,
         **kwargs,
     ):
+        self.filter_search = filter_search
         self.TOOL_RESPONSER = TOOL_RESPONSER
         tools: List[Any] = []
 
-        if all or enable_dataframe_analyzer:
-            tools.append(self.dataframe_analyzer)
+        if all or enable_get_relevant_documents:
+            tools.append(self.get_relevant_documents)
 
-        super().__init__(name="dataframe_analyzer_tools", tools=tools, **kwargs)
+        super().__init__(name="get_relevant_documents_tools", tools=tools, **kwargs)
     
     def _update_response(self, tool_name: str, payload: dict):
         """
@@ -156,42 +158,40 @@ class RetrievalAugmentedGeneration(Toolkit):
             str: A report containing analysis results, insights, and possible visualizations. IN MARKDOWN
         """
         try:
-            #"""
-            #"""
-            response = "xxx"
+            retriver = PineconeRetriever()
+
+            documents = retriver.similarity_search(
+                query=query,
+                k=5,
+                filter_search=self.filter_search
+            )
+
+            manager = RetrievalManager(docs=documents)
+            context = manager.generate_context()
 
             # Collect metadata
-            self._update_response("dataframe_analyzer", {"md": "md"})
+            self._update_response(
+                "get_relevant_documents", 
+                {"files": manager.get_files()}
+            )
 
         except Exception as e:
             return f"Failed to generate context of research: {str(e)}"
 
-        return response
+        return context
 
 if __name__ == "__main__":
     import json
 
-    #"""
-    retriver = PineconeRetriever()
-    documents = retriver.similarity_search(
-        query="MESCOLARE ",
-        k=5,
+    tool = RetrievalAugmentedGeneration(
         filter_search={
-            "collection_id": "collection_01"
+            "file_id": ["candidatura", "tenerezza", "cucinare"]
         }
+        #{"collection_id": "collection_01"}
     )
+    result = tool.get_relevant_documents("Enzo Schitini")
 
-    #print(json.dumps(results, indent=4))
-    print("\n\n\n\n")
-    #"""
-
-    manager = RetrievalManager(
-        docs=documents,
-        score_min=0.50,
-        filter_by_score=False
-    )
-
-    print(manager.generate_context())
+    print(f"\n\n{result}\n")
 
 
 # python -m src.agents.rag.toolkit
