@@ -1,127 +1,235 @@
 ```python
-from src.image_generation.cost_calculator.pricing_table import PricingTable
-from typing import List, Dict
+import os
+from typing import Optional
+
+from dotenv import load_dotenv
+from langchain_openai import OpenAIEmbeddings
+import pinecone
+from langchain_pinecone import PineconeVectorStore
+
+from src.vector_store.config import PineconeVectorStoreConfig
+from src.tracing.tracing_core import ApplicationTracing
+
+load_dotenv()
+
+tracer = ApplicationTracing(
+    flag="PineconeClient",
+    file_name="pinecone_client.py",
+    log_file_name="pinecone_module"
+)
 
 
-class CostCalculator:
+def trace(method_name: str):
     """
-    Responsável por calcular custos baseados em diferentes métricas de token e imagens, 
-    utilizando uma tabela de preços fornecida para realizar os cálculos.
+    Decorator para padronizar logging e captura de erros.
+    """
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            tracer.INFO(method_name, "Execution started")
+            try:
+                result = func(*args, **kwargs)
+                tracer.INFO(method_name, "Execution finished successfully")
+                return result
+            except Exception as e:
+                tracer.ERROR(
+                    method_name,
+                    "Execution failed",
+                    error=e
+                )
+                raise
+        return wrapper
+    return decorator
 
-    Args:
-        pricing_table (PricingTable): Uma tabela de preços para cálculo dos custos. Default é PricingTable.
+
+class PineconeClient:
+    """
+    Cliente unificado responsável por:
+    - Carregar credenciais
+    - Inicializar Pinecone
+    - Inicializar embeddings
+    - Criar VectorStores
+    - Criar Retrievers
+    - Gerenciar namespaces
+
+    Args: 
+        index_name (Optional[str]): Nome do índice Pinecone a ser usado. Default é None, que utiliza valor do .env ou configuração padrão.
+        main_namespace (Optional[str]): Namespace principal para operações. Default é None, que utiliza valor do .env ou configuração padrão.
+        global_namespace (Optional[str]): Namespace global para operações. Default é None, que utiliza valor do .env ou configuração padrão.
+        embedding_model (Optional[str]): Nome do modelo de embeddings a ser usado. Default é None, que utiliza valor do .env ou configuração padrão.
 
     Methods:
-            merge_cost_information(cost_infos): Combina várias informações de custo em um único dicionário com totais consolidados.
-            calculate(model, prompt_tokens, output_tokens, total_tokens, num_images, cached_prompt_tokens, cache_storage_tokens, cache_storage_hours): Calcula o custo total baseado na quantidade de tokens e imagens, considerando caching e armazenamento.
+        create_vector_store(namespace, embedding_model): Cria um VectorStore para ingestão ou busca.
     """
 
-    def __init__(self, pricing_table: PricingTable = PricingTable):
-        self.pricing_table = pricing_table
-
-    def merge_cost_information(self, cost_infos: List[Dict]) -> Dict:
-        """
-        Combina múltiplos dicionários de informações de custo em um único dicionário, somando os valores de tokens.
-
-        Args: 
-        cost_infos (List[Dict]): Uma lista de dicionários contendo informações de tokens para prompt, saída e total.
-
-        Returns:
-                Dict: Um dicionário com os totais somados de prompt_tokens, output_tokens e total_tokens.
-
-        Raises:
-                ValueError: Se a lista cost_infos contiver menos de dois elementos.
-        """
-        if not cost_infos or len(cost_infos) < 2:
-            raise ValueError("You must provide at least two cost_information objects.")
-
-        merged = {
-            "prompt_tokens": 0,
-            "output_tokens": 0,
-            "total_tokens": 0,
-        }
-
-        for cost in cost_infos:
-            merged["prompt_tokens"] += cost.get("prompt_tokens", 0)
-            merged["output_tokens"] += cost.get("output_tokens", 0)
-            merged["total_tokens"] += cost.get("total_tokens", 0)
-
-        return merged
-
-    def calculate(
+    def __init__(
         self,
-        model: str,
-        prompt_tokens: int,
-        output_tokens: int,
-        total_tokens: int,
-        num_images: int = 0,
-        cached_prompt_tokens: int = 0,
-        cache_storage_tokens: int = 0,
-        cache_storage_hours: float = 0.0,
-    ) -> Dict[str, float]:
-        """
-        Calcula o custo total baseado no modelo, quantidade de tokens de prompt, saída, total, imagens geradas, e custos relacionados ao cache.
+        index_name: Optional[str] = None,
+        main_namespace: Optional[str] = None,
+        global_namespace: Optional[str] = None,
+        embedding_model: Optional[str] = None,
+    ):
+        tracer.INFO("__init__", "Initializing client")
 
-        Args: 
-        model (str): Nome do modelo utilizado para buscar preços.
-        prompt_tokens (int): Quantidade de tokens no prompt.
-        output_tokens (int): Quantidade de tokens na saída gerada.
-        total_tokens (int): Total de tokens envolvidos.
-        num_images (int, optional): Quantidade de imagens geradas. Default é 0.
-        cached_prompt_tokens (int, optional): Quantidade de tokens de prompt armazenados em cache. Default é 0.
-        cache_storage_tokens (int, optional): Quantidade de tokens armazenados em cache para custeio. Default é 0.
-        cache_storage_hours (float, optional): Horas que os tokens estão armazenados no cache. Default é 0.0.
+        try:
+            # ======================================================
+            # Credenciais
+            # ======================================================
+            self.openai_key = os.getenv("OPENAI_API_KEY")
+            self.pinecone_key = os.getenv("PINECONE_API_KEY")
+            self.config = PineconeVectorStoreConfig()
 
-        Returns:
-                Dict[str, float]: Um dicionário contendo tokens e seus respectivos custos em dólares, arredondados para seis casas decimais.
-        """
-        pricing = self.pricing_table.get(model)
+            if not self.openai_key or not self.pinecone_key:
+                tracer.ERROR(
+                    "__init__",
+                    "Missing API keys",
+                    metadata={
+                        "openai_key_exists": bool(self.openai_key),
+                        "pinecone_key_exists": bool(self.pinecone_key),
+                    }
+                )
+                raise EnvironmentError(
+                    "OPENAI_API_KEY or PINECONE_API_KEY not found."
+                )
 
-        # Tokens cost
-        prompt_cost = (prompt_tokens / 1_000_000) * pricing.input_per_million_tokens
+            # ======================================================
+            # Configurações
+            # ======================================================
+            self.index_name = (
+                index_name
+                or os.getenv("PINECONE_INDEX_NAME", self.config.index_name)
+            )
 
-        output_cost = 0.0
-        if pricing.output_per_million_tokens and output_tokens:
-            output_cost = (output_tokens / 1_000_000) * pricing.output_per_million_tokens
+            if not self.index_name:
+                tracer.ERROR(
+                    "__init__",
+                    "Index name not provided",
+                )
+                raise ValueError(
+                    "index_name not provided or defined in PINECONE_INDEX_NAME."
+                )
 
-        # Image cost
-        image_cost = 0.0
-        if pricing.image_price_per_unit and num_images:
-            image_cost = num_images * pricing.image_price_per_unit
+            self.main_namespace = (
+                main_namespace
+                or os.getenv("PINECONE_NAMESPACE", self.config.namespace)
+            )
 
-        # Cache input cost
-        cache_input_cost = 0.0
-        if pricing.cache_input_per_million_tokens and cached_prompt_tokens:
-            cache_input_cost = (
-                cached_prompt_tokens / 1_000_000
-            ) * pricing.cache_input_per_million_tokens
+            self.global_namespace = (
+                global_namespace
+                or os.getenv(
+                    "PINECONE_GLOBAL_NAMESPACE",
+                    self.config.global_namespace
+                )
+            )
 
-        # Cache storage cost
-        cache_storage_cost = 0.0
-        if (
-            pricing.cache_storage_per_million_tokens_per_hour
-            and cache_storage_tokens
-            and cache_storage_hours
-        ):
-            cache_storage_cost = (
-                cache_storage_tokens / 1_000_000
-            ) * pricing.cache_storage_per_million_tokens_per_hour * cache_storage_hours
+            self.embedding_model_name = (
+                embedding_model
+                or os.getenv(
+                    "OPENAI_EMBEDDING_MODEL",
+                    self.config.embedding_model
+                )
+            )
 
-        total_cost = (
-            prompt_cost
-            + output_cost
-            + image_cost
-            + cache_input_cost
-            + cache_storage_cost
+            tracer.DEBUG(
+                "__init__",
+                "Client parameters resolved",
+                metadata={
+                    "index_name": self.index_name,
+                    "main_namespace": self.main_namespace,
+                    "global_namespace": self.global_namespace,
+                    "embedding_model": self.embedding_model_name,
+                }
+            )
+
+            # ======================================================
+            # Inicializações
+            # ======================================================
+            self._init_pinecone()
+            self._init_embeddings()
+
+        except Exception as e:
+            tracer.ERROR("__init__", "Client initialization failed", error=e)
+            raise
+
+    # ======================================================
+    # Internals
+    # ======================================================
+
+    @trace("_init_pinecone")
+    def _init_pinecone(self) -> None:
+        tracer.DEBUG("_init_pinecone", "Connecting to Pinecone")
+
+        self.pc = pinecone.Pinecone(api_key=self.pinecone_key)
+        self.index = self.pc.Index(self.index_name)
+
+        tracer.DEBUG(
+            "_init_pinecone",
+            "Pinecone connection established",
+            metadata={"index_name": self.index_name}
         )
 
-        return {
-            "prompt_tokens": prompt_tokens,
-            "output_tokens": output_tokens,
-            "total_tokens": total_tokens,
-            "prompt_usd": round(prompt_cost, 6),
-            "output_usd": round(output_cost, 6),
-            "images_usd": round(image_cost, 6),
-            "total_usd": round(total_cost, 6),
-        }
+    @trace("_init_embeddings")
+    def _init_embeddings(self, model_name: Optional[str] = None) -> None:
+        model = model_name or self.embedding_model_name
+
+        tracer.DEBUG(
+            "_init_embeddings",
+            "Initializing embeddings model",
+            metadata={"model": model}
+        )
+
+        self.embedding_model = OpenAIEmbeddings(model=model)
+
+    # ======================================================
+    # Public API
+    # ======================================================
+
+    def get_namespace(self, namespace: Optional[str] = None) -> str:
+        """
+        Resolve namespace padrão.
+        """
+        resolved = namespace or self.main_namespace
+
+        tracer.DEBUG(
+            "get_namespace",
+            "Namespace resolved",
+            metadata={
+                "input": namespace,
+                "resolved": resolved
+            }
+        )
+
+        return resolved
+
+    @trace("create_vector_store")
+    def create_vector_store(
+        self,
+        namespace: Optional[str] = None,
+        embedding_model: Optional[OpenAIEmbeddings] = None,
+    ) -> PineconeVectorStore:
+        """
+        Cria um VectorStore para ingestão ou busca. Possibilita especificar um namespace e um modelo de embeddings personalizados, ou usa as configurações padrão do cliente.
+
+        Args: 
+            namespace (Optional[str]): Namespace para o VectorStore. Default é None, que utiliza o namespace principal do cliente.
+            embedding_model (Optional[OpenAIEmbeddings]): Modelo de embeddings a ser usado no VectorStore. Default é None, que utiliza o modelo padrão do cliente.
+
+        Returns:
+            PineconeVectorStore: Instância do VectorStore configurado para operações no Pinecone.
+        """
+        resolved_namespace = self.get_namespace(namespace)
+
+        tracer.DEBUG(
+            "create_vector_store",
+            "Creating vector store",
+            metadata={"namespace": resolved_namespace}
+        )
+
+        vector_store = PineconeVectorStore(
+            index=self.index,
+            embedding=embedding_model or self.embedding_model,
+            text_key="text",
+            namespace=resolved_namespace,
+        )
+
+        return vector_store
 ```

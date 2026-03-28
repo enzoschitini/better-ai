@@ -1,171 +1,216 @@
-# Documentação Didática da Classe `CostCalculator`
+# Documentação da Classe `PineconeClient`
 
 ## Visão Geral
 
-A classe `CostCalculator` é responsável por calcular custos relacionados ao consumo de tokens de modelos de linguagem e à geração de imagens, utilizando uma tabela de preços específica. Ela resolve o problema de atribuir custos financeiros precisos para diferentes tipos de consumo em sistemas que utilizam modelos baseados em tokens, como APIs de processamento de linguagem natural e geração de imagens automatizadas.
+A classe `PineconeClient` é um cliente unificado que facilita a integração com os serviços da Pinecone e OpenAI para armazenamento e recuperação eficiente de vetores de embeddings. Seu propósito é abstrair a complexidade de carregar credenciais, inicializar conexões, configurar modelos de embeddings e manipular namespaces, permitindo ao desenvolvedor focar na lógica de negócio sem se preocupar com detalhes de infraestrutura.
 
-Na prática, a classe pode ser usada em sistemas que precisam calcular custos detalhados de uso de APIs pagas, especialmente em contextos que envolvem geração de texto e imagens. Permite combinar informações de custo parciais e obter um custo total considerando fatores como tokens gerados, imagens criadas e até uso de cache para otimização.
-
----
+Ela resolve o problema de gerenciar múltiplas configurações e inicializações necessárias para trabalhar com bancos de dados vetoriais Pinecone e modelos de embeddings OpenAI de forma simples, reutilizável e segura. Na prática, pode ser usada para criar "VectorStores" customizados que armazenam e buscam dados vetoriais segmentados por namespaces.
 
 ## Fluxo de Execução
 
-1. **Inicialização:** Instancie a classe `CostCalculator`, passando opcionalmente uma instância ou classe de tabela de preços (por padrão, usa `PricingTable`).
-2. **Mesclar informações de custo** (opcional): Caso tenha múltiplas informações de custo parciais, use o método `merge_cost_information` para somá-las e consolidar em um único dicionário.
-3. **Calcular custo total:** Chame o método `calculate`, fornecendo o modelo utilizado, a quantidade de tokens no prompt e saída, total de tokens, e o número de imagens geradas, além de possíveis dados de cache.
-4. **Receber resultado:** O método `calculate` retorna um dicionário com o custo detalhado para cada componente (tokens de prompt, tokens de saída, imagens, cache) e o custo total em dólares, já arredondado.
+1. Instancie a classe `PineconeClient`, opcionalmente passando parâmetros como nome do índice, namespaces e modelo de embeddings. Caso não passe, as configurações padrão ou do arquivo `.env` serão usadas.
 
----
+2. Durante a inicialização (`__init__`), a classe carrega as chaves de API do ambiente, valida sua existência, resolve as configurações de índice e namespaces, e inicializa as conexões Pinecone e o modelo de embeddings OpenAI.
+
+3. Utilize o método `create_vector_store` para criar uma instância de `PineconeVectorStore`. Você pode especificar um namespace e um modelo de embeddings diferentes do padrão, se desejar.
+
+4. O `PineconeVectorStore` criado poderá ser usado para tarefas como ingestão de documentos, busca por similaridade, e gerenciamento dos dados vetoriais dentro do namespace escolhido.
 
 ## Tabela de Métodos da Classe
 
-| Método                  | Descrição                                                      |
-|-------------------------|----------------------------------------------------------------|
-| `__init__`              | Inicializa o calculador de custos com uma tabela de preços.     |
-| `merge_cost_information`| Combina múltiplos dicionários de custo em um só, somando tokens.|
-| `calculate`             | Calcula o custo total usando dados de tokens, imagens e cache.  |
-
----
+| Método                  | Descrição                                                    |
+|-------------------------|--------------------------------------------------------------|
+| `__init__`              | Inicializa o cliente, carrega configurações e autenticações |
+| `_init_pinecone`        | Inicializa conexão com o Pinecone e instancia o índice       |
+| `_init_embeddings`      | Inicializa o modelo de embeddings OpenAI                      |
+| `get_namespace`         | Resolve o namespace a ser utilizado, preferindo input ou padrão |
+| `create_vector_store`   | Cria um VectorStore configurado para operações de vetorização |
 
 ## Pontos Importantes da Arquitetura e Insights
 
-- **Design modular**: O cálculo de custos é desacoplado da tabela de preços, que é passada como dependência, facilitando a extensão para diferentes esquemas de preços.
-- **Tratamento de cache**: A classe inclui cálculos separados para custos relacionados a tokens armazenados e uso de cache, o que é um diferencial para cenários que utilizam armazenamento temporário para otimizar chamadas externas.
-- **Validação explícita**: No método `merge_cost_information`, existe verificação para garantir que pelo menos dois conjuntos de dados sejam fornecidos, reforçando a segurança do uso.
-- **Padronização de custo por milhão de tokens**: Os cálculos são sempre baseados em custo por milhão de tokens, facilitando a compreensão e escalabilidade dos custos.
-- **Uso de tipos**: A tipagem das variáveis está clara, incluindo valores padrão para parâmetros opcionais, o que melhora a legibilidade e a integração em sistemas tipados.
-- A classe utiliza a classe `PricingTable` para obter os preços, integrando-se ao sistema de preços externo.
+- **Encapsulamento com Decoradores de Tracing:** Usa um decorador `trace` para padronizar logs e captura de erros em métodos importantes. Isso mantém o código limpo e garante rastreabilidade consistente.
+
+- **Configuração por Variáveis de Ambiente e Defaults:** Permite flexibilidade na parametrização usando valores passados explicitamente, ambiente `.env`, ou configuração padrão, facilitando deploy em múltiplos ambientes.
+
+- **Separação Clara entre Inicializações Internas e API Pública:** Métodos com underscore (`_init_pinecone`, `_init_embeddings`) são internos, e os públicos expõem apenas as operações necessárias para consumo.
+
+- **Dependência em Outras Classes:** Utiliza `PineconeVectorStoreConfig` para obter configurações padrão, `OpenAIEmbeddings` para embeddings, `pinecone.Pinecone` para conexão Pinecone e `PineconeVectorStore` para operações vetoriais.
+
+- **Design para Flexibilidade de Namespace:** Suporta namespaces diferenciados para escopo principal e global, possibilitando segmentação refinada dos dados.
 
 ---
 
 # Descrição da Classe e Métodos
 
-## Classe `CostCalculator`
+## Classe `PineconeClient`
 
 ### Descrição
 
-Classe que calcula os custos financeiros de uso de modelos de linguagem e geração de imagens com base na quantidade de tokens consumidos, imagens produzidas e utilização de cache, utilizando uma tabela de preços para conversão.
+A `PineconeClient` é a camada de abstração responsável por gerenciar a conexão e configurações necessárias para trabalhar com o Pinecone e suas integrações de embeddings com OpenAI. Ela centraliza carregamento de credenciais, criação do índice e inicialização dos modelos, além de fornecer interface para criação de `VectorStores` configurados para diferentes namespaces e modelos.
 
 ### Argumentos do Construtor
 
-| Argumento      | Tipo          | Descrição                                      | Valor Padrão    |
-|----------------|---------------|------------------------------------------------|-----------------|
-| pricing_table  | `PricingTable`| Tabela de preços que define os valores monetários para tokens e imagens.| `PricingTable` |
+| Argumento         | Tipo           | Descrição                                                                                      | Valor Padrão |
+|-------------------|----------------|------------------------------------------------------------------------------------------------|--------------|
+| `index_name`      | Optional[str]  | Nome do índice Pinecone a ser utilizado. Se `None`, tenta pegar de `.env` ou configuração padrão. | None         |
+| `main_namespace`  | Optional[str]  | Namespace principal para operações. Se `None`, tenta pegar de `.env` ou configuração padrão.      | None         |
+| `global_namespace`| Optional[str]  | Namespace global para operações. Se `None`, tenta pegar de `.env` ou configuração padrão.         | None         |
+| `embedding_model` | Optional[str]  | Nome do modelo de embeddings OpenAI a ser utilizado. Se `None`, tenta pegar de `.env` ou configuração padrão.| None |
+
+### Métodos
 
 ---
 
 ### 1. `__init__`
 
-### Descrição
+#### Descrição
 
-Método construtor que inicializa o objeto com uma tabela de preços para cálculo dos custos.
+Inicializa o cliente Pinecone carregando credenciais da OpenAI e Pinecone, resolvendo nomes de índice e namespaces com prioridade para parâmetros explícitos, ambiente ou configurações padrão. Também inicializa conexões com Pinecone e o modelo de embeddings escolhido.
 
-### Argumentos
+#### Argumentos
 
-- `pricing_table` (PricingTable): A tabela de preços utilizada para efetuar os cálculos dos valores.
+- `index_name` (Optional[str]): nome do índice Pinecone.
+- `main_namespace` (Optional[str]): namespace padrão para operações.
+- `global_namespace` (Optional[str]): namespace global para operações.
+- `embedding_model` (Optional[str]): nome do modelo de embeddings OpenAI.
 
-### Retornos
+#### Retornos
 
 - Não retorna valor.
 
-### Raises
+#### Raises
+
+- `EnvironmentError`: se as chaves API não estiverem definidas.
+- `ValueError`: se o nome do índice não for fornecido/definido.
+
+#### Exemplos
+
+```python
+client = PineconeClient(
+    index_name="my-index",
+    main_namespace="default-namespace",
+    embedding_model="text-embedding-3-small"
+)
+```
+
+---
+
+### 2. `_init_pinecone`
+
+#### Descrição
+
+Método interno que conecta ao Pinecone usando a API Key e instancia o índice para operações vetoriais.
+
+#### Argumentos
 
 - Nenhum.
 
-### Exemplos
+#### Retornos
+
+- Não retorna valor.
+
+#### Exemplos
 
 ```python
-calculator = CostCalculator()
-# Ou com uma tabela de preços personalizada
-calculator_custom = CostCalculator(custom_pricing_table)
+# Chamado automaticamente na inicialização do cliente
+client._init_pinecone()
 ```
 
 ---
 
-### 2. `merge_cost_information`
+### 3. `_init_embeddings`
 
-### Descrição
+#### Descrição
 
-Combina vários dicionários com informações de custo agregando as quantidades de tokens (prompt, output e total) em um único dicionário consolidado.
+Método interno que inicializa a instância de embeddings da OpenAI, podendo receber um nome de modelo alternativo.
 
-### Argumentos
+#### Argumentos
 
-- `cost_infos` (List[Dict]): Lista de dicionários, cada um representando informações de custo parcial.
+- `model_name` (Optional[str]): nome do modelo de embeddings. Se None, usa o padrão do cliente.
 
-### Retornos
+#### Retornos
 
-- `Dict`: Dicionário único com as somas totais de `"prompt_tokens"`, `"output_tokens"` e `"total_tokens"`.
+- Não retorna valor.
 
-### Raises
-
-- `ValueError`: Se a lista `cost_infos` não possuir pelo menos dois elementos.
-
-### Exemplos
+#### Exemplos
 
 ```python
-cost1 = {"prompt_tokens": 1200, "output_tokens": 800, "total_tokens": 2000}
-cost2 = {"prompt_tokens": 500, "output_tokens": 300, "total_tokens": 800}
-
-merged = calculator.merge_cost_information([cost1, cost2])
-print(merged)
-# Saída:
-# {'prompt_tokens': 1700, 'output_tokens': 1100, 'total_tokens': 2800}
+client._init_embeddings(model_name="text-embedding-3-small")
 ```
 
 ---
 
-### 3. `calculate`
+### 4. `get_namespace`
 
-### Descrição
+#### Descrição
 
-Calcula os custos em dólares baseando-se nas quantidades de tokens de prompt, saída, total, número de imagens geradas, e custos associados a caching, aplicando os preços definidos na tabela.
+Resolve e retorna o namespace a ser usado, preferindo o valor passado como argumento, com fallback para o namespace principal configurado.
 
-### Argumentos
+#### Argumentos
 
-- `model` (str): Nome do modelo para buscar o preço correspondente.
-- `prompt_tokens` (int): Quantidade de tokens usados no prompt.
-- `output_tokens` (int): Quantidade de tokens gerados na saída.
-- `total_tokens` (int): Total de tokens processados.
-- `num_images` (int, opcional): Número de imagens geradas. Default é 0.
-- `cached_prompt_tokens` (int, opcional): Tokens de prompt armazenados em cache. Default é 0.
-- `cache_storage_tokens` (int, opcional): Tokens armazenados para custeio em cache. Default é 0.
-- `cache_storage_hours` (float, opcional): Horas de armazenamento em cache. Default é 0.0.
+- `namespace` (Optional[str]): namespace desejado.
 
-### Retornos
+#### Retornos
 
-- `Dict[str, float]`: Dicionário contendo as quantidades de tokens e os custos em dólares (`prompt_usd`, `output_usd`, `images_usd`) e o custo total (`total_usd`), com valores arredondados a 6 casas decimais.
+- `str`: namespace resolvido.
 
-### Raises
-
-- Nenhum explícito (assumindo que o método `get` da tabela de preços retorna preços válidos).
-
-### Exemplos
+#### Exemplos
 
 ```python
-result = calculator.calculate(
-    model="gpt-4",
-    prompt_tokens=1500,
-    output_tokens=1000,
-    total_tokens=2500,
-    num_images=2,
-    cached_prompt_tokens=500,
-    cache_storage_tokens=2000,
-    cache_storage_hours=5.0
+ns = client.get_namespace()  # Retorna o namespace principal
+ns_custom = client.get_namespace("custom-namespace")  # Retorna "custom-namespace"
+```
+
+---
+
+### 5. `create_vector_store`
+
+#### Descrição
+
+Cria e retorna uma instância de `PineconeVectorStore`, configurada para usar um namespace e modelo de embeddings específicos, com fallback para os padrões do cliente.
+
+#### Argumentos
+
+- `namespace` (Optional[str]): namespace onde o VectorStore irá operar.
+- `embedding_model` (Optional[OpenAIEmbeddings]): modelo de embeddings para ser usado no VectorStore.
+
+#### Retornos
+
+- `PineconeVectorStore`: instância configurada para manipulação vetorial.
+
+#### Exemplos
+
+```python
+vector_store = client.create_vector_store()
+vector_store_custom = client.create_vector_store(namespace="custom-ns")
+
+# Usando um modelo de embeddings personalizado
+custom_embedding = OpenAIEmbeddings(model="text-embedding-large")
+vector_store_custom_model = client.create_vector_store(
+    embedding_model=custom_embedding
 )
-
-print(result)
-# Exemplo de saída (valores ilustrativos):
-# {
-#   'prompt_tokens': 1500,
-#   'output_tokens': 1000,
-#   'total_tokens': 2500,
-#   'prompt_usd': 0.00075,
-#   'output_usd': 0.00050,
-#   'images_usd': 0.012,
-#   'total_usd': 0.01325
-# }
 ```
 
 ---
 
-Com essa documentação, desenvolvedores podem compreender claramente os propósitos, funcionamento e como integrar/utilizar a classe `CostCalculator` em seus projetos para gerenciamento eficiente dos custos de uso de APIs baseadas em tokens e geração de imagens.
+# Exemplos Práticos de Uso
+
+```python
+# Instancia o cliente com configurações padrões do ambiente
+client = PineconeClient()
+
+# Cria um VectorStore para o namespace padrão
+default_store = client.create_vector_store()
+
+# Cria um VectorStore para um namespace personalizado
+custom_store = client.create_vector_store(namespace="finance_docs")
+
+# Obtém o namespace resolvido para uso
+ns = client.get_namespace()
+
+# Usa o VectorStore para adicionar ou buscar vetores (exemplo com PineconeVectorStore)
+custom_store.add_texts(["Documento importante sobre finanças"], ids=["doc1"])
+results = custom_store.similarity_search("consultoria financeira")
+```
+
+Esta documentação detalhada e organizada ajudará desenvolvedores a entender e utilizar a classe `PineconeClient` de forma rápida, eficiente e segura.

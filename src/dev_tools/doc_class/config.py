@@ -23,7 +23,7 @@ class GenereteDocStringConfig:
 
     OBS: Não precisa documentar __init__
 
-    2. Para os metodos de uma classe:
+    2. Para os metodos de uma classe: (Públicos e Internos)
 
     DESCRIÇÃO DIRETA AO PONTO DA FUNÇÂO DO METODO (UM POUCO MAIS DE UMA FRASE)
 
@@ -74,7 +74,7 @@ class GenereteDocClassConfig:
 
     ESTRUTURA OBRIGATÓRIA:
 
-    # Documentação Didática da Classe `NomeDaClasse`
+    # Documentação da Classe `NomeDaClasse`
 
     ## Visão Geral
 
