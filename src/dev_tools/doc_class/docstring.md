@@ -1,85 +1,127 @@
 ```python
-class PlotCollector:
+from src.image_generation.cost_calculator.pricing_table import PricingTable
+from typing import List, Dict
+
+
+class CostCalculator:
     """
-    Colecionador de gráficos que intercepta a exibição padrão do Matplotlib, salva os gráficos em arquivos e/ou 
-    mantém uma representação base64 para uso posterior. Permite o gerenciamento dos gráficos coletados.
+    Responsável por calcular custos baseados em diferentes métricas de token e imagens, 
+    utilizando uma tabela de preços fornecida para realizar os cálculos.
 
     Args:
-        output_dir (str): Diretório onde os arquivos de gráficos serão salvos. Default é "outputs".
-        save (bool): Indica se os gráficos gerados devem ser salvos como arquivos PNG. Default é True.
+        pricing_table (PricingTable): Uma tabela de preços para cálculo dos custos. Default é PricingTable.
 
     Methods:
-        custom_show(): Substitui o método plt.show do Matplotlib para salvar o gráfico, gerar base64 e coletar dados.
-        patch_matplotlib(): Aplica o patch para substituir plt.show pelo método custom_show deste coletor.
-        reset(): Limpa a lista de gráficos coletados.
-        get_graphs(): Retorna a lista dos gráficos coletados, contendo caminho do arquivo e base64 parcial.
+            merge_cost_information(cost_infos): Combina várias informações de custo em um único dicionário com totais consolidados.
+            calculate(model, prompt_tokens, output_tokens, total_tokens, num_images, cached_prompt_tokens, cache_storage_tokens, cache_storage_hours): Calcula o custo total baseado na quantidade de tokens e imagens, considerando caching e armazenamento.
     """
 
-    def __init__(self, output_dir: str = "outputs", save: bool = True):
-        """
-        Inicializa a instância do coletor de gráficos, criando o diretório de saída caso necessário e configurando 
-        se os gráficos devem ser salvos.
+    def __init__(self, pricing_table: PricingTable = PricingTable):
+        self.pricing_table = pricing_table
 
-        Args:
-            output_dir (str): Diretório para salvar os gráficos gerados. Default é "outputs".
-            save (bool): Flag para indicar se os gráficos devem ser salvos em disco. Default é True.
+    def merge_cost_information(self, cost_infos: List[Dict]) -> Dict:
         """
+        Combina múltiplos dicionários de informações de custo em um único dicionário, somando os valores de tokens.
 
-    def custom_show(self):
-        """
-        Método customizado que substitui a função padrão plt.show do Matplotlib. Ele salva o gráfico como PNG (se 
-        configurado para salvar), gera uma string base64 para o gráfico e armazena essas informações na lista de gráficos.
+        Args: 
+        cost_infos (List[Dict]): Uma lista de dicionários contendo informações de tokens para prompt, saída e total.
 
         Returns:
-            dict: Dicionário contendo 'file_path' com o caminho do arquivo salvo (ou None se não salvar) e 
-                  'image_base64' com os primeiros 100 caracteres da imagem codificada em base64.
+                Dict: Um dicionário com os totais somados de prompt_tokens, output_tokens e total_tokens.
 
         Raises:
-            IOError: Se houver falha ao salvar o arquivo de imagem.
-
-        Examples:
-            >>> collector = PlotCollector(save=True)
-            >>> collector.patch_matplotlib()
-            >>> plt.plot([1, 2, 3])
-            >>> graph_data = plt.show()
-            >>> print(graph_data['file_path'])
-            'outputs/plot_abcdef123456.png'
+                ValueError: Se a lista cost_infos contiver menos de dois elementos.
         """
+        if not cost_infos or len(cost_infos) < 2:
+            raise ValueError("You must provide at least two cost_information objects.")
 
-    def patch_matplotlib(self):
-        """
-        Substitui o método plt.show do Matplotlib pelo método custom_show desta classe, permitindo que todas as 
-        chamadas de exibição de gráfico sejam interceptadas e registradas pelo coletor.
+        merged = {
+            "prompt_tokens": 0,
+            "output_tokens": 0,
+            "total_tokens": 0,
+        }
 
-        Examples:
-            >>> collector = PlotCollector()
-            >>> collector.patch_matplotlib()
-            >>> plt.plot([1, 2, 3])
-            >>> plt.show()  # Agora usará custom_show implicitamente
-        """
+        for cost in cost_infos:
+            merged["prompt_tokens"] += cost.get("prompt_tokens", 0)
+            merged["output_tokens"] += cost.get("output_tokens", 0)
+            merged["total_tokens"] += cost.get("total_tokens", 0)
 
-    def reset(self):
-        """
-        Limpa a lista interna de gráficos coletados, descartando todos os registros anteriores. Útil para reiniciar 
-        o estado do coletor entre diferentes conjuntos de gráficos.
+        return merged
 
-        Examples:
-            >>> collector = PlotCollector()
-            >>> collector.reset()  # Remove gráficos coletados anteriormente
+    def calculate(
+        self,
+        model: str,
+        prompt_tokens: int,
+        output_tokens: int,
+        total_tokens: int,
+        num_images: int = 0,
+        cached_prompt_tokens: int = 0,
+        cache_storage_tokens: int = 0,
+        cache_storage_hours: float = 0.0,
+    ) -> Dict[str, float]:
         """
+        Calcula o custo total baseado no modelo, quantidade de tokens de prompt, saída, total, imagens geradas, e custos relacionados ao cache.
 
-    def get_graphs(self):
-        """
-        Retorna a lista dos gráficos coletados até o momento. Cada elemento da lista é um dicionário contendo 
-        informações parciais do gráfico, como caminho do arquivo salvo e string base64.
+        Args: 
+        model (str): Nome do modelo utilizado para buscar preços.
+        prompt_tokens (int): Quantidade de tokens no prompt.
+        output_tokens (int): Quantidade de tokens na saída gerada.
+        total_tokens (int): Total de tokens envolvidos.
+        num_images (int, optional): Quantidade de imagens geradas. Default é 0.
+        cached_prompt_tokens (int, optional): Quantidade de tokens de prompt armazenados em cache. Default é 0.
+        cache_storage_tokens (int, optional): Quantidade de tokens armazenados em cache para custeio. Default é 0.
+        cache_storage_hours (float, optional): Horas que os tokens estão armazenados no cache. Default é 0.0.
 
         Returns:
-            list: Lista de dicionários com os dados dos gráficos coletados.
-
-        Examples:
-            >>> collector = PlotCollector()
-            >>> graphs = collector.get_graphs()
-            >>> print(graphs)
-            [{'file_path': 'outputs/plot_...', 'image_base64': 'iVBORw0KGgoAAAANSUhEUgAAAEAAA...'}]
+                Dict[str, float]: Um dicionário contendo tokens e seus respectivos custos em dólares, arredondados para seis casas decimais.
         """
+        pricing = self.pricing_table.get(model)
+
+        # Tokens cost
+        prompt_cost = (prompt_tokens / 1_000_000) * pricing.input_per_million_tokens
+
+        output_cost = 0.0
+        if pricing.output_per_million_tokens and output_tokens:
+            output_cost = (output_tokens / 1_000_000) * pricing.output_per_million_tokens
+
+        # Image cost
+        image_cost = 0.0
+        if pricing.image_price_per_unit and num_images:
+            image_cost = num_images * pricing.image_price_per_unit
+
+        # Cache input cost
+        cache_input_cost = 0.0
+        if pricing.cache_input_per_million_tokens and cached_prompt_tokens:
+            cache_input_cost = (
+                cached_prompt_tokens / 1_000_000
+            ) * pricing.cache_input_per_million_tokens
+
+        # Cache storage cost
+        cache_storage_cost = 0.0
+        if (
+            pricing.cache_storage_per_million_tokens_per_hour
+            and cache_storage_tokens
+            and cache_storage_hours
+        ):
+            cache_storage_cost = (
+                cache_storage_tokens / 1_000_000
+            ) * pricing.cache_storage_per_million_tokens_per_hour * cache_storage_hours
+
+        total_cost = (
+            prompt_cost
+            + output_cost
+            + image_cost
+            + cache_input_cost
+            + cache_storage_cost
+        )
+
+        return {
+            "prompt_tokens": prompt_tokens,
+            "output_tokens": output_tokens,
+            "total_tokens": total_tokens,
+            "prompt_usd": round(prompt_cost, 6),
+            "output_usd": round(output_cost, 6),
+            "images_usd": round(image_cost, 6),
+            "total_usd": round(total_cost, 6),
+        }
 ```

@@ -54,6 +54,6 @@ if __name__ == "__main__":
     end = time.perf_counter()
     duration = end - start
 
-    print(f"Tempo de execução: {duration:.4f} segundos")
+    print(f"Tempo de execução: {duration:.2f} segundos")
 
 # python -m src.dev_tools.doc_class.module
