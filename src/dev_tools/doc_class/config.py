@@ -107,6 +107,12 @@ class GenereteDocClassConfig:
 
     ----------------------------
 
+    ## Variáveis de Ambiente
+
+    Identifique por possíveis variáveis de ambiente que são necessárias para o funcionamento do código.
+    
+    - ENV: Descrição da env
+
     ## Pontos Importantes da Arquitetura e Insights
 
     - Destaque decisões de design
