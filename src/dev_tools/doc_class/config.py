@@ -16,7 +16,7 @@ class GenereteDocStringConfig:
     DESCRIÇÃO DA CLASSE (UM POUCO MAIS DE UMA FRASE)
 
     Args: 
-    parm_example (str): Explica o que é em uma frase (Se tiver um Default coloqur Default é "blablabla"
+    :param parm_name (str): Explica o que é em uma frase (Se tiver um Default coloqur Default é "blablabla"
 
     Methods:
             generate_post(topic): Explica o metodo em uma frase
@@ -74,7 +74,7 @@ class GenereteDocClassConfig:
 
     ESTRUTURA OBRIGATÓRIA:
 
-    # Documentação da Classe `NomeDaClasse`
+    # Classe `NomeDaClasse`
 
     ## Visão Geral
 

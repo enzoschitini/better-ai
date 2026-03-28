@@ -13,10 +13,11 @@ tracer = ApplicationTracing(
 )
 
 class ClassDoc:
-    def __init__(self):
+    def __init__(self, class_name: str = "output"):
         tracer.INFO("Initializing")
         config = AgentConfig()
         self.path = config.path
+        self.class_name = class_name
 
     def load_code(self):
         try:
@@ -48,7 +49,7 @@ class ClassDoc:
     def save_markdown(self, documentation: str, name: str):
         try:
             saver = MarkdownSaver()
-            saver.save(documentation, f"{self.path}/{name}.md")
+            saver.save(documentation, f"{self.path}/{self.class_name}/{name}.md")
         except Exception as e:
             raise RuntimeError("Erro: ClassDoc.save_markdown", str(e))
 
