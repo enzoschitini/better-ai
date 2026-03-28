@@ -32,8 +32,8 @@ class GenereteDoc:
 
     def _create_agent(self):
         return Agent(
-            id="deep_research",
-            model=OpenAIChat(id=DEFAULT_MODEL),
+            id="document",
+            model=OpenAIChat(id=self.config.model_id),
             instructions=self.instructions,
             description=self.description,
             markdown=True,

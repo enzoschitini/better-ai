@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 @dataclass
 class AgentConfig:
     model_id: str = "gpt-4.1-mini"
+    path: str = "src/dev_tools/doc_class"
 
 @dataclass
 class GenereteDocStringConfig:
