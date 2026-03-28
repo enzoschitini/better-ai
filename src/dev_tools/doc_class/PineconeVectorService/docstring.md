@@ -1,3 +1,4 @@
+```python
 import os
 from typing import List, Optional, Dict, Any
 
@@ -43,6 +44,14 @@ class PineconeVectorService:
     - transformar texto em chunks
     - gerar embeddings
     - salvar nos namespaces
+
+    Args:
+    :param vector_client (Optional[PineconeClient]): Cliente Pinecone opcional para comunicação com o serviço de vetor. Default é None.
+    :param embedding_model_name (str): Nome do modelo de embedding utilizado para gerar embeddings. Default é None.
+    :param dimensions (int): Número de dimensões dos vetores de embedding. Default é None.
+
+    Methods:
+            generate_vectors(text, metadata, save_global=False, batch_size=None): Gera e armazena embeddings para o texto dado.
     """
 
     def __init__(
@@ -141,7 +150,18 @@ class PineconeVectorService:
         chunk_size: int | None = None,
         chunk_overlap: int | None = None,
     ) -> List[str]:
+        """
+        Divide o texto de entrada em pedaços menores (chunks) com tamanho e sobreposição especificados,
+        utilizando separadores definidos.
 
+        Args: 
+        text (str): O texto completo que será dividido em chunks.
+        chunk_size (int | None): Tamanho máximo de cada chunk. Default é None, que usa o valor configurado na instância.
+        chunk_overlap (int | None): Quantidade de sobreposição entre chunks consecutivos. Default é None, que usa o valor configurado na instância.
+
+        Returns:
+                List[str]: Lista de strings contendo os chunks gerados do texto original.
+        """
         splitter = RecursiveCharacterTextSplitter(
             chunk_size=chunk_size or self.chunk_size,
             chunk_overlap=chunk_overlap or self.chunk_overlap,
@@ -172,7 +192,18 @@ class PineconeVectorService:
         target_id: str,
         namespace: str
     ):
+        """
+        Remove documentos do vetor armazenado no namespace especificado, cujo metadado corresponde
+        ao filtro definido pelo par target_feature e target_id.
 
+        Args: 
+        target_feature (str): A chave do campo de metadado pelo qual filtrar os documentos a deletar.
+        target_id (str): O valor do campo de metadado que identificar os documentos a serem removidos.
+        namespace (str): Namespace onde a deleção será executada.
+
+        Returns:
+                dict: Dicionário com a quantidade de vetores deletados e o namespace usado.
+        """
         namespace = namespace or self.namespace
 
         tracer.DEBUG(
@@ -248,7 +279,19 @@ class PineconeVectorService:
         namespace: str = None,
         filter: dict = None,
     ):
+        """
+        Executa uma busca por similaridade no vetor com base na consulta fornecida,
+        retornando os documentos mais relevantes no namespace informado.
 
+        Args:
+        query (str): Texto da consulta para busca por similaridade.
+        k (int): Quantidade máxima de resultados a retornar. Default é 3.
+        namespace (str): Namespace onde será realizada a busca. Default é None, usa o namespace principal.
+        filter (dict): Filtros opcionais para restringir a busca.
+
+        Returns:
+                dict: Dicionário formatado com os resultados da busca, contendo IDs e metadados.
+        """
         selected_namespace = namespace or self.client.main_namespace
 
         vectordb = self.client.create_vector_store(
@@ -299,7 +342,19 @@ class PineconeVectorService:
         save_global: bool = False,
         batch_size: int | None = None,
     ):
+        """
+        Gera embeddings para o texto informado, divide o texto em chunks, cria documentos e armazena os vetores no namespace principal.
+        Opcionalmente, salva também na base global e executa rollback em caso de erro.
 
+        Args:
+        text (str): O texto completo para geração de embeddings.
+        metadata (dict): Metadados associados que serão adicionados a cada vetor.
+        save_global (bool): Indica se deve salvar também na base global. Default é False.
+        batch_size (int | None): Tamanho opcional dos batches para adição dos documentos. Default é None, utiliza configuração padrão.
+
+        Returns:
+                dict: Dicionário contendo status, mensagem e informações sobre os embeddings gerados.
+        """
         dt_utc = datetime.now(timezone.utc).replace(microsecond=0, tzinfo=None)
         metadata["created_at"] = str(dt_utc)
 
@@ -387,3 +442,4 @@ class PineconeVectorService:
         )
 
         return response
+```

@@ -46,6 +46,8 @@ class GenereteDocStringConfig:
     - APENAS adicione as docstrings nos locais apropriados
     - NÃO retorne apenas as docstrings isoladas
     - A saída final deve ser o código original + docstrings inseridas
+    
+    IDIOMA DO CONTEÚDO: PORTUGUÊS BRASIL
     """
 
     description: str = """
@@ -167,6 +169,8 @@ class GenereteDocClassConfig:
     - se for possível traga exemplo do retorno, mas não invente, faça isso só se for possível deduzir.
     - Nunca coloque imports nos exemplos
     ```
+
+    IDIOMA DO CONTEÚDO: PORTUGUÊS BRASIL
 
     """
 
