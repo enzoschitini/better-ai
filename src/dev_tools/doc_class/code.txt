@@ -1,7 +1,43 @@
-Ciao!
-         dkkdkdkd
-         dkkdkdkd
-   dkkdkdkd
 
+class GenereteDoc:
+    def __init__(self):
+        self.config = AgentConfig()
 
-d
+    def _get_prompt_config(self, about: str):
+        try:
+            if about == "docstring":
+                prompt_config = GenereteDocStringConfig()
+                instructions = prompt_config.instructions
+                description = prompt_config.description
+
+            elif about == "class":
+                prompt_config = GenereteDocClassConfig()
+                instructions = prompt_config.instructions
+                description = prompt_config.description
+            
+            else:
+                raise ValueError("Erro: GenereteDoc._get_prompt_config. about is not [docstring, class]", str(e))
+        
+            return instructions, description
+
+        except Exception as e:
+            raise RuntimeError("Erro: GenereteDoc._get_prompt_config", str(e))
+
+    def _create_agent(self, instructions, description):
+        try:
+            agent = Agent(
+                # Settings
+                id="deep_research",
+                model=OpenAIChat(id=DEFAULT_MODEL), 
+                instructions=instructions,
+                description=description,
+                markdown=True,
+                stream=True,
+                debug_level=True,
+
+            )
+
+            return agent
+
+        except Exception as e:
+            raise RuntimeError("Erro: GenereteDoc.generate_doc_string", str(e))
