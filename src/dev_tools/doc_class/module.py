@@ -33,7 +33,7 @@ class ClassDoc:
         except Exception as e:
             raise RuntimeError("Erro: ClassDoc.save_markdown", str(e))
 
-    def generate_doc(self):  # 👈 método principal
+    def run(self):  # 👈 método principal
         try:
             code = self.load_code()
             documentation = self._generate_doc(code)  # 👈 corrigido
@@ -43,7 +43,14 @@ class ClassDoc:
             raise RuntimeError("Erro: ClassDoc.generate_doc", str(e))
 
 if __name__ == "__main__":
-    gen = ClassDoc()
-    gen.generate_doc()
+    import time
+    start = time.perf_counter()
+
+    ClassDoc().run()
+
+    end = time.perf_counter()
+    duration = end - start
+
+    print(f"Tempo de execução: {duration:.4f} segundos")
 
 # python -m src.dev_tools.doc_class.module
