@@ -7,6 +7,7 @@ from agno.models.groq import Groq
 from agno.models.openai import OpenAIResponses
 from dotenv import load_dotenv
 from src.text_parse.json_to_pydantic import JsonToPydantic, GeneratePydanticSchema
+from dataclasses import dataclass, field
 
 load_dotenv()
 
@@ -28,32 +29,6 @@ json_data = {
       "example": "Aplicativo"
     }
   },
-  "launch": {
-    "year": {
-      "type": "int",
-      "description": "Ano de lançamento do produto",
-      "example": 2023
-    },
-    "location": {
-      "type": "str",
-      "description": "Cidade onde o produto foi desenvolvido",
-      "example": "São Paulo"
-    }
-  },
-  "team": {
-    "leader": {
-      "type": "str",
-      "description": "Nome da pessoa responsável pelo projeto",
-      "example": "Ana Souza"
-    }
-  },
-  "metrics": {
-    "active_users": {
-      "type": "int",
-      "description": "Número de usuários ativos mencionados",
-      "example": 50000
-    }
-  },
   "purpose": {
     "type": "str",
     "description": "Objetivo principal do produto",
@@ -70,35 +45,62 @@ data = {
     "task": "Se o nome da empresa for TechNova, troque por BetterAI"
 }
 
+@dataclass
+class Config:
+    # Models: OpenAIChat(id="gpt-4.1-mini"), Groq(id="llama-3.3-70b-versatile"),
+    model_id: str = "llama-3.3-70b-versatile"
+    debug_mode: bool = True
+
+    # Come lo fai
+    instructions: str = """
+    Extraia dados do texto
+    """
+
+    # Cosa sei
+    description: str = """
+    Leia o texto e extraia as informações relevantes conforme o esquema definido. Retorne um JSON estruturado com os dados extraídos.
+    Caso não encontre alguma informação, retorne null para aquele campo.
+    """
+
+config = Config()
 
 parser = JsonToPydantic("ResearchRequest")
 request = parser.parse(data)
 
 converter = GeneratePydanticSchema()
-Movie = converter.convert(json_data, "Movie")
+output_schema = converter.convert(json_data, "Movie")
 
-
-# 🤖 Agent
 agent = Agent(
-    # Models: OpenAIChat(id="gpt-4.1-mini"), Groq(id="llama-3.3-70b-versatile"),
-    model=Groq(id="llama-3.3-70b-versatile"),
-
-    # Come lo fai
-    instructions="Extraia dados do texto",
-    # Cosa sei
-    description="Leia o texto e extraia as informações relevantes conforme o esquema definido. Retorne um JSON estruturado com os dados extraídos.",
+    model=Groq(id=config.model_id),
     
-    debug_mode=True,
-    output_schema=Movie,
+    instructions=config.instructions,
+    description=config.description,
+    
+    debug_mode=config.debug_mode,
+    output_schema=output_schema,
 )
 
 response = agent.run(input=request)
 
-# 📦 JSON completo
 print("\n\nFull Response Object:")
 print(json.dumps(response.content.model_dump(), indent=2))
 
 print("\n\nMetrics:")
-print(json.dumps(response.metrics.__dict__, indent=2, default=str))
+def extract_model_metrics(response):
+    metrics_dict = response.metrics.__dict__
+    model_metrics = metrics_dict["details"]["model"][0]
+
+    return {
+        "provider": model_metrics.provider,
+        "id": model_metrics.id,
+        "input_tokens": model_metrics.input_tokens,
+        "output_tokens": model_metrics.output_tokens,
+        "total_tokens": model_metrics.total_tokens,
+        "duration": round(metrics_dict.get("duration"), 2),
+    }
+
+
+result = extract_model_metrics(response)
+print(json.dumps(result, indent=2))
 
 # python -m src.text_parse.agno_parser
