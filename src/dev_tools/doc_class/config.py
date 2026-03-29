@@ -110,6 +110,7 @@ class GenereteDocClassConfig:
     ## Variáveis de Ambiente
 
     Identifique por possíveis variáveis de ambiente que são necessárias para o funcionamento do código.
+    Caso não haja nenhuma ENV, não precisa criar essa seção
     
     - ENV: Descrição da env
 
