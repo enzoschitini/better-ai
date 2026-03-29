@@ -1,6 +1,6 @@
 import json
 from typing import List
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers.json import JsonOutputParser
 from langchain_openai import ChatOpenAI
@@ -9,38 +9,38 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# === Modelo Pydantic para saída estruturada ===
-class Contexto(BaseModel):
-    descricao: str
-    lenda: str
-    caracteristicas: List[str]  # continua sendo lista de strings
 
-class Protagonista(BaseModel):
-    nome: str
-    descricao: str
-    motivacao: str
+# 🎬 Parte 1: Estrutura do roteiro
+class MovieScript(BaseModel):
+    setting: str = Field(description="Where the movie takes place")
+    genre: str = Field(description="Movie genre")
+    storyline: str = Field(description="Brief plot summary")
 
-class Personagens(BaseModel):
-    protagonista: Protagonista
-    aliados: List[str]
+class MovieContext(BaseModel):
+    history: str = Field(description="Background information about the movie's universe")
+    local: str = Field(description="Specific location within the movie's universe")
+    year: int = Field(description="Year in which the movie is set")
 
-class Narrativa(BaseModel):
-    introducao: str
-    desenvolvimento: str
-    conflito: str
-    resolucao: str
+# 🎭 Parte 2: Personagens
+class Character(BaseModel):
+    name: str = Field(description="Character name")
+    role: str = Field(description="Role in the story (e.g., protagonist, antagonist)")
+    description: str = Field(description="Short description of the character")
 
-class Historia(BaseModel):
-    titulo: str
-    subtitulo: str
-    contexto: Contexto
-    personagens: Personagens
-    narrativa: Narrativa
-    temas: List[str]
+
+class MoviePerson(BaseModel):
+    characters: List[Character] = Field(description="List of characters in the movie")
+
+
+# 🎬🎭 Parte 3: Modelo final (composição)
+class Movie(BaseModel):
+    script: MovieScript
+    people: MoviePerson
+    context: MovieContext
 
 
 # === Parser com Pydantic ===
-parser = JsonOutputParser(pydantic_object=Historia)
+parser = JsonOutputParser(pydantic_object=Movie)
 
 # === Prompt ===
 prompt = PromptTemplate(
