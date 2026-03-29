@@ -97,29 +97,43 @@ class JsonToSchema:
     def _parse_field(self, key: str, value: Any):
         description = f"Auto-generated field for {key}"
 
-        # Nested object
+        # ==========================
+        # Nested object (FIX HERE)
+        # ==========================
         if isinstance(value, dict):
             nested_name = self.name_generator.generate(key)
             nested_model = self._parse_object(value, nested_name)
-            return nested_model, Field(description=description)
 
+            # 🚫 NÃO usar Field aqui
+            return nested_model, ...
+
+        # ==========================
         # List handling
+        # ==========================
         elif isinstance(value, list):
             if len(value) == 0:
                 return List[Any], Field(description=description)
 
             first_item = value[0]
 
+            # Lista de objetos (FIX HERE)
             if isinstance(first_item, dict):
-                nested_name = self.name_generator.generate(p.singular_noun(key) or key)
+                nested_name = self.name_generator.generate(
+                    p.singular_noun(key) or key
+                )
                 nested_model = self._parse_object(first_item, nested_name)
-                return List[nested_model], Field(description=description)
 
+                # 🚫 NÃO usar Field aqui
+                return List[nested_model], ...
+
+            # Lista de primitivos
             else:
                 resolved_type = self.type_resolver.resolve(first_item)
                 return List[resolved_type], Field(description=description)
 
+        # ==========================
         # Primitive
+        # ==========================
         else:
             resolved_type = self.type_resolver.resolve(value)
             return resolved_type, Field(description=description)

@@ -6,6 +6,7 @@ from langchain_core.output_parsers.json import JsonOutputParser
 from langchain_openai import ChatOpenAI
 
 from dotenv import load_dotenv
+from src.text_parse.json_to_schema import JsonToSchema
 
 load_dotenv()
 
@@ -39,8 +40,34 @@ class Movie(BaseModel):
     context: MovieContext
 
 
+json_data = {
+    "script": {
+        "setting": "Tokyo",
+        "genre": "Heist",
+        "storyline": "A big robbery"
+    },
+    "context": {
+        "history": "Ancient artifact",
+        "local": "Museum",
+        "year": 2025
+    },
+    "people": {
+        "characters": [
+            {
+                "name": "John",
+                "role": "protagonist",
+                "description": "Smart thief"
+            }
+        ]
+    }
+}
+
+converter = JsonToSchema()
+Movie_Schema = converter.convert(json_data, "Movie")
+
+
 # === Parser com Pydantic ===
-parser = JsonOutputParser(pydantic_object=Movie)
+parser = JsonOutputParser(pydantic_object=Movie_Schema)
 
 # === Prompt ===
 prompt = PromptTemplate(
