@@ -2,6 +2,7 @@ import json
 from typing import List
 from pydantic import BaseModel, Field
 from agno.agent import Agent
+from agno.models.openai import OpenAIChat
 from agno.models.openai import OpenAIResponses
 from dotenv import load_dotenv
 from text_parse.json_to_pydantic import JsonToPydantic
@@ -69,13 +70,16 @@ Movie = converter.convert(json_data, "Movie")
 # 🤖 Agent
 agent = Agent(
     model=OpenAIResponses(id="gpt-4.1-mini"),
+    instructions="Extraia dados do texto",
+
+    reasoning=True,
+    reasoning_model=OpenAIChat(id="gpt-4.1-mini"),
+    reasoning_max_steps=5,
+    
     output_schema=Movie,
 )
 
-response = agent.run(
-    input=text,
-    instructions="Extraia dados do texto"
-)
+response = agent.run(input=text)
 
 # 📦 JSON completo
 print("\n\nFull Response Object:")
