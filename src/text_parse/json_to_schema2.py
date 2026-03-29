@@ -31,50 +31,12 @@ class DefaultTypeResolver(TypeResolver):
 
 
 # ==========================================
-# Helper: Name Generator
-# ==========================================
-class NameGenerator:
-    def __init__(self):
-        self.counter = 0
-
-    def generate(self, base: str) -> str:
-        self.counter += 1
-        return f"{base.capitalize()}{self.counter}"
-
-
-# ==========================================
-# Builder: Schema Builder
-# ==========================================
-class SchemaBuilder:
-    def __init__(self):
-        self.models: Dict[str, Type[BaseModel]] = {}
-
-    def create(self, name: str, fields: Dict[str, Tuple[Any, Any]]) -> Type[BaseModel]:
-        model = create_model(name, **fields)
-        self.models[name] = model
-        return model
-
-    def get_all(self) -> Dict[str, Type[BaseModel]]:
-        return self.models
-
-
-# ==========================================
-# Parser: Field Metadata (🔥 NOVO)
+# Parser: Field Metadata
 # ==========================================
 class FieldMetadataParser:
-    def parse(self, key: str, value: Any) -> Tuple[Any, Any] | None:
-        """
-        Detecta se o campo é um schema explícito:
-        {
-            "type": "str",
-            "description": "...",
-            "example": "...",
-            "default": ...
-        }
-        """
+    def parse(self, value: Any) -> Tuple[Any, Any] | None:
         if isinstance(value, dict) and "type" in value:
             return self._parse_metadata(value)
-
         return None
 
     def _parse_metadata(self, value: Dict[str, Any]) -> Tuple[Any, Any]:
@@ -107,14 +69,14 @@ class JsonToSchema:
     def __init__(
         self,
         type_resolver: TypeResolver = None,
-        name_generator: NameGenerator = None,
-        builder: SchemaBuilder = None,
         metadata_parser: FieldMetadataParser = None,
     ):
         self.type_resolver = type_resolver or DefaultTypeResolver()
-        self.name_generator = name_generator or NameGenerator()
-        self.builder = builder or SchemaBuilder()
         self.metadata_parser = metadata_parser or FieldMetadataParser()
+
+        # 🔥 agora internos
+        self._models: Dict[str, Type[BaseModel]] = {}
+        self._name_counter = 0
 
     # --------------------------------------
     # Public API
@@ -123,10 +85,22 @@ class JsonToSchema:
         return self._parse_object(data, root_name)
 
     def get_models(self) -> Dict[str, Type[BaseModel]]:
-        return self.builder.get_all()
+        return self._models
 
     # --------------------------------------
-    # Internal Parsing
+    # Internal Helpers
+    # --------------------------------------
+    def _generate_name(self, base: str) -> str:
+        self._name_counter += 1
+        return f"{base.capitalize()}{self._name_counter}"
+
+    def _create_model(self, name: str, fields: Dict[str, Tuple[Any, Any]]) -> Type[BaseModel]:
+        model = create_model(name, **fields)
+        self._models[name] = model
+        return model
+
+    # --------------------------------------
+    # Parsing
     # --------------------------------------
     def _parse_object(self, obj: Dict[str, Any], name: str) -> Type[BaseModel]:
         fields = {}
@@ -134,11 +108,11 @@ class JsonToSchema:
         for key, value in obj.items():
             fields[key] = self._parse_field(key, value)
 
-        return self.builder.create(name, fields)
+        return self._create_model(name, fields)
 
     def _parse_field(self, key: str, value: Any) -> Tuple[Any, Any]:
-        # 🔥 1. Metadata explícita
-        metadata = self.metadata_parser.parse(key, value)
+        # 🔥 Metadata explícita
+        metadata = self.metadata_parser.parse(value)
         if metadata:
             return metadata
 
@@ -148,7 +122,7 @@ class JsonToSchema:
         # Nested Object
         # ----------------------------------
         if isinstance(value, dict):
-            model_name = self.name_generator.generate(key)
+            model_name = self._generate_name(key)
             nested_model = self._parse_object(value, model_name)
             return nested_model, ...
 
@@ -163,7 +137,7 @@ class JsonToSchema:
 
             # Lista de objetos
             if isinstance(first, dict):
-                model_name = self.name_generator.generate(
+                model_name = self._generate_name(
                     p.singular_noun(key) or key
                 )
                 nested_model = self._parse_object(first, model_name)
