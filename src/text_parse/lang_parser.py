@@ -42,14 +42,13 @@ parser = JsonOutputParser(pydantic_object=Movie_Schema)
 # === Prompt ===
 prompt = PromptTemplate(
     template=(
-        "A partir de uma ideia, gere uma história completa e estruturada no formato JSON.\n"
+        "Extraia dados do texto"
+        "Texto: {text}\n\n"
+        "Leia o texto e extraia as informações relevantes conforme o esquema definido. Retorne um JSON estruturado com os dados extraídos."
+        "A resposta deve ser estruturada no formato JSON.\n"
         "{format_instructions}\n\n"
-        "⚠️ Instruções específicas:\n"
-        "- Em 'contexto.caracteristicas', escreva descrições detalhadas e personificadas.\n"
-        "- Cada item da lista deve trazer uma característica quase como se fosse uma pequena cena ou sensação.\n\n"
-        "Ideia: {ideia}"
     ),
-    input_variables=["ideia"],
+    input_variables=["text"],
     partial_variables={"format_instructions": parser.get_format_instructions()},
 )
 
@@ -59,8 +58,12 @@ llm = ChatOpenAI(model="gpt-4.1-mini", temperature=0)
 # === Encadeia ===
 chain = prompt | llm | parser
 
+text = """
+Em 2023, a empresa TechNova lançou um novo aplicativo chamado DataFlow. O produto foi desenvolvido em São Paulo e liderado pela engenheira Ana Souza. O objetivo do aplicativo é facilitar a análise de dados para pequenas empresas. Desde o lançamento, o DataFlow já alcançou mais de 50 mil usuários ativos.
+"""
+
 # === Teste ===
-resposta = chain.invoke({"ideia": "Um bosque mágico"})
+resposta = chain.invoke({"text": text})
 print(json.dumps(resposta, indent=2, ensure_ascii=False))
 
 

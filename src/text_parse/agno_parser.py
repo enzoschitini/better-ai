@@ -5,7 +5,7 @@ from agno.agent import Agent
 from agno.models.openai import OpenAIChat
 from agno.models.openai import OpenAIResponses
 from dotenv import load_dotenv
-from text_parse.json_to_pydantic import JsonToPydantic
+from src.text_parse.json_to_pydantic import JsonToPydantic
 
 load_dotenv()
 
@@ -67,19 +67,71 @@ Em 2023, a empresa TechNova lançou um novo aplicativo chamado DataFlow. O produ
 converter = JsonToPydantic()
 Movie = converter.convert(json_data, "Movie")
 
+class ResearchRequest(BaseModel):
+    text: str
+    task: str
+
+
+request2 = ResearchRequest(
+    text=text,
+    task="Se o nome da empresa for TechNova, troque por BetterAI"
+)
+
+
+from typing import Type, TypeVar, Dict, Any
+from pydantic import BaseModel
+
+T = TypeVar("T", bound=BaseModel)
+
+
+class JsonToPydantic:
+    def __init__(self, model: Type[T]):
+        self.model = model
+
+    def parse(self, data: Dict[str, Any]) -> T:
+        """
+        Converte um dict (JSON) em uma instância do modelo Pydantic
+        """
+        try:
+            return self.model(**data)
+        except TypeError as e:
+            raise ValueError(f"Erro ao mapear JSON para {self.model.__name__}: {e}")
+
+    def safe_parse(self, data: Dict[str, Any]) -> T:
+        """
+        Ignora campos extras que não existem no modelo
+        """
+        filtered_data = {
+            key: value
+            for key, value in data.items()
+            if key in self.model.model_fields
+        }
+        return self.model(**filtered_data)
+
+data = {
+    "text": text,
+    "task": "Se o nome da empresa for TechNova, troque por BetterAI"
+}
+
+parser = JsonToPydantic(ResearchRequest)
+request = parser.parse(data)
+
+
+
 # 🤖 Agent
 agent = Agent(
-    model=OpenAIResponses(id="gpt-4.1-mini"),
-    instructions="Extraia dados do texto",
+    model=OpenAIResponses(id="gpt-4.1-mini", temperature=0),
 
-    reasoning=True,
-    reasoning_model=OpenAIChat(id="gpt-4.1-mini"),
-    reasoning_max_steps=5,
+    # Come lo fai
+    instructions="Extraia dados do texto",
+    # Cosa sei
+    description="Leia o texto e extraia as informações relevantes conforme o esquema definido. Retorne um JSON estruturado com os dados extraídos.",
     
+    debug_mode=True,
     output_schema=Movie,
 )
 
-response = agent.run(input=text)
+response = agent.run(input=request)
 
 # 📦 JSON completo
 print("\n\nFull Response Object:")
