@@ -2,33 +2,7 @@ from typing import Any, Dict, List, Type, Tuple
 from pydantic import BaseModel, Field, create_model
 import inflect
 
-p = inflect.engine()
-
-
-# ==========================================
-# Strategy: Type Resolver
-# ==========================================
-class TypeResolver:
-    def resolve(self, value: Any) -> Any:
-        raise NotImplementedError
-
-
-class DefaultTypeResolver(TypeResolver):
-    def resolve(self, value: Any) -> Any:
-        if isinstance(value, str):
-            return str
-        if isinstance(value, bool):
-            return bool
-        if isinstance(value, int):
-            return int
-        if isinstance(value, float):
-            return float
-        if isinstance(value, list):
-            return list
-        if isinstance(value, dict):
-            return dict
-        return Any
-
+inflector = inflect.engine()
 
 # ==========================================
 # Parser: Field Metadata
@@ -61,20 +35,14 @@ class FieldMetadataParser:
         }
         return mapping.get(type_name, Any)
 
-
 # ==========================================
-# Core: JsonToSchema
+# Core: JsonToPydantic
 # ==========================================
-class JsonToSchema:
-    def __init__(
-        self,
-        type_resolver: TypeResolver = None,
-        metadata_parser: FieldMetadataParser = None,
-    ):
-        self.type_resolver = type_resolver or DefaultTypeResolver()
+class JsonToPydantic:
+    def __init__(self, metadata_parser: FieldMetadataParser = None):
         self.metadata_parser = metadata_parser or FieldMetadataParser()
 
-        # 🔥 agora internos
+        # Estado interno
         self._models: Dict[str, Type[BaseModel]] = {}
         self._name_counter = 0
 
@@ -88,7 +56,7 @@ class JsonToSchema:
         return self._models
 
     # --------------------------------------
-    # Internal Helpers
+    # Helpers internos
     # --------------------------------------
     def _generate_name(self, base: str) -> str:
         self._name_counter += 1
@@ -98,6 +66,21 @@ class JsonToSchema:
         model = create_model(name, **fields)
         self._models[name] = model
         return model
+
+    def _resolve_type(self, value: Any) -> Any:
+        if isinstance(value, str):
+            return str
+        if isinstance(value, bool):
+            return bool
+        if isinstance(value, int):
+            return int
+        if isinstance(value, float):
+            return float
+        if isinstance(value, list):
+            return list
+        if isinstance(value, dict):
+            return dict
+        return Any
 
     # --------------------------------------
     # Parsing
@@ -111,7 +94,7 @@ class JsonToSchema:
         return self._create_model(name, fields)
 
     def _parse_field(self, key: str, value: Any) -> Tuple[Any, Any]:
-        # 🔥 Metadata explícita
+        # 🔥 1. Metadata explícita
         metadata = self.metadata_parser.parse(value)
         if metadata:
             return metadata
@@ -138,26 +121,61 @@ class JsonToSchema:
             # Lista de objetos
             if isinstance(first, dict):
                 model_name = self._generate_name(
-                    p.singular_noun(key) or key
+                    inflector.singular_noun(key) or key
                 )
                 nested_model = self._parse_object(first, model_name)
                 return List[nested_model], ...
 
             # Lista de primitivos
-            item_type = self.type_resolver.resolve(first)
+            item_type = self._resolve_type(first)
             return List[item_type], Field(description=description)
 
         # ----------------------------------
         # Primitive
         # ----------------------------------
-        field_type = self.type_resolver.resolve(value)
+        field_type = self._resolve_type(value)
         return field_type, Field(description=description)
+
+
+
+
+
+
 
 
 # ==========================================
 # Example Usage
 # ==========================================
-if __name__ == "__main__":
+def TestFieldMetadataParser():
+    parser = FieldMetadataParser()
+
+    test_cases = [
+        {
+            "input": {
+                "type": "str",
+                "description": "Nome do personagem",
+                "example": "John"
+            }
+        },
+        {
+            "input": {
+                "type": "int",
+                "default": 10
+            }
+        },
+        {
+            "input": "valor simples"
+        }
+    ]
+
+    for i, case in enumerate(test_cases, 1):
+        result = parser.parse(case["input"])
+        print(f"\nTeste {i}")
+        print("Input:", case["input"])
+        print("Output:", result)
+
+
+def TestJsonToPydantic():
     json_data = {
         "script": {
             "setting": {
@@ -192,10 +210,11 @@ if __name__ == "__main__":
         }
     }
 
-    converter = JsonToSchema()
+    converter = JsonToPydantic()
     Movie = converter.convert(json_data, "Movie")
 
     print(Movie.schema_json(indent=2))
 
-# python -m src.text_parse.json_to_schema2
+
+# python -m src.text_parse.json_to_pydantic
 # inflect==7.5.0

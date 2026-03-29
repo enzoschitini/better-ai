@@ -6,39 +6,9 @@ from langchain_core.output_parsers.json import JsonOutputParser
 from langchain_openai import ChatOpenAI
 
 from dotenv import load_dotenv
-from src.text_parse.json_to_schema import JsonToSchema
+from src.text_parse.json_to_pydantic import JsonToPydantic
 
 load_dotenv()
-
-
-# 🎬 Parte 1: Estrutura do roteiro
-class MovieScript(BaseModel):
-    setting: str = Field(description="Where the movie takes place")
-    genre: str = Field(description="Movie genre")
-    storyline: str = Field(description="Brief plot summary")
-
-class MovieContext(BaseModel):
-    history: str = Field(description="Background information about the movie's universe")
-    local: str = Field(description="Specific location within the movie's universe")
-    year: int = Field(description="Year in which the movie is set")
-
-# 🎭 Parte 2: Personagens
-class Character(BaseModel):
-    name: str = Field(description="Character name")
-    role: str = Field(description="Role in the story (e.g., protagonist, antagonist)")
-    description: str = Field(description="Short description of the character")
-
-
-class MoviePerson(BaseModel):
-    characters: List[Character] = Field(description="List of characters in the movie")
-
-
-# 🎬🎭 Parte 3: Modelo final (composição)
-class Movie(BaseModel):
-    script: MovieScript
-    people: MoviePerson
-    context: MovieContext
-
 
 json_data = {
     "script": {
@@ -62,7 +32,7 @@ json_data = {
     }
 }
 
-converter = JsonToSchema()
+converter = JsonToPydantic()
 Movie_Schema = converter.convert(json_data, "Movie")
 
 
