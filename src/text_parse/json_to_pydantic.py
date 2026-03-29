@@ -1,5 +1,7 @@
 from typing import Any, Dict, List, Type, Tuple
 from pydantic import BaseModel, Field, create_model
+from typing import Any, Dict, Type
+from pydantic import BaseModel, create_model
 import inflect
 
 inflector = inflect.engine()
@@ -35,10 +37,44 @@ class FieldMetadataParser:
         }
         return mapping.get(type_name, Any)
 
+
+class JsonToPydantic:
+    def __init__(self, model_name: str = "DynamicModel"):
+        self.model_name = model_name
+
+    def _infer_type(self, value: Any) -> Type:
+        if isinstance(value, str):
+            return str
+        elif isinstance(value, int):
+            return int
+        elif isinstance(value, float):
+            return float
+        elif isinstance(value, bool):
+            return bool
+        elif isinstance(value, list):
+            return list
+        elif isinstance(value, dict):
+            return dict
+        else:
+            return Any
+
+    def build_model(self, data: Dict[str, Any]) -> Type[BaseModel]:
+        fields = {}
+
+        for key, value in data.items():
+            field_type = self._infer_type(value)
+            fields[key] = (field_type, ...)
+
+        return create_model(self.model_name, **fields)
+
+    def parse(self, data: Dict[str, Any]) -> BaseModel:
+        model = self.build_model(data)
+        return model(**data)
+
 # ==========================================
 # Core: JsonToPydantic
 # ==========================================
-class JsonToPydantic:
+class GeneratePydanticSchema:
     def __init__(self, metadata_parser: FieldMetadataParser = None):
         self.metadata_parser = metadata_parser or FieldMetadataParser()
 
@@ -174,8 +210,18 @@ def TestFieldMetadataParser():
         print("Input:", case["input"])
         print("Output:", result)
 
-
 def TestJsonToPydantic():
+    data = {
+        "text": "A empresa TechNova está crescendo rapidamente.",
+        "task": "Se o nome da empresa for TechNova, troque por BetterAI"
+    }
+    parser = JsonToPydantic("ResearchRequest")
+    request = parser.parse(data)
+    
+    print(request)
+    print(type(request))
+
+def TestGeneratePydanticSchema():
     json_data = {
         "script": {
             "setting": {
