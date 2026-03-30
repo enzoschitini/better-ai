@@ -115,6 +115,19 @@ config_data = {
     "model_id": "llama-3.3-70b-versatile",
     "model_provider": "OpenAI",
     "model_id": "gpt-4.1-mini",
+
+# criar venv (se ainda não tiver)
+python -m venv venv
+
+# ativar
+venv\Scripts\activate
+
+# instalar tudo
+pip install -r requirements.txt
+
+# rodar o projeto
+python -m uvicorn app.main:app --reload
+
 """
 
 

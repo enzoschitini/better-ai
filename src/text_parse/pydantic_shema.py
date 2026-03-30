@@ -1,42 +1,9 @@
 from typing import Any, Dict, List, Type, Tuple
 from pydantic import BaseModel, Field, create_model
 from typing import Any, Dict, Type
-from pydantic import BaseModel, create_model
 import inflect
 
 inflector = inflect.engine()
-
-class FieldMetadataParser:
-    def parse(self, value: Any) -> Tuple[Any, Any] | None:
-        try:
-            if isinstance(value, dict) and "type" in value:
-                return self._parse_metadata(value)
-            return None
-        
-        except Exception as e:
-            raise RuntimeError("Error parsing field metadata", str(e))
-
-    def _parse_metadata(self, value: Dict[str, Any]) -> Tuple[Any, Any]:
-        field_type = self._map_type(value.get("type"))
-
-        field_info = Field(
-            default=value.get("default", ...),
-            description=value.get("description"),
-            examples=[value["example"]] if "example" in value else None
-        )
-
-        return field_type, field_info
-
-    def _map_type(self, type_name: str):
-        mapping = {
-            "str": str,
-            "int": int,
-            "float": float,
-            "bool": bool,
-            "list": list,
-            "dict": dict,
-        }
-        return mapping.get(type_name, Any)
 
 
 class JsonToPydantic:
@@ -80,6 +47,39 @@ class JsonToPydantic:
             return model(**data)
         except Exception as e:
             raise RuntimeError("Error parsing data", str(e))
+
+
+class FieldMetadataParser:
+    def parse(self, value: Any) -> Tuple[Any, Any] | None:
+        try:
+            if isinstance(value, dict) and "type" in value:
+                return self._parse_metadata(value)
+            return None
+        
+        except Exception as e:
+            raise RuntimeError("Error parsing field metadata", str(e))
+
+    def _parse_metadata(self, value: Dict[str, Any]) -> Tuple[Any, Any]:
+        field_type = self._map_type(value.get("type"))
+
+        field_info = Field(
+            default=value.get("default", ...),
+            description=value.get("description"),
+            examples=[value["example"]] if "example" in value else None
+        )
+
+        return field_type, field_info
+
+    def _map_type(self, type_name: str):
+        mapping = {
+            "str": str,
+            "int": int,
+            "float": float,
+            "bool": bool,
+            "list": list,
+            "dict": dict,
+        }
+        return mapping.get(type_name, Any)
 
 
 class GeneratePydanticSchema:
