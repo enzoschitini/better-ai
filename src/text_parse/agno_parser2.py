@@ -77,30 +77,28 @@ class AgentParser:
       self.output_data = output_data
       self.config_data = config_data
 
-      self.gererate_schemas()
+      self._gererate_schemas()
 
-    def gererate_schemas(self):
+    def _gererate_schemas(self):
         parser = JsonToPydantic("ResearchRequest")
         converter = GeneratePydanticSchema()
 
-        self.request = parser.parse(self.input_data)
-        self.config = parser.parse(self.config_data)
+        self.input_schema = parser.parse(self.input_data)
+        self.config_schema = parser.parse(self.config_data)
         self.output_schema = converter.convert(self.output_data, "Movie")
 
-        return self.request, self.config, self.output_schema
-
-    def run_agent(self, request, config, output_schema):
+    def run_agent(self):
         agent = Agent(
-            model=Groq(id=config.model_id),
+            model=Groq(id=self.config_schema.model_id),
             
-            instructions=config.instructions,
-            description=config.description,
+            instructions=self.config_schema.instructions,
+            description=self.config_schema.description,
             
-            debug_mode=config.debug_mode,
-            output_schema=output_schema,
+            debug_mode=self.config_schema.debug_mode,
+            output_schema=self.output_schema,
         )
 
-        response = agent.run(input=request)
+        response = agent.run(input=self.input_schema)
         return response
     
     def format_response(self, response):
@@ -132,8 +130,7 @@ if __name__ == "__main__":
         output_data=output_data,
         config_data=config_data
     )
-    request, config, output_schema = agent_parser.gererate_schemas()
-    response = agent_parser.run_agent(request, config, output_schema)
+    response = agent_parser.run_agent()
     agent_parser.format_response(response)
 
 # python -m src.text_parse.agno_parser2
