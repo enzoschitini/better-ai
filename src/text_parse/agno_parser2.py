@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 
 load_dotenv()
 
-json_data = {
+output_data = {
   "company": {
     "type": "str",
     "description": "Nome da empresa mencionada no texto",
@@ -40,12 +40,12 @@ text = """
 Em 2023, a empresa TechNova lançou um novo aplicativo chamado DataFlow. O produto foi desenvolvido em São Paulo e liderado pela engenheira Ana Souza. O objetivo do aplicativo é facilitar a análise de dados para pequenas empresas. Desde o lançamento, o DataFlow já alcançou mais de 50 mil usuários ativos.
 """
 
-data = {
+input_data = {
     "text": text,
     "task": "Se o nome da empresa for TechNova, troque por BetterAI"
 }
 
-config_json = {
+config_data = {
     "model_id": "llama-3.3-70b-versatile",
     "debug_mode": True,
     "instructions": "Extraia dados do texto",
@@ -127,7 +127,11 @@ class AgentParser:
         print(json.dumps(final_response, indent=2))
 
 if __name__ == "__main__":
-    agent_parser = AgentParser()
+    agent_parser = AgentParser(
+        input_data=input_data,
+        output_data=output_data,
+        config_data=config_data
+    )
     request, config, output_schema = agent_parser.gererate_schemas()
     response = agent_parser.run_agent(request, config, output_schema)
     agent_parser.format_response(response)

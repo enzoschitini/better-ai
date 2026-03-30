@@ -53,4 +53,5 @@ dependencies = [
     "yfinance>=1.2.0",
     "psycopg2-binary>=2.9.11",
     "inflect>=7.5.0",
+    "groq>=0.37.1",
 ]
