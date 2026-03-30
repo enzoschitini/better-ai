@@ -6,7 +6,7 @@ from agno.models.openai import OpenAIChat
 from agno.models.groq import Groq
 from agno.models.openai import OpenAIResponses
 from dotenv import load_dotenv
-from src.text_parse.json_to_pydantic import JsonToPydantic, GeneratePydanticSchema
+from src.text_parse.pydantic_shema import JsonToPydantic, GeneratePydanticSchema
 from dataclasses import dataclass, field
 
 load_dotenv()
@@ -109,7 +109,7 @@ preenchido
 
 input_data = {
     "text": text,
-    "task": "Se o nome da empresa for TechNova, troque por BetterAI"
+    "task": "Se o código da pesquisa for NA75038, adicione -EC ao final do código."
 }
 
 config_data = {
