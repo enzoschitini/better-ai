@@ -71,47 +71,59 @@ class Config:
 
 config = Config()
 
-# Generate Schemas
+class AgentParser:
+    def __init__(self):
+      pass
 
-parser = JsonToPydantic("ResearchRequest")
-converter = GeneratePydanticSchema()
+    def gererate_schemas(self):
+      parser = JsonToPydantic("ResearchRequest")
+      converter = GeneratePydanticSchema()
 
-request = parser.parse(data)
-config = parser.parse(config_json)
-output_schema = converter.convert(json_data, "Movie")
+      request = parser.parse(data)
+      config = parser.parse(config_json)
+      output_schema = converter.convert(json_data, "Movie")
 
-# Run Parser 
-agent = Agent(
-    model=Groq(id=config.model_id),
+      return request, config, output_schema
     
-    instructions=config.instructions,
-    description=config.description,
+    def run_agent(self, request, config, output_schema):
+      agent = Agent(
+          model=Groq(id=config.model_id),
+          
+          instructions=config.instructions,
+          description=config.description,
+          
+          debug_mode=config.debug_mode,
+          output_schema=output_schema,
+      )
+
+      response = agent.run(input=request)
+      return response
     
-    debug_mode=config.debug_mode,
-    output_schema=output_schema,
-)
+    def format_response(self, response):
+      # Format Response
+      print("\n\nFull Response Object:")
+      content = json.dumps(response.content.model_dump(), indent=2)
+      print(content)
 
-response = agent.run(input=request)
+      print("\n\nMetrics:")
+      metrics_dict = response.metrics.__dict__
+      model_metrics = metrics_dict["details"]["model"][0]
 
-# Format Response
+      metrics = {
+          "provider": model_metrics.provider,
+          "id": model_metrics.id,
+          "input_tokens": model_metrics.input_tokens,
+          "output_tokens": model_metrics.output_tokens,
+          "total_tokens": model_metrics.total_tokens,
+          "duration": round(metrics_dict.get("duration"), 2),
+      }
 
-print("\n\nFull Response Object:")
-content = json.dumps(response.content.model_dump(), indent=2)
-print(content)
+      print(json.dumps(metrics, indent=2))
 
-print("\n\nMetrics:")
-metrics_dict = response.metrics.__dict__
-model_metrics = metrics_dict["details"]["model"][0]
-
-metrics = {
-    "provider": model_metrics.provider,
-    "id": model_metrics.id,
-    "input_tokens": model_metrics.input_tokens,
-    "output_tokens": model_metrics.output_tokens,
-    "total_tokens": model_metrics.total_tokens,
-    "duration": round(metrics_dict.get("duration"), 2),
-}
-
-print(json.dumps(metrics, indent=2))
+if __name__ == "__main__":
+    agent_parser = AgentParser()
+    request, config, output_schema = agent_parser.gererate_schemas()
+    response = agent_parser.run_agent(request, config, output_schema)
+    agent_parser.format_response(response)
 
 # python -m src.text_parse.agno_parser2
