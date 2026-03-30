@@ -112,8 +112,16 @@ input_data = {
     "task": "Se o código da pesquisa for NA75038, adicione -EC ao final do código."
 }
 
-config_data = {
+"""
+    "model_provider": "Groq",
     "model_id": "llama-3.3-70b-versatile",
+    "model_provider": "OpenAI",
+    "model_id": "gpt-4.1-mini",
+"""
+
+config_data = {
+    "model_provider": "OpenAI",
+    "model_id": "gpt-4.1-mini",
     "debug_mode": True,
     "instructions": "Extraia dados do texto",
     "description": "Leia o texto e extraia as informações relevantes conforme o esquema definido. Retorne um JSON estruturado com os dados extraídos. Caso não encontre alguma informação, retorne null para aquele campo."
@@ -121,6 +129,7 @@ config_data = {
 
 @dataclass
 class Config:
+    model_provider: str = "Groq"
     # Models: OpenAIChat(id="gpt-4.1-mini"), Groq(id="llama-3.3-70b-versatile"),
     model_id: str = "llama-3.3-70b-versatile"
     debug_mode: bool = True
@@ -162,6 +171,14 @@ class AgentParser:
             self.config_schema = parser.parse(self.config_data)
         else:
             self.config_schema = Config()
+    
+    def _get_model(self):
+        if self.config_schema.model_provider.lower() == "openai":
+            return OpenAIResponses(id=self.config_schema.model_id, temperature=0)
+        elif self.config_schema.model_provider.lower() == "groq":
+            return Groq(id=self.config_schema.model_id)
+        else:
+            raise ValueError(f"Unsupported model provider: {self.config_schema.model_provider}")
 
     def get_schemas(self):
         return {
@@ -172,7 +189,7 @@ class AgentParser:
 
     def run_agent(self):
         agent = Agent(
-            model=Groq(id=self.config_schema.model_id),
+            model=self._get_model(),
             instructions=self.config_schema.instructions,
             description=self.config_schema.description,
             debug_mode=self.config_schema.debug_mode,
