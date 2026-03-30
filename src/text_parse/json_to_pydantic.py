@@ -6,14 +6,15 @@ import inflect
 
 inflector = inflect.engine()
 
-# ==========================================
-# Parser: Field Metadata
-# ==========================================
 class FieldMetadataParser:
     def parse(self, value: Any) -> Tuple[Any, Any] | None:
-        if isinstance(value, dict) and "type" in value:
-            return self._parse_metadata(value)
-        return None
+        try:
+            if isinstance(value, dict) and "type" in value:
+                return self._parse_metadata(value)
+            return None
+        
+        except Exception as e:
+            raise RuntimeError("Error parsing field metadata", str(e))
 
     def _parse_metadata(self, value: Dict[str, Any]) -> Tuple[Any, Any]:
         field_type = self._map_type(value.get("type"))
@@ -43,37 +44,44 @@ class JsonToPydantic:
         self.model_name = model_name
 
     def _infer_type(self, value: Any) -> Type:
-        if isinstance(value, str):
-            return str
-        elif isinstance(value, int):
-            return int
-        elif isinstance(value, float):
-            return float
-        elif isinstance(value, bool):
-            return bool
-        elif isinstance(value, list):
-            return list
-        elif isinstance(value, dict):
-            return dict
-        else:
-            return Any
+        try:
+            if isinstance(value, str):
+                return str
+            elif isinstance(value, int):
+                return int
+            elif isinstance(value, float):
+                return float
+            elif isinstance(value, bool):
+                return bool
+            elif isinstance(value, list):
+                return list
+            elif isinstance(value, dict):
+                return dict
+            else:
+                return Any
+        except Exception as e:
+            raise RuntimeError("Error inferring type", str(e))
 
     def build_model(self, data: Dict[str, Any]) -> Type[BaseModel]:
-        fields = {}
+        try:
+            fields = {}
 
-        for key, value in data.items():
-            field_type = self._infer_type(value)
-            fields[key] = (field_type, ...)
+            for key, value in data.items():
+                field_type = self._infer_type(value)
+                fields[key] = (field_type, ...)
 
-        return create_model(self.model_name, **fields)
+            return create_model(self.model_name, **fields)
+        except Exception as e:
+            raise RuntimeError("Error building model", str(e))
 
     def parse(self, data: Dict[str, Any]) -> BaseModel:
-        model = self.build_model(data)
-        return model(**data)
+        try:
+            model = self.build_model(data)
+            return model(**data)
+        except Exception as e:
+            raise RuntimeError("Error parsing data", str(e))
 
-# ==========================================
-# Core: JsonToPydantic
-# ==========================================
+
 class GeneratePydanticSchema:
     def __init__(self, metadata_parser: FieldMetadataParser = None):
         self.metadata_parser = metadata_parser or FieldMetadataParser()
@@ -86,7 +94,10 @@ class GeneratePydanticSchema:
     # Public API
     # --------------------------------------
     def convert(self, data: Dict[str, Any], root_name: str = "RootModel") -> Type[BaseModel]:
-        return self._parse_object(data, root_name)
+        try:
+            return self._parse_object(data, root_name)
+        except Exception as e:
+            raise RuntimeError("Error converting data", str(e))
 
     def get_models(self) -> Dict[str, Type[BaseModel]]:
         return self._models
@@ -130,51 +141,49 @@ class GeneratePydanticSchema:
         return self._create_model(name, fields)
 
     def _parse_field(self, key: str, value: Any) -> Tuple[Any, Any]:
-        # 🔥 1. Metadata explícita
-        metadata = self.metadata_parser.parse(value)
-        if metadata:
-            return metadata
+        try:
+            metadata = self.metadata_parser.parse(value)
+            if metadata:
+                return metadata
 
-        description = f"Auto-generated field for {key}"
+            description = f"Auto-generated field for {key}"
 
-        # ----------------------------------
-        # Nested Object
-        # ----------------------------------
-        if isinstance(value, dict):
-            model_name = self._generate_name(key)
-            nested_model = self._parse_object(value, model_name)
-            return nested_model, ...
+            # ----------------------------------
+            # Nested Object
+            # ----------------------------------
+            if isinstance(value, dict):
+                model_name = self._generate_name(key)
+                nested_model = self._parse_object(value, model_name)
+                return nested_model, ...
 
-        # ----------------------------------
-        # List
-        # ----------------------------------
-        if isinstance(value, list):
-            if not value:
-                return List[Any], Field(description=description)
+            # ----------------------------------
+            # List
+            # ----------------------------------
+            if isinstance(value, list):
+                if not value:
+                    return List[Any], Field(description=description)
 
-            first = value[0]
+                first = value[0]
 
-            # Lista de objetos
-            if isinstance(first, dict):
-                model_name = self._generate_name(
-                    inflector.singular_noun(key) or key
-                )
-                nested_model = self._parse_object(first, model_name)
-                return List[nested_model], ...
+                # Lista de objetos
+                if isinstance(first, dict):
+                    model_name = self._generate_name(
+                        inflector.singular_noun(key) or key
+                    )
+                    nested_model = self._parse_object(first, model_name)
+                    return List[nested_model], ...
 
-            # Lista de primitivos
-            item_type = self._resolve_type(first)
-            return List[item_type], Field(description=description)
+                # Lista de primitivos
+                item_type = self._resolve_type(first)
+                return List[item_type], Field(description=description)
 
-        # ----------------------------------
-        # Primitive
-        # ----------------------------------
-        field_type = self._resolve_type(value)
-        return field_type, Field(description=description)
-
-
-
-
+            # ----------------------------------
+            # Primitive
+            # ----------------------------------
+            field_type = self._resolve_type(value)
+            return field_type, Field(description=description)
+        except Exception as e:
+            raise RuntimeError("Error parsing field", str(e))
 
 
 
