@@ -69,23 +69,39 @@ class Config:
     Caso não encontre alguma informação, retorne null para aquele campo.
     """
 
-config = Config()
+from typing import Optional, Dict, Any
 
 class AgentParser:
-    def __init__(self, input_data: dict, output_data: dict, config_data: dict):
-      self.input_data = input_data
-      self.output_data = output_data
-      self.config_data = config_data
+    def __init__(
+        self,
+        input_data: Dict[str, Any],
+        output_data: Dict[str, Any],
+        config_data: Optional[Dict[str, Any]] = None,
+    ):
+        self.input_data = input_data
+        self.output_data = output_data
+        self.config_data = config_data
 
-      self._gererate_schemas()
+        self._generate_schemas()
 
-    def _gererate_schemas(self):
+    def _generate_schemas(self):
         parser = JsonToPydantic()
         converter = GeneratePydanticSchema()
 
         self.input_schema = parser.parse(self.input_data)
-        self.config_schema = parser.parse(self.config_data)
         self.output_schema = converter.convert(self.output_data, "OutputSchema")
+
+        if self.config_data is not None:
+            self.config_schema = parser.parse(self.config_data)
+        else:
+            self.config_schema = Config()
+
+    def get_schemas(self):
+        return {
+            "input": self.input_schema,
+            "output": self.output_schema,
+            "config": self.config_schema,
+        }
 
     def run_agent(self):
         agent = Agent(
@@ -99,12 +115,12 @@ class AgentParser:
         response = agent.run(input=self.input_schema)
         return response
     
-    def format_response(self, response):
-        content = response.content.model_dump()
-        metrics_dict = response.metrics.__dict__
+    def format_response(self, raw_response):
+        content = raw_response.content.model_dump()
+        metrics_dict = raw_response.metrics.__dict__
         model_metrics = metrics_dict["details"]["model"][0]
 
-        final_response = {
+        response = {
             "content": content,
             "metadata": {
                 "model": {
@@ -120,7 +136,8 @@ class AgentParser:
             }
         }
 
-        print(json.dumps(final_response, indent=2))
+        print(json.dumps(response, indent=2))
+        return response
 
 if __name__ == "__main__":
     agent_parser = AgentParser(
