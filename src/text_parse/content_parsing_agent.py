@@ -147,7 +147,7 @@ class Config:
 
 from typing import Optional, Dict, Any
 
-class AgentParser:
+class ContentParsingAgent:
     def __init__(
         self,
         input_data: Dict[str, Any],
@@ -216,7 +216,7 @@ class AgentParser:
                 "content": content,
                 "metadata": {
                     "model": {
-                        "provider": model_metrics.provider,
+                        "provider": model_metrics.provider.split(" ")[0],
                         "id": model_metrics.id
                     },
                     "metrics": {
@@ -235,7 +235,7 @@ class AgentParser:
             raise RuntimeError("Error formatting response", str(e))
 
 if __name__ == "__main__":
-    agent_parser = AgentParser(
+    agent_parser = ContentParsingAgent(
         input_data=input_data,
         output_data=output_data,
         config_data=config_data
@@ -243,4 +243,4 @@ if __name__ == "__main__":
     content_parsed = agent_parser.run_agent()
     response = agent_parser.format_response(content_parsed)
 
-# python -m src.text_parse.agno_parser2
+# python -m src.text_parse.content_parsing_agent
