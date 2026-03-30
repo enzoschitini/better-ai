@@ -72,19 +72,23 @@ class Config:
 config = Config()
 
 class AgentParser:
-    def __init__(self):
-      pass
+    def __init__(self, input_data: dict, output_data: dict, config_data: dict):
+      self.input_data = input_data
+      self.output_data = output_data
+      self.config_data = config_data
+
+      self.gererate_schemas()
 
     def gererate_schemas(self):
         parser = JsonToPydantic("ResearchRequest")
         converter = GeneratePydanticSchema()
 
-        request = parser.parse(data)
-        config = parser.parse(config_json)
-        output_schema = converter.convert(json_data, "Movie")
+        self.request = parser.parse(self.input_data)
+        self.config = parser.parse(self.config_data)
+        self.output_schema = converter.convert(self.output_data, "Movie")
 
-        return request, config, output_schema
-    
+        return self.request, self.config, self.output_schema
+
     def run_agent(self, request, config, output_schema):
         agent = Agent(
             model=Groq(id=config.model_id),
