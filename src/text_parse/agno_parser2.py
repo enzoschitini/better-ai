@@ -161,17 +161,21 @@ class AgentParser:
         self._generate_schemas()
 
     def _generate_schemas(self):
-        parser = JsonToPydantic()
-        converter = GeneratePydanticSchema()
+        try:
+            parser = JsonToPydantic()
+            converter = GeneratePydanticSchema()
 
-        self.input_schema = parser.parse(self.input_data)
-        self.output_schema = converter.convert(self.output_data, "OutputSchema")
+            self.input_schema = parser.parse(self.input_data)
+            self.output_schema = converter.convert(self.output_data, "OutputSchema")
 
-        if self.config_data is not None:
-            self.config_schema = parser.parse(self.config_data)
-        else:
-            self.config_schema = Config()
-    
+            if self.config_data is not None:
+                self.config_schema = parser.parse(self.config_data)
+            else:
+                self.config_schema = Config()
+
+        except Exception as e:
+            raise RuntimeError("Error generating schemas", str(e))    
+
     def _get_model(self):
         if self.config_schema.model_provider.lower() == "openai":
             return OpenAIResponses(id=self.config_schema.model_id, temperature=0)
@@ -188,40 +192,47 @@ class AgentParser:
         }
 
     def run_agent(self):
-        agent = Agent(
-            model=self._get_model(),
-            instructions=self.config_schema.instructions,
-            description=self.config_schema.description,
-            debug_mode=self.config_schema.debug_mode,
-            output_schema=self.output_schema,
-        )
+        try:
+            agent = Agent(
+                model=self._get_model(),
+                instructions=self.config_schema.instructions,
+                description=self.config_schema.description,
+                debug_mode=self.config_schema.debug_mode,
+                output_schema=self.output_schema,
+            )
 
-        response = agent.run(input=self.input_schema)
-        return response
-    
+            response = agent.run(input=self.input_schema)
+            return response
+        except Exception as e:
+            raise RuntimeError("Error running agent", str(e))    
+
     def format_response(self, raw_response):
-        content = raw_response.content.model_dump()
-        metrics_dict = raw_response.metrics.__dict__
-        model_metrics = metrics_dict["details"]["model"][0]
+        try:
+            content = raw_response.content.model_dump()
+            metrics_dict = raw_response.metrics.__dict__
+            model_metrics = metrics_dict["details"]["model"][0]
 
-        response = {
-            "content": content,
-            "metadata": {
-                "model": {
-                    "provider": model_metrics.provider,
-                    "id": model_metrics.id
-                },
-                "metrics": {
-                    "input_tokens": model_metrics.input_tokens,
-                    "output_tokens": model_metrics.output_tokens,
-                    "total_tokens": model_metrics.total_tokens,
-                },
-                "duration": round(metrics_dict.get("duration"), 2),
+            response = {
+                "content": content,
+                "metadata": {
+                    "model": {
+                        "provider": model_metrics.provider,
+                        "id": model_metrics.id
+                    },
+                    "metrics": {
+                        "input_tokens": model_metrics.input_tokens,
+                        "output_tokens": model_metrics.output_tokens,
+                        "total_tokens": model_metrics.total_tokens,
+                    },
+                    "duration": round(metrics_dict.get("duration"), 2),
+                }
             }
-        }
 
-        print(json.dumps(response, indent=2))
-        return response
+            print(json.dumps(response, indent=2))
+            return response
+
+        except Exception as e:
+            raise RuntimeError("Error formatting response", str(e))
 
 if __name__ == "__main__":
     agent_parser = AgentParser(
