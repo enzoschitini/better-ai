@@ -1,6 +1,9 @@
 import tiktoken
 from src.embedding.tokens_calculator.dollar_rates import DollarRateService
 
+# https://currencyrateapi.com/it/
+# https://exchangerateapi.net/
+
 
 class TokenCounter:
     """Responsável APENAS por contar tokens."""
