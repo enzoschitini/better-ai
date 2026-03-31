@@ -68,31 +68,17 @@ async def parse_content(
             max_size_mb=5
         ).load()
 
-        schema_data = json.loads(schema)
-
-        file_bytes = loader.bytes
-        raw_bytes = file_bytes.getvalue()
-        file_extension = loader.extension
-
-        print(type(file_bytes))  # BytesIO
-        print(file_extension)    # extensão do arquivo
-        print(len(raw_bytes))    # tamanho em bytes
-        print(raw_bytes[:100])   # primeiros 100 bytes do arquivo
-
-        extractor = FileContentExtractor(file_bytes, "pdf")
-        result = extractor.extract()
-        print(result["response"][:500])  # Imprime os primeiros 500 caracteres do conteúdo extraído
+        extractor = FileContentExtractor(
+            loader.bytes, 
+            loader.extension
+        )
+        result_extract = extractor.extract()
 
         agent_parser = ContentParsingAgent(
             input_data={
-                "file_content": result["response"]
+                "file_content": result_extract["response"]
             },
-            output_data={
-                "summary": {
-                    "type": "str",
-                    "description": "Resumo do conteúdo do arquivo"
-                }
-            },
+            output_data=json.loads(schema)
             #config_data=config_data
         )
         content_parsed = agent_parser.run_agent()
@@ -106,5 +92,15 @@ async def parse_content(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
+"""
+curl --location 'http://localhost:8000/parse-content' \
+--header 'Accept: application/json' \
+--form 'schema="{
+  \"summary\": {
+       \"type\": \"str\",
+       \"description\": \"Resumo do conteúdo do arquivo\"
+  }
+}"' \
+--form 'file=@"/C:/Users/enzo_silva/Downloads/files/Fiat Test Chat/Endurance.pdf"'
+"""
 
