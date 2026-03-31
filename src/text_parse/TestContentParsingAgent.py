@@ -35,6 +35,8 @@ output_schema = {
   }
 }
 
+
+
 config_data = {
     "model_provider": "OpenAI",
     "model_id": "gpt-4.1-mini",
@@ -72,6 +74,7 @@ if __name__ == "__main__":
     )
     content_parsed = agent_parser.run_agent()
     response = agent_parser.format_response(content_parsed)
+    print(json.dumps(response, indent=4, ensure_ascii=False))
 
 
 # python -m src.text_parse.TestContentParsingAgent

@@ -2,7 +2,7 @@ import asyncio
 from fastapi import UploadFile
 import json
 import time
-from src.text_parse.text_parse_module import TextParserModule
+from text_parse.backup.text_parse_module import TextParserModule
 import httpx
 
 url = "http://127.0.0.1:8000/text_parse"

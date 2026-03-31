@@ -13,6 +13,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from auth import Authorization
 
+# Utils
+from src.utils.load_file.load_request_file import LoadRequestFile
+
 from src.chat.AgentAsk import AgentAsk
 
 # Embedding Packages
@@ -25,7 +28,7 @@ from src.image_generation.applications import ImageGeneration
 from src.image_generation.module import ImageGenerate, RequestProcessor
 
 # Text Parser Packages
-from src.text_parse.text_parse_module import TextParserModule
+from src.text_parse.module.applications import SimpleFileParse
 
 # Deep Research Packages
 from src.deep_research.tavily_research.tavily_core import TavilyDeepResearch
@@ -388,40 +391,39 @@ async def image_generation(
 # Context Parser
 # ========================
 
-@app.post("/parse-content", dependencies=[Depends(Authorization.multikey)],
+@app.post("/parse-content/simple-file-parse", dependencies=[Depends(Authorization.multikey)],
           summary="Parse and extract structured content from files using schema")
-async def text_parse(
-    payload: str = Form(...),
-    file: UploadFile = File(...)
+async def parse_content(
+    schema: str = Form(...),
+    file: UploadFile = File(...),
+    config: Optional[str] = Form(None),
 ):
-    """
-    Endpoint per parsing testuale.
-    Riceve:
-    - payload: JSON string (schema, client_id, job_id, etc.)
-    - file: file da analizzare (txt, pdf, ecc.)
-    """
-
-    # Parse payload JSON
     try:
-        payload_dict = json.loads(payload)
-    except json.JSONDecodeError:
-        raise HTTPException(status_code=400, detail="Payload non è un JSON valido")
+        loader = await LoadRequestFile(
+            file=file,
+            max_size_mb=5
+        ).load()
 
-    # Inizializza il modulo
-    module = TextParserModule(
-        payload=payload_dict,
-        file=file
-    )
+        file_bytes = loader.bytes
+        file_extension = loader.extension
 
-    # Esegui parsing
-    try:
-        result = await module.execute()
+        parser = SimpleFileParse(
+            schema=schema,
+            config=config,
+            file_bytes=file_bytes,
+            file_extension=file_extension
+        )
+
+        response = parser.run()
+
+        return JSONResponse(content={
+            "status": "success",
+            "response": response,
+            "config_used": parser.config
+        })
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-    return {
-        "result": result
-    }
 
 
 # ========================
