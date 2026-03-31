@@ -51,21 +51,29 @@ class LoadRequestFile:
         if self.allowed_extensions and self.extension not in self.allowed_extensions:
             raise HTTPException(
                 status_code=400,
-                detail=f"Extensão '{self.extension}' não permitida. Permitidas: {self.allowed_extensions}"
+                detail={
+                    "message": f"The '{self.extension}' extension is not allowed.",
+                    "allowed_extensions": self.allowed_extensions
+                }
             )
 
     def _validate_mimetype(self):
         if self.allowed_mimetypes and self.mimetype not in self.allowed_mimetypes:
             raise HTTPException(
                 status_code=400,
-                detail=f"Mimetype '{self.mimetype}' não permitido. Permitidos: {self.allowed_mimetypes}"
+                detail={
+                    "message": f"The '{self.mimetype}' mimetype is not allowed.",
+                    "allowed_mimetypes": self.allowed_mimetypes
+                }
             )
 
     def _validate_size(self):
         if self.size_mb > self.max_size_mb:
             raise HTTPException(
                 status_code=400,
-                detail=f"Arquivo excede o limite de {self.max_size_mb} MB"
+                detail={
+                    "message": f"The file exceeds the limit of {self.max_size_mb} MB"
+                }
             )
 
     def to_dict(self):
@@ -86,8 +94,8 @@ app = FastAPI()
 async def upload_file(file: UploadFile = File(...)):
     loader = LoadRequestFile(
         file,
-        allowed_extensions=["txt", "pdf"],
-        allowed_mimetypes=["text/plain", "application/pdf"],
+        #allowed_extensions=["txt", "pdf"],
+        #allowed_mimetypes=["text/plain", "application/pdf"],
         max_size_mb=5,
     )
     result = await loader.load()
