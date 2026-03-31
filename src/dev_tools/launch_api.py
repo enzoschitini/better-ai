@@ -52,85 +52,21 @@ def healthy():
 # uvicorn app:app --reload  
 
 # ------------------------------------------------- #
-from src.utils.load_file.load_request_file import LoadRequestFile
-from src.embedding.services.file_content_extractor import FileContentExtractor
-from src.text_parse.content_parsing_agent import ContentParsingAgent
 
+import json
 from fastapi import Form, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse
 from typing import Optional
-import json
 
-import json
-from typing import Optional
-from fastapi import HTTPException
-from io import BytesIO
+from src.utils.load_file.load_request_file import LoadRequestFile
+from src.text_parse.module.applications import SimpleFileParse
 
-
-class SimpleFileParse:
-    def __init__(
-        self,
-        schema: str,
-        file_bytes: BytesIO,
-        file_extension: str,
-        config: Optional[str] = None,
-    ):
-        self.schema = schema
-        self.config = config
-        self.file_bytes = file_bytes
-        self.file_extension = file_extension
-
-    def run(self):
-        try:
-            schema_data = json.loads(self.schema)
-        except json.JSONDecodeError:
-            raise HTTPException(status_code=400, detail="Invalid JSON in schema")
-
-        default_config = {
-            "model_provider": "OpenAI",
-            "model_id": "gpt-4.1-mini",
-            "debug_mode": True,
-            "instructions": "Extraia dados do texto",
-            "description": (
-                "Leia o texto e extraia as informações relevantes conforme o esquema definido. "
-                "Retorne um JSON estruturado com os dados extraídos. "
-                "Caso não encontre alguma informação, retorne null para aquele campo."
-            ),
-        }
-
-        if self.config:
-            try:
-                config_input = json.loads(self.config)
-                config_data = {**default_config, **config_input}
-            except json.JSONDecodeError:
-                raise HTTPException(status_code=400, detail="Invalid JSON in config")
-        else:
-            config_data = default_config
-
-        extractor = FileContentExtractor(
-            file_bytes=self.file_bytes,
-            file_extension=self.file_extension
-        )
-        result_extract = extractor.extract()
-
-        agent_parser = ContentParsingAgent(
-            input_data={
-                "file_content": result_extract["response"]
-            },
-            output_data=schema_data,
-            config_data=config_data
-        )
-
-        content_parsed = agent_parser.run_agent()
-        response = agent_parser.format_response(content_parsed)
-
-        return response
 
 @app.post("/parse-content/simple-file-parse")
 async def parse_content(
     schema: str = Form(...),
     file: UploadFile = File(...),
-    config: Optional[str] = Form(None),  # 👈 opcional
+    config: Optional[str] = Form(None),
 ):
     try:
         loader = await LoadRequestFile(
@@ -160,7 +96,7 @@ async def parse_content(
         raise HTTPException(status_code=500, detail=str(e))
 
 """
-curl --location 'http://localhost:8000/parse-content' \
+curl --location 'http://localhost:8000/parse-content/simple-file-parse' \
 --header 'Accept: application/json' \
 --form 'schema="{
   \"summary\": {
