@@ -61,34 +61,46 @@ from fastapi.responses import JSONResponse
 from typing import Optional
 import json
 
-@app.post("/parse-content")
-async def parse_content(
-    schema: str = Form(...),
-    file: UploadFile = File(...),
-    config: Optional[str] = Form(None),  # 👈 opcional
-):
-    try:
-        loader = await LoadRequestFile(
-            file=file,
-            max_size_mb=5
-        ).load()
+import json
+from typing import Optional
+from fastapi import HTTPException
+from io import BytesIO
 
-        file_bytes = loader.bytes
-        file_extension = loader.extension
 
-        schema_data = json.loads(schema)
+class SimpleFileParse:
+    def __init__(
+        self,
+        schema: str,
+        file_bytes: BytesIO,
+        file_extension: str,
+        config: Optional[str] = None,
+    ):
+        self.schema = schema
+        self.config = config
+        self.file_bytes = file_bytes
+        self.file_extension = file_extension
+
+    def run(self):
+        try:
+            schema_data = json.loads(self.schema)
+        except json.JSONDecodeError:
+            raise HTTPException(status_code=400, detail="Invalid JSON in schema")
 
         default_config = {
             "model_provider": "OpenAI",
             "model_id": "gpt-4.1-mini",
             "debug_mode": True,
             "instructions": "Extraia dados do texto",
-            "description": "Leia o texto e extraia as informações relevantes conforme o esquema definido. Retorne um JSON estruturado com os dados extraídos. Caso não encontre alguma informação, retorne null para aquele campo."
+            "description": (
+                "Leia o texto e extraia as informações relevantes conforme o esquema definido. "
+                "Retorne um JSON estruturado com os dados extraídos. "
+                "Caso não encontre alguma informação, retorne null para aquele campo."
+            ),
         }
 
-        if config:
+        if self.config:
             try:
-                config_input = json.loads(config)
+                config_input = json.loads(self.config)
                 config_data = {**default_config, **config_input}
             except json.JSONDecodeError:
                 raise HTTPException(status_code=400, detail="Invalid JSON in config")
@@ -96,8 +108,8 @@ async def parse_content(
             config_data = default_config
 
         extractor = FileContentExtractor(
-            file_bytes=file_bytes,
-            file_extension=file_extension
+            file_bytes=self.file_bytes,
+            file_extension=self.file_extension
         )
         result_extract = extractor.extract()
 
@@ -112,10 +124,36 @@ async def parse_content(
         content_parsed = agent_parser.run_agent()
         response = agent_parser.format_response(content_parsed)
 
+        return response
+
+@app.post("/parse-content/simple-file-parse")
+async def parse_content(
+    schema: str = Form(...),
+    file: UploadFile = File(...),
+    config: Optional[str] = Form(None),  # 👈 opcional
+):
+    try:
+        loader = await LoadRequestFile(
+            file=file,
+            max_size_mb=5
+        ).load()
+
+        file_bytes = loader.bytes
+        file_extension = loader.extension
+
+        parser = SimpleFileParse(
+            schema=schema,
+            config=config,
+            file_bytes=file_bytes,
+            file_extension=file_extension
+        )
+
+        response = parser.run()
+
         return JSONResponse(content={
             "status": "success",
             "response": response,
-            "config_used": config_data
+            "config_used": parser.config
         })
 
     except Exception as e:
