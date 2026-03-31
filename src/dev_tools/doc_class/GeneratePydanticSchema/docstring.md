@@ -1,3 +1,4 @@
+```python
 from typing import Any, Dict, List, Type, Tuple
 from pydantic import BaseModel, Field, create_model
 from typing import Any, Dict, Type
@@ -6,6 +7,16 @@ import inflect
 inflector = inflect.engine()
 
 class GeneratePydanticSchema:
+    """
+    Classe para gerar esquemas Pydantic dinamicamente a partir de dados de dicionário,
+    convertendo-os em modelos BaseModel com tipos e descrições automaticamente inferidos.
+
+    Args:
+    :param metadata_parser (FieldMetadataParser): Parser opcional para metadados dos campos. Default é None.
+
+    Methods:
+            generate_post(topic): Explica o metodo em uma frase
+    """
     def __init__(self, metadata_parser: FieldMetadataParser = None):
         self.metadata_parser = metadata_parser or FieldMetadataParser()
 
@@ -54,6 +65,19 @@ class GeneratePydanticSchema:
         return self._create_model(name, fields)
 
     def _parse_field(self, key: str, value: Any) -> Tuple[Any, Any]:
+        """
+        Analisa o campo para determinar seu tipo e metadados, criando modelos aninhados para objetos e listas quando necessário.
+
+        Args: 
+        key (str): Nome do campo a ser parseado.
+        value (Any): Valor do campo que será utilizado para deduzir o tipo.
+
+        Returns:
+                Tuple[Any, Any]: Tupla contendo o tipo do campo e seus metadados para uso na criação do modelo Pydantic.
+
+        Raises:
+                RuntimeError: Em caso de erro ao parsear o campo, lança exceção com a mensagem do erro.
+        """
         try:
             metadata = self.metadata_parser.parse(value)
             if metadata:
@@ -86,3 +110,4 @@ class GeneratePydanticSchema:
             return field_type, Field(description=description)
         except Exception as e:
             raise RuntimeError("Error parsing field", str(e))
+```

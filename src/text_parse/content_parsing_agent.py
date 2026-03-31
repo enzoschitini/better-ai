@@ -7,7 +7,7 @@ from agno.models.groq import Groq
 from agno.models.openai import OpenAIResponses
 
 from src.text_parse.config import Config
-from src.text_parse.pydantic_shema import JsonToPydantic, GeneratePydanticSchema
+from src.text_parse.pydantic_schema import JsonToPydantic, GeneratePydanticSchema
 
 load_dotenv()
 
@@ -92,7 +92,6 @@ class ContentParsingAgent:
                 }
             }
 
-            print(json.dumps(response, indent=2))
             return response
 
         except Exception as e:

@@ -86,13 +86,9 @@ class GeneratePydanticSchema:
     def __init__(self, metadata_parser: FieldMetadataParser = None):
         self.metadata_parser = metadata_parser or FieldMetadataParser()
 
-        # Estado interno
         self._models: Dict[str, Type[BaseModel]] = {}
         self._name_counter = 0
 
-    # --------------------------------------
-    # Public API
-    # --------------------------------------
     def convert(self, data: Dict[str, Any], root_name: str = "RootModel") -> Type[BaseModel]:
         try:
             return self._parse_object(data, root_name)
@@ -102,9 +98,6 @@ class GeneratePydanticSchema:
     def get_models(self) -> Dict[str, Type[BaseModel]]:
         return self._models
 
-    # --------------------------------------
-    # Helpers internos
-    # --------------------------------------
     def _generate_name(self, base: str) -> str:
         self._name_counter += 1
         return f"{base.capitalize()}{self._name_counter}"
@@ -129,9 +122,6 @@ class GeneratePydanticSchema:
             return dict
         return Any
 
-    # --------------------------------------
-    # Parsing
-    # --------------------------------------
     def _parse_object(self, obj: Dict[str, Any], name: str) -> Type[BaseModel]:
         fields = {}
 
@@ -148,24 +138,17 @@ class GeneratePydanticSchema:
 
             description = f"Auto-generated field for {key}"
 
-            # ----------------------------------
-            # Nested Object
-            # ----------------------------------
             if isinstance(value, dict):
                 model_name = self._generate_name(key)
                 nested_model = self._parse_object(value, model_name)
                 return nested_model, ...
 
-            # ----------------------------------
-            # List
-            # ----------------------------------
             if isinstance(value, list):
                 if not value:
                     return List[Any], Field(description=description)
 
                 first = value[0]
 
-                # Lista de objetos
                 if isinstance(first, dict):
                     model_name = self._generate_name(
                         inflector.singular_noun(key) or key
@@ -173,13 +156,9 @@ class GeneratePydanticSchema:
                     nested_model = self._parse_object(first, model_name)
                     return List[nested_model], ...
 
-                # Lista de primitivos
                 item_type = self._resolve_type(first)
                 return List[item_type], Field(description=description)
 
-            # ----------------------------------
-            # Primitive
-            # ----------------------------------
             field_type = self._resolve_type(value)
             return field_type, Field(description=description)
         except Exception as e:
