@@ -12,7 +12,7 @@ class TokenCounter:
 
 class ModelPricing:
     COST_MODELS = {
-        "gpt-4.1-mini": {"input": 0.15, "cached_input": 0.075, "output": 0.60}
+        "gpt-4.1-mini": {"input": 0.4, "output": 1.6}
     }
 
     def __init__(self, model: str):
@@ -21,11 +21,11 @@ class ModelPricing:
         self.model = model
         self.prices = self.COST_MODELS[model]
 
-    def input_rate_usd(self) -> float:
-        return self.prices["input"] / 1000
+    def input_rate_per_token(self) -> float:
+        return self.prices["input"] / 1_000_000
 
-    def output_rate_usd(self) -> float:
-        return self.prices["output"] / 1000
+    def output_rate_per_token(self) -> float:
+        return self.prices["output"] / 1_000_000
 
 if __name__ == "__main__":
     # Exemplo de uso
@@ -46,8 +46,10 @@ if __name__ == "__main__":
 
     # Test ModelPricing
     model_pricing = ModelPricing(MODEL)
-    input_cost = model_pricing.input_rate_usd() * input_token_count
-    output_cost = model_pricing.output_rate_usd() * output_token_count
+    input_cost = model_pricing.input_rate_per_token() * input_token_count
+    output_cost = model_pricing.output_rate_per_token() * output_token_count
 
     print(f"\nCusto de entrada (USD): {input_cost:.6f}")
     print(f"Custo de saída (USD): {output_cost:.6f}")
+
+
