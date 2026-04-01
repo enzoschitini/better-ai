@@ -53,3 +53,24 @@ if __name__ == "__main__":
     print(f"Custo de saída (USD): {output_cost:.6f}")
 
 
+usage = {
+    "model": {
+        "provider": "OpenAI",
+        "id": "gpt-4.1-mini"
+    },
+    "tokens": {
+        "input_tokens": 946,
+        "output_tokens": 255,
+        "total_tokens": 1201
+    },
+    "cost": {
+        "input_cost_usd": 0.0003784,
+        "output_cost_usd": 0.000408,
+        "total_cost_usd": 0.0007864
+    },
+    "dollar_rate": {
+        "brl": 5.25,
+        "eur": 0.92
+    }
+}
+
