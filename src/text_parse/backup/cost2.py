@@ -68,9 +68,11 @@ usage = {
         "output_cost_usd": 0.000408,
         "total_cost_usd": 0.0007864
     },
-    "dollar_rate": {
-        "brl": 5.25,
-        "eur": 0.92
+    "exchange_rates": {
+        "base": "USD",
+        "rates": {
+            "BRL": 5.25
+        }
     }
 }
 
