@@ -5,6 +5,7 @@ from io import BytesIO
 
 from src.embedding.services.file_content_extractor import FileContentExtractor
 from src.text_parse.content_parsing_agent import ContentParsingAgent
+from src.tokens_calculate.module import ModelPricing, ExchangeRateService
 
 class SimpleFileParse:
     def __init__(
@@ -85,7 +86,7 @@ if __name__ == "__main__":
     }
     """
 
-    with open("example.pdf", "rb") as f:
+    with open("src\\text_parse\\module\\Endurance.pdf", "rb") as f:
         file_bytes = BytesIO(f.read())
 
     parser = SimpleFileParse(
@@ -96,5 +97,34 @@ if __name__ == "__main__":
     )
 
     response = parser.run()
+    metadata = response.get("metadata", {})
+
+    model_pricing = ModelPricing(metadata.get("model").get("id"))
+    input_cost = model_pricing.input_rate_per_token() * metadata.get("tokens").get("input_tokens", 0)
+    output_cost = model_pricing.output_rate_per_token() * metadata.get("tokens").get("output_tokens", 0)
+
+    service = ExchangeRateService()
+    rate = service.get_usd_rate()
+    print(f"Cotação do dólar: {rate}")
+
+    formatted_metadata = {
+        "model": metadata.get("model"),
+        "tokens": metadata.get("tokens"),
+        "cost": {
+            "input_cost_usd": input_cost,
+            "output_cost_usd": output_cost,
+            "total_cost_usd": input_cost + output_cost,
+            "total_cost_brl": (input_cost + output_cost) * rate
+        },
+        "duration_s": metadata.get("duration_s"),
+    }
+
+    response = {
+        "content": response.get("content"),
+        "metadata": formatted_metadata
+    }
+
+    print("\nResposta do parser:")
+    print(json.dumps(response, indent=2))
 
 # python -m src.text_parse.module.simple_file_parse
