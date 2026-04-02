@@ -25,7 +25,7 @@ class BCBExchangeRateService:
     def _fetch_rate_for_date(self, date: datetime):
         url = self._build_url(date)
         try:
-            erro = 1 / 0
+            #erro = 1 / 0
             response = requests.get(url, timeout=self.timeout)
 
             print(f"Tentativa para {date.strftime('%m-%d-%Y')}: "
@@ -48,34 +48,39 @@ class BCBExchangeRateService:
         return None, None
 
     def get_latest_rate(self, max_days_back: int = 5):
-        today = datetime.now()
-        best_rate = None
-        best_date = None
+        try:
+            today = datetime.now()
+            best_rate = None
+            best_date = None
 
-        for delta in range(0, max_days_back):
-            date_try = today - timedelta(days=delta)
+            for delta in range(0, max_days_back):
+                date_try = today - timedelta(days=delta)
 
-            rate, date_api = self._fetch_rate_for_date(date_try)
+                rate, date_api = self._fetch_rate_for_date(date_try)
 
-            if rate and date_api:
-                if best_date is None or date_api > best_date:
-                    best_rate = rate
-                    best_date = date_api
+                if rate and date_api:
+                    if best_date is None or date_api > best_date:
+                        best_rate = rate
+                        best_date = date_api
 
-            time.sleep(0.2)
+                time.sleep(0.2)
 
-        print(
-            f"\nMelhor cotação encontrada: "
-            f"{best_rate} BRL/USD em "
-            f"{best_date.strftime('%Y-%m-%d') if best_date else 'N/A'}\n"
-        )
+            print(
+                f"\nMelhor cotação encontrada: "
+                f"{best_rate} BRL/USD em "
+                f"{best_date.strftime('%Y-%m-%d') if best_date else 'N/A'}\n"
+            )
 
-        return {
-            "rate": best_rate,
-            "date": best_date
-        }
-
-
+            return {
+                "rate": best_rate,
+                "date": best_date
+            }
+        except Exception as e:
+            print(f"Erro geral ao obter cotação: {e}")
+            return {
+                "rate": None,
+                "date": None
+            }
 
 
 
@@ -91,35 +96,66 @@ class ExchangeRateService:
             "rate": 5.25,
             "source": "better-ai"
         }
+        self.today = datetime.now()
+        self.date_str_api = self.today.strftime("%Y-%m-%d")
     
     def _get_bcb_rate(self):
         service = BCBExchangeRateService()
         result = service.get_latest_rate()
-
         return result.get("rate")
     
-    def _get_database_rate(self):
-        manager = DocumentStore(backend="local")
-        count = len(manager.fetch_documents("tokens_calculate", "exchange_rate"))
+    def _get_last_db_record(self):
+        docs = self.manager.fetch_documents("tokens_calculate", "exchange_rate")
 
-        if count == 0:
-            manager.save_payload("tokens_calculate", "exchange_rate", self.base)
-            return self.base["rate"]
+        if not docs:
+            return None
 
-        today = datetime.now()
-        date_str_api = today.strftime("%Y-%m-%d")
-
-        docs = manager.fetch_documents("tokens_calculate", "exchange_rate", {"date": date_str_api})
-        return docs[0]["rate"] if docs else None
+        # ordena pela data (mais recente primeiro)
+        docs_sorted = sorted(docs, key=lambda x: x["date"], reverse=True)
+        return docs_sorted[0]
 
     def get_usd_rate(self):
-        api_result = self._get_bcb_rate()
+        print("\n--- INÍCIO get_usd_rate ---")
 
-        if api_result is not None:
-            return api_result
+        last_record = self._get_last_db_record()
 
-        db_result = self._get_database_rate()
-        return db_result
+        # 1. Se já existe registro e é de hoje → retorna direto
+        if last_record:
+            print(f"Último registro encontrado: {last_record}")
+
+            if last_record["date"] == self.date_str_api:
+                print("Registro já é de hoje. Retornando do banco.")
+                return last_record["rate"]
+
+        # 2. Tenta buscar na API
+        print("Buscando cotação na API...")
+        api_rate = self._get_bcb_rate()
+
+        if api_rate is not None:
+            print(f"Cotação obtida da API: {api_rate}")
+
+            payload = {
+                "date": self.date_str_api,
+                "currency": "USD",
+                "rate": api_rate,
+                "source": "bcb"
+            }
+
+            self.manager.save_payload("tokens_calculate", "exchange_rate", payload)
+            print("Salvo no banco.")
+
+            return api_rate
+
+        # 2.1 Se API falhar → usa último do banco
+        if last_record:
+            print("API falhou. Usando último valor do banco.")
+            return last_record["rate"]
+
+        # 3. Pior caso → salva base
+        print("Nenhum dado disponível. Usando base.")
+
+        self.manager.save_payload("tokens_calculate", "exchange_rate", self.base)
+        return self.base["rate"]
 
 if __name__ == "__main__":
     #"""
