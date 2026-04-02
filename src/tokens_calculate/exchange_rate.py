@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from datetime import datetime, timedelta
 import time
 import requests
+from src.database.no_relational_db.router import DocumentStore
 
 load_dotenv()
 
@@ -24,6 +25,7 @@ class BCBExchangeRateService:
     def _fetch_rate_for_date(self, date: datetime):
         url = self._build_url(date)
         try:
+            erro = 1 / 0
             response = requests.get(url, timeout=self.timeout)
 
             print(f"Tentativa para {date.strftime('%m-%d-%Y')}: "
@@ -40,8 +42,8 @@ class BCBExchangeRateService:
                     )
                     return rate, date_api
 
-        except requests.RequestException as e:
-            print(f"Erro na requisição: {e}")
+        except Exception as e:
+            print(f"Erro ao buscar cotação para {date.strftime('%m-%d-%Y')}: {e}")
 
         return None, None
 
@@ -73,10 +75,58 @@ class BCBExchangeRateService:
             "date": best_date
         }
 
-if __name__ == "__main__":
-    service = BCBExchangeRateService()
-    result = service.get_latest_rate()
 
-    print(result)
+
+
+
+
+
+
+class ExchangeRateService:
+    def __init__(self):
+        self.manager = DocumentStore(backend="local")
+        self.base = {
+            "date": "2025-11-09",
+            "currency": "USD",
+            "rate": 5.25,
+            "source": "better-ai"
+        }
+    
+    def _get_bcb_rate(self):
+        service = BCBExchangeRateService()
+        result = service.get_latest_rate()
+
+        return result.get("rate")
+    
+    def _get_database_rate(self):
+        manager = DocumentStore(backend="local")
+        count = len(manager.fetch_documents("tokens_calculate", "exchange_rate"))
+
+        if count == 0:
+            manager.save_payload("tokens_calculate", "exchange_rate", self.base)
+            return self.base["rate"]
+
+        today = datetime.now()
+        date_str_api = today.strftime("%Y-%m-%d")
+
+        docs = manager.fetch_documents("tokens_calculate", "exchange_rate", {"date": date_str_api})
+        return docs[0]["rate"] if docs else None
+
+    def get_usd_rate(self):
+        api_result = self._get_bcb_rate()
+
+        if api_result is not None:
+            return api_result
+
+        db_result = self._get_database_rate()
+        return db_result
+
+if __name__ == "__main__":
+    #"""
+    service = ExchangeRateService()
+    rate = service.get_usd_rate()
+
+    print(rate)
+    #"""
 
 # python -m src.tokens_calculate.exchange_rate
