@@ -12,20 +12,24 @@ load_dotenv()
 output_data = {
     "title": {
         "type": "str",
-        "description": "Title of the content"
+        "description": "Title of the content",
+        "example": "The Future of AI"
     },
     "author": {
         "type": "str",
-        "description": "Author of the content"
+        "description": "Author of the content",
+        "example": "John Doe"
     },
     "summary": {
         "type": "str",
-        "description": "Short summary of the text"
+        "required": False,
+        "description": "Short summary of the text",
+        "example": "Artificial Intelligence is evolving rapidly. Companies are investing heavily in automation and machine learning to improve efficiency and decision-making."
     },
     "code": {
         "type": "str",
         "description": "Code snippet extracted from the text",
-        #"required": True
+        "required": True
     },
     "names": {
         "type": "list",

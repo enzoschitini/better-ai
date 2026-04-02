@@ -1,7 +1,8 @@
+import inflect
+
 from typing import Any, Dict, List, Type, Tuple
 from pydantic import BaseModel, Field, create_model
-from typing import Any, Dict, Type
-import inflect
+from typing import Any, Dict, Type, Optional
 
 inflector = inflect.engine()
 
@@ -49,6 +50,7 @@ class JsonToPydantic:
             raise RuntimeError("Error parsing data", str(e))
 
 
+
 class FieldMetadataParser:
     def parse(self, value: Any) -> Tuple[Any, Any] | None:
         try:
@@ -60,12 +62,47 @@ class FieldMetadataParser:
             raise RuntimeError("Error parsing field metadata", str(e))
 
     def _parse_metadata(self, value: Dict[str, Any]) -> Tuple[Any, Any]:
-        field_type = self._map_type(value.get("type"))
+        type_name = value.get("type")
+        is_required = value.get("required", False)
+
+        if type_name == "list":
+            items = value.get("items")
+
+            if not items:
+                raise ValueError("List type must define 'items'")
+
+            if items.get("type") != "object":
+                item_type = self._map_type(items.get("type"))
+                field_type = List[item_type]
+            else:
+                properties = items.get("properties", {})
+                model_name = "NestedItem"
+
+                nested_model = create_model(
+                    model_name,
+                    **{
+                        k: (
+                            self._map_type(v["type"]),
+                            Field(description=v.get("description"))
+                        )
+                        for k, v in properties.items()
+                    }
+                )
+
+                field_type = List[nested_model]
+
+        else:
+            field_type = self._map_type(type_name)
+
+        if not is_required:
+            field_type = Optional[field_type]
 
         field_info = Field(
-            default=value.get("default", ...),
+            default=value.get("default", None if not is_required else ...),
             description=value.get("description"),
-            examples=[value["example"]] if "example" in value else None
+            examples=[value["example"]] if "example" in value else None,
+            min_length=value.get("min_length"),
+            max_length=value.get("max_length"),
         )
 
         return field_type, field_info
@@ -163,6 +200,8 @@ class GeneratePydanticSchema:
             return field_type, Field(description=description)
         except Exception as e:
             raise RuntimeError("Error parsing field", str(e))
+
+
 
 
 
