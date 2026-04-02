@@ -22,7 +22,10 @@ output_data = {
         "type": "str",
         "description": "Short summary of the text"
     },
-
+    "code": {
+        "type": "str",
+        "description": "Code snippet extracted from the text"
+    },
     "names": {
         "type": "list",
         "description": "List of names mentioned in the text",
@@ -85,7 +88,7 @@ class ParsedText(BaseModel):
         max_length=5
     )
 
-output_schema = ParsedText
+output_schema2 = ParsedText
 
 agent = Agent(
     model=OpenAIResponses(id="gpt-4.1-mini"),
@@ -96,6 +99,7 @@ agent = Agent(
 input_text = """
 Title: The Future of AI
 Author: John Doe
+Code: 
 
 Artificial Intelligence is evolving rapidly. Companies are investing heavily
 in automation and machine learning to improve efficiency and decision-making.
