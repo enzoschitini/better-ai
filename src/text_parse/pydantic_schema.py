@@ -1,8 +1,6 @@
 import inflect
-
-from typing import Any, Dict, List, Type, Tuple
+from typing import Any, Dict, List, Type, Tuple, Optional
 from pydantic import BaseModel, Field, create_model
-from typing import Any, Dict, Type, Optional
 
 inflector = inflect.engine()
 

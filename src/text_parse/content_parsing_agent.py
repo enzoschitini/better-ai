@@ -88,7 +88,7 @@ class ContentParsingAgent:
                         "output_tokens": model_metrics.output_tokens,
                         "total_tokens": model_metrics.total_tokens,
                     },
-                    "duration_s": round(metrics_dict.get("duration_s"), 2),
+                    "duration_s": round(metrics_dict.get("duration"), 2),
                 }
             }
 
