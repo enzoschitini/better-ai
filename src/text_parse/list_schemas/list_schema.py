@@ -24,7 +24,8 @@ output_data = {
     },
     "code": {
         "type": "str",
-        "description": "Code snippet extracted from the text"
+        "description": "Code snippet extracted from the text",
+        #"required": True
     },
     "names": {
         "type": "list",

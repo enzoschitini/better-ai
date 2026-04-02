@@ -2,6 +2,7 @@ from typing import Any, Dict, List, Type, Tuple
 from pydantic import BaseModel, Field, create_model
 from typing import Any, Dict, Type
 import inflect
+from typing import Optional
 
 inflector = inflect.engine()
 
@@ -17,20 +18,18 @@ class FieldMetadataParser:
 
     def _parse_metadata(self, value: Dict[str, Any]) -> Tuple[Any, Any]:
         type_name = value.get("type")
+        is_required = value.get("required", False)
 
-        # 🔥 TRATAMENTO DE LISTA
+        # 🔥 LISTA
         if type_name == "list":
             items = value.get("items")
 
             if not items:
                 raise ValueError("List type must define 'items'")
 
-            # item simples (str, int, etc.)
             if items.get("type") != "object":
                 item_type = self._map_type(items.get("type"))
                 field_type = List[item_type]
-
-            # item complexo (objeto)
             else:
                 properties = items.get("properties", {})
                 model_name = "NestedItem"
@@ -38,7 +37,10 @@ class FieldMetadataParser:
                 nested_model = create_model(
                     model_name,
                     **{
-                        k: (self._map_type(v["type"]), Field(description=v.get("description")))
+                        k: (
+                            self._map_type(v["type"]),
+                            Field(description=v.get("description"))
+                        )
                         for k, v in properties.items()
                     }
                 )
@@ -47,16 +49,13 @@ class FieldMetadataParser:
 
         else:
             field_type = self._map_type(type_name)
-        
-        """
-        field_info = Field(
-            default=value.get("default", ...),
-            description=value.get("description"),
-        )
-        """
+
+        # 🔥 AQUI É O PONTO CHAVE
+        if not is_required:
+            field_type = Optional[field_type]
 
         field_info = Field(
-            default=value.get("default", ...),
+            default=value.get("default", None if not is_required else ...),
             description=value.get("description"),
             examples=[value["example"]] if "example" in value else None,
             min_length=value.get("min_length"),
