@@ -16,12 +16,41 @@ class FieldMetadataParser:
             raise RuntimeError("Error parsing field metadata", str(e))
 
     def _parse_metadata(self, value: Dict[str, Any]) -> Tuple[Any, Any]:
-        field_type = self._map_type(value.get("type"))
+        type_name = value.get("type")
+
+        # 🔥 TRATAMENTO DE LISTA
+        if type_name == "list":
+            items = value.get("items")
+
+            if not items:
+                raise ValueError("List type must define 'items'")
+
+            # item simples (str, int, etc.)
+            if items.get("type") != "object":
+                item_type = self._map_type(items.get("type"))
+                field_type = List[item_type]
+
+            # item complexo (objeto)
+            else:
+                properties = items.get("properties", {})
+                model_name = "NestedItem"
+
+                nested_model = create_model(
+                    model_name,
+                    **{
+                        k: (self._map_type(v["type"]), Field(description=v.get("description")))
+                        for k, v in properties.items()
+                    }
+                )
+
+                field_type = List[nested_model]
+
+        else:
+            field_type = self._map_type(type_name)
 
         field_info = Field(
             default=value.get("default", ...),
             description=value.get("description"),
-            examples=[value["example"]] if "example" in value else None
         )
 
         return field_type, field_info
