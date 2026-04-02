@@ -26,25 +26,47 @@ output_schema = ParsedText
 # 🔹 Json Schema
 
 output_data = {
-    "title": {"type": "str"},
-    "author": {"type": "str"},
-    "summary": {"type": "str"},
+    "title": {
+        "type": "str",
+        "description": "Title of the content"
+    },
+    "author": {
+        "type": "str",
+        "description": "Author of the content"
+    },
+    "summary": {
+        "type": "str",
+        "description": "Short summary of the text"
+    },
 
     "names": {
         "type": "list",
+        "description": "List of names mentioned in the text",
         "items": {
-            "type": "str"
+            "type": "str",
+            "description": "A person's name mentioned in the text"
         }
     },
 
     "peoples": {
         "type": "list",
+        "description": "List of people with structured details extracted from the text",
         "items": {
             "type": "object",
+            "description": "A person mentioned in the text",
             "properties": {
-                "name": {"type": "str"},
-                "experience": {"type": "str"},
-                "profession": {"type": "str"}
+                "name": {
+                    "type": "str",
+                    "description": "Full name of the person"
+                },
+                "experience": {
+                    "type": "str",
+                    "description": "Years of experience or expertise level"
+                },
+                "profession": {
+                    "type": "str",
+                    "description": "Profession or role of the person"
+                }
             }
         }
     }
