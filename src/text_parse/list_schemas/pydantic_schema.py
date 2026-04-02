@@ -47,10 +47,20 @@ class FieldMetadataParser:
 
         else:
             field_type = self._map_type(type_name)
+        
+        """
+        field_info = Field(
+            default=value.get("default", ...),
+            description=value.get("description"),
+        )
+        """
 
         field_info = Field(
             default=value.get("default", ...),
             description=value.get("description"),
+            examples=[value["example"]] if "example" in value else None,
+            min_length=value.get("min_length"),
+            max_length=value.get("max_length"),
         )
 
         return field_type, field_info

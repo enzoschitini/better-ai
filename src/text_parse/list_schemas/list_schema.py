@@ -51,6 +51,7 @@ output_data = {
     "peoples": {
         "type": "list",
         "description": "List of people with structured details extracted from the text",
+        "max_length": 1,
         "items": {
             "type": "object",
             "description": "A person mentioned in the text",
