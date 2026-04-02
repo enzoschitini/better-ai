@@ -114,8 +114,35 @@ class ExchangeRateService:
         docs_sorted = sorted(docs, key=lambda x: x["date"], reverse=True)
         return docs_sorted[0]
 
+    def _enforce_limit(self, limit: int = 5):
+        docs = self.manager.fetch_documents("tokens_calculate", "exchange_rate")
+
+        if len(docs) < limit:
+            return
+
+        # ordena do mais antigo → mais recente
+        docs_sorted = sorted(docs, key=lambda x: x["date"])
+
+        # calcula quantos precisam ser removidos
+        to_delete = len(docs_sorted) - limit + 1
+
+        for i in range(to_delete):
+            doc = docs_sorted[i]
+
+            print(f"Removendo registro antigo: {doc}")
+
+            # ⚠️ ajuste aqui conforme sua implementação
+            self.manager.delete_documents(
+                "tokens_calculate",
+                "exchange_rate",
+                {"date": doc["date"]}
+            )
+
     def get_usd_rate(self):
         print("\n--- INÍCIO get_usd_rate ---")
+
+        # 🔥 GARANTE LIMITE SEMPRE
+        self._enforce_limit(limit=6)
 
         last_record = self._get_last_db_record()
 
@@ -141,6 +168,9 @@ class ExchangeRateService:
                 "source": "bcb"
             }
 
+            # (opcional manter aqui também, mas não obrigatório)
+            self._enforce_limit(limit=5)
+
             self.manager.save_payload("tokens_calculate", "exchange_rate", payload)
             print("Salvo no banco.")
 
@@ -154,7 +184,9 @@ class ExchangeRateService:
         # 3. Pior caso → salva base
         print("Nenhum dado disponível. Usando base.")
 
+        self._enforce_limit(limit=5)
         self.manager.save_payload("tokens_calculate", "exchange_rate", self.base)
+
         return self.base["rate"]
 
 if __name__ == "__main__":
