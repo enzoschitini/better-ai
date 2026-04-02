@@ -47,6 +47,7 @@ seaborn~=0.13.2
 # --- 7. EXTERNAL TOOLS & INTEGRATIONS ---
 # Ferramentas de busca e APIs de terceiros para os Agents
 wikipedia~=1.4.0
+exchangerateapi-python~=0.1.0
 
 # --- 8. INTERNAL SERVICES ---
 pytest~=9.0.2
