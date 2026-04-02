@@ -7,22 +7,6 @@ from src.text_parse.list_schemas.pydantic_schema import GeneratePydanticSchema
 
 load_dotenv()
 
-# 🔹 Schema do que você quer extrair
-
-class PeoplesDescription(BaseModel):
-    name: str = Field(description="Name of the person")
-    experience: str = Field(description="Experience of the person in years")
-    profession: str = Field(description="Profession of the person")
-
-class ParsedText(BaseModel):
-    title: str = Field(description="Title of the content")
-    author: str = Field(description="Author of the content")
-    summary: str = Field(description="Short summary of the text")
-    names: list[str] = Field(description="List of names mentioned in the text")
-    peoples: list[PeoplesDescription] = Field(description="List of people with their descriptions.", max_length=5)
-
-output_schema = ParsedText
-
 # 🔹 Json Schema
 
 output_data = {
@@ -76,8 +60,32 @@ output_data = {
 converter = GeneratePydanticSchema()
 output_schema = converter.convert(output_data, "OutputSchema")
 
-print("Generated Pydantic Schema:")
-print(output_schema.schema_json(indent=2))
+# print("Generated Pydantic Schema:")
+# print(output_schema.schema_json(indent=2))
+
+# 🔹 Schema do que você quer extrair
+from typing import Optional
+
+class PeoplesDescription(BaseModel):
+    name: str = Field(description="Name of the person")
+    experience: str = Field(description="Experience of the person in years")
+    profession: str = Field(description="Profession of the person")
+
+class ParsedText(BaseModel):
+    title: str = Field(description="Title of the content")
+    author: str = Field(description="Author of the content")
+    summary: str = Field(description="Short summary of the text")
+    code: Optional[str] = Field(
+        default=None,
+        description="Code snippet extracted from the text"
+    )
+    names: list[str] = Field(description="List of names mentioned in the text")
+    peoples: list[PeoplesDescription] = Field(
+        description="List of people with their descriptions.",
+        max_length=5
+    )
+
+output_schema = ParsedText
 
 agent = Agent(
     model=OpenAIResponses(id="gpt-4.1-mini"),
