@@ -7,6 +7,19 @@ from src.embedding.services.file_content_extractor import FileContentExtractor
 from src.text_parse.content_parsing_agent import ContentParsingAgent
 from src.tokens_calculate.module import ModelPricing, ExchangeRateService
 
+
+default_config = {
+    "model_provider": "OpenAI",
+    "model_id": "gpt-4.1-mini",
+    "debug_mode": True,
+    "instructions": "Extraia dados do texto",
+    "description": (
+        "Leia o texto e extraia as informações relevantes conforme o esquema definido. "
+        "Retorne um JSON estruturado com os dados extraídos. "
+        "Caso não encontre alguma informação, retorne null para aquele campo."
+    ),
+}
+
 class SimpleFileParse:
     def __init__(
         self,
@@ -19,50 +32,52 @@ class SimpleFileParse:
         self.config = config
         self.file_bytes = file_bytes
         self.file_extension = file_extension
-
-    def run(self):
+    
+    def set_data(self):
+        # Set metadata
         try:
-            schema_data = json.loads(self.schema)
+            self.schema_data = json.loads(self.schema)
         except json.JSONDecodeError:
             raise HTTPException(status_code=400, detail="Invalid JSON in schema")
-
-        default_config = {
-            "model_provider": "OpenAI",
-            "model_id": "gpt-4.1-mini",
-            "debug_mode": True,
-            "instructions": "Extraia dados do texto",
-            "description": (
-                "Leia o texto e extraia as informações relevantes conforme o esquema definido. "
-                "Retorne um JSON estruturado com os dados extraídos. "
-                "Caso não encontre alguma informação, retorne null para aquele campo."
-            ),
-        }
 
         if self.config:
             try:
                 config_input = json.loads(self.config)
-                config_data = {**default_config, **config_input}
+                self.config_data = {**default_config, **config_input}
             except json.JSONDecodeError:
                 raise HTTPException(status_code=400, detail="Invalid JSON in config")
         else:
-            config_data = default_config
-
+            self.config_data = default_config
+    
+    def extract_file_content(self):
+        # Extract file content
         extractor = FileContentExtractor(
             file_bytes=self.file_bytes,
             file_extension=self.file_extension
         )
-        result_extract = extractor.extract()
-
+        self.result_extract = extractor.extract()
+    
+    def content_parsing(self):
+        # Parse content with agent
         agent_parser = ContentParsingAgent(
             input_data={
-                "file_content": result_extract["response"]
+                "file_content": self.result_extract["response"]
             },
-            output_data=schema_data,
-            config_data=config_data
+            output_data=self.schema_data,
+            config_data=self.config_data
         )
 
         content_parsed = agent_parser.run_agent()
-        response = agent_parser.format_response(content_parsed)
+        return agent_parser.format_response(content_parsed)
+
+    def run(self):
+        self.set_data()
+        self.extract_file_content()
+        response = self.content_parsing()
+
+        # Calculate tokens and cost
+        # Formatte response result + process
+        # Save processed result in database
 
         return response
 
