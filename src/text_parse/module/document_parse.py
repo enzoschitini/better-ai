@@ -45,6 +45,11 @@ class DocumentParse:
     def _load_schema_and_config(self):
         # Set metadata
         try:
+            self.metadata_data = json.loads(self.metadata)
+        except json.JSONDecodeError:
+            raise HTTPException(status_code=400, detail="Invalid JSON in metadata")
+
+        try:
             self.schema_data = json.loads(self.schema)
         except json.JSONDecodeError:
             raise HTTPException(status_code=400, detail="Invalid JSON in schema")
@@ -106,7 +111,7 @@ class DocumentParse:
 
         self.response = {
             "job_id": self.job_id,
-            "metadata": self.metadata,
+            "metadata": self.metadata_data,
             "content": self.agent_response.get("content"),
             "process_info": formatted_info_process
         }

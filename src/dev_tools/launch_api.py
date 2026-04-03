@@ -64,6 +64,8 @@ from src.text_parse.module.applications import DocumentParse
 
 @app.post("/parse-content/simple-file-parse")
 async def parse_content(
+    job_id: str = Form(...),
+    metadata: str = Form(...),
     schema: str = Form(...),
     file: UploadFile = File(...),
     config: Optional[str] = Form(None),
@@ -78,8 +80,8 @@ async def parse_content(
         file_extension = loader.extension
 
         parser = DocumentParse(
-            job_id="test",
-            metadata={"filename": "xxxx"},
+            job_id=job_id,
+            metadata=metadata,
             schema=schema,
             config=config,
             file_bytes=file_bytes,
