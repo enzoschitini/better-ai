@@ -68,18 +68,48 @@ class SimpleFileParse:
         )
 
         content_parsed = agent_parser.run_agent()
-        return agent_parser.format_response(content_parsed)
+        self.response = agent_parser.format_response(content_parsed)
+    
+    def calculate_tokens_and_cost(self):
+        # Calculate tokens and cost
+        self.metadata = self.response.get("metadata", {})
+
+        model_pricing = ModelPricing(self.metadata.get("model").get("id"))
+        self.input_cost = model_pricing.input_rate_per_token() * self.metadata.get("tokens").get("input_tokens", 0)
+        self.output_cost = model_pricing.output_rate_per_token() * self.metadata.get("tokens").get("output_tokens", 0)
+
+        service = ExchangeRateService()
+        self.rate = service.get_usd_rate()
+        print(f"Cotação do dólar: {self.rate}")
+    
+    def formatte_response(self):
+        # Formatte response result + process
+        formatted_metadata = {
+            "model": self.metadata.get("model"),
+            "tokens": self.metadata.get("tokens"),
+            "cost": {
+                "input_cost_usd": self.input_cost,
+                "output_cost_usd": self.output_cost,
+                "total_cost_usd": self.input_cost + self.output_cost,
+                "total_cost_brl": (self.input_cost + self.output_cost) * self.rate
+            },
+            "duration_s": self.metadata.get("duration_s"),
+        }
+
+        self.response = {
+            "content": self.response.get("content"),
+            "metadata": formatted_metadata
+        }
 
     def run(self):
         self.set_data()
         self.extract_file_content()
-        response = self.content_parsing()
+        self.content_parsing()
+        self.calculate_tokens_and_cost()
 
-        # Calculate tokens and cost
-        # Formatte response result + process
         # Save processed result in database
 
-        return response
+        return self.response
 
 if __name__ == "__main__":
     # Exemplo de uso
@@ -112,32 +142,6 @@ if __name__ == "__main__":
     )
 
     response = parser.run()
-    metadata = response.get("metadata", {})
-
-    model_pricing = ModelPricing(metadata.get("model").get("id"))
-    input_cost = model_pricing.input_rate_per_token() * metadata.get("tokens").get("input_tokens", 0)
-    output_cost = model_pricing.output_rate_per_token() * metadata.get("tokens").get("output_tokens", 0)
-
-    service = ExchangeRateService()
-    rate = service.get_usd_rate()
-    print(f"Cotação do dólar: {rate}")
-
-    formatted_metadata = {
-        "model": metadata.get("model"),
-        "tokens": metadata.get("tokens"),
-        "cost": {
-            "input_cost_usd": input_cost,
-            "output_cost_usd": output_cost,
-            "total_cost_usd": input_cost + output_cost,
-            "total_cost_brl": (input_cost + output_cost) * rate
-        },
-        "duration_s": metadata.get("duration_s"),
-    }
-
-    response = {
-        "content": response.get("content"),
-        "metadata": formatted_metadata
-    }
 
     print("\nResposta do parser:")
     print(json.dumps(response, indent=2))
