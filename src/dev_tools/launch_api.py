@@ -88,12 +88,11 @@ async def parse_content(
             file_extension=file_extension
         )
 
-        response = parser.run()
+        result = parser.run()
 
         return JSONResponse(content={
             "status": "success",
-            "response": response,
-            "config_used": parser.config
+            "result": result
         })
 
     except Exception as e:
@@ -101,7 +100,8 @@ async def parse_content(
 
 """
 curl --location 'http://localhost:8000/parse-content/simple-file-parse' \
---header 'Accept: application/json' \
+--form 'job_id="teste"' \
+--form 'metadata="{\"value1\": \"value3\"}"' \
 --form 'schema="{
   \"summary\": {
     \"type\": \"str\",
@@ -115,6 +115,6 @@ curl --location 'http://localhost:8000/parse-content/simple-file-parse' \
   \"instructions\": \"Extraia dados do texto\",
   \"description\": \"Leia o texto e extraia as informações relevantes conforme o esquema definido. Retorne um JSON estruturado com os dados extraídos. Caso não encontre alguma informação, retorne null para aquele campo.\"
 }"' \
---form 'file=@"/C:/Users/enzo_silva/Downloads/files/Fiat Test Chat/Endurance.pdf"'
+--form 'file=@"c:\\Users\\schit\\better-ai\\src\\text_parse\\module\\Endurance.pdf"''
 """
 

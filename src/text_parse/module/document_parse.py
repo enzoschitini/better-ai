@@ -40,7 +40,7 @@ class DocumentParse:
         self._build_response()
         self._save()
 
-        return self.response
+        return self.api_response
 
     def _load_schema_and_config(self):
         # Set metadata
@@ -109,11 +109,16 @@ class DocumentParse:
             "duration_s": self.info_process.get("duration_s"),
         }
 
-        self.response = {
+        self.save_payload = {
             "job_id": self.job_id,
             "metadata": self.metadata_data,
             "content": self.agent_response.get("content"),
             "process_info": formatted_info_process
+        }
+
+        self.api_response = {
+            "job_id": self.job_id,
+            "content": self.agent_response.get("content"),
         }
     
     def _save(self):
@@ -122,7 +127,7 @@ class DocumentParse:
         document_store.save_payload(
             database_name=self.database_name,
             collection_name=self.collection_name,
-            payload=self.response
+            payload=self.save_payload
         )
 
 
