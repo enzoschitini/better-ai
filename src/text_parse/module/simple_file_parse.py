@@ -6,6 +6,7 @@ from io import BytesIO
 from src.embedding.services.file_content_extractor import FileContentExtractor
 from src.text_parse.content_parsing_agent import ContentParsingAgent
 from src.tokens_calculate.module import ModelPricing, ExchangeRateService
+from src.database.no_relational_db.router import DocumentStore
 
 
 default_config = {
@@ -100,14 +101,22 @@ class SimpleFileParse:
             "content": self.response.get("content"),
             "metadata": formatted_metadata
         }
+    
+    def save_to_database(self):
+        # Save processed result in database
+        document_store = DocumentStore(backend="local")
+        document_store.save_payload(
+            database_name="SimpleFileParse", 
+            collection_name="process", 
+            payload=self.response
+        )
 
     def run(self):
         self.set_data()
         self.extract_file_content()
         self.content_parsing()
         self.calculate_tokens_and_cost()
-
-        # Save processed result in database
+        self.save_to_database()
 
         return self.response
 
