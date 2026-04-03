@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 @dataclass
 class Config:
@@ -17,3 +17,21 @@ class Config:
     Leia o texto e extraia as informações relevantes conforme o esquema definido. Retorne um JSON estruturado com os dados extraídos.
     Caso não encontre alguma informação, retorne null para aquele campo.
     """
+
+
+@dataclass
+class DocumentParseConfig:
+    default_config: dict = field(default_factory=lambda: {
+        "model_provider": "OpenAI",
+        "model_id": "gpt-4.1-mini",
+        "debug_mode": True,
+        "instructions": "Extraia dados do texto",
+        "description": (
+            "Leia o texto e extraia as informações relevantes conforme o esquema definido. "
+            "Retorne um JSON estruturado com os dados extraídos. "
+            "Caso não encontre alguma informação, retorne null para aquele campo."
+        )
+    })
+
+    database_name: str = "SimpleFileParse"
+    collection_name: str = "process"

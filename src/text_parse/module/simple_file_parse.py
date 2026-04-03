@@ -3,23 +3,12 @@ from typing import Optional
 from fastapi import HTTPException
 from io import BytesIO
 
-from src.embedding.services.file_content_extractor import FileContentExtractor
 from src.text_parse.content_parsing_agent import ContentParsingAgent
+from src.text_parse.config import DocumentParseConfig
+from src.embedding.services.file_content_extractor import FileContentExtractor
 from src.tokens_calculate.module import ModelPricing, ExchangeRateService
 from src.database.no_relational_db.router import DocumentStore
 
-
-default_config = {
-    "model_provider": "OpenAI",
-    "model_id": "gpt-4.1-mini",
-    "debug_mode": True,
-    "instructions": "Extraia dados do texto",
-    "description": (
-        "Leia o texto e extraia as informações relevantes conforme o esquema definido. "
-        "Retorne um JSON estruturado com os dados extraídos. "
-        "Caso não encontre alguma informação, retorne null para aquele campo."
-    ),
-}
 
 class DocumentParse:
     def __init__(
@@ -37,6 +26,11 @@ class DocumentParse:
         self.config = config
         self.file_bytes = file_bytes
         self.file_extension = file_extension
+
+        system_settings = DocumentParseConfig()
+        self.default_config = system_settings.default_config
+        self.database_name = system_settings.database_name
+        self.collection_name = system_settings.collection_name
 
     def run(self):
         self._load_schema_and_config()
@@ -58,11 +52,11 @@ class DocumentParse:
         if self.config:
             try:
                 config_input = json.loads(self.config)
-                self.config_data = {**default_config, **config_input}
+                self.config_data = {**self.default_config, **config_input}
             except json.JSONDecodeError:
                 raise HTTPException(status_code=400, detail="Invalid JSON in config")
         else:
-            self.config_data = default_config
+            self.config_data = self.default_config
     
     def _extract_file_content(self):
         # Extract file content
@@ -119,10 +113,10 @@ class DocumentParse:
     
     def _save(self):
         # Save processed result in database
-        document_store = DocumentStore(backend="local")
+        document_store = DocumentStore()
         document_store.save_payload(
-            database_name="SimpleFileParse", 
-            collection_name="process", 
+            database_name=self.database_name,
+            collection_name=self.collection_name,
             payload=self.response
         )
 
