@@ -1,7 +1,7 @@
-from src.text_parse.module.simple_file_parse import SimpleFileParse
+from src.text_parse.module.document_parse import DocumentParse
 
 __all__ = [
-    "SimpleFileParse"
+    "DocumentParse"
 ]
 
 # python -m src.text_parse.module.applications

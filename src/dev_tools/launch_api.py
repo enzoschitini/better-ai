@@ -59,7 +59,7 @@ from fastapi.responses import JSONResponse
 from typing import Optional
 
 from src.utils.load_file.load_request_file import LoadRequestFile
-from src.text_parse.module.applications import SimpleFileParse
+from src.text_parse.module.applications import DocumentParse
 
 
 @app.post("/parse-content/simple-file-parse")
@@ -77,7 +77,9 @@ async def parse_content(
         file_bytes = loader.bytes
         file_extension = loader.extension
 
-        parser = SimpleFileParse(
+        parser = DocumentParse(
+            job_id="test",
+            metadata={"filename": "xxxx"},
             schema=schema,
             config=config,
             file_bytes=file_bytes,
