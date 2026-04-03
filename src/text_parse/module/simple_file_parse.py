@@ -24,11 +24,15 @@ default_config = {
 class SimpleFileParse:
     def __init__(
         self,
+        job_id: str,
+        metadata: dict,
         schema: str,
         file_bytes: BytesIO,
         file_extension: str,
         config: Optional[str] = None,
     ):
+        self.job_id = job_id
+        self.metadata = metadata
         self.schema = schema
         self.config = config
         self.file_bytes = file_bytes
@@ -69,15 +73,15 @@ class SimpleFileParse:
         )
 
         content_parsed = agent_parser.run_agent()
-        self.response = agent_parser.format_response(content_parsed)
+        self.agent_response = agent_parser.format_response(content_parsed)
     
     def calculate_tokens_and_cost(self):
         # Calculate tokens and cost
-        self.metadata = self.response.get("metadata", {})
+        self.info_process = self.agent_response.get("metadata", {})
 
-        model_pricing = ModelPricing(self.metadata.get("model").get("id"))
-        self.input_cost = model_pricing.input_rate_per_token() * self.metadata.get("tokens").get("input_tokens", 0)
-        self.output_cost = model_pricing.output_rate_per_token() * self.metadata.get("tokens").get("output_tokens", 0)
+        model_pricing = ModelPricing(self.info_process.get("model").get("id"))
+        self.input_cost = model_pricing.input_rate_per_token() * self.info_process.get("tokens").get("input_tokens", 0)
+        self.output_cost = model_pricing.output_rate_per_token() * self.info_process.get("tokens").get("output_tokens", 0)
 
         service = ExchangeRateService()
         self.rate = service.get_usd_rate()
@@ -85,21 +89,23 @@ class SimpleFileParse:
     
     def formatte_response(self):
         # Formatte response result + process
-        formatted_metadata = {
-            "model": self.metadata.get("model"),
-            "tokens": self.metadata.get("tokens"),
+        formatted_info_process = {
+            "model": self.info_process.get("model"),
+            "tokens": self.info_process.get("tokens"),
             "cost": {
                 "input_cost_usd": self.input_cost,
                 "output_cost_usd": self.output_cost,
                 "total_cost_usd": self.input_cost + self.output_cost,
                 "total_cost_brl": (self.input_cost + self.output_cost) * self.rate
             },
-            "duration_s": self.metadata.get("duration_s"),
+            "duration_s": self.info_process.get("duration_s"),
         }
 
         self.response = {
-            "content": self.response.get("content"),
-            "metadata": formatted_metadata
+            "job_id": self.job_id,
+            "metadata": self.metadata,
+            "content": self.agent_response.get("content"),
+            "process_info": formatted_info_process
         }
     
     def save_to_database(self):
@@ -116,6 +122,7 @@ class SimpleFileParse:
         self.extract_file_content()
         self.content_parsing()
         self.calculate_tokens_and_cost()
+        self.formatte_response()
         self.save_to_database()
 
         return self.response
@@ -144,6 +151,8 @@ if __name__ == "__main__":
         file_bytes = BytesIO(f.read())
 
     parser = SimpleFileParse(
+        job_id="job_123",
+        metadata={"user_id": "user_456"},
         schema=schema,
         config=config,
         file_bytes=file_bytes,
