@@ -127,6 +127,10 @@ class SimpleFileParse:
 
         return self.response
 
+
+
+
+
 if __name__ == "__main__":
     # Exemplo de uso
     schema = """
