@@ -21,7 +21,7 @@ default_config = {
     ),
 }
 
-class SimpleFileParse:
+class DocumentParse:
     def __init__(
         self,
         job_id: str,
@@ -37,8 +37,18 @@ class SimpleFileParse:
         self.config = config
         self.file_bytes = file_bytes
         self.file_extension = file_extension
-    
-    def set_data(self):
+
+    def run(self):
+        self._load_schema_and_config()
+        self._extract_file_content()
+        self._parse_content()
+        self._calculate_costs()
+        self._build_response()
+        self._save()
+
+        return self.response
+
+    def _load_schema_and_config(self):
         # Set metadata
         try:
             self.schema_data = json.loads(self.schema)
@@ -54,7 +64,7 @@ class SimpleFileParse:
         else:
             self.config_data = default_config
     
-    def extract_file_content(self):
+    def _extract_file_content(self):
         # Extract file content
         extractor = FileContentExtractor(
             file_bytes=self.file_bytes,
@@ -62,7 +72,7 @@ class SimpleFileParse:
         )
         self.result_extract = extractor.extract()
     
-    def content_parsing(self):
+    def _parse_content(self):
         # Parse content with agent
         agent_parser = ContentParsingAgent(
             input_data={
@@ -72,10 +82,10 @@ class SimpleFileParse:
             config_data=self.config_data
         )
 
-        content_parsed = agent_parser.run_agent()
-        self.agent_response = agent_parser.format_response(content_parsed)
+        raw_content_parsed = agent_parser.run_agent()
+        self.agent_response = agent_parser.format_response(raw_content_parsed)
     
-    def calculate_tokens_and_cost(self):
+    def _calculate_costs(self):
         # Calculate tokens and cost
         self.info_process = self.agent_response.get("metadata", {})
 
@@ -85,9 +95,8 @@ class SimpleFileParse:
 
         service = ExchangeRateService()
         self.rate = service.get_usd_rate()
-        print(f"Cotação do dólar: {self.rate}")
     
-    def formatte_response(self):
+    def _build_response(self):
         # Formatte response result + process
         formatted_info_process = {
             "model": self.info_process.get("model"),
@@ -108,7 +117,7 @@ class SimpleFileParse:
             "process_info": formatted_info_process
         }
     
-    def save_to_database(self):
+    def _save(self):
         # Save processed result in database
         document_store = DocumentStore(backend="local")
         document_store.save_payload(
@@ -117,22 +126,15 @@ class SimpleFileParse:
             payload=self.response
         )
 
-    def run(self):
-        self.set_data()
-        self.extract_file_content()
-        self.content_parsing()
-        self.calculate_tokens_and_cost()
-        self.formatte_response()
-        self.save_to_database()
-
-        return self.response
-
 
 
 
 
 if __name__ == "__main__":
     # Exemplo de uso
+    job_id = "job_123"
+    metadata = {"user_id": "user_456"}
+
     schema = """
     {
       "summary": {
@@ -154,9 +156,9 @@ if __name__ == "__main__":
     with open("src\\text_parse\\module\\Endurance.pdf", "rb") as f:
         file_bytes = BytesIO(f.read())
 
-    parser = SimpleFileParse(
-        job_id="job_123",
-        metadata={"user_id": "user_456"},
+    parser = DocumentParse(
+        job_id=job_id,
+        metadata=metadata,
         schema=schema,
         config=config,
         file_bytes=file_bytes,
