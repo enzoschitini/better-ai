@@ -62,8 +62,8 @@ from src.utils.load_file.load_request_file import LoadRequestFile
 from src.text_parse.module.applications import DocumentParse
 
 
-@app.post("/parse-content/simple-file-parse")
-async def parse_content(
+@app.post("/parse-content/document-parse")
+async def document_parse(
     job_id: str = Form(...),
     metadata: str = Form(...),
     schema: str = Form(...),
