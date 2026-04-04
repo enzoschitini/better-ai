@@ -1,37 +1,33 @@
 ```python
-from typing import Any, Dict, List, Type, Tuple
-from pydantic import BaseModel, Field, create_model
 from typing import Any, Dict, Type
-import inflect
-
-inflector = inflect.engine()
+from pydantic import BaseModel, create_model
 
 class JsonToPydantic:
     """
-    Classe para converter um dicionário JSON em um modelo Pydantic dinâmico, inferindo os tipos de dados dos campos.
+    Classe para converter um dicionário JSON em um modelo Pydantic dinâmico, identificando automaticamente os tipos dos campos.
 
-    Args:
-        :param model_name (str): Nome do modelo Pydantic dinâmico que será criado. Default é "DynamicModel".
+    Args: 
+    :param model_name (str): Nome do modelo Pydantic a ser criado. Default é "DynamicModel".
 
     Methods:
-            generate_post(topic): Explica o metodo em uma frase
+        build_model(): Constrói um modelo Pydantic dinâmico baseado no dicionário JSON fornecido.
+        parse(): Converte um dicionário JSON em uma instância do modelo Pydantic gerado.
     """
-
     def __init__(self, model_name: str = "DynamicModel"):
         self.model_name = model_name
 
     def _infer_type(self, value: Any) -> Type:
         """
-        Determina o tipo Python adequado com base no valor fornecido, facilitando a criação dinâmica de modelos.
+        Identifica e retorna o tipo Python correspondente ao valor fornecido, como str, int, float, bool, list, dict ou Any.
 
-        Args:
-            value (Any): Valor do qual se deseja inferir o tipo.
+        Args: 
+        value (Any): O valor para o qual o tipo deverá ser inferido.
 
         Returns:
-                Type: Tipo Python inferido para o valor.
+                Type: O tipo Python correspondente ao valor.
         
         Raises:
-                RuntimeError: Caso ocorra um erro durante a inferência do tipo.
+                RuntimeError: Caso ocorra algum erro durante a inferência do tipo.
         """
         try:
             if isinstance(value, str):
@@ -53,16 +49,16 @@ class JsonToPydantic:
 
     def build_model(self, data: Dict[str, Any]) -> Type[BaseModel]:
         """
-        Cria dinamicamente um modelo Pydantic a partir de um dicionário, utilizando tipos inferidos dos valores.
+        Constrói e retorna um modelo Pydantic dinamicamente, com campos tipados de acordo com os dados fornecidos.
 
-        Args:
-            data (Dict[str, Any]): Dicionário contendo os dados que definirão os campos do modelo.
+        Args: 
+        data (Dict[str, Any]): Dicionário contendo os dados para os quais o modelo será criado.
 
         Returns:
-                Type[BaseModel]: Modelo Pydantic criado dinamicamente com os campos e tipos inferidos.
+                Type[BaseModel]: Classe do modelo Pydantic gerado dinamicamente.
         
         Raises:
-                RuntimeError: Caso ocorra um erro durante a construção do modelo.
+                RuntimeError: Caso ocorra algum erro durante a construção do modelo.
         """
         try:
             fields = {}
@@ -77,16 +73,16 @@ class JsonToPydantic:
 
     def parse(self, data: Dict[str, Any]) -> BaseModel:
         """
-        Constrói um modelo Pydantic dinâmico e instancia-o com os dados fornecidos.
+        Gera um modelo Pydantic baseado nos dados fornecidos e retorna uma instância desse modelo preenchida com os dados.
 
-        Args:
-            data (Dict[str, Any]): Dicionário contendo os dados para popular o modelo.
+        Args: 
+        data (Dict[str, Any]): Dicionário JSON a ser convertido em uma instância do modelo Pydantic.
 
         Returns:
-                BaseModel: Instância do modelo Pydantic com os dados validados e estruturados.
+                BaseModel: Instância do modelo Pydantic com os dados fornecidos.
         
         Raises:
-                RuntimeError: Caso ocorra um erro durante o parsing dos dados.
+                RuntimeError: Caso ocorra algum erro durante o parsing dos dados para o modelo.
         """
         try:
             model = self.build_model(data)

@@ -2,44 +2,38 @@
 
 ## Visão Geral
 
-A classe `JsonToPydantic` tem como objetivo facilitar a criação dinâmica de modelos Pydantic a partir de dicionários JSON comuns. Isso é especialmente útil quando não se tem um esquema pré-definido dos dados, mas deseja-se validar e manipular esses dados usando a robustez dos modelos Pydantic. A classe infere automaticamente os tipos dos campos presentes no JSON e gera um modelo correspondente.
+A classe `JsonToPydantic` foi desenvolvida para facilitar a conversão dinâmica de dicionários JSON em modelos Pydantic com tipagem automática dos campos. Esse processo é bastante útil quando se trabalha com dados JSON não estruturados ou variáveis, e há necessidade de validar e manipular esses dados utilizando a robustez que o Pydantic oferece.
 
-Com `JsonToPydantic`, você pode validar rapidamente estruturas JSON arbitrárias, garantindo que os dados estejam corretos conforme os tipos inferidos, além de obter a segurança tipada durante o desenvolvimento. É ideal para aplicações que recebem dados dinâmicos e precisam manipulá-los de forma estruturada.
+Basicamente, a classe permite transformar um JSON arbitrário em uma classe Pydantic gerada em tempo de execução, inferindo os tipos básicos dos valores (como string, inteiro, float, booleano, listas e dicionários). Isso simplifica workflows que envolvem validação de dados, testes ou manipulação onde o esquema JSON não está previamente definido.
+
+Na prática, basta criar uma instância de `JsonToPydantic`, passar o JSON como dicionário para os métodos da classe, e obter modelos e instâncias tipadas automaticamente, prontos para validação e acesso facilitado aos dados.
 
 ## Fluxo de Execução
 
-1. **Inicialização:** Instancie a classe, opcionalmente definindo o nome do modelo dinâmico que será criado.
+1. Instancia a classe `JsonToPydantic`, opcionalmente passando um nome para o modelo Pydantic que será criado (`model_name`).
 
-2. **Parse dos Dados:** Use o método `parse`, passando um dicionário JSON. 
+2. Chama o método `build_model` passando um dicionário JSON para criar um modelo Pydantic dinâmico. Este método infere os tipos dos campos baseando-se nos valores do dicionário.
 
-3. **Inferência de Tipos:** Internamente, o método `_infer_type` é chamado para cada valor do dicionário, definindo seu tipo Python correspondente.
+3. Utiliza o método `parse` para criar uma instância do modelo Pydantic previamente gerado, preenchida com os dados do dicionário JSON.
 
-4. **Construção do Modelo:** A partir dessas inferências, `build_model` cria um modelo Pydantic dinâmico usando `create_model`.
-
-5. **Instanciação e Validação:** O modelo é instanciado com os dados reais, realizando assim a validação e estruturando os dados conforme o modelo gerado.
-
-6. **Resultado:** O método `parse` retorna a instância validada do modelo, pronta para uso.
+4. Caso qualquer etapa falhe (inferência de tipos, construção do modelo, instanciamento), a classe lança exceções do tipo `RuntimeError` para indicar erros explicativos.
 
 ## Tabela de Métodos da Classe
 
-| Método     | Descrição                                    |
-|------------|----------------------------------------------|
-| `__init__` | Inicializa a classe com o nome do modelo.    |
-| `_infer_type` | Infere o tipo Python de um valor fornecido. |
-| `build_model` | Cria um modelo Pydantic dinâmico a partir de um dicionário. |
-| `parse`     | Cria e instancia um modelo Pydantic com os dados, realizando validação. |
-
-## Variáveis de Ambiente
-
-Não há variáveis de ambiente necessárias para o funcionamento desta classe.
+| Método    | Descrição                                                      |
+|-----------|---------------------------------------------------------------|
+| `__init__`| Inicializa a classe definindo o nome do modelo Pydantic.      |
+| `_infer_type` | Identifica o tipo Python de um valor para tipagem do campo.  |
+| `build_model`| Cria dinamicamente um modelo Pydantic com base no dicionário.|
+| `parse`   | Cria uma instância do modelo preenchida com os dados JSON.    |
 
 ## Pontos Importantes da Arquitetura e Insights
 
-- A classe utiliza o pacote `pydantic` para a criação dinâmica de modelos por meio da função `create_model`, que permite montar esquemas sob demanda.
-- A inferência de tipos é simplificada, cobrindo os tipos básicos do Python — para casos mais complexos, como listas com tipos específicos ou dicionários aninhados, a inferência precisaria ser aprimorada.
-- A classe isola a responsabilidade de inferir tipos e construir o modelo, respeitando o princípio de separação de responsabilidades.
-- Em caso de erro em qualquer etapa, exceções genéricas são convertidas para `RuntimeError` com mensagens detalhadas, facilitando o tratamento externo.
-- A utilização do `inflect` no código não está efetivamente aplicada na classe, indicando potencial para futuras funcionalidades, como pluralização ou manipulação de nomes.
+- A classe utiliza a biblioteca `pydantic` para criar modelos dinamicamente (`create_model`) e para validação robusta dos dados.
+- A inferência feita pelo método `_infer_type` cobre tipos comuns do Python e retorna `Any` quando o tipo não é claramente identificado.
+- O uso de exceções do tipo `RuntimeError` com mensagens específicas facilita o entendimento de possíveis falhas no fluxo.
+- A classe não depende de variáveis de ambiente externas para funcionar.
+- A abordagem adotada facilita a criação de esquemas dinâmicos, útil para sistemas que consomem JSONs com estrutura variável ou desconhecida na fase de desenvolvimento.
 
 # Descrição da Classe e Métodos
 
@@ -47,13 +41,13 @@ Não há variáveis de ambiente necessárias para o funcionamento desta classe.
 
 ### Descrição
 
-Classe para converter um dicionário JSON em um modelo Pydantic dinâmico, inferindo automaticamente os tipos de cada campo. Permite validação e estruturação dos dados com base em um esquema gerado em tempo de execução.
+Classe para criação dinâmica de modelos Pydantic a partir de dicionários JSON, permitindo validação e tipagem automática dos campos conforme os dados recebidos.
 
 ### Argumentos do Construtor
 
-| Argumento   | Tipo  | Descrição                                  | Valor Padrão   |
-|-------------|-------|--------------------------------------------|----------------|
-| `model_name`| str   | Nome do modelo Pydantic que será criado dinamicamente. | `"DynamicModel"`|
+| Argumento   | Tipo   | Descrição                               | Valor Padrão    |
+|-------------|--------|---------------------------------------|-----------------|
+| model_name  | str    | Nome do modelo Pydantic criado        | "DynamicModel"  |
 
 ### Métodos
 
@@ -63,11 +57,11 @@ Classe para converter um dicionário JSON em um modelo Pydantic dinâmico, infer
 
 ### Descrição
 
-Inicializa a instância da classe definindo o nome que o modelo Pydantic gerado terá.
+Inicializa o objeto definindo o nome do modelo Pydantic que será criado dinamicamente.
 
 ### Argumentos
 
-- `model_name` (str): Nome do modelo Pydantic dinamicamente criado. Default é `"DynamicModel"`.
+- model_name (str): Nome do modelo Pydantic (opcional).
 
 ### Retornos
 
@@ -80,7 +74,8 @@ Inicializa a instância da classe definindo o nome que o modelo Pydantic gerado 
 ### Exemplos
 
 ```python
-converter = JsonToPydantic(model_name="UsuarioModel")
+converter = JsonToPydantic()  # modelo padrão "DynamicModel"
+converter_custom = JsonToPydantic("MeuModelo")
 ```
 
 ---
@@ -89,25 +84,25 @@ converter = JsonToPydantic(model_name="UsuarioModel")
 
 ### Descrição
 
-Método interno que determina o tipo Python apropriado para um valor fornecido. Este método é fundamental para definir corretamente os tipos dos campos do modelo dinâmico.
+Identifica o tipo Python correspondente ao valor fornecido para definir o tipo do campo no modelo.
 
 ### Argumentos
 
-- `value` (Any): Valor do qual se deseja inferir o tipo.
+- value (Any): Valor para ser analisado e tipado.
 
 ### Retornos
 
-- `Type`: Tipo Python inferido para o valor (exemplo: `str`, `int`, `float`, `bool`, `list`, `dict`, ou `Any`).
+- Type: Tipo Python correspondente (str, int, float, bool, list, dict ou Any).
 
 ### Raises
 
-- `RuntimeError`: Caso ocorra algum erro na inferência do tipo.
+- RuntimeError: Caso ocorra erro durante a inferência do tipo.
 
 ### Exemplos
 
 ```python
-inf_type = converter._infer_type(10)      # retorna <class 'int'>
-inf_type = converter._infer_type("texto") # retorna <class 'str'>
+tipo = converter._infer_type("texto")  # retorna <class 'str'>
+tipo = converter._infer_type(123)      # retorna <class 'int'>
 ```
 
 ---
@@ -116,26 +111,28 @@ inf_type = converter._infer_type("texto") # retorna <class 'str'>
 
 ### Descrição
 
-Cria um modelo Pydantic dinamicamente, baseando-se nos dados do dicionário e nos tipos inferidos de seus valores.
+Constrói e retorna um modelo Pydantic gerado dinamicamente com campos e tipos baseados no dicionário JSON fornecido.
 
 ### Argumentos
 
-- `data` (Dict[str, Any]): Dicionário contendo os dados que determinarão os campos do modelo.
+- data (Dict[str, Any]): Dicionário com dados para inferência do modelo.
 
 ### Retornos
 
-- `Type[BaseModel]`: Classe do modelo Pydantic criada dinamicamente com os campos e tipos inferidos.
+- Type[BaseModel]: Classe do modelo Pydantic criado.
 
 ### Raises
 
-- `RuntimeError`: Caso ocorram erros durante a construção do modelo.
+- RuntimeError: Caso ocorra erro durante a criação do modelo.
 
 ### Exemplos
 
 ```python
-data = {"nome": "João", "idade": 30, "ativo": True}
-modelo = converter.build_model(data)
-# `modelo` é uma subclasse de BaseModel com campos nome:str, idade:int, ativo:bool
+modelo = converter.build_model({"nome": "Ana", "idade": 30})
+# Retorna um modelo equivalente a:
+# class DynamicModel(BaseModel):
+#     nome: str
+#     idade: int
 ```
 
 ---
@@ -144,25 +141,24 @@ modelo = converter.build_model(data)
 
 ### Descrição
 
-Gera o modelo Pydantic dinâmico e o instancia com os dados fornecidos, realizando validação e organização estruturada dos mesmos.
+Gera um modelo Pydantic a partir dos dados e retorna uma instância preenchida com esses dados.
 
 ### Argumentos
 
-- `data` (Dict[str, Any]): Dicionário de dados para popular o modelo.
+- data (Dict[str, Any]): Dicionário JSON a ser convertido em instância do modelo.
 
 ### Retornos
 
-- `BaseModel`: Instância do modelo Pydantic com os dados validados.
+- BaseModel: Instância do modelo Pydantic com os dados validados.
 
 ### Raises
 
-- `RuntimeError`: Caso ocorra um erro durante a criação ou validação do modelo.
+- RuntimeError: Caso ocorra falha na criação ou validação da instância.
 
 ### Exemplos
 
 ```python
-data = {"usuario": "alice", "pontos": 1500}
-instance = converter.parse(data)
-print(instance.usuario)  # saída: alice
-print(instance.pontos)   # saída: 1500
+obj = converter.parse({"nome": "Carlos", "ativo": True})
+print(obj.nome)   # Carlos
+print(obj.ativo)  # True
 ```
