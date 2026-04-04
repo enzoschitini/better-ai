@@ -4,11 +4,12 @@
     // Per altre informazioni, visitare: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         {
             "name": "Application Tracing",
             "type": "debugpy",
             "request": "launch",
-            "module": "src.tracing.tracing_core",
+            "module": "src.dev_tools.debug",
             "console": "integratedTerminal"
         },
         {

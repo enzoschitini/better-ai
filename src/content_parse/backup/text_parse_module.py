@@ -1,8 +1,8 @@
 from fastapi import UploadFile
 
 from src.embedding.embedding_module import ContentExtractorService, FileService
-from src.text_parse.langchain_parse import GenericTextExtractor
-from src.text_parse.cost import LLMCostCalculator
+from text_parse.backup.langchain_parse import GenericTextExtractor
+from text_parse.backup.cost import LLMCostCalculator
 
 
 class TextParserModule:
@@ -58,4 +58,4 @@ class TextParserModule:
         return result
 
 
-# python -m src.text_parse.text_parse_module
+# python -m src.content_parse.text_parse_module
