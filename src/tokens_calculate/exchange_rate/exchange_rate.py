@@ -20,7 +20,7 @@ class ExchangeRateService:
     :param backend (str): Tipo de backend utilizado para armazenar dados, Default é "local".
 
     Methods:
-            generate_post(topic): Explica o metodo em uma frase
+            get_usd_rate(): Obtém a cotação atual do dólar americano, utilizando a API
     """
     def __init__(self):
         self.manager = DocumentStore()
