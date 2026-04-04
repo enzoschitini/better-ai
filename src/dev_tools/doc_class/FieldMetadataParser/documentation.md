@@ -156,9 +156,33 @@ Mapeia um nome de tipo representado por uma string para o tipo Python correspond
 ### Exemplos
 
 ```python
-t = parser._map_type("int")
-# t será <class 'int'>
+if __name__ == "__main__":
+    parser = FieldMetadataParser()
 
-t = parser._map_type("custom_type")
-# t será typing.Any
+    test_cases = [
+        {
+            "input": {
+                "type": "str",
+                "description": "Nome do personagem",
+                "example": "John"
+            }
+        },
+        {
+            "input": {
+                "type": "int",
+                "default": 10
+            }
+        },
+        {
+            "input": "valor simples"
+        }
+    ]
+
+    for i, case in enumerate(test_cases, 1):
+        result = parser.parse(case["input"])
+        print(f"\nTeste {i}")
+        print("Input:", case["input"])
+        print("Output:", result)
+
+# python -m src.content_parse.pydantic_shema
 ```

@@ -158,7 +158,16 @@ Gera um modelo Pydantic a partir dos dados e retorna uma instância preenchida c
 ### Exemplos
 
 ```python
-obj = converter.parse({"nome": "Carlos", "ativo": True})
-print(obj.nome)   # Carlos
-print(obj.ativo)  # True
+if __name__ == "__main__":
+    data = {
+        "text": "A empresa TechNova está crescendo rapidamente.",
+        "task": "Se o nome da empresa for TechNova, troque por BetterAI"
+    }
+    parser = JsonToPydantic("ResearchRequest")
+    request = parser.parse(data)
+    
+    print(request)
+    print(type(request))
+
+# python -m src.content_parse.pydantic_shema
 ```

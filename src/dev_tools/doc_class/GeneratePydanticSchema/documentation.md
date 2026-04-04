@@ -288,9 +288,47 @@ Determina o tipo e metadados para um campo individual, tratando casos de dicion�
 ### Exemplos
 
 ```python
-field_type, field_info = schema_generator._parse_field("idade", 25)
-# field_type: int
-# field_info: Field(description="Auto-generated field for idade")
+if __name__ == "__main__":
+    json_data = {
+        "script": {
+            "setting": {
+                "type": "str",
+                "description": "Onde o filme acontece",
+                "example": "Tokyo"
+            },
+            "genre": {
+                "type": "str",
+                "description": "Gênero do filme",
+                "example": "Heist"
+            },
+            "storyline": "A big robbery"
+        },
+        "context": {
+            "year": {
+                "type": "int",
+                "description": "Ano da história",
+                "example": 2025
+            }
+        },
+        "people": {
+            "characters": [
+                {
+                    "name": {
+                        "type": "str",
+                        "description": "Nome do personagem"
+                    },
+                    "role": "protagonist"
+                }
+            ]
+        }
+    }
+
+    converter = JsonToPydantic()
+    Movie = converter.convert(json_data, "Movie")
+
+    print(Movie.schema_json(indent=2))
+
+# python -m src.content_parse.pydantic_shema
 ```
 
 ---
