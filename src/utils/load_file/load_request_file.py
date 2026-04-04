@@ -96,5 +96,3 @@ class LoadRequestFile:
             "size_bytes": self.size_bytes,
             "size_mb": round(self.size_mb, 2),
         }
-
-# uvicorn src.utils.load_file.load_request_file:app --reload 

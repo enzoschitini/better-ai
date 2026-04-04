@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 from datetime import datetime
 
 from src.database.no_relational_db.router import DocumentStore
-from src.tokens_calculate.bcb import BCBExchangeRateService
+from src.tokens_calculate.exchange_rate.bcb import BCBExchangeRateService
 
 load_dotenv()
 
