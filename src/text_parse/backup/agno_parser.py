@@ -6,7 +6,7 @@ from agno.models.openai import OpenAIChat
 from agno.models.groq import Groq
 from agno.models.openai import OpenAIResponses
 from dotenv import load_dotenv
-from src.text_parse.pydantic_schema import JsonToPydantic, GeneratePydanticSchema
+from src.content_parse.pydantic_schema import JsonToPydantic, GeneratePydanticSchema
 from dataclasses import dataclass, field
 
 load_dotenv()
@@ -103,4 +103,4 @@ def extract_model_metrics(response):
 result = extract_model_metrics(response)
 print(json.dumps(result, indent=2))
 
-# python -m src.text_parse.agno_parser
+# python -m src.content_parse.agno_parser

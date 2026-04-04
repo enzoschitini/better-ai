@@ -61,7 +61,7 @@ config_data = {
 
 ```python
 import json
-from src.text_parse.content_parsing_agent import ContentParsingAgent
+from src.content_parse.content_parsing_agent import ContentParsingAgent
 
 agent_parser = ContentParsingAgent(
     input_data=input_data,

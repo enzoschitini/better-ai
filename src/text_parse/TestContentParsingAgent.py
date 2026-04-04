@@ -1,5 +1,5 @@
 import json
-from src.text_parse.content_parsing_agent import ContentParsingAgent
+from src.content_parse.content_parsing_agent import ContentParsingAgent
 
 text = """
 Este produto foi desenvolvido para oferecer praticidade e eficiência no dia a dia, combinando design moderno com alta funcionalidade. Pensado para atender às necessidades de diferentes perfis de usuários, ele se destaca pela facilidade de uso e pela qualidade dos materiais utilizados em sua fabricação. Cada detalhe foi cuidadosamente planejado para garantir uma experiência intuitiva, tornando tarefas rotineiras mais simples e agradáveis.
@@ -77,4 +77,4 @@ if __name__ == "__main__":
     print(json.dumps(response, indent=4, ensure_ascii=False))
 
 
-# python -m src.text_parse.TestContentParsingAgent
+# python -m src.content_parse.TestContentParsingAgent

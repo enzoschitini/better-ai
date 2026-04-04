@@ -28,7 +28,7 @@ from src.image_generation.applications import ImageGeneration
 from src.image_generation.module import ImageGenerate, RequestProcessor
 
 # Text Parser Packages
-from src.text_parse.module.applications import SimpleFileParse
+from src.content_parse.module.applications import SimpleFileParse
 
 # Deep Research Packages
 from src.deep_research.tavily_research.tavily_core import TavilyDeepResearch

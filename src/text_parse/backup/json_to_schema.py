@@ -180,5 +180,5 @@ if __name__ == "__main__":
     except Exception as e:
         print("Erro esperado:", e)
 
-# python -m src.text_parse.json_to_schema
+# python -m src.content_parse.json_to_schema
 # inflect==7.5.0

@@ -3,8 +3,8 @@ from typing import Optional
 from fastapi import HTTPException
 from io import BytesIO
 
-from src.text_parse.content_parsing_agent import ContentParsingAgent
-from src.text_parse.config import DocumentParseConfig
+from src.content_parse.content_parsing_agent import ContentParsingAgent
+from src.content_parse.config import DocumentParseConfig
 from src.embedding.services.file_content_extractor import FileContentExtractor
 from src.tokens_calculate.module import ModelPricing, ExchangeRateService
 from src.database.no_relational_db.router import DocumentStore
@@ -174,4 +174,4 @@ if __name__ == "__main__":
     print("\nResposta do parser:")
     print(json.dumps(response, indent=2))
 
-# python -m src.text_parse.module.simple_file_parse
+# python -m src.content_parse.module.simple_file_parse

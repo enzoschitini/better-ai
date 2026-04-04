@@ -6,8 +6,8 @@ from agno.agent import Agent
 from agno.models.groq import Groq
 from agno.models.openai import OpenAIResponses
 
-from src.text_parse.config import Config
-from src.text_parse.pydantic_schema import JsonToPydantic, GeneratePydanticSchema
+from src.content_parse.config import Config
+from src.content_parse.pydantic_schema import JsonToPydantic, GeneratePydanticSchema
 
 load_dotenv()
 
@@ -97,4 +97,4 @@ class ContentParsingAgent:
         except Exception as e:
             raise RuntimeError("Error formatting response", str(e))
 
-# python -m src.text_parse.content_parsing_agent
+# python -m src.content_parse.content_parsing_agent

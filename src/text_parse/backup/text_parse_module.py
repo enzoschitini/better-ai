@@ -58,4 +58,4 @@ class TextParserModule:
         return result
 
 
-# python -m src.text_parse.text_parse_module
+# python -m src.content_parse.text_parse_module

@@ -59,7 +59,7 @@ from fastapi.responses import JSONResponse
 from typing import Optional
 
 from src.utils.load_file.load_request_file import LoadRequestFile
-from src.text_parse.module.applications import DocumentParse
+from src.content_parse.module.applications import DocumentParse
 
 
 @app.post("/parse-content/document-parse")

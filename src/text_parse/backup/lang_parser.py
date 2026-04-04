@@ -6,7 +6,7 @@ from langchain_core.output_parsers.json import JsonOutputParser
 from langchain_openai import ChatOpenAI
 
 from dotenv import load_dotenv
-from src.text_parse.pydantic_schema import JsonToPydantic
+from src.content_parse.pydantic_schema import JsonToPydantic
 
 load_dotenv()
 
@@ -68,4 +68,4 @@ print(json.dumps(resposta, indent=2, ensure_ascii=False))
 
 
 
-# python -m src.text_parse.lang_parser
+# python -m src.content_parse.lang_parser

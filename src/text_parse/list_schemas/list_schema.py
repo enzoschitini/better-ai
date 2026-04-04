@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 from agno.agent import Agent
 from agno.models.openai import OpenAIResponses
 from dotenv import load_dotenv
-from src.text_parse.list_schemas.pydantic_schema import GeneratePydanticSchema
+from src.content_parse.list_schemas.pydantic_schema import GeneratePydanticSchema
 
 load_dotenv()
 
@@ -128,4 +128,4 @@ print("Parsed Output:")
 parsed_dict = response.content.model_dump()
 print(json.dumps(parsed_dict, indent=2))
 
-# python -m src.text_parse.list_schemas.list_schema
+# python -m src.content_parse.list_schemas.list_schema

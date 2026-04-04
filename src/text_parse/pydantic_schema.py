@@ -287,5 +287,5 @@ def TestGeneratePydanticSchema():
     print(Movie.schema_json(indent=2))
 
 
-# python -m src.text_parse.pydantic_shema
+# python -m src.content_parse.pydantic_shema
 # inflect==7.5.0

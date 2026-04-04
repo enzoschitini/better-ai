@@ -138,4 +138,4 @@ test(
     result=result
 )
 """
-# python -m src.text_parse.cost
+# python -m src.content_parse.cost

@@ -113,4 +113,4 @@ def test(value):
         print(json.dumps(response.json(), indent=2, ensure_ascii=False))
 
 test(2)
-# python -m src.text_parse.test
+# python -m src.content_parse.test
