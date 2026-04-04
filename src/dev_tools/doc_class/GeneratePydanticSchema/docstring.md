@@ -1,5 +1,16 @@
-
+```python
 class GeneratePydanticSchema:
+    """
+    Classe responsável por converter dicionários aninhados em modelos Pydantic de forma dinâmica,
+    facilitando a geração automática de schemas para validação de dados complexos.
+
+    Args: 
+    :param metadata_parser (FieldMetadataParser): Objeto utilizado para parsear metadata de campos. Default é uma instância nova de FieldMetadataParser.
+
+    Methods:
+            convert(): Converte um dicionário em um modelo Pydantic raiz.
+            get_models(): Retorna todos os modelos Pydantic gerados até o momento.
+    """
     def __init__(self, metadata_parser: FieldMetadataParser = None):
         self.metadata_parser = metadata_parser or FieldMetadataParser()
 
@@ -13,6 +24,13 @@ class GeneratePydanticSchema:
             raise RuntimeError("Error converting data", str(e))
 
     def get_models(self) -> Dict[str, Type[BaseModel]]:
+        """
+        Retorna um dicionário contendo todos os modelos Pydantic que foram gerados 
+        durante o processamento dos dados.
+
+        Returns:
+            Dict[str, Type[BaseModel]]: Dicionário onde as chaves são nomes dos modelos e os valores são os tipos dos modelos Pydantic.
+        """
         return self._models
 
     def _generate_name(self, base: str) -> str:
@@ -48,6 +66,20 @@ class GeneratePydanticSchema:
         return self._create_model(name, fields)
 
     def _parse_field(self, key: str, value: Any) -> Tuple[Any, Any]:
+        """
+        Analisa o valor de um campo e determina seu tipo e eventuais metadados, gerando
+        o tipo adequado para o campo no modelo Pydantic.
+
+        Args: 
+        key (str): Nome do campo a ser analisado.
+        value (Any): Valor do campo, usado para deduzir o tipo e metadados.
+
+        Returns:
+                Tuple[Any, Any]: Uma tupla contendo o tipo do campo e um objeto Field com metadados para o Pydantic.
+
+        Raises:
+                RuntimeError: Erro ocorrido durante o parsing do campo.
+        """
         try:
             metadata = self.metadata_parser.parse(value)
             if metadata:
@@ -80,3 +112,4 @@ class GeneratePydanticSchema:
             return field_type, Field(description=description)
         except Exception as e:
             raise RuntimeError("Error parsing field", str(e))
+```
