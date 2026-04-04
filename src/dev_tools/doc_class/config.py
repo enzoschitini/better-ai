@@ -19,7 +19,7 @@ class GenereteDocStringConfig:
     :param parm_name (str): Explica o que é em uma frase (Se tiver um Default coloqur Default é "blablabla"
 
     Methods:
-            generate_post(topic): Explica o metodo em uma frase
+            example_method(): Explica o que o método faz em uma frase. (Somente método público, ou seja, sem underline no início do nome)
 
     OBS: Não precisa documentar __init__
 

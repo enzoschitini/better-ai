@@ -8,23 +8,24 @@ from agno.models.groq import Groq
 from agno.models.openai import OpenAIResponses
 
 from src.content_parse.config import Config
-from src.content_parse.pydantic_shema import JsonToPydantic, GeneratePydanticSchema
+from src.content_parse.pydantic_schema import JsonToPydantic, GeneratePydanticSchema
 
 load_dotenv()
 
 class ContentParsingAgent:
     """
-    Classe responsável por inicializar e executar um agente de parsing de conteúdo que utiliza esquemas Pydantic
-    para validar e converter dados de entrada, saída e configuração. Gerencia a seleção do modelo adequado
-    e formata a resposta do agente para incluir métricas e metadados.
+    Agente responsável por processar dados de entrada e saída, gerar esquemas Pydantic a partir desses dados,
+    e executar um modelo de linguagem configurável para processar o conteúdo conforme instruções fornecidas.
 
-    Args: 
-    :param input_data (Dict[str, Any]): Dicionário contendo os dados de entrada a serem processados pelo agente.
-    :param output_data (Dict[str, Any]): Dicionário contendo o esquema de dados de saída esperado pelo agente.
-    :param config_data (Optional[Dict[str, Any]]): Dicionário opcional contendo configurações adicionais para o agente. Default é None.
+    Args:
+    :param input_data (Dict[str, Any]): Dicionário contendo os dados de entrada a serem processados.
+    :param output_data (Dict[str, Any]): Dicionário contendo os dados de saída esperados após o processamento.
+    :param config_data (Optional[Dict[str, Any]]): Dicionário opcional com dados de configuração do agente. Default é None.
 
     Methods:
-            generate_post(topic): Explica o metodo em uma frase
+            get_schemas(): Retorna os schemas Pydantic gerados para input, output e configuração.
+            run_agent(): Executa o agente com base no modelo configurado e retorna a resposta.
+            format_response(raw_response): Formata a resposta bruta do agente em um dicionário estruturado com conteúdo e metadados.
     """
     def __init__(
         self,
@@ -40,11 +41,11 @@ class ContentParsingAgent:
 
     def _generate_schemas(self):
         """
-        Gera esquemas Pydantic para os dados de entrada, saída e configuração com base nos dados fornecidos,
-        permitindo validação e conversão estruturada.
+        Gera os schemas Pydantic para os dados de entrada, saída e configuração.
+        Utiliza parseadores específicos para conversão dos dados brutos em modelos validados.
 
         Raises:
-                RuntimeError: Se ocorrer um erro durante a geração dos esquemas, uma exceção é lançada com detalhes do erro.
+                RuntimeError: Caso ocorra algum erro na geração dos schemas.
         """
         try:
             parser = JsonToPydantic()
@@ -63,14 +64,13 @@ class ContentParsingAgent:
 
     def _get_model(self):
         """
-        Seleciona e instancia o modelo apropriado baseado na configuração do provider especificado
-        no esquema de configuração.
+        Seleciona e retorna o modelo de linguagem apropriado com base no provedor configurado.
 
         Returns:
-                OpenAIResponses ou Groq: Instância do modelo configurado conforme o provider selecionado.
+                Instância do modelo configurado conforme o provedor estabelecido na configuração.
 
         Raises:
-                ValueError: Se o provider do modelo for desconhecido ou não suportado.
+                ValueError: Caso o provedor de modelo configurado não seja suportado.
         """
         if self.config_schema.model_provider.lower() == "openai":
             return OpenAIResponses(id=self.config_schema.model_id, temperature=0)
@@ -81,10 +81,10 @@ class ContentParsingAgent:
 
     def get_schemas(self):
         """
-        Retorna os esquemas atualmente gerados para entrada, saída e configuração.
+        Retorna os schemas Pydantic referentes aos dados de entrada, saída e configuração.
 
         Returns:
-                dict: Dicionário contendo os esquemas 'input', 'output' e 'config'.
+                dict: Dicionário contendo os schemas 'input', 'output' e 'config'.
         """
         return {
             "input": self.input_schema,
@@ -94,14 +94,14 @@ class ContentParsingAgent:
 
     def run_agent(self):
         """
-        Executa o agente configurado com os modelos e instruções especificados, utilizando os dados de entrada
-        validados pelo esquema correspondente, e retorna a resposta gerada pelo agente.
+        Executa o agente utilizando o modelo configurado, instruções e descrição para processar os dados de entrada,
+        e retorna a resposta gerada pelo modelo.
 
         Returns:
-                Conteúdo da resposta gerada pelo agente.
+                Resposta gerada pelo agente após o processamento da entrada.
 
         Raises:
-                RuntimeError: Se ocorrer um erro durante a execução do agente, uma exceção é lançada com detalhes do erro.
+                RuntimeError: Caso ocorra algum erro durante a execução do agente.
         """
         try:
             agent = Agent(
@@ -119,17 +119,17 @@ class ContentParsingAgent:
 
     def format_response(self, raw_response):
         """
-        Formata a resposta crua do agente para incluir o conteúdo modelado e metadados relevantes,
-        como informações do modelo e métricas de uso, retornando um dicionário estruturado.
+        Formata a resposta bruta obtida do agente em um dicionário estruturado, extraindo conteúdo,
+        informações sobre o modelo utilizado e métricas relacionadas à execução.
 
         Args: 
-        raw_response: Resposta bruta obtida após a execução do agente, contendo conteúdo e métricas.
+        raw_response: Objeto de resposta bruta retornado pelo agente.
 
         Returns:
-                dict: Estrutura contendo o conteúdo formatado e metadados incluindo informações do modelo e métricas.
+                dict: Conteúdo formatado em um dicionário estruturado pronto para uso ou publicação.
 
         Raises:
-                RuntimeError: Se ocorrer um erro durante a formatação da resposta, uma exceção é lançada com detalhes do erro.
+                RuntimeError: Caso ocorra algum erro durante a formatação da resposta.
         """
         try:
             content = raw_response.content.model_dump()
@@ -143,20 +143,17 @@ class ContentParsingAgent:
                         "provider": model_metrics.provider.split(" ")[0],
                         "id": model_metrics.id
                     },
-                    "metrics": {
+                    "tokens": {
                         "input_tokens": model_metrics.input_tokens,
                         "output_tokens": model_metrics.output_tokens,
                         "total_tokens": model_metrics.total_tokens,
                     },
-                    "duration": round(metrics_dict.get("duration"), 2),
+                    "duration_s": round(metrics_dict.get("duration"), 2),
                 }
             }
 
-            print(json.dumps(response, indent=2))
             return response
 
         except Exception as e:
             raise RuntimeError("Error formatting response", str(e))
-
-# python -m src.content_parse.content_parsing_agent
 ```

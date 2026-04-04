@@ -1,51 +1,90 @@
-## Use ContentParsingAgent
+# Use `ContentParsingAgent`
 
-### Content
+### Imports:
 
 ```python
-text = """
-Este produto foi desenvolvido para oferecer praticidade e eficiência no dia a dia, combinando design moderno com alta funcionalidade. Pensado para atender às necessidades de diferentes perfis de usuários, ele se destaca pela facilidade de uso e pela qualidade dos materiais utilizados em sua fabricação. Cada detalhe foi cuidadosamente planejado para garantir uma experiência intuitiva, tornando tarefas rotineiras mais simples e agradáveis.
+import json
+from src.content_parse.content_parsing_agent import ContentParsingAgent
+```
 
-Além disso, o produto apresenta excelente durabilidade e desempenho consistente, mesmo em condições de uso frequente. Seu custo-benefício é um dos grandes atrativos, proporcionando uma solução confiável sem comprometer o orçamento. Seja para uso pessoal ou profissional, trata-se de uma escolha inteligente para quem busca inovação, praticidade e resultados satisfatórios.
+### Input Text:
+
+```python
+input_text = """
+Title: The Future of AI
+Author: John Doe
+Code: 
+
+Artificial Intelligence is evolving rapidly. Companies are investing heavily
+in automation and machine learning to improve efficiency and decision-making.
+
+Enzo: Is a data scientist and has 5 years of experience
+Laura: Is a software engineer and has 3 years of experience
+Marico: Is a product manager and has 7 years of experience.
 """
 ```
 
-### Input Data
+### Schema:
 
 ```python
-input_data = {
-    "product_review": text,
+output_data = {
+    "title": {
+        "type": "str",
+        "description": "Title of the content",
+        "example": "The Future of AI"
+    },
+    "author": {
+        "type": "str",
+        "description": "Author of the content",
+        "example": "John Doe"
+    },
+    "summary": {
+        "type": "str",
+        "required": False,
+        "description": "Short summary of the text",
+        "example": "Artificial Intelligence is evolving rapidly. Companies are investing heavily in automation and machine learning to improve efficiency and decision-making."
+    },
+    "code": {
+        "type": "str",
+        "description": "Code snippet extracted from the text",
+        "required": True
+    },
+    "names": {
+        "type": "list",
+        "description": "List of names mentioned in the text",
+        "items": {
+            "type": "str",
+            "description": "A person's name mentioned in the text"
+        }
+    },
+
+    "peoples": {
+        "type": "list",
+        "description": "List of people with structured details extracted from the text",
+        "max_length": 1,
+        "items": {
+            "type": "object",
+            "description": "A person mentioned in the text",
+            "properties": {
+                "name": {
+                    "type": "str",
+                    "description": "Full name of the person"
+                },
+                "experience": {
+                    "type": "str",
+                    "description": "Years of experience or expertise level"
+                },
+                "profession": {
+                    "type": "str",
+                    "description": "Profession or role of the person"
+                }
+            }
+        }
+    }
 }
 ```
 
-### Output Schema
-
-```python
-output_schema = {
-  "product_description": {
-    "type": "str",
-    "description": "Descrição geral do produto apresentada no texto"
-  },
-  "main_benefit": {
-    "type": "str",
-    "description": "Principal benefício ou proposta de valor do produto"
-  },
-  "key_features": {
-    "type": "str",
-    "description": "Principais características mencionadas"
-  },
-  "target_use": {
-    "type": "str",
-    "description": "Para que tipo de uso ou situação o produto é indicado"
-  },
-  "value_proposition": {
-    "type": "str",
-    "description": "Resumo do porquê o produto é uma boa escolha"
-  }
-}
-```
-
-### Config
+### Config:
 
 ```python
 config_data = {
@@ -57,18 +96,18 @@ config_data = {
 }
 ```
 
-### Code
+### Run Parse:
 
 ```python
-import json
-from src.content_parse.content_parsing_agent import ContentParsingAgent
+if __name__ == "__main__":
+    agent_parser = ContentParsingAgent(
+        input_data=input_data,
+        output_data=output_schema,
+        config_data=config_data
+    )
+    content_parsed = agent_parser.run_agent()
+    response = agent_parser.format_response(content_parsed)
+    print(json.dumps(response, indent=4, ensure_ascii=False))
 
-agent_parser = ContentParsingAgent(
-    input_data=input_data,
-    output_data=output_schema,
-    config_data=config_data
-)
-content_parsed = agent_parser.run_agent()
-response = agent_parser.format_response(content_parsed)
+# python -m src.content_parse.content_parsing_agent
 ```
-
