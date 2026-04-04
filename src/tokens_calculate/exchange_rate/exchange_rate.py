@@ -23,15 +23,16 @@ class ExchangeRateService:
             generate_post(topic): Explica o metodo em uma frase
     """
     def __init__(self):
-        self.manager = DocumentStore(backend="local")
+        self.manager = DocumentStore()
+        self.today = datetime.now()
+        self.date_str_api = self.today.strftime("%Y-%m-%d")
+
         self.base = {
-            "date": "2025-11-09",
+            "date": self.date_str_api,
             "currency": "USD",
             "rate": 5.25,
             "source": "better-ai"
         }
-        self.today = datetime.now()
-        self.date_str_api = self.today.strftime("%Y-%m-%d")
     
     def _get_bcb_rate(self):
         """
