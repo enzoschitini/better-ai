@@ -11,6 +11,23 @@ from src.database.no_relational_db.router import DocumentStore
 
 
 class DocumentParse:
+    """
+    Classe responsável por orquestrar o processo de parsing de documentos,
+    desde a extração do conteúdo do arquivo até o salvamento do resultado
+    processado no banco de dados.
+
+    Args:
+        :param job_id (str): Identificador único do job de processamento.
+        :param metadata (dict): Metadados associados ao documento a ser processado.
+        :param schema (str): JSON string que define o esquema esperado para os dados.
+        :param file_bytes (BytesIO): Conteúdo binário do arquivo a ser processado.
+        :param file_extension (str): Extensão do arquivo (ex.: '.pdf', '.txt').
+        :param config (Optional[str]): JSON string de configuração customizada para parsing. Default é None.
+
+    Methods:
+        run(): Executa o pipeline completo de parsing do documento e retorna a resposta da API.
+    """
+
     def __init__(
         self,
         job_id: str,
@@ -33,6 +50,14 @@ class DocumentParse:
         self.collection_name = system_settings.collection_name
 
     def run(self):
+        """
+        Executa todo o processo de parsing do documento, incluindo carregamento da configuração,
+        extração do conteúdo do arquivo, parsing do conteúdo, cálculo dos custos relacionados,
+        construção da resposta da API e salvamento dos dados no banco.
+
+        Returns:
+            dict: Resposta formatada pronta para ser retornada pela API.
+        """
         self._load_schema_and_config()
         self._extract_file_content()
         self._parse_content()
@@ -43,6 +68,10 @@ class DocumentParse:
         return self.api_response
 
     def _load_schema_and_config(self):
+        """
+        Carrega e valida os dados JSON de metadata, schema e configuração personalizada,
+        fundindo a configuração padrão com a qualquer configuração customizada passada.
+        """
         # Set metadata
         try:
             self.metadata_data = json.loads(self.metadata)
@@ -64,6 +93,10 @@ class DocumentParse:
             self.config_data = self.default_config
     
     def _extract_file_content(self):
+        """
+        Utiliza o extractor de conteúdo para extrair texto raw do arquivo fornecido,
+        considerando sua extensão.
+        """
         # Extract file content
         extractor = FileContentExtractor(
             file_bytes=self.file_bytes,
@@ -72,6 +105,10 @@ class DocumentParse:
         self.result_extract = extractor.extract()
     
     def _parse_content(self):
+        """
+        Executa o agente de parsing para extrair dados formatados conforme o schema,
+        a partir do conteúdo extraído do arquivo.
+        """
         # Parse content with agent
         agent_parser = ContentParsingAgent(
             input_data={
@@ -85,6 +122,10 @@ class DocumentParse:
         self.agent_response = agent_parser.format_response(raw_content_parsed)
     
     def _calculate_costs(self):
+        """
+        Calcula os custos de processamento com base no modelo utilizado,
+        tokens utilizados na entrada e saída, e converte para BRL utilizando a taxa de câmbio atual.
+        """
         # Calculate tokens and cost
         self.info_process = self.agent_response.get("metadata", {})
 
@@ -96,6 +137,10 @@ class DocumentParse:
         self.rate = service.get_usd_rate()
     
     def _build_response(self):
+        """
+        Constrói o payload de resposta da API e o payload para salvar no banco,
+        incluindo conteúdo processado e informações detalhadas do processo.
+        """
         # Formatte response result + process
         formatted_info_process = {
             "model": self.info_process.get("model"),
@@ -122,6 +167,10 @@ class DocumentParse:
         }
     
     def _save(self):
+        """
+        Persiste o resultado do processamento no banco de dados NoSQL configurado,
+        utilizando o payload estruturado previamente.
+        """
         # Save processed result in database
         document_store = DocumentStore()
         document_store.save_payload(
