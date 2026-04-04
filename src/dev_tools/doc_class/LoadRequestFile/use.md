@@ -29,6 +29,10 @@ async def upload_file(file: UploadFile = File(...)):
     return result.to_dict()
 ```
 
+```bash
+uvicorn src.dev_tools.launch_api:app --reload
+```
+
 ### CURL
 
 ```bash
