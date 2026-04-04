@@ -101,7 +101,10 @@ async def document_parse(
         raise HTTPException(status_code=500, detail=str(e))
 
 """
-curl --location 'http://localhost:8000/parse-content/simple-file-parse' \
+curl --location 'http://localhost:8000/parse-content/document-parse' \
+--header 'Authorization: Bearer betterai-dev-96d97aa3-492d-4ecc-9ced-3dc34c0cf062-945d3391-85dc-4a19-a054-191d048b62c0' \
+--header 'Client: BETTERAI' \
+--header 'SecretKey: Bearer betterai-dev-6c6febc5-de97-464a-929b-cce1b2278de1' \
 --form 'job_id="teste"' \
 --form 'metadata="{\"value1\": \"value3\"}"' \
 --form 'schema="{

@@ -28,7 +28,7 @@ from src.image_generation.applications import ImageGeneration
 from src.image_generation.module import ImageGenerate, RequestProcessor
 
 # Text Parser Packages
-from src.content_parse.module.applications import SimpleFileParse
+from src.content_parse.module.applications import DocumentParse
 
 # Deep Research Packages
 from src.deep_research.tavily_research.tavily_core import TavilyDeepResearch
@@ -391,9 +391,11 @@ async def image_generation(
 # Context Parser
 # ========================
 
-@app.post("/parse-content/simple-file-parse", dependencies=[Depends(Authorization.multikey)],
+@app.post("/parse-content/document-parse", dependencies=[Depends(Authorization.multikey)],
           summary="Parse and extract structured content from files using schema")
-async def parse_content(
+async def document_parse(
+    job_id: str = Form(...),
+    metadata: str = Form(...),
     schema: str = Form(...),
     file: UploadFile = File(...),
     config: Optional[str] = Form(None),
@@ -401,25 +403,28 @@ async def parse_content(
     try:
         loader = await LoadRequestFile(
             file=file,
+            allowed_extensions=["txt", "md", "pdf", "docx"],
             max_size_mb=5
         ).load()
 
         file_bytes = loader.bytes
         file_extension = loader.extension
 
-        parser = SimpleFileParse(
+        parser = DocumentParse(
+            job_id=job_id,
+            metadata=metadata,
             schema=schema,
             config=config,
             file_bytes=file_bytes,
             file_extension=file_extension
         )
 
-        response = parser.run()
+        result = parser.run()
 
         return JSONResponse(content={
             "status": "success",
-            "response": response,
-            "config_used": parser.config
+            "job_id": result.get("job_id"),
+            "result": result.get("content")
         })
 
     except Exception as e:
