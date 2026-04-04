@@ -100,6 +100,8 @@ Conta quantos tokens o texto fornecido possui, convertendo o texto usando o codi
 counter = TokenCounter("gpt-3.5-turbo")
 num_tokens = counter.count("Hello, how are you?")
 print(num_tokens)  # Saída provável: 6
+
+# python -m src.tokens_calculate.token_counter
 ```
 
 Este exemplo mostra a contagem aproximada de tokens para a frase "Hello, how are you?", que em geral possui 6 tokens segundo a tokenização do modelo indicado.

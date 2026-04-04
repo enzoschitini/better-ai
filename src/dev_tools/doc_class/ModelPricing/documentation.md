@@ -139,6 +139,8 @@ output_cost = model_pricing.output_rate_per_token() * output_token_count
 
 print(f"Custo de entrada (USD): {input_cost:.6f}")
 print(f"Custo de saída (USD): {output_cost:.6f}")
+
+# python -m src.tokens_calculate.model_pricing
 ```
 
 Saída esperada:
