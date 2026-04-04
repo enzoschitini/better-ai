@@ -1,107 +1,84 @@
-from dotenv import load_dotenv
-from datetime import datetime
+import time
+import requests
+from datetime import datetime, timedelta
 
-from src.database.no_relational_db.router import DocumentStore
-from src.tokens_calculate.exchange_rate.bcb import BCBExchangeRateService
+class BCBExchangeRateService:
+    BCB_API_URL = "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/"
 
-load_dotenv()
+    def __init__(self, timeout: int = 10):
+        self.timeout = timeout
 
-class ExchangeRateService:
-    def __init__(self):
-        self.manager = DocumentStore(backend="local")
-        self.base = {
-            "date": "2025-11-09",
-            "currency": "USD",
-            "rate": 5.25,
-            "source": "better-ai"
-        }
-        self.today = datetime.now()
-        self.date_str_api = self.today.strftime("%Y-%m-%d")
-    
-    def _get_bcb_rate(self):
-        service = BCBExchangeRateService()
-        result = service.get_latest_rate()
-        return result.get("rate")
-    
-    def _get_last_db_record(self):
-        docs = self.manager.fetch_documents("tokens_calculate", "exchange_rate")
+    def _build_url(self, date: datetime) -> str:
+        date_str_api = date.strftime("%m-%d-%Y")
+        return (
+            f"{self.BCB_API_URL}"
+            f"CotacaoDolarDia(dataCotacao=@dataCotacao)?@dataCotacao='{date_str_api}'"
+            f"&$top=1&$format=json"
+        )
 
-        if not docs:
-            return None
+    def _fetch_rate_for_date(self, date: datetime):
+        url = self._build_url(date)
+        try:
+            #erro = 1 / 0
+            response = requests.get(url, timeout=self.timeout)
 
-        docs_sorted = sorted(docs, key=lambda x: x["date"], reverse=True)
-        return docs_sorted[0]
+            print(f"Tentativa para {date.strftime('%m-%d-%Y')}: "
+                  f"{'Sucesso' if response.status_code == 200 else 'Falha'}")
 
-    def _enforce_limit(self, limit: int = 5):
-        docs = self.manager.fetch_documents("tokens_calculate", "exchange_rate")
+            if response.status_code == 200:
+                dados = response.json()
 
-        if len(docs) < limit:
-            return
+                if dados["value"]:
+                    rate = float(dados["value"][0]["cotacaoVenda"])
+                    date_api = datetime.strptime(
+                        dados["value"][0]["dataHoraCotacao"].split(" ")[0],
+                        "%Y-%m-%d",
+                    )
+                    return rate, date_api
 
-        docs_sorted = sorted(docs, key=lambda x: x["date"])
-        to_delete = len(docs_sorted) - limit + 1
+        except Exception as e:
+            print(f"Erro ao buscar cotação para {date.strftime('%m-%d-%Y')}: {e}")
 
-        for i in range(to_delete):
-            doc = docs_sorted[i]
+        return None, None
 
-            print(f"Removendo registro antigo: {doc}")
+    def get_latest_rate(self, max_days_back: int = 5):
+        try:
+            today = datetime.now()
+            best_rate = None
+            best_date = None
 
-            self.manager.delete_documents(
-                "tokens_calculate",
-                "exchange_rate",
-                {"date": doc["date"]}
+            for delta in range(0, max_days_back):
+                date_try = today - timedelta(days=delta)
+
+                rate, date_api = self._fetch_rate_for_date(date_try)
+
+                if rate and date_api:
+                    if best_date is None or date_api > best_date:
+                        best_rate = rate
+                        best_date = date_api
+
+                time.sleep(0.2)
+
+            print(
+                f"\nMelhor cotação encontrada: "
+                f"{best_rate} BRL/USD em "
+                f"{best_date.strftime('%Y-%m-%d') if best_date else 'N/A'}\n"
             )
 
-    def get_usd_rate(self):
-        try:
-            print("\n--- INÍCIO get_usd_rate ---")
-
-            self._enforce_limit(limit=6)
-
-            last_record = self._get_last_db_record()
-
-            if last_record:
-                print(f"Último registro encontrado: {last_record}")
-
-                if last_record["date"] == self.date_str_api:
-                    print("Registro já é de hoje. Retornando do banco.")
-                    return last_record["rate"]
-
-            print("Buscando cotação na API...")
-            api_rate = self._get_bcb_rate()
-
-            if api_rate is not None:
-                print(f"Cotação obtida da API: {api_rate}")
-
-                payload = {
-                    "date": self.date_str_api,
-                    "currency": "USD",
-                    "rate": api_rate,
-                    "source": "olinda.bcb.gov.br"
-                }
-
-                self._enforce_limit(limit=5)
-                self.manager.save_payload("tokens_calculate", "exchange_rate", payload)
-                print("Salvo no banco.")
-
-                return api_rate
-
-            if last_record:
-                print("API falhou. Usando último valor do banco.")
-                return last_record["rate"]
-
-            print("Nenhum dado disponível. Usando base.")
-
-            self._enforce_limit(limit=5)
-            self.manager.save_payload("tokens_calculate", "exchange_rate", self.base)
-
-            return self.base["rate"]
+            return {
+                "rate": best_rate,
+                "date": best_date
+            }
         except Exception as e:
-            print(f"Erro geral em get_usd_rate: {e}")
-            raise RuntimeError("Não foi possível obter a cotação do dólar.") from e
+            print(f"Erro geral ao obter cotação: {e}")
+            return {
+                "rate": None,
+                "date": None
+            }
 
 if __name__ == "__main__":
-    service = ExchangeRateService()
-    rate = service.get_usd_rate()
+    service = BCBExchangeRateService()
+    result = service.get_latest_rate()
+    print(f"Cotação atual: {result['rate']} BRL/USD em {result['date']}")
 
-    print(rate)
+# python -m src.tokens_calculate.bcb

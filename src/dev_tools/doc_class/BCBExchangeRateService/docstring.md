@@ -1,3 +1,4 @@
+```python
 import time
 import requests
 from datetime import datetime, timedelta
@@ -96,3 +97,9 @@ class BCBExchangeRateService:
                 "rate": None,
                 "date": None
             }
+
+if __name__ == "__main__":
+    service = BCBExchangeRateService()
+    result = service.get_latest_rate()
+    print(f"Cotação atual: {result['rate']} BRL/USD em {result['date']}")
+```
