@@ -1,3 +1,4 @@
+```python
 import json
 from typing import Optional
 from fastapi import HTTPException
@@ -178,3 +179,4 @@ class DocumentParse:
             collection_name=self.collection_name,
             payload=self.save_payload
         )
+```
