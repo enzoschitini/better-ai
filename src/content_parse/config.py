@@ -33,5 +33,5 @@ class DocumentParseConfig:
         )
     })
 
-    database_name: str = "SimpleFileParse"
-    collection_name: str = "process"
+    database_name: str = "process_informations"
+    collection_name: str = "document_parse"
