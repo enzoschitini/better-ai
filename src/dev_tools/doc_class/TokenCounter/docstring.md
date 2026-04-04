@@ -1,3 +1,4 @@
+```python
 import tiktoken
 
 class TokenCounter:
@@ -27,3 +28,9 @@ class TokenCounter:
                 int: Número total de tokens encontrados no texto.
         """
         return len(self.encoder.encode(text)) if text else 0
+
+if __name__ == "__main__":
+    counter = TokenCounter("gpt-3.5-turbo")
+    text = "Hello, how are you?"
+    print(f"Token count for '{text}': {counter.count(text)}")
+```
