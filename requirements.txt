@@ -50,6 +50,8 @@ wikipedia~=1.4.0
 
 # --- 8. INTERNAL SERVICES ---
 pytest~=9.0.2
+inflect~=7.5.0
+groq~=0.37.1
 
 # --- 9. DEEP RECEARCH ---
 tavily~=1.1.0
