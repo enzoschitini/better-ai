@@ -1,6 +1,13 @@
 import time
 import requests
 from datetime import datetime, timedelta
+from src.tracing.tracing_core import ApplicationTracing
+
+tracer = ApplicationTracing(
+    flag="ExchangeRate",
+    log_file_name="exchange_rate",
+    file_name="bcb.py"
+)
 
 class BCBExchangeRateService:
     """
@@ -29,11 +36,12 @@ class BCBExchangeRateService:
     def _fetch_rate_for_date(self, date: datetime):
         url = self._build_url(date)
         try:
-            #erro = 1 / 0
             response = requests.get(url, timeout=self.timeout)
 
-            print(f"Tentativa para {date.strftime('%m-%d-%Y')}: "
-                  f"{'Sucesso' if response.status_code == 200 else 'Falha'}")
+            log = (f"Attempt for {date.strftime('%m-%d-%Y')}: "
+                  f"{'Success' if response.status_code == 200 else 'Error'}")
+
+            tracer.INFO(log)
 
             if response.status_code == 200:
                 dados = response.json()
@@ -47,7 +55,7 @@ class BCBExchangeRateService:
                     return rate, date_api
 
         except Exception as e:
-            print(f"Erro ao buscar cotação para {date.strftime('%m-%d-%Y')}: {e}")
+            tracer.ERROR(f"Error fetching rate for {date.strftime('%m-%d-%Y')}: {e}")
 
         return None, None
 
@@ -80,18 +88,19 @@ class BCBExchangeRateService:
 
                 time.sleep(0.2)
 
-            print(
-                f"\nMelhor cotação encontrada: "
-                f"{best_rate} BRL/USD em "
+            log = (
+                f"\nBest rate found: "
+                f"{best_rate} BRL/USD on "
                 f"{best_date.strftime('%Y-%m-%d') if best_date else 'N/A'}\n"
             )
+            tracer.INFO(log)
 
             return {
                 "rate": best_rate,
                 "date": best_date
             }
         except Exception as e:
-            print(f"Erro geral ao obter cotação: {e}")
+            tracer.ERROR(f"General error occurred while fetching exchange rate: {e}")
             return {
                 "rate": None,
                 "date": None

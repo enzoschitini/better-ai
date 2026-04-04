@@ -1,10 +1,14 @@
-from dotenv import load_dotenv
 from datetime import datetime
 
 from src.database.no_relational_db.router import DocumentStore
 from src.tokens_calculate.exchange_rate.bcb import BCBExchangeRateService
+from src.tracing.tracing_core import ApplicationTracing
 
-load_dotenv()
+tracer = ApplicationTracing(
+    flag="ExchangeRate",
+    log_file_name="exchange_rate",
+    file_name="exchange_rate.py"
+)
 
 class ExchangeRateService:
     """
@@ -74,7 +78,7 @@ class ExchangeRateService:
         for i in range(to_delete):
             doc = docs_sorted[i]
 
-            print(f"Removendo registro antigo: {doc}")
+            tracer.INFO(f"Removing old record: {doc}")
 
             self.manager.delete_documents(
                 "tokens_calculate",
@@ -95,24 +99,24 @@ class ExchangeRateService:
                 RuntimeError: Se ocorrer algum erro obtendo a cotação na API ou no processo de armazenamento.
         """
         try:
-            print("\n--- INÍCIO get_usd_rate ---")
+            tracer.INFO("Starting process to get USD exchange rate.")
 
             self._enforce_limit(limit=6)
 
             last_record = self._get_last_db_record()
 
             if last_record:
-                print(f"Último registro encontrado: {last_record}")
+                tracer.INFO(f"Last record in DB: {last_record}")
 
                 if last_record["date"] == self.date_str_api:
-                    print("Registro já é de hoje. Retornando do banco.")
+                    tracer.INFO("Record is already from today. Returning from DB.")
                     return last_record["rate"]
 
-            print("Buscando cotação na API...")
+            tracer.INFO("Fetching rate from BCB API.")
             api_rate = self._get_bcb_rate()
 
             if api_rate is not None:
-                print(f"Cotação obtida da API: {api_rate}")
+                tracer.INFO(f"Rate obtained from API: {api_rate}")
 
                 payload = {
                     "date": self.date_str_api,
@@ -123,20 +127,20 @@ class ExchangeRateService:
 
                 self._enforce_limit(limit=5)
                 self.manager.save_payload("tokens_calculate", "exchange_rate", payload)
-                print("Salvo no banco.")
+                tracer.INFO("New rate saved to DB.")    
 
                 return api_rate
 
             if last_record:
-                print("API falhou. Usando último valor do banco.")
+                tracer.INFO("API failed. Using last value from DB.")
                 return last_record["rate"]
 
-            print("Nenhum dado disponível. Usando base.")
+            tracer.INFO("No data available. Using base rate.")
 
             self._enforce_limit(limit=5)
             self.manager.save_payload("tokens_calculate", "exchange_rate", self.base)
 
             return self.base["rate"]
         except Exception as e:
-            print(f"Erro geral em get_usd_rate: {e}")
+            tracer.ERROR(f"General error in get_usd_rate: {e}")
             raise RuntimeError("Não foi possível obter a cotação do dólar.") from e
