@@ -93,7 +93,8 @@ async def document_parse(
 
         return JSONResponse(content={
             "status": "success",
-            "result": result
+            "job_id": result.get("job_id"),
+            "result": result.get("content")
         })
 
     except Exception as e:

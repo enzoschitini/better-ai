@@ -1,4 +1,6 @@
 import json
+import logging
+
 from dotenv import load_dotenv
 from typing import Optional, Dict, Any
 
@@ -10,6 +12,8 @@ from src.content_parse.config import Config
 from src.content_parse.pydantic_schema import JsonToPydantic, GeneratePydanticSchema
 
 load_dotenv()
+logging.getLogger("httpx").setLevel(logging.WARNING)
+
 
 class ContentParsingAgent:
     """

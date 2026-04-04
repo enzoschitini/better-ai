@@ -24,7 +24,7 @@ class DocumentParseConfig:
     default_config: dict = field(default_factory=lambda: {
         "model_provider": "OpenAI",
         "model_id": "gpt-4.1-mini",
-        "debug_mode": True,
+        "debug_mode": False,
         "instructions": "Extraia dados do texto",
         "description": (
             "Leia o texto e extraia as informações relevantes conforme o esquema definido. "
