@@ -73,6 +73,7 @@ async def document_parse(
     try:
         loader = await LoadRequestFile(
             file=file,
+            allowed_extensions=["txt", "md", "pdf", "docx"],
             max_size_mb=5
         ).load()
 
