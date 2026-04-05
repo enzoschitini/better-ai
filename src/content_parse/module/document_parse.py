@@ -103,6 +103,9 @@ class DocumentParse:
             file_extension=self.file_extension
         )
         self.result_extract = extractor.extract()
+
+        if self.result_extract["response"] == None or self.result_extract["response"].strip() == "":
+            raise HTTPException(status_code=400, detail="Failed to extract content from file")
     
     def _parse_content(self):
         """
