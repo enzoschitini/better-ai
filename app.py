@@ -404,7 +404,7 @@ async def document_parse(
         loader = await LoadRequestFile(
             file=file,
             allowed_extensions=["txt", "md", "pdf", "docx"],
-            max_size_mb=5
+            max_size_mb=50
         ).load()
 
         file_bytes = loader.bytes
