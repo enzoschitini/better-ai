@@ -10,6 +10,7 @@ from agno.models.openai import OpenAIResponses
 
 from src.content_parse.config import Config
 from src.content_parse.pydantic_schema import JsonToPydantic, GeneratePydanticSchema
+from src.tokens_calculate.token_counter import TokenCounter
 
 load_dotenv()
 logging.getLogger("httpx").setLevel(logging.WARNING)
@@ -63,7 +64,26 @@ class ContentParsingAgent:
                 self.config_schema = Config()
 
         except Exception as e:
-            raise RuntimeError("Error generating schemas", str(e))    
+            raise RuntimeError("Error generating schemas", str(e))
+    
+    def _verify_context_window(self):
+        """
+        Verifica se o tamanho do contexto necessário para processar os dados de entrada e saída está dentro do limite
+        definido pelo modelo configurado. Calcula o número total de tokens necessários e compara com a janela de contexto.
+
+        Raises:
+                ValueError: Caso o número total de tokens necessários exceda a janela de contexto do modelo.
+        """
+        token_counter = TokenCounter(model=self.config_schema.model_id)
+
+        input_data_tokens = token_counter.count(str(self.input_data))
+        output_data_tokens = token_counter.count(str(self.output_data))
+
+        num_tokens = input_data_tokens + output_data_tokens
+        model_context_window = self.config_schema.context_window
+
+        if num_tokens >= model_context_window:
+            raise ValueError(f"Context window exceeded: {num_tokens} tokens needed, but model supports only {model_context_window} tokens.")
 
     def _get_model(self):
         """
@@ -107,6 +127,8 @@ class ContentParsingAgent:
                 RuntimeError: Caso ocorra algum erro durante a execução do agente.
         """
         try:
+            self._verify_context_window()
+
             agent = Agent(
                 model=self._get_model(),
                 instructions=self.config_schema.instructions,
@@ -159,3 +181,56 @@ class ContentParsingAgent:
 
         except Exception as e:
             raise RuntimeError("Error formatting response", str(e))
+
+
+input_data = """
+Title: The Future of AI
+Author: John Doe
+Code: 
+
+Artificial Intelligence is evolving rapidly. Companies are investing heavily
+in automation and machine learning to improve efficiency and decision-making.
+
+Enzo: Is a data scientist and has 5 years of experience
+Laura: Is a software engineer and has 3 years of experience
+Marico: Is a product manager and has 7 years of experience.
+"""
+
+output_data = {
+    "title": {
+        "type": "str",
+        "description": "Title of the content"
+    },
+    "summary": {
+        "type": "str",
+        "description": "Short summary of the text"
+    },
+    "code": {
+        "type": "str",
+        "description": "Code snippet extracted from the text"
+    },
+}
+
+config_data = {
+    "model_provider": "OpenAI",
+    "model_id": "gpt-4.1-mini",
+    "context_window": 1000000,
+    "debug_mode": True,
+    "instructions": "Extraia dados do texto",
+    "description": "Leia o texto e extraia as informações relevantes conforme o esquema definido. Retorne um JSON estruturado com os dados extraídos. Caso não encontre alguma informação, retorne null para aquele campo."
+}
+
+if __name__ == "__main__":
+    agent_parser = ContentParsingAgent(
+        input_data={
+            "input_data": input_data, 
+            #"task": "Extraia dados do texto"
+        },
+        output_data=output_data,
+        config_data=config_data
+    )
+    content_parsed = agent_parser.run_agent()
+    response = agent_parser.format_response(content_parsed)
+    print(json.dumps(response, indent=4, ensure_ascii=False))
+
+# python -m src.content_parse.content_parsing_agent
