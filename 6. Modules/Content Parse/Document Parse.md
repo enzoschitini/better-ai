@@ -307,31 +307,31 @@ document_parse._save()
 ## Use
 
 ```python
-
 if __name__ == "__main__":
     # Exemplo de uso
     job_id = "job_123"
-    metadata = {"user_id": "user_456"}
+    metadata = """{"user_id": "user_456"}"""
 
     schema = """
     {
-      "summary": {
+    "summary": {
         "type": "str",
         "description": "Resumo do conteúdo do arquivo"
-      }
+    }
     }
     """
     config = """
     {
-      "model_provider": "OpenAI",
-      "model_id": "gpt-4.1-mini",
-      "debug_mode": true,
-      "instructions": "Extraia dados do texto",
-      "description": "Leia o texto e extraia as informações relevantes conforme o esquema definido. Retorne um JSON estruturado com os dados extraídos. Caso não encontre alguma informação, retorne null para aquele campo."
+    "model_provider": "OpenAI",
+    "model_id": "gpt-4.1-mini",
+    "max_input_tokens": 1000000,
+    "debug_mode": true,
+    "instructions": "Extraia dados do texto",
+    "description": "Leia o texto e extraia as informações relevantes conforme o esquema definido. Retorne um JSON estruturado com os dados extraídos. Caso não encontre alguma informação, retorne null para aquele campo."
     }
     """
 
-    with open("src\\text_parse\\module\\Endurance.pdf", "rb") as f:
+    with open("src\\content_parse\\module\\example.pdf", "rb") as f:
         file_bytes = BytesIO(f.read())
 
     parser = DocumentParse(
@@ -348,9 +348,5 @@ if __name__ == "__main__":
     print("\nResposta do parser:")
     print(json.dumps(response, indent=2))
 
-# python -m src.content_parse.module.simple_file_parse
+# python -m src.content_parse.module.document_parse
 ```
-
----
-
-# Fim da documentação da classe `DocumentParse`.
