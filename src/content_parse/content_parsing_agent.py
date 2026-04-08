@@ -10,6 +10,7 @@ from agno.models.openai import OpenAIResponses
 
 from src.content_parse.config import Config
 from src.content_parse.pydantic_schema import JsonToPydantic, GeneratePydanticSchema
+from src.tokens_calculate.token_counter import TokenCounter
 
 load_dotenv()
 logging.getLogger("httpx").setLevel(logging.WARNING)
@@ -63,7 +64,31 @@ class ContentParsingAgent:
                 self.config_schema = Config()
 
         except Exception as e:
-            raise RuntimeError("Error generating schemas", str(e))    
+            raise RuntimeError("Error generating schemas", str(e))
+    
+    def _verify_max_input_tokens(self):
+        """
+        Verifica se o tamanho do contexto necessário para processar os dados de entrada e saída está dentro do limite
+        definido pelo modelo configurado. Calcula o número total de tokens necessários e compara com a janela de contexto.
+
+        Raises:
+                RuntimeError: Caso ocorra algum erro durante a verificação da janela de contexto.
+                ValueError: Caso o número total de tokens necessários exceda a janela de contexto do modelo.
+        """
+        try:
+            token_counter = TokenCounter(model=self.config_schema.model_id)
+
+            input_data_tokens = token_counter.count(str(self.input_data))
+            output_data_tokens = token_counter.count(str(self.output_data))
+
+            num_tokens = input_data_tokens + output_data_tokens
+            model_max_input_tokens = self.config_schema.max_input_tokens
+        
+        except Exception as e:
+            raise RuntimeError("Error verifying context window", str(e))
+
+        if num_tokens >= model_max_input_tokens:
+            raise ValueError(f"Context window exceeded: {num_tokens} tokens needed, but model supports only {model_max_input_tokens} tokens.")
 
     def _get_model(self):
         """
@@ -107,6 +132,8 @@ class ContentParsingAgent:
                 RuntimeError: Caso ocorra algum erro durante a execução do agente.
         """
         try:
+            self._verify_max_input_tokens()
+
             agent = Agent(
                 model=self._get_model(),
                 instructions=self.config_schema.instructions,
