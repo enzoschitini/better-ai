@@ -72,15 +72,20 @@ class ContentParsingAgent:
         definido pelo modelo configurado. Calcula o número total de tokens necessários e compara com a janela de contexto.
 
         Raises:
+                RuntimeError: Caso ocorra algum erro durante a verificação da janela de contexto.
                 ValueError: Caso o número total de tokens necessários exceda a janela de contexto do modelo.
         """
-        token_counter = TokenCounter(model=self.config_schema.model_id)
+        try:
+            token_counter = TokenCounter(model=self.config_schema.model_id)
 
-        input_data_tokens = token_counter.count(str(self.input_data))
-        output_data_tokens = token_counter.count(str(self.output_data))
+            input_data_tokens = token_counter.count(str(self.input_data))
+            output_data_tokens = token_counter.count(str(self.output_data))
 
-        num_tokens = input_data_tokens + output_data_tokens
-        model_context_window = self.config_schema.context_window
+            num_tokens = input_data_tokens + output_data_tokens
+            model_context_window = self.config_schema.context_window
+        
+        except Exception as e:
+            raise RuntimeError("Error verifying context window", str(e))
 
         if num_tokens >= model_context_window:
             raise ValueError(f"Context window exceeded: {num_tokens} tokens needed, but model supports only {model_context_window} tokens.")
