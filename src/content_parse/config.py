@@ -5,7 +5,7 @@ class Config:
     model_provider: str = "OpenAI"
     # Models: OpenAIChat(id="gpt-4.1-mini"), Groq(id="llama-3.3-70b-versatile"),
     model_id: str = "gpt-4.1-mini"
-    context_window: int = 1000000
+    max_input_tokens: int = 1000000
     debug_mode: bool = True
 
     # Come lo fai
@@ -25,7 +25,7 @@ class DocumentParseConfig:
     default_config: dict = field(default_factory=lambda: {
         "model_provider": "OpenAI",
         "model_id": "gpt-4.1-mini",
-        "context_window": 1000000,
+        "max_input_tokens": 1000000,
         "debug_mode": False,
         "instructions": "Extraia dados do texto",
         "description": (
