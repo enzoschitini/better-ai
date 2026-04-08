@@ -10,7 +10,7 @@ from src.content_parse.content_parsing_agent import ContentParsingAgent
 ### Input Text:
 
 ```python
-input_text = """
+input_data = """
 Title: The Future of AI
 Author: John Doe
 Code: 
@@ -90,6 +90,7 @@ output_data = {
 config_data = {
     "model_provider": "OpenAI",
     "model_id": "gpt-4.1-mini",
+    "max_input_tokens": 1000000,
     "debug_mode": True,
     "instructions": "Extraia dados do texto",
     "description": "Leia o texto e extraia as informações relevantes conforme o esquema definido. Retorne um JSON estruturado com os dados extraídos. Caso não encontre alguma informação, retorne null para aquele campo."
@@ -101,8 +102,11 @@ config_data = {
 ```python
 if __name__ == "__main__":
     agent_parser = ContentParsingAgent(
-        input_data=input_data,
-        output_data=output_schema,
+        input_data={
+            "input_data": input_data, 
+            #"task": "Extraia dados do texto"
+        },
+        output_data=output_data,
         config_data=config_data
     )
     content_parsed = agent_parser.run_agent()
