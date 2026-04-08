@@ -8,6 +8,13 @@ from src.content_parse.config import DocumentParseConfig
 from src.embedding.services.file_content_extractor import FileContentExtractor
 from src.tokens_calculate.module import ModelPricing, ExchangeRateService
 from src.database.no_relational_db.router import DocumentStore
+from src.tracing.tracing_core import ApplicationTracing
+
+tracer = ApplicationTracing(
+    flag="DocumentParse",
+    file_name="document_parse",
+    log_file_name="parse",
+)
 
 
 class DocumentParse:
@@ -37,6 +44,7 @@ class DocumentParse:
         file_extension: str,
         config: Optional[str] = None,
     ):
+        tracer.INFO(func_name="__init__", message=f"Initializing DocumentParse with job_id: {job_id}")
         self.job_id = job_id
         self.metadata = metadata
         self.schema = schema
@@ -65,6 +73,7 @@ class DocumentParse:
         self._build_response()
         self._save()
 
+        tracer.INFO(func_name="run", message=f"Completed processing for job_id: {self.job_id}")
         return self.api_response
 
     def _load_schema_and_config(self):
@@ -91,12 +100,15 @@ class DocumentParse:
                 raise HTTPException(status_code=400, detail="Invalid JSON in config")
         else:
             self.config_data = self.default_config
+        
+        tracer.INFO(func_name="_load_schema_and_config", message="Loaded schema and configuration")
     
     def _extract_file_content(self):
         """
         Utiliza o extractor de conteúdo para extrair texto raw do arquivo fornecido,
         considerando sua extensão.
         """
+        tracer.INFO(func_name="_extract_file_content", message=f"Extracting content from file with extension: {self.file_extension}")
         # Extract file content
         extractor = FileContentExtractor(
             file_bytes=self.file_bytes,
@@ -106,6 +118,7 @@ class DocumentParse:
 
         if self.result_extract["response"] == None or self.result_extract["response"].strip() == "":
             raise HTTPException(status_code=400, detail="Failed to extract content from file")
+        tracer.INFO(func_name="_extract_file_content", message="Content extracted successfully from file")
     
     def _parse_content(self):
         """
@@ -113,6 +126,7 @@ class DocumentParse:
         a partir do conteúdo extraído do arquivo.
         """
         # Parse content with agent
+        tracer.INFO(func_name="_parse_content", message="Parsing content with agent")
         agent_parser = ContentParsingAgent(
             input_data={
                 "file_content": self.result_extract["response"]
@@ -123,6 +137,7 @@ class DocumentParse:
 
         raw_content_parsed = agent_parser.run_agent()
         self.agent_response = agent_parser.format_response(raw_content_parsed)
+        tracer.INFO(func_name="_parse_content", message="Content parsed successfully with agent")
     
     def _calculate_costs(self):
         """
@@ -138,7 +153,19 @@ class DocumentParse:
 
         service = ExchangeRateService()
         self.rate = service.get_usd_rate()
-    
+        tracer.DEBUG(
+            func_name="_calculate_costs",
+            message="Calculated costs",
+            metadata={
+                "model": self.info_process.get("model").get("id"),
+                "input_tokens": self.info_process.get("tokens").get("input_tokens", 0),
+                "output_tokens": self.info_process.get("tokens").get("output_tokens", 0),
+                "input_cost_usd": self.input_cost,
+                "output_cost_usd": self.output_cost,
+                "exchange_rate_usd_brl": self.rate
+            }
+        )
+
     def _build_response(self):
         """
         Constrói o payload de resposta da API e o payload para salvar no banco,
@@ -168,6 +195,15 @@ class DocumentParse:
             "job_id": self.job_id,
             "content": self.agent_response.get("content"),
         }
+
+        tracer.DEBUG(
+            func_name="_build_response",
+            message="Built API response and save payload",
+            metadata={
+                "api_response": self.api_response,
+                "save_payload": self.save_payload
+            }
+        )
     
     def _save(self):
         """
@@ -181,3 +217,4 @@ class DocumentParse:
             collection_name=self.collection_name,
             payload=self.save_payload
         )
+        tracer.INFO(func_name="_save", message="Saved processed result in database")
