@@ -2,7 +2,7 @@ import asyncio
 from fastapi import UploadFile
 import json
 import time
-from src.text_parse.text_parse_module import TextParserModule
+from text_parse.backup.text_parse_module import TextParserModule
 import httpx
 
 url = "http://127.0.0.1:8000/text_parse"
@@ -113,4 +113,4 @@ def test(value):
         print(json.dumps(response.json(), indent=2, ensure_ascii=False))
 
 test(2)
-# python -m src.text_parse.test
+# python -m src.content_parse.test

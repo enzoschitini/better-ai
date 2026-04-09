@@ -21,6 +21,7 @@ dependencies = [
     "langchain-google-genai~=2.1.12",
     "langchain-groq~=0.3.8",
     "langchain-pinecone~=0.2.13",
+    "agno~=2.5.8",
     # --- 3. AI MODELS & SDKs ---
     # SDKs nativos para quando você precisar de recursos não suportados pelo LangChain
     "google-genai~=1.52.0",
@@ -46,10 +47,11 @@ dependencies = [
     # Ferramentas de busca e APIs de terceiros para os Agents
     "wikipedia~=1.4.0",
     # --- 8. INTERNAL SERVICES ---
-    "pytest~=9.0.2",
-    "tavily~=1.1.0",
-    "psycopg2~=2.9.11",
-    "agno~=2.5.8",
-    "yfinance~=1.2.0",
-    "psycopg2-binary~=2.9.11",
+    "pytest>=9.0.2",
+    "tavily>=1.1.0",
+    "psycopg2>=2.9.11",
+    "yfinance>=1.2.0",
+    "psycopg2-binary>=2.9.11",
+    "inflect~=7.5.0",
+    "groq~=0.37.1",
 ]

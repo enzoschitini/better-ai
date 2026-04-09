@@ -6,9 +6,6 @@ from docx import Document
 from pptx import Presentation
 import pymupdf as fitz  
 import pandas as pd
-from base64 import b64decode
-import yaml
-from functools import lru_cache
 
 
 class FileProcessorStrategy:
@@ -159,3 +156,16 @@ class FileContentExtractor:
     def extract(self) -> dict:
         response = self.processor.extract_content(self.file_bytes)
         return {"response": response}
+
+if __name__ == "__main__":
+    path = "local/test files"
+
+    # Exemplo de uso
+    with open(f"{path}/Candidatura.pdf", "rb") as f:
+        file_bytes = BytesIO(f.read())
+
+    extractor = FileContentExtractor(file_bytes, "pdf")
+    result = extractor.extract()
+    print(result["response"][:500])  # Imprime os primeiros 500 caracteres do conteúdo extraído
+
+# python -m src.embedding.services.file_content_extractor
