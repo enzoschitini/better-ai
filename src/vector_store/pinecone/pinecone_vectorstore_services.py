@@ -31,7 +31,7 @@ def trace(method_name: str):
                 tracer.INFO(method_name, "Execution finished successfully")
                 return result
             except Exception as e:
-                tracer.ERROR(method_name, "Execution failed", error=e)
+                tracer.ERROR(method_name, "Execution failed")
                 raise
         return wrapper
     return decorator
