@@ -13,7 +13,7 @@ from src.agents.rag_agent.config import DEFAULT_MODEL, PROMPT
 
 load_dotenv()
 
-DATABASE = Database()
+DATABASE = Database(local=True)
 TOOL_RESPONSER = ToolResponse()
 USE_REASONING = False
 

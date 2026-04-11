@@ -16,10 +16,16 @@ class Database:
     ):
         if local:
             return cls._local_database(database_name)
-        return cls._supabase(database_url)
+        return cls._supabase(database_url, database_name)
 
     @staticmethod
-    def _get_database_name(database_name: str | None):
+    def _get_schema_name(database_name: str | None):
+        if database_name:
+            return database_name
+        return "agent_db"
+
+    @staticmethod
+    def _get_database_local_storage(database_name: str | None):
         path = "src/agents/database"
         if database_name:
             return f"{path}/{database_name}.db"
@@ -36,9 +42,9 @@ class Database:
         return f"postgresql://postgres:{password}@db.{host}:5432/postgres"
 
     @classmethod
-    def _supabase(cls, database_url: str | None):
+    def _supabase(cls, database_url: str | None, database_name: str | None):
         return PostgresDb(
-            db_schema="agent_db",
+            db_schema=cls._get_schema_name(database_name),
             db_url=cls._get_database_url(database_url),
 
             session_table="sessions",
@@ -62,7 +68,7 @@ class Database:
     @classmethod
     def _local_database(cls, database_name: str | None):
         return SqliteDb(
-            db_file=cls._get_database_name(database_name),
+            db_file=cls._get_database_local_storage(database_name),
 
             session_table="sessions",
             memory_table="memories",
