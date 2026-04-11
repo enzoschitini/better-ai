@@ -22,7 +22,8 @@ class RunAgent:
             text: str
 
         response = self.agent.run(
-            input=AgentInput(text=ask)
+            input=AgentInput(text=ask),
+            stream=False,
         )
 
         formatter = FormatAgentResponse(response)
@@ -42,6 +43,7 @@ class RunAgent:
     def agent_os(self):
         agent_os = AgentOS(
             id="my-first-os",
+            name="My First AgentOS",
             description="My first AgentOS",
             agents=[self.agent],
         )
