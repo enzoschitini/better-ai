@@ -30,14 +30,18 @@ agent = Agent(
 )
 
 if __name__ == "__main__":
+    import json
     from src.agents.ultils.run_agent import RunAgent
 
     runner = RunAgent(agent=agent)
     ASK = """
-Gere um grafico de barras da quantidade de pessoas por genero
+Gere um gráfico de barras da quantidade de pessoas por gênero.
 """
     #runner.process(ask=ASK, tool_responses=response_collector)
     runner.debug(ask=ASK)
     #runner.agent_os()
+
+    print("Tool Response Metadata:")
+    print(json.dumps(TOOL_RESPONSER.get_metadata(), indent=4))
 
 # python -m src.agents.sheet_analyzer.agent

@@ -26,6 +26,11 @@ class AgentConfig:
     - ALWAYS use the provided dataframe `df`
     - NEVER load external datasets
 
+    About plots:
+    - ONLY generate plots if the user EXPLICITLY asks for a chart, graph, plot, or visualization
+    - If the user does NOT explicitly request a plot, DO NOT generate any visualization
+    - When in doubt, DO NOT generate a plot
+    
     When creating plots:
     - ALWAYS use matplotlib
     - ALWAYS call plt.show() at the end
