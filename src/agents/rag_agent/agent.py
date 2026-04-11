@@ -92,14 +92,51 @@ if __name__ == "__main__":
 Quais arquivos estão na base?
 """
     #runner.run_agent(ask=ASK, tool_responses=TOOL_RESPONSER)
-    runner.debug(ask=ASK)
+    #runner.debug(ask=ASK)
     #runner.agent_os()
 
+
+    #agent.print_response(ASK)
+
+    #"""
+    from pydantic import BaseModel
+    from src.agents.ultils.format_response import FormatAgentResponse
+
+    class AgentInput(BaseModel):
+        text: str
+
+    response = agent.run(
+        input=AgentInput(text=ASK),
+        stream=False,
+    )
+
+    formatter = FormatAgentResponse(response)
+    formated_response = formatter.format()
+
+    path = "src/agents/rag_agent/debug"
+
+    if path:
+        formatter.save_json(formated_response, f"{path}/agent_response.json")
+
+    print(json.dumps(formated_response, indent=2))
+
+    #"""
+
+    """
+    from agno.os import AgentOS
+
+    agent_os = AgentOS(
+        id="my-first-os",
+        name="My First AgentOS",
+        description="My first AgentOS",
+        agents=[agent],
+    )
+
+    app = agent_os.get_app()
+    agent_os.serve(app=app)
+    #"""
+
+    print("\n\nTool Response Metadata:")
     print(json.dumps(TOOL_RESPONSER.get_metadata(), indent=4))
 
-"""
-    reasoning=True,
-    reasoning_model=OpenAIChat(id=DEFAULT_MODEL),
-    reasoning_max_steps=5,
-"""
 # python -m src.agents.rag_agent.agent
