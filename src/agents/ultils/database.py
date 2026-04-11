@@ -4,27 +4,42 @@ from dotenv import load_dotenv
 from agno.db.sqlite import SqliteDb
 from agno.db.postgres import PostgresDb
 
-from src.agents.rag_agent.config import LOCAL_MEMORY_DB
-
 load_dotenv()
 
+
 class Database:
-    def __new__(cls, local: bool = False):
+    def __new__(
+        cls,
+        local: bool = False,
+        database_name: str | None = None,
+        database_url: str | None = None,
+    ):
         if local:
-            return cls.local_database()
-        return cls.supabase()
+            return cls._local_database(database_name)
+        return cls._supabase(database_url)
 
     @staticmethod
-    def supabase():
-        SUPABASE_PROJECT_HOST = os.getenv("SUPABASE_PROJECT_HOST")
-        SUPABASE_DATABASE_PASSWORD = os.getenv("SUPABASE_DATABASE_PASSWORD")
+    def _get_database_name(database_name: str | None):
+        path = "src/agents/database"
+        if database_name:
+            return f"{path}/{database_name}.db"
+        return f"{path}/agno.db"
 
-        SUPABASE_DB_URL = (
-            f"postgresql://postgres:{SUPABASE_DATABASE_PASSWORD}@db.{SUPABASE_PROJECT_HOST}:5432/postgres"
-        )
+    @staticmethod
+    def _get_database_url(database_url: str | None):
+        if database_url:
+            return database_url
+        
+        host = os.getenv("SUPABASE_PROJECT_HOST")
+        password = os.getenv("SUPABASE_DATABASE_PASSWORD")
 
+        return f"postgresql://postgres:{password}@db.{host}:5432/postgres"
+
+    @classmethod
+    def _supabase(cls, database_url: str | None):
         return PostgresDb(
-            db_url=SUPABASE_DB_URL,
+            db_schema="agent_db",
+            db_url=cls._get_database_url(database_url),
 
             session_table="sessions",
             memory_table="memories",
@@ -44,10 +59,10 @@ class Database:
             approvals_table="approvals",
         )
 
-    @staticmethod
-    def local_database():
+    @classmethod
+    def _local_database(cls, database_name: str | None):
         return SqliteDb(
-            db_file=LOCAL_MEMORY_DB,
+            db_file=cls._get_database_name(database_name),
 
             session_table="sessions",
             memory_table="memories",
@@ -66,4 +81,3 @@ class Database:
             schedule_runs_table="schedule_runs",
             approvals_table="approvals",
         )
-
