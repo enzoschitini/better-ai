@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 from typing import List, Any
 
 from agno.tools import Toolkit
+from src.agents.ultils.tool_response import ToolResponse
 
 # Retriver Packages
 from src.vector_store.pinecone.pinecone_retriever import PineconeRetriever
@@ -31,7 +32,7 @@ class RetrievalAugmentedGeneration(Toolkit):
         filter_search: dict,
         enable_get_relevant_documents: bool = True,
         all: bool = False,
-        TOOL_RESPONSER: Any = None,
+        TOOL_RESPONSER: ToolResponse = None,
         **kwargs,
     ):
         self.filter_search = filter_search

@@ -6,6 +6,7 @@ from agno.agent import Agent
 from agno.os import AgentOS
 from agno.models.groq import Groq
 
+from src.agents.ultils.tool_response import ToolResponse
 from src.agents.ultils.format_response import FormatAgentResponse
 
 load_dotenv()
@@ -17,7 +18,7 @@ class RunAgent:
     def debug(self, ask: str = "Hello!"):
         self.agent.print_response(ask)
 
-    def run_agent(self, ask: str = "Hello!", path: str = None, tool_responses = None):
+    def js_reponse(self, ask: str = "Hello!", path: str = None, tool_response: ToolResponse = None):
         class AgentInput(BaseModel):
             text: str
 
@@ -29,22 +30,22 @@ class RunAgent:
         formatter = FormatAgentResponse(response)
         formated_response = formatter.format()
 
-        if path:
-            formatter.save_json(formated_response, f"{path}agent_response.json")
+        path = path or "src/agents"
+        formatter.save_json(formated_response, f"{path}/agent_response.json")
 
         print(json.dumps(formated_response, indent=2))
 
-        if tool_responses:
-            print(f"\nTool Responses:\n{tool_responses.get_metadata()}")
+        if tool_response:
+            print(f"\nTool Responses:\n{tool_response.get_metadata()}")
         
         print(f"\nResponse: {formated_response["content"]}")
         return formated_response
 
-    def agent_os(self):
+    def agent_os(self, id: str = "my-first-os", name: str = "My First AgentOS", description: str = "My first AgentOS"):
         agent_os = AgentOS(
-            id="my-first-os",
-            name="My First AgentOS",
-            description="My first AgentOS",
+            id=id,
+            name=name,
+            description=description,
             agents=[self.agent],
         )
 
