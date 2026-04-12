@@ -13,7 +13,7 @@ class AgentRequest:
         self.host = host
         self.url = f"http://{host}/agents/{agent_id}/runs"
     
-    def _get_connection(self, data: dict):
+    def get_connection(self, data: dict):
         self.response = requests.post(self.url, data=data, stream=True)
 
         return self.response
@@ -103,14 +103,14 @@ class AgentRequest:
 
 if __name__ == "__main__":
     request = AgentRequest(agent_id="rag_agent")
-    request._get_connection(
+    request.get_connection(
         data={
             "message": "Quais arquivos estão na base?",
             "session_id": "session-123456",
             "stream": "true"
         }
     )
-    request.stream_with_tools()
+    request.simple_request()
 
     # Explique o que é RAG
     # http://localhost:7777/docs
