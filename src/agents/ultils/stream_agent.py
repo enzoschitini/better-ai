@@ -1,14 +1,16 @@
 import requests
 import json
 
+PORT = "8000" # 7777 8000
+
 def get_agents():
-    response = requests.get("http://localhost:7777/agents").json()
+    response = requests.get(f"http://localhost:{PORT}/agents").json()
     print(response)
 
     return response
 
 class AgentRequest:
-    def __init__(self, agent_id: str, host: str = "localhost:7777"):
+    def __init__(self, agent_id: str, host: str = f"localhost:{PORT}"):
         self.agent_id = agent_id
         self.host = host
         self.url = f"http://{host}/agents/{agent_id}/runs"
@@ -106,11 +108,12 @@ if __name__ == "__main__":
     request.get_connection(
         data={
             "message": "Quais arquivos estão na base?",
-            "session_id": "session-123456",
-            "stream": "true"
+            "session_id": "session-1234567",
+            "stream": "true",
+            #"stream": "false",
         }
     )
-    request.simple_request()
+    request.stream_with_tools()
 
     # Explique o que é RAG
     # http://localhost:7777/docs

@@ -83,6 +83,9 @@ agent = Agent(
     ],
 )
 
+def get_agent():
+    return agent
+
 if __name__ == "__main__":
     import json
     from src.agents.ultils.run_agent import RunAgent

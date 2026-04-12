@@ -41,7 +41,14 @@ class RunAgent:
         print(f"\nResponse: {formated_response["content"]}")
         return formated_response
 
-    def agent_os(self, id: str = "my-first-os", name: str = "My First AgentOS", description: str = "My first AgentOS"):
+    def agent_os(
+        self,
+        id: str = "my_agent",
+        name: str = "My Agent",
+        description: str = "An agent created for demonstration purposes.",
+        host: str = "localhost",
+        port: int = 7777,
+    ):
         agent_os = AgentOS(
             id=id,
             name=name,
@@ -50,7 +57,7 @@ class RunAgent:
         )
 
         app = agent_os.get_app()
-        agent_os.serve(app=app)
+        agent_os.serve(app=app, host=host, port=port)
 
 if __name__ == "__main__":
     agent = Agent(
@@ -59,8 +66,6 @@ if __name__ == "__main__":
     )
 
     runner = RunAgent(agent=agent)
-    response = runner.process()
-
     response = runner.agent_os()
 
 # python -m src.agents.ultils.run_agent
