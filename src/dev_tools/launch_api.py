@@ -59,7 +59,7 @@ def healthy():
 # ------------------------------------------------- #
 
 from agno.os import AgentOS
-from src.agents.ultils.run_agent import RunAgent
+from src.agents.ultils.test_agents.run_agent import RunAgent
 from src.agents.rag_agent.agent import get_agent
 
 agent_os = AgentOS(

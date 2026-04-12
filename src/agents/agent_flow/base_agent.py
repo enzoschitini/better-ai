@@ -109,7 +109,7 @@ agent = Agent(
 )
 
 if __name__ == "__main__":
-    from src.agents.ultils.run_agent import RunAgent
+    from src.agents.ultils.test_agents.run_agent import RunAgent
 
     runner = RunAgent(agent=agent)
     runner.run_agent()
