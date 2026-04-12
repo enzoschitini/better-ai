@@ -91,8 +91,8 @@ if __name__ == "__main__":
     ASK = """
 Quais arquivos estão na base?
 """
-    runner.js_reponse(ask=ASK, tool_response=TOOL_RESPONSER)
+    #runner.js_reponse(ask=ASK, tool_response=TOOL_RESPONSER)
     #runner.debug(ask=ASK)
-    #runner.agent_os()
+    runner.agent_os()
 
 # python -m src.agents.rag_agent.agent

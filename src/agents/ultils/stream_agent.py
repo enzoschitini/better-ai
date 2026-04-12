@@ -64,11 +64,11 @@ class AgentRequest:
 
                     # tool começou
                     elif event_type == "ToolCallStarted":
-                        print(f"\n🔧 TOOL CHAMADA: {event.get('tool_name')}")
+                        print(f"\n🔧 TOOL CHAMADA: {event.get("tool", {}).get("tool_name")}")
 
                     # tool terminou
                     elif event_type == "ToolCallCompleted":
-                        print(f"\n✅ TOOL FINALIZADA: {event.get('tool_name')}")
+                        print(f"\n✅ TOOL FINALIZADA: {event.get('tool', {}).get('tool_name')}")
 
                 except:
                     pass
@@ -102,11 +102,11 @@ class AgentRequest:
         print("\nStream salvo com sucesso!")
 
 if __name__ == "__main__":
-    request = AgentRequest(agent_id="base-agent")
+    request = AgentRequest(agent_id="rag_agent")
     request._get_connection(
         data={
-            "message": "O que as pessoas tem dito sobre as olimpiadas de inverno?",
-            "session_id": "session-1",
+            "message": "Quais arquivos estão na base?",
+            "session_id": "session-123456",
             "stream": "true"
         }
     )
@@ -115,4 +115,5 @@ if __name__ == "__main__":
     # Explique o que é RAG
     # http://localhost:7777/docs
 
-# python -m src.agents.agent_flow.stream_agent
+
+# python -m src.agents.ultils.stream_agent
