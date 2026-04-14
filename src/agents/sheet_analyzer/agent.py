@@ -34,8 +34,9 @@ if __name__ == "__main__":
     from src.agents.ultils.test_agents.run_agent import RunAgent
 
     runner = RunAgent(agent=agent)
+    # Gere um gráfico de barras da quantidade de pessoas por gênero.
     ASK = """
-Gere um gráfico de barras da quantidade de pessoas por gênero.
+Qual a média de preço por genero?
 """
     #runner.process(ask=ASK, tool_responses=response_collector)
     runner.debug(ask=ASK)
