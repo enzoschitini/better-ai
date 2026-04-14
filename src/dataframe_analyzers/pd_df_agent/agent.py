@@ -246,6 +246,59 @@ Graphs generated: {len(self.collector.get_graphs())}
         self.create_agent()
         return self.invoke(user_query)
 
+import io
+
+class BasicDataframeToolkit:
+    def __init__(self):
+        self.df = None
+        self.tool_result = None
+
+    def _get_dataframe(self, df):
+        self.df = df
+
+    def _get_tools(self):
+        return [
+            {
+                "name": "get_dataframe_head",
+                "func": self.get_head,
+                "description": (
+                    "Use this tool whenever you need to inspect, explore, or understand the structure "
+                    "and content of the dataframe. This includes requests such as previewing the data, "
+                    "seeing sample rows, checking column values, understanding the dataset layout, "
+                    "or getting a quick overview of the data. "
+                    "It returns the first 5 rows of the dataframe as a readable table."
+                )
+            },
+
+            {
+                "name": "get_dataframe_structure",
+                "func": self.get_dataframe_structure,
+                "description": (
+                    "Use this tool to understand the structure of the dataframe, including column names, "
+                    "data types, and non-null counts. This is especially useful when you need to know what "
+                    "columns are available, their data types, or if there are any missing values. It provides "
+                    "a summary of the dataframe's structure, which can help in deciding how to analyze or manipulate the data."
+                )
+            }
+        ]
+
+    def get_head(self, _=None):
+        result = self.df.head(5).to_string()
+        self.tool_result = result
+        return result
+    
+    def get_dataframe_structure(self, _=None):
+        buffer = io.StringIO()
+        self.df.info(buf=buffer)
+        result = buffer.getvalue()
+        
+        markdown_result = f"```\n{result}\n```"
+        self.tool_result = markdown_result
+        return markdown_result
+
+
+
+
 if __name__ == "__main__":
     import pandas as pd
     from io import BytesIO
@@ -255,26 +308,22 @@ if __name__ == "__main__":
     
     use_chat = True
     df = pd.read_excel(BytesIO(file_bytes))
-
-    agent = DataframeAgent(
-        dataframe=df,
-        #model_provider="gemini",
-        #id_model="gemini-2.5-flash",
-    )
+    
+    toolkit = BasicDataframeToolkit()
+    agent = DataframeAgent(dataframe=df, toolkit=toolkit)
 
     if use_chat:
-        print("\n\nDigite sua pergunta (ou 'sair' para encerrar):")
+        print("\n\nDigite sua pergunta (ou 'cls' para encerrar):")
         
         while True:
             ask = input("\n>>> ")
             
-            if ask.lower() in ["sair", "exit", "quit"]:
+            if ask.lower() in ["cls", "sair", "exit", "quit"]:
                 print("Encerrando...")
                 break
             
             try:
                 report = agent.run_agent(ask)
-                #print(resposta)
             except Exception as e:
                 print(f"Erro: {e}")
     else:
@@ -284,6 +333,8 @@ if __name__ == "__main__":
             "Quais generos foram representados na pesquisa?"
         )
 
+# Crie uma tabela da média de idade por resposta
+# Qual a média de idade por resposta?
 # Quais as 5 principais respostas da pesquisa?
 # Qual a média de idade por classe?
 # Divida as idades em 3 grupos e diga a quantidade de respostas por grupo
