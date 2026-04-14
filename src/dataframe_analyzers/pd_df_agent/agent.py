@@ -333,6 +333,7 @@ if __name__ == "__main__":
             "Quais generos foram representados na pesquisa?"
         )
 
+# Monte uma tabela relacionado resposta e classe. Com o percentual de resposta de cada classe para cada resposta
 # Crie uma tabela da média de idade por resposta
 # Qual a média de idade por resposta?
 # Quais as 5 principais respostas da pesquisa?
