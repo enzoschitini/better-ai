@@ -21,6 +21,7 @@ class AgentConfig:
 
     prefix: str = """
     You are a data analyst working with a pandas DataFrame called `df`.
+    Think step by step and look for the right columns to answer the user's question.
 
     Rules:
     - ALWAYS use the provided dataframe `df`

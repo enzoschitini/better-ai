@@ -78,10 +78,10 @@ class DataframeAnalyzer(Toolkit):
         """
         try:
             #"""
-            with open("src/dataframe_analyzers/pd_df_agent/supermarket_sales.csv", "rb") as f:
+            with open("src\\agents\\sheet_analyzer\\sheets\\ENQUETE_OTB_ACAOPROMO.xlsx", "rb") as f:
                 file_bytes = f.read()
 
-            df = pd.read_csv(BytesIO(file_bytes))
+            df = pd.read_excel(BytesIO(file_bytes))
             agent = DataframeAgent(
                 dataframe=df,
             )
@@ -114,12 +114,14 @@ Esse tipo de visualização é útil para:
             return f"Failed to generate context of research: {str(e)}"
 
         return report
+    
 
 if __name__ == "__main__":
     tool = DataframeAnalyzer()
     tool.dataframe_analyzer(
         #"Gere um grafico de barras da quantidade de pessoas por genero"
-        "Qual a quantidade de pessoas por gênero"
+        #"Qual a quantidade de pessoas por gênero"
+        "Quais generos foram representados na pesquisa?"
     )
 
 # python -m src.agents.sheet_analyzer.toolkit

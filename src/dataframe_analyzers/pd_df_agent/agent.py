@@ -219,7 +219,18 @@ class DataframeAgent:
                 }
             }
 
-            tracer.INFO(message=f"Agent invoked. User query: '{user_query}'. Response: '{response['output']}'")
+            tracer.INFO(
+                message=f"""
+\n\n############################## AGENT INVOCATION ##############################\n\n
+Agent invoked. User query: '{user_query}'.
+
+Response: 
+{response['output']}
+
+Graphs generated: {len(self.collector.get_graphs())}
+\n\n##############################################################################\n\n
+"""
+            )
             return final_response
         
         except Exception as e:
@@ -234,3 +245,46 @@ class DataframeAgent:
         self._get_tools()
         self.create_agent()
         return self.invoke(user_query)
+
+if __name__ == "__main__":
+    import pandas as pd
+    from io import BytesIO
+
+    with open("src\\agents\\sheet_analyzer\\sheets\\ENQUETE_OTB_ACAOPROMO.xlsx", "rb") as f:
+        file_bytes = f.read()
+    
+    use_chat = True
+    df = pd.read_excel(BytesIO(file_bytes))
+
+    agent = DataframeAgent(
+        dataframe=df,
+        #model_provider="gemini",
+        #id_model="gemini-2.5-flash",
+    )
+
+    if use_chat:
+        print("\n\nDigite sua pergunta (ou 'sair' para encerrar):")
+        
+        while True:
+            ask = input("\n>>> ")
+            
+            if ask.lower() in ["sair", "exit", "quit"]:
+                print("Encerrando...")
+                break
+            
+            try:
+                report = agent.run_agent(ask)
+                #print(resposta)
+            except Exception as e:
+                print(f"Erro: {e}")
+    else:
+        report = agent.run_agent(
+            #"Gere um grafico de barras da quantidade de pessoas por genero"
+            #"Qual a quantidade de pessoas por gênero"
+            "Quais generos foram representados na pesquisa?"
+        )
+
+# Quais as 5 principais respostas da pesquisa?
+# Qual a média de idade por classe?
+# Divida as idades em 3 grupos e diga a quantidade de respostas por grupo
+# python -m src.dataframe_analyzers.pd_df_agent.agent
