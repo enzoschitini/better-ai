@@ -1,79 +1,49 @@
-import pandas as pd
-class Toolkit:
+import io
+
+class BasicDataframeToolkit:
     def __init__(self):
-        self.tool_result = []
-    
-    def _get_dataframe(self, dataframe):
-        self.dataframe = dataframe
-        return dataframe
-    
-    def _dataframe_preview(self, dataframe, format="text"):
-        preview_df = dataframe.head(50)
+        self.df = None
+        self.tool_result = None
 
-        if format == "text":
-            return preview_df.to_markdown(index=False)
-        elif format == "dict":
-            return preview_df.to_dict(orient="records")
-        else:
-            raise ValueError("Unsupported format. Use 'text' or 'dict'.")
-
-    def _add_tool_result(self, tool_name, result, format="text"):
-        if isinstance(result, pd.DataFrame):
-            result = {
-                "type": "dataframe",
-                "preview": self._dataframe_preview(dataframe=result, format=format),
-                "format": format,
-                #"columns": list(result.columns),
-                "shape": result.shape
-            }
-
-        self.tool_result.append({
-            "tool_name": tool_name,
-            "result": result
-        })
+    def _get_dataframe(self, df):
+        self.df = df
 
     def _get_tools(self):
         return [
             {
-                "name": "custom_calculation",
-                "func": self.custom_calculation_tool,
-                "description": "Performs a custom calculation based on the input string."
+                "name": "get_dataframe_head",
+                "func": self.get_head,
+                "description": (
+                    "Use this tool whenever you need to inspect, explore, or understand the structure "
+                    "and content of the dataframe. This includes requests such as previewing the data, "
+                    "seeing sample rows, checking column values, understanding the dataset layout, "
+                    "or getting a quick overview of the data. "
+                    "It returns the first 5 rows of the dataframe as a readable table."
+                )
             },
+
             {
-                "name": "knn",
-                "func": self.knn,
-                "description": "Performs KNN analysis based on the input string. For clustering or classification tasks."
-            },
-            {
-                "name": "clean_data",
-                "func": self.clean_data,
-                "description": "Cleans the data based on the input string. For example, it can drop missing values or create new features."
+                "name": "get_dataframe_structure",
+                "func": self.get_dataframe_structure,
+                "description": (
+                    "Use this tool to understand the structure of the dataframe, including column names, "
+                    "data types, and non-null counts. This is especially useful when you need to know what "
+                    "columns are available, their data types, or if there are any missing values. It provides "
+                    "a summary of the dataframe's structure, which can help in deciding how to analyze or manipulate the data."
+                )
             }
         ]
 
-    def custom_calculation_tool(self, input: str) -> str:
-        print(f"Running custom_calculation_tool with input: {input}")
-        df = self.dataframe.head()
-        print(f"DataFrame head:\n{df}")
-        return f"Custom calculation result for: {input}. DataFrame head:\n{df}"
+    def get_head(self, _=None):
+        result = self.df.head(5).to_string()
+        self.tool_result = result
+        return result
     
-    def knn(self, input: str) -> str:
-        print(f"Running knn tool with input: {input}")
-        return f"KNN result for: {input}"
-    
-    def clean_data(self, input: str) -> str:
-        print(f"Running clean_data tool with input: {input}")
-        df = self.dataframe.head()
-        df = df.dropna()
-        df["cleaned"] = True
-        self._add_tool_result("clean_data", df)
-
-        return f"Cleaned data based on: {input}. DataFrame head:\n{df.to_markdown(index=False)}"
-
-
-
-
-
-
-
-
+    def get_dataframe_structure(self, _=None):
+        buffer = io.StringIO()
+        self.df.info(buf=buffer)
+        result = buffer.getvalue()
+        
+        markdown_result = f"```\n{result}\n```"
+        self.tool_result = markdown_result
+        return markdown_result

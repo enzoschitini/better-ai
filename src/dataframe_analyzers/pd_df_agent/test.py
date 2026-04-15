@@ -3,7 +3,7 @@ import pandas as pd
 
 from io import BytesIO
 from src.dataframe_analyzers.pd_df_agent.agent import DataframeAgent
-from src.dataframe_analyzers.pd_df_agent.toolkit import Toolkit
+from src.dataframe_analyzers.pd_df_agent.toolkit2 import Toolkit
 
 if __name__ == "__main__":
     with open("src/dataframe_analyzers/pd_df_agent/supermarket_sales.csv", "rb") as f:
