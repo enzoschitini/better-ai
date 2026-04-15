@@ -334,9 +334,12 @@ if __name__ == "__main__":
         )
 
 # Monte uma tabela relacionado resposta e classe. Com o percentual de resposta de cada classe para cada resposta. Quero ver a tabela
+# Qual o percentual de resposta por estado da classe A?
+# Qual o percentual de resposta de cada classe por estado?
 # Crie uma tabela da média de idade por resposta
 # Qual a média de idade por resposta?
 # Quais as 5 principais respostas da pesquisa?
 # Qual a média de idade por classe?
 # Divida as idades em 3 grupos e diga a quantidade de respostas por grupo
+
 # python -m src.dataframe_analyzers.pd_df_agent.agent
