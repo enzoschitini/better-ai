@@ -22,8 +22,16 @@ class TestPineconeVectorStore:
 
         result = retriver.similarity_search(
             query="Etiam vehicula luctus",
-            filter_search={"file_id": ["21d75dca2eec7b02080327f40220e20dxx2", "xksksk"]},
-            k=1
+            filter_search={"file_id": [
+                "21d75dca2eec7b02080327f40220e20dxx2", 
+                "ENQUETE_OTB_ACAOPROMO",
+                "ENQUETE_OTB_BACKTOOUTBACK",
+                "ESCALA_OTB_BACKTOOUTBACK",
+                "MINISURVEY_OTB_BACKTOOUTBACK",
+                "MINISURVEY_OTB_BRINDE",
+                "OPEN_OTB_BACKTOOUTBACK"
+            ]},
+            k=2
         )
 
         print(json.dumps(result, indent=2))
@@ -62,6 +70,6 @@ class TestPineconeVectorStore:
 
 if __name__ == "__main__":
     tester = TestPineconeVectorStore()
-    tester.delete()
+    tester.retriver()
 
 # python -m src.vector_store.pinecone.test
