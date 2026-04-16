@@ -14,7 +14,7 @@ with open(f"src\\agents\\sheet_analyzer\\sheets\\OPEN_OTB_BACKTOOUTBACK.xlsx", "
 df = pd.read_excel(BytesIO(file_bytes))
 
 # Converte as primeiras linhas em markdown
-markdown_table = df.head().to_markdown(index=False)
+markdown_table = df.head(n=20).to_markdown(index=False)
 markdown_info = str(df.info())
 print(markdown_table)
 print(markdown_info)
