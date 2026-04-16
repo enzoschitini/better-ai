@@ -17,21 +17,23 @@ class TestPineconeVectorStore:
 
         return pine_client
 
-    def retriver(self):
+    def retriver(
+            self, 
+            query: str = "Quais arquivos estão na base?",
+            filter_search: dict = {
+                "file_id": [
+                    "21d75dca2eec7b02080327f40220e20dxx2"
+                ]
+            },
+            k: int = 5
+        ):
+
         retriver = PineconeRetriever()
 
         result = retriver.similarity_search(
-            query="Etiam vehicula luctus",
-            filter_search={"file_id": [
-                "21d75dca2eec7b02080327f40220e20dxx2", 
-                "ENQUETE_OTB_ACAOPROMO",
-                "ENQUETE_OTB_BACKTOOUTBACK",
-                "ESCALA_OTB_BACKTOOUTBACK",
-                "MINISURVEY_OTB_BACKTOOUTBACK",
-                "MINISURVEY_OTB_BRINDE",
-                "OPEN_OTB_BACKTOOUTBACK"
-            ]},
-            k=2
+            query=query,
+            filter_search=filter_search,
+            k=k
         )
 
         print(json.dumps(result, indent=2))
