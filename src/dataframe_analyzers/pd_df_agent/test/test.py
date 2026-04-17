@@ -6,11 +6,16 @@ from src.dataframe_analyzers.pd_df_agent.agent import DataframeAgent
 from src.dataframe_analyzers.pd_df_agent.toolkit import BasicDataframeToolkit
 
 
-with open("src\\agents\\sheet_analyzer\\sheets\\ENQUETE_OTB_ACAOPROMO.xlsx", "rb") as f:
+with open("src/dataframe_analyzers/pd_df_agent/test/supermarket_sales.csv", "rb") as f:
     file_bytes = f.read()
 
+if file_bytes.startswith(b"\x50\x4B\x03\x04"):  # Verificar se é um arquivo Excel (ZIP)
+    df = pd.read_excel(BytesIO(file_bytes))
+
+elif file_bytes.startswith(b"\xFF\xFE") or file_bytes.startswith(b"\xFE\xFF") or file_bytes.startswith(b"\xEF\xBB\xBF") or b"," in file_bytes[:1000]:  # Verificar se é um arquivo CSV
+    df = pd.read_csv(BytesIO(file_bytes))
+
 use_chat = True
-df = pd.read_excel(BytesIO(file_bytes))
 
 toolkit = BasicDataframeToolkit()
 agent = DataframeAgent(dataframe=df, toolkit=toolkit)
@@ -27,15 +32,24 @@ if use_chat:
         
         try:
             report = agent.run_agent(ask)
+            output = report['output']
+
+            graphs_dict = report['graphs']
+            graphs_file_path = [{'file_path': graph['file_path']} for graph in graphs_dict]
+            graphs_output = "\n".join(
+                f"- {graph['file_path']}" for graph in graphs_file_path
+            )
+
             print(
                 f"""
 \n\n############################## AGENT INVOCATION ##############################\n\n
-Agent invoked. User query: '{ask}'.
+User query: '{ask}'.
 
 Response: 
-{report['output']}
+{output}
 
-Graphs generated: {report['graphs']}
+Graphs generated:
+{graphs_output}
 \n\n##############################################################################
 """
         )
@@ -46,4 +60,4 @@ else:
         #"xxxxxxxxxx"
     )
 
-# python -m src.dataframe_analyzers.pd_df_agent.test
+# python -m src.dataframe_analyzers.pd_df_agent.test.test
