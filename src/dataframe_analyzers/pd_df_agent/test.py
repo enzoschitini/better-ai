@@ -3,36 +3,47 @@ import pandas as pd
 
 from io import BytesIO
 from src.dataframe_analyzers.pd_df_agent.agent import DataframeAgent
-from src.dataframe_analyzers.pd_df_agent.toolkit2 import Toolkit
+from src.dataframe_analyzers.pd_df_agent.toolkit import BasicDataframeToolkit
 
-if __name__ == "__main__":
-    with open("src/dataframe_analyzers/pd_df_agent/supermarket_sales.csv", "rb") as f:
-        file_bytes = f.read()
 
-    df = pd.read_csv(BytesIO(file_bytes))
-    agent = DataframeAgent(
-        dataframe=df,
-        #toolkit=Toolkit(),
+with open("src\\agents\\sheet_analyzer\\sheets\\ENQUETE_OTB_ACAOPROMO.xlsx", "rb") as f:
+    file_bytes = f.read()
+
+use_chat = True
+df = pd.read_excel(BytesIO(file_bytes))
+
+toolkit = BasicDataframeToolkit()
+agent = DataframeAgent(dataframe=df, toolkit=toolkit)
+
+if use_chat:
+    print("\n\nDigite sua pergunta (ou 'cls' para encerrar):")
+    
+    while True:
+        ask = input("\n>>> ")
+        
+        if ask.lower() in ["cls", "sair", "exit", "quit"]:
+            print("Encerrando...")
+            break
+        
+        try:
+            report = agent.run_agent(ask)
+            print(
+                f"""
+\n\n############################## AGENT INVOCATION ##############################\n\n
+Agent invoked. User query: '{ask}'.
+
+Response: 
+{report['output']}
+
+Graphs generated: {report['graphs']}
+\n\n##############################################################################
+"""
+        )
+        except Exception as e:
+            print(f"Erro: {e}")
+else:
+    report = agent.run_agent(
+        #"xxxxxxxxxx"
     )
-
-    respose = agent.run_agent(
-        #"Use the custom_calculation tool to process 'example input'."
-        #"Classify passengers into 'survived' and 'not survived"
-        #"Clean the data"
-        #"Quero um grafico de barra com a media de idade por sexo"
-        #"Qual o nome do passageiro mais velho que sobreviveu?"
-        #"Gere um grafico de pizza com a percentual de crianças, adultos e idosos"
-        #"Gere um grafico de barras com a média de cada resposta na primeira pergunta"
-        #"Gere um grafico de barras com a quantidade de respostas ao longo dos meses"
-        #"Gere um grafico de barras com a quantidade de respostas por estado"
-        #"Gere um grafico nuvem de palavras da quantidade de respostas por estado"
-        "Gere um grafico de barras da quantidade de pessoas por genero"
-        #"Oi"
-
-    )
-
-    print(json.dumps(respose, indent=4))
-
-    # 1. Analisar mais de uma tabela de uma planilha
 
 # python -m src.dataframe_analyzers.pd_df_agent.test

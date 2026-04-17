@@ -9,7 +9,6 @@ from langchain_community.callbacks import get_openai_callback
 
 from src.dataframe_analyzers.pd_df_agent.config import AgentConfig
 from src.dataframe_analyzers.pd_df_agent.plot_collector import PlotCollector
-from src.dataframe_analyzers.pd_df_agent.toolkit import BasicDataframeToolkit
 from src.tracing.tracing_core import ApplicationTracing
 
 load_dotenv()
@@ -317,64 +316,3 @@ class DataframeAgent:
         self._get_tools()
         self.create_agent()
         return self.invoke(user_query)
-
-
-
-
-
-if __name__ == "__main__":
-    import pandas as pd
-    from io import BytesIO
-
-    with open("src\\agents\\sheet_analyzer\\sheets\\ENQUETE_OTB_ACAOPROMO.xlsx", "rb") as f:
-        file_bytes = f.read()
-    
-    use_chat = True
-    df = pd.read_excel(BytesIO(file_bytes))
-    
-    toolkit = BasicDataframeToolkit()
-    agent = DataframeAgent(dataframe=df, toolkit=toolkit)
-
-    if use_chat:
-        print("\n\nDigite sua pergunta (ou 'cls' para encerrar):")
-        
-        while True:
-            ask = input("\n>>> ")
-            
-            if ask.lower() in ["cls", "sair", "exit", "quit"]:
-                print("Encerrando...")
-                break
-            
-            try:
-                report = agent.run_agent(ask)
-                print(
-                    f"""
-\n\n############################## AGENT INVOCATION ##############################\n\n
-Agent invoked. User query: '{ask}'.
-
-Response: 
-{report['output']}
-
-Graphs generated: {report['graphs']}
-\n\n##############################################################################
-"""
-            )
-            except Exception as e:
-                print(f"Erro: {e}")
-    else:
-        report = agent.run_agent(
-            #"Gere um grafico de barras da quantidade de pessoas por genero"
-            #"Qual a quantidade de pessoas por gênero"
-            "Quais generos foram representados na pesquisa?"
-        )
-
-# Monte uma tabela relacionado resposta e classe. Com o percentual de resposta de cada classe para cada resposta. Quero ver a tabela
-# Qual o percentual de resposta por estado da classe A?
-# Qual o percentual de resposta de cada classe por estado?
-# Crie uma tabela da média de idade por resposta
-# Qual a média de idade por resposta?
-# Quais as 5 principais respostas da pesquisa?
-# Qual a média de idade por classe?
-# Divida as idades em 3 grupos e diga a quantidade de respostas por grupo
-
-# python -m src.dataframe_analyzers.pd_df_agent.agent
