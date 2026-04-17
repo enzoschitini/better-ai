@@ -21,6 +21,31 @@ tracer = ApplicationTracing(
 )
 
 class DataframeAgent:
+    """
+    This class encapsulates the creation and invocation of an agent that interacts with dataframes using language models.
+    It configures the agent based on detailed parameters and integrates custom tools for data manipulation.
+
+    Args:
+    :param dataframe (pd.DataFrame): The dataframe on which the agent will operate.
+    :param toolkit (BasicDataframeToolkit, optional): A set of additional tools for dataframe manipulation. Default is None.
+    :param id_model (str, optional): Identifier of the language model. Default is defined by AgentConfig.
+    :param model_provider (str, optional): Model provider, such as "openai". Default is defined by AgentConfig.
+    :param temperature (float, optional): Degree of randomness in the model responses. Default is defined by AgentConfig.
+    :param agent_type (str, optional): Type of agent to be created. Default is defined by AgentConfig.
+    :param include_df_in_prompt (bool, optional): Whether the dataframe will be included in the prompt. Default is defined by AgentConfig.
+    :param number_of_head_rows (int, optional): Number of initial rows of the dataframe to consider. Default is defined by AgentConfig.
+    :param max_execution_time (int, optional): Maximum execution time allowed for the agent. Default is defined by AgentConfig.
+    :param early_stopping_method (str, optional): Early stopping method for the agent. Default is defined by AgentConfig.
+    :param allow_dangerous_code (bool, optional): Allows execution of potentially dangerous code. Default is defined by AgentConfig.
+    :param verbose (bool, optional): Whether operations will be displayed in detail. Default is defined by AgentConfig.
+    :param prefix (str, optional): Prefix text for the agent prompt. Default is defined by AgentConfig.
+    :param suffix (str, optional): Suffix text for the agent prompt. Default is defined by AgentConfig.
+
+    Methods:
+            create_agent(): Creates and configures the pandas dataframe agent based on the class properties and settings.
+            invoke(user_query): Invokes the agent with a user query and returns the formatted response.
+            run_agent(user_query): Executes the full flow of initializing and invoking the agent with a query.
+    """
     def __init__(
         self,
         dataframe,
@@ -107,6 +132,20 @@ class DataframeAgent:
         )
 
     def _get_model(self, provider: str = None):
+        """
+        Initializes and returns the language model according to the specified provider.
+        If not specified, the default provider from the configuration is used.
+
+        Args:
+        provider (str, optional): Name of the model provider. Default is None.
+
+        Returns:
+                model: Instance of the configured language model.
+
+        Raises:
+                ValueError: If the provided provider is not in the list of valid providers.
+                RuntimeError: If an error occurs during model initialization.
+        """
         try:
             VALID_PROVIDERS = self.valid_providers
             provider = (provider or self.model_provider).strip().lower()
@@ -140,6 +179,16 @@ class DataframeAgent:
             raise RuntimeError(f"Error initializing model: {str(e)}")
     
     def _get_tools(self):
+        """
+        Generates and returns the list of extra tools based on the provided toolkit.
+        If no toolkit is configured, returns an empty list.
+
+        Returns:
+                list: List of tools configured for the agent.
+
+        Raises:
+                RuntimeError: If an error occurs during tool initialization.
+        """
         try:
             extra_tools = []
 
@@ -169,6 +218,15 @@ class DataframeAgent:
             raise RuntimeError(f"Error initializing tools: {str(e)}")
 
     def create_agent(self):
+        """
+        Creates and configures the pandas dataframe agent using the model, tools, and parameters specified in the class.
+
+        Returns:
+                agent: Instance of the created agent ready for interaction.
+
+        Raises:
+                RuntimeError: If an error occurs during agent creation.
+        """
         try:
             agent = create_pandas_dataframe_agent(
                 llm=self.model,
@@ -203,6 +261,18 @@ class DataframeAgent:
             raise RuntimeError(f"Error creating agent: {str(e)}")
 
     def invoke(self, user_query):
+        """
+        Sends a query to the agent and retrieves the response along with token usage information.
+
+        Args:
+        user_query (str): Textual query sent to the agent.
+
+        Returns:
+                dict: Dictionary containing the user input, agent response, tool output (if any), and usage metrics.
+
+        Raises:
+                RuntimeError: If an error occurs during agent invocation.
+        """
         try:
             with get_openai_callback() as cb:
                 response = self.agent.invoke(user_query)
@@ -220,18 +290,7 @@ class DataframeAgent:
                 }
             }
 
-            tracer.INFO(
-                message=f"""
-\n\n############################## AGENT INVOCATION ##############################\n\n
-Agent invoked. User query: '{user_query}'.
-
-Response: 
-{response['output']}
-
-Graphs generated: {len(self.collector.get_graphs())}
-\n\n##############################################################################\n\n
-"""
-            )
+            tracer.INFO(message=f"Agent invoked successfully", metadata={"response": final_response})
             return final_response
         
         except Exception as e:
@@ -241,7 +300,19 @@ Graphs generated: {len(self.collector.get_graphs())}
             )
             raise RuntimeError(f"Error invoking agent: {str(e)}")
     
-    def run_agent(self, user_query: str = "Create a bar chart showing the number of passengers in each class."):
+    def run_agent(
+            self, 
+            user_query: str = "Create a bar chart showing the number of passengers in each class."
+        ):
+        """
+        Executes the full flow to initialize the model, load tools, create the agent, and invoke the user query.
+
+        Args:
+        user_query (str, optional): Query for the agent. Default is "Create a bar chart showing the number of passengers in each class.".
+
+        Returns:
+                dict: Formatted response from the agent after executing the query.
+        """
         self._get_model()
         self._get_tools()
         self.create_agent()
@@ -276,6 +347,18 @@ if __name__ == "__main__":
             
             try:
                 report = agent.run_agent(ask)
+                print(
+                    f"""
+\n\n############################## AGENT INVOCATION ##############################\n\n
+Agent invoked. User query: '{ask}'.
+
+Response: 
+{report['output']}
+
+Graphs generated: {report['graphs']}
+\n\n##############################################################################
+"""
+            )
             except Exception as e:
                 print(f"Erro: {e}")
     else:
