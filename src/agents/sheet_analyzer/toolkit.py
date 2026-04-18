@@ -82,14 +82,14 @@ class DataframeAnalyzer(Toolkit):
             )
 
             report = agent.run_agent(query)
-            print(json.dumps(report, indent=4))
+            response = report["output"]
 
-            self._update_response("dataframe_analyzer", {"report": report})
+            self._update_response("dataframe_analyzer", {"response": response})
 
         except Exception as e:
             return f"Failed to generate context of research: {str(e)}"
 
-        return report
+        return response
 
 
 if __name__ == "__main__":

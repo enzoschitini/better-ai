@@ -32,7 +32,8 @@ if __name__ == "__main__":
     # RUN
     # =========================
     runner = RunAgent(agent=agent)
-    runner.debug(ask="Gere um grafico da média de idade por genero")
+    #runner.debug(ask="Gere um grafico da média de idade por genero")
+    runner.agent_os()
 
     # =========================
     # TOOL METADATA

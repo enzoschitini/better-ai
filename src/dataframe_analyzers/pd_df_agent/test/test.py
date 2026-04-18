@@ -45,7 +45,7 @@ if use_chat:
 
             for graph in graphs_dict:
                 file_name = graph["file_name"]
-                file_path = os.path.join(output_dir, file_name)
+                file_path = os.path.join(output_dir, file_name).replace("\\", "/")
 
                 # Decodifica e salva imagem
                 image_bytes = base64.b64decode(graph["image_base64"])
