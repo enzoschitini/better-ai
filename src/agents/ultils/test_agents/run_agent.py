@@ -12,7 +12,7 @@ from src.agents.ultils.test_agents.format_response import FormatAgentResponse
 load_dotenv()
 
 class RunAgent:
-    def __init__(self, agent):
+    def __init__(self, agent: Agent):
         self.agent = agent
 
     def debug(self, ask: str = "Hello!"):
@@ -66,7 +66,7 @@ if __name__ == "__main__":
     )
 
     runner = RunAgent(agent=agent)
-    response = runner.agent_os()
+    response = runner.debug()
 
 # python -m src.agents.ultils.test_agents.run_agent
 

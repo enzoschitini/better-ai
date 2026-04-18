@@ -31,11 +31,13 @@ class DataframeAnalyzer(Toolkit):
     """
     def __init__(
         self,
+        df,
         enable_dataframe_analyzer: bool = True,
         all: bool = False,
         TOOL_RESPONSER: Any = None,
         **kwargs,
     ):
+        self.df = df
         self.TOOL_RESPONSER = TOOL_RESPONSER
         tools: List[Any] = []
 
@@ -77,44 +79,20 @@ class DataframeAnalyzer(Toolkit):
             str: A report containing analysis results, insights, and possible visualizations. IN MARKDOWN
         """
         try:
-            #"""
-            with open("src\\agents\\sheet_analyzer\\sheets\\ENQUETE_OTB_ACAOPROMO.xlsx", "rb") as f:
-                file_bytes = f.read()
-
-            df = pd.read_excel(BytesIO(file_bytes))
             agent = DataframeAgent(
-                dataframe=df,
+                dataframe=self.df,
             )
 
             report = agent.run_agent(query)
             print(json.dumps(report, indent=4))
-            #"""
 
-            md = """
-### 📊 Análise do Gráfico de Barras: Quantidade de Pessoas por Gênero
-
-O gráfico de barras apresenta a quantidade de pessoas por gênero. Nele, é possível observar a distribuição entre os gêneros representados na base de dados.
-
-A barra correspondente a cada gênero indica a quantidade de indivíduos, permitindo uma comparação visual clara entre eles.
-
-Esse tipo de visualização é útil para:
-- entender a demografia da amostra  
-- apoiar análises mais profundas  
-- identificar possíveis diferenças de comportamento ou preferências entre grupos
-"""
-
-            #report = "Montre para o usuário o gráfico gerado: ![Graph_1](https://hsenyunovbrmjejxqvjn.supabase.co/storage/v1/object/public/images/image_generations/img_1771170203179075400QhZ3)"
-            #print(md)
-
-            # Collect metadata
-            #self._update_response("dataframe_analyzer", {"md": md})
             self._update_response("dataframe_analyzer", {"report": report})
 
         except Exception as e:
             return f"Failed to generate context of research: {str(e)}"
 
         return report
-    
+
 
 if __name__ == "__main__":
     tool = DataframeAnalyzer()

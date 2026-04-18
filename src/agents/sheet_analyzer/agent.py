@@ -12,31 +12,42 @@ load_dotenv()
 
 TOOL_RESPONSER = ToolResponse()
 
-agent = Agent(
-    id="sheet_analyzer",
+def create_agent(df):
+    agent = Agent(
+        id="sheet_analyzer",
 
-    # Settings
-    model=OpenAIChat(id=DEFAULT_MODEL), 
-    instructions=PROMPT["instructions"],
-    description=PROMPT["description"],
-    markdown=True,
-    stream=True,
-    debug_level=True,
+        # Settings
+        model=OpenAIChat(id=DEFAULT_MODEL), 
+        instructions=PROMPT["instructions"],
+        description=PROMPT["description"],
+        markdown=True,
+        stream=True,
+        debug_level=True,
 
-    # Toolkit
-    tools=[
-        DataframeAnalyzer(TOOL_RESPONSER=TOOL_RESPONSER)
-    ],
-)
+        # Toolkit
+        tools=[
+            DataframeAnalyzer(TOOL_RESPONSER=TOOL_RESPONSER, df=df)
+        ],
+    )
+
+    return agent
 
 if __name__ == "__main__":
     import json
+    import pandas as pd
+    from io import BytesIO
+
     from src.agents.ultils.test_agents.run_agent import RunAgent
 
+    with open("src/dataframe_analyzers/pd_df_agent/test/supermarket_sales.csv", "rb") as f:
+        file_bytes = f.read()
+
+    df = pd.read_csv(BytesIO(file_bytes))
+    agent = create_agent(df)
+
     runner = RunAgent(agent=agent)
-    # Gere um gráfico de barras da quantidade de pessoas por gênero.
     ASK = """
-Qual a média de preço por genero?
+Qual a média de preço?
 """
     #runner.process(ask=ASK, tool_responses=response_collector)
     runner.debug(ask=ASK)
