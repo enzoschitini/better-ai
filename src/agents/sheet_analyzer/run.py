@@ -8,7 +8,6 @@ from src.agents.ultils.test_agents.run_agent import RunAgent
 
 
 if __name__ == "__main__":
-
     # =========================
     # LOAD DATA
     # =========================
