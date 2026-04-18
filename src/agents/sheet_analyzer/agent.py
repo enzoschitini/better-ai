@@ -10,26 +10,15 @@ from src.agents.sheet_analyzer.config import DEFAULT_MODEL, PROMPT
 
 load_dotenv()
 
-
-# =========================================================
-# TOOL RESPONDER (COMPARTILHADO)
-# =========================================================
 class ToolContext:
     def __init__(self):
         self.tool_responser = ToolResponse()
 
-
-# =========================================================
-# BASE AGENT (CONTRATO)
-# =========================================================
 class BaseAgent:
-    def create_agent(self, metadata: dict, context: ToolContext):
+    def create_agent(self, metadata: dict, tool_context: ToolContext):
         raise NotImplementedError
 
 
-# =========================================================
-# DATAFRAME AGENT
-# =========================================================
 class DataframeAgent(BaseAgent):
 
     def _validate_metadata(self, metadata: dict):
@@ -39,7 +28,7 @@ class DataframeAgent(BaseAgent):
         if "dataframe" not in metadata:
             raise ValueError("metadata deve conter 'dataframe'")
 
-    def create_agent(self, metadata: dict, context: ToolContext):
+    def create_agent(self, metadata: dict, tool_context: ToolContext):
         self._validate_metadata(metadata)
 
         dataframe = metadata["dataframe"]
@@ -63,7 +52,7 @@ class DataframeAgent(BaseAgent):
             # =========================
             tools=[
                 DataframeAnalyzer(
-                    TOOL_RESPONSER=context.tool_responser,
+                    TOOL_RESPONSER=tool_context.tool_responser,
                     dataframe=dataframe  # 🔥 PADRONIZADO
                 )
             ],
@@ -72,11 +61,7 @@ class DataframeAgent(BaseAgent):
         return agent
 
 
-# =========================================================
-# AGENT FACTORY (ORQUESTRADOR)
-# =========================================================
 class AgnoAiAgents:
-
     def __init__(self):
         self._registry = {
             "DataframeAgent": DataframeAgent,
@@ -86,14 +71,14 @@ class AgnoAiAgents:
         if id not in self._registry:
             raise ValueError(f"Agent '{id}' não registrado.")
 
-        context = ToolContext()
+        tool_context = ToolContext()
 
         agent_class = self._registry[id]
         agent_instance = agent_class()
 
-        agent = agent_instance.create_agent(metadata, context)
+        agent = agent_instance.create_agent(metadata, tool_context)
 
-        return agent, context
+        return agent, tool_context
 
 
 # =========================================================
@@ -119,7 +104,7 @@ if __name__ == "__main__":
     # =========================
     agno = AgnoAiAgents()
 
-    agent, context = agno.create_agent(
+    agent, tool_context = agno.create_agent(
         id="DataframeAgent",
         metadata={
             "dataframe": df
@@ -139,6 +124,6 @@ if __name__ == "__main__":
     # TOOL METADATA
     # =========================
     print("\nTool Response Metadata:")
-    print(json.dumps(context.tool_responser.get_metadata(), indent=4))
+    print(json.dumps(tool_context.tool_responser.get_metadata(), indent=4))
 
 # python -m src.agents.sheet_analyzer.agent
