@@ -25,7 +25,11 @@ if __name__ == "__main__":
     # =========================
     agent, tool_context = agno.create_agent(
         "DataframeAgent",
-        {"dataframe": df}
+        {
+            "session_id": "session_01",
+            "user_id": "user_01",
+            "dataframe": df
+        }
     )
 
     # =========================

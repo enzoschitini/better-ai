@@ -13,8 +13,14 @@ load_dotenv()
 class DataframeAgent(BaseAgent):
 
     def _validate_metadata(self, metadata: dict):
+        if "session_id" not in metadata:
+            raise ValueError("metadata must contain 'session_id'")
+
+        if "user_id" not in metadata:
+            raise ValueError("metadata must contain 'user_id'")
+
         if "dataframe" not in metadata:
-            raise ValueError("metadata deve conter 'dataframe'")
+            raise ValueError("metadata must contain 'dataframe'")
 
     def create_agent(self, metadata: dict, tool_context: ToolContext):
         self._validate_metadata(metadata)
@@ -22,6 +28,9 @@ class DataframeAgent(BaseAgent):
 
         return Agent(
             id="sheet_analyzer",
+            session_id=metadata.get("session_id", "default_session"),
+            user_id=metadata.get("user_id", "default_user"),
+
             model=OpenAIChat(id=DEFAULT_MODEL),
 
             instructions=PROMPT["instructions"],
