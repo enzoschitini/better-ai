@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from agno.agent import Agent
 from agno.models.openai import OpenAIChat
 
+from src.agents.ultils.database import Database
 from src.agents.sheet_analyzer.toolkit import DataframeAnalyzer
 from src.agents.sheet_analyzer.config import DEFAULT_MODEL, PROMPT
 from src.agents.agno_ai_agents.agents import BaseAgent, ToolContext
@@ -17,13 +18,22 @@ class DataframeAgent(BaseAgent):
 
     def create_agent(self, metadata: dict, tool_context: ToolContext):
         self._validate_metadata(metadata)
+        db = Database(local=True)
 
         return Agent(
             id="sheet_analyzer",
             model=OpenAIChat(id=DEFAULT_MODEL),
+
             instructions=PROMPT["instructions"],
             description=PROMPT["description"],
             markdown=True,
+
+            db=db,
+            add_history_to_context=True,
+            num_history_runs=10,
+            enable_user_memories=True,
+            add_memories_to_context=True,
+
             stream=True,
             debug_level=True,
             tools=[
