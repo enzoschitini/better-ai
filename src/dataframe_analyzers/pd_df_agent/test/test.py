@@ -1,4 +1,6 @@
 import json
+import os
+import base64
 import pandas as pd
 
 from io import BytesIO
@@ -35,7 +37,25 @@ if use_chat:
             output = report['output']
 
             graphs_dict = report['graphs']
-            graphs_file_path = [{'file_path': graph['file_path']} for graph in graphs_dict]
+
+            output_dir = "outputs"
+            os.makedirs(output_dir, exist_ok=True)
+
+            graphs_file_path = []
+
+            for graph in graphs_dict:
+                file_name = graph["file_name"]
+                file_path = os.path.join(output_dir, file_name)
+
+                # Decodifica e salva imagem
+                image_bytes = base64.b64decode(graph["image_base64"])
+                with open(file_path, "wb") as f:
+                    f.write(image_bytes)
+
+                graphs_file_path.append({
+                    "file_path": file_path
+                })
+
             graphs_output = "\n".join(
                 f"- {graph['file_path']}" for graph in graphs_file_path
             )
@@ -57,7 +77,7 @@ Graphs generated:
             print(f"Erro: {e}")
 else:
     report = agent.run_agent(
-        #"xxxxxxxxxx"
+        #"Gere um grafico de barra da quantidade de homens e mulheres"
     )
 
 # python -m src.dataframe_analyzers.pd_df_agent.test.test
