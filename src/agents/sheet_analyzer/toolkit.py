@@ -1,15 +1,13 @@
 import os
+import json
+import pandas as pd
+
 from dotenv import load_dotenv
 from typing import Any, List
-from pydantic import BaseModel
 
 from agno.tools import Toolkit
 
 # Dataframe Analyzer Packages
-import json
-import pandas as pd
-
-from io import BytesIO
 from src.dataframe_analyzers.pd_df_agent.agent import DataframeAgent
 
 load_dotenv()
@@ -31,13 +29,13 @@ class DataframeAnalyzer(Toolkit):
     """
     def __init__(
         self,
-        df,
+        dataframe: pd.DataFrame,
         enable_dataframe_analyzer: bool = True,
         all: bool = False,
         TOOL_RESPONSER: Any = None,
         **kwargs,
     ):
-        self.df = df
+        self.dataframe = dataframe
         self.TOOL_RESPONSER = TOOL_RESPONSER
         tools: List[Any] = []
 
@@ -80,7 +78,7 @@ class DataframeAnalyzer(Toolkit):
         """
         try:
             agent = DataframeAgent(
-                dataframe=self.df,
+                dataframe=self.dataframe,
             )
 
             report = agent.run_agent(query)
@@ -95,11 +93,16 @@ class DataframeAnalyzer(Toolkit):
 
 
 if __name__ == "__main__":
-    tool = DataframeAnalyzer()
+    from io import BytesIO
+
+    with open("src/dataframe_analyzers/pd_df_agent/test/supermarket_sales.csv", "rb") as f:
+        file_bytes = f.read()
+
+    df = pd.read_csv(BytesIO(file_bytes))
+
+    tool = DataframeAnalyzer(dataframe=df)
     tool.dataframe_analyzer(
-        #"Gere um grafico de barras da quantidade de pessoas por genero"
-        #"Qual a quantidade de pessoas por gênero"
-        "Quais generos foram representados na pesquisa?"
+        "Qual a média de preço?"
     )
 
 # python -m src.agents.sheet_analyzer.toolkit
