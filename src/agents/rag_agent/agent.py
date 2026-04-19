@@ -6,8 +6,8 @@ from agno.models.openai import OpenAIChat
 
 from agno.memory.manager import MemoryManager
 
-from src.agents.ultils.database import Database
-from src.agents.ultils.tool_response import ToolResponse
+from src.agents.utils.database import Database
+from src.agents.utils.tool_response import ToolResponse
 from src.agents.rag_agent.toolkit import RetrievalAugmentedGeneration
 from src.agents.rag_agent.config import DEFAULT_MODEL, PROMPT
 
@@ -83,23 +83,19 @@ agent = Agent(
     ],
 )
 
+def get_agent():
+    return agent
+
 if __name__ == "__main__":
     import json
-    from src.agents.ultils.run_agent import RunAgent
+    from src.agents.utils.test_agents.run_agent import RunAgent
 
     runner = RunAgent(agent=agent)
     ASK = """
 Quais arquivos estão na base?
 """
-    #runner.run_agent(ask=ASK, tool_responses=TOOL_RESPONSER)
-    runner.debug(ask=ASK)
-    #runner.agent_os()
+    #runner.js_reponse(ask=ASK, tool_response=TOOL_RESPONSER)
+    #runner.debug(ask=ASK)
+    runner.agent_os()
 
-    print(json.dumps(TOOL_RESPONSER.get_metadata(), indent=4))
-
-"""
-    reasoning=True,
-    reasoning_model=OpenAIChat(id=DEFAULT_MODEL),
-    reasoning_max_steps=5,
-"""
 # python -m src.agents.rag_agent.agent

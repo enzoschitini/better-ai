@@ -1,131 +1,55 @@
-import json
-from typing import Optional
-from fastapi import HTTPException
-from io import BytesIO
+from dotenv import load_dotenv
 
-from src.content_parse.content_parsing_agent import ContentParsingAgent
-from src.content_parse.config import DocumentParseConfig
-from src.embedding.services.file_content_extractor import FileContentExtractor
-from src.tokens_calculate.module import ModelPricing, ExchangeRateService
-from src.database.no_relational_db.router import DocumentStore
+from agno.agent import Agent
+from agno.models.openai import OpenAIChat
 
+from src.agents.utils.database import Database
+from src.agents.sheet_analyzer.toolkit import DataframeAnalyzer
+from src.agents.sheet_analyzer.config import DEFAULT_MODEL, PROMPT
+from src.agents.agno_ai_agents.agents import BaseAgent, ToolContext
 
-class DocumentParse:
-    def __init__(
-        self,
-        job_id: str,
-        metadata: dict,
-        schema: str,
-        file_bytes: BytesIO,
-        file_extension: str,
-        config: Optional[str] = None,
-    ):
-        self.job_id = job_id
-        self.metadata = metadata
-        self.schema = schema
-        self.config = config
-        self.file_bytes = file_bytes
-        self.file_extension = file_extension
+load_dotenv()
 
-        system_settings = DocumentParseConfig()
-        self.default_config = system_settings.default_config
-        self.database_name = system_settings.database_name
-        self.collection_name = system_settings.collection_name
+class DataframeAgent(BaseAgent):
+    def _validate_metadata(self, metadata: dict):
+        if "session_id" not in metadata:
+            raise ValueError("metadata must contain 'session_id'")
 
-    def run(self):
-        self._load_schema_and_config()
-        self._extract_file_content()
-        self._parse_content()
-        self._calculate_costs()
-        self._build_response()
-        self._save()
+        if "user_id" not in metadata:
+            raise ValueError("metadata must contain 'user_id'")
 
-        return self.api_response
+        if "dataframe" not in metadata:
+            raise ValueError("metadata must contain 'dataframe'")
 
-    def _load_schema_and_config(self):
-        # Set metadata
-        try:
-            self.metadata_data = json.loads(self.metadata)
-        except json.JSONDecodeError:
-            raise HTTPException(status_code=400, detail="Invalid JSON in metadata")
+    def create_agent(self, metadata: dict, tool_context: ToolContext):
+        self._validate_metadata(metadata)
+        db = Database(local=True)
 
-        try:
-            self.schema_data = json.loads(self.schema)
-        except json.JSONDecodeError:
-            raise HTTPException(status_code=400, detail="Invalid JSON in schema")
+        return Agent(
+            id="sheet_analyzer",
+            session_id=metadata.get("session_id", "default_session"),
+            user_id=metadata.get("user_id", "default_user"),
 
-        if self.config:
-            try:
-                config_input = json.loads(self.config)
-                self.config_data = {**self.default_config, **config_input}
-            except json.JSONDecodeError:
-                raise HTTPException(status_code=400, detail="Invalid JSON in config")
-        else:
-            self.config_data = self.default_config
-    
-    def _extract_file_content(self):
-        # Extract file content
-        extractor = FileContentExtractor(
-            file_bytes=self.file_bytes,
-            file_extension=self.file_extension
-        )
-        self.result_extract = extractor.extract()
-    
-    def _parse_content(self):
-        # Parse content with agent
-        agent_parser = ContentParsingAgent(
-            input_data={
-                "file_content": self.result_extract["response"]
-            },
-            output_data=self.schema_data,
-            config_data=self.config_data
+            model=OpenAIChat(id=DEFAULT_MODEL),
+
+            instructions=PROMPT["instructions"],
+            description=PROMPT["description"],
+            markdown=True,
+
+            db=db,
+            add_history_to_context=True,
+            num_history_runs=10,
+            enable_user_memories=True,
+            add_memories_to_context=True,
+
+            stream=True,
+            debug_level=True,
+            tools=[
+                DataframeAnalyzer(
+                    TOOL_RESPONSER=tool_context.tool_responser,
+                    dataframe=metadata["dataframe"]
+                )
+            ],
         )
 
-        raw_content_parsed = agent_parser.run_agent()
-        self.agent_response = agent_parser.format_response(raw_content_parsed)
-    
-    def _calculate_costs(self):
-        # Calculate tokens and cost
-        self.info_process = self.agent_response.get("metadata", {})
-
-        model_pricing = ModelPricing(self.info_process.get("model").get("id"))
-        self.input_cost = model_pricing.input_rate_per_token() * self.info_process.get("tokens").get("input_tokens", 0)
-        self.output_cost = model_pricing.output_rate_per_token() * self.info_process.get("tokens").get("output_tokens", 0)
-
-        service = ExchangeRateService()
-        self.rate = service.get_usd_rate()
-    
-    def _build_response(self):
-        # Formatte response result + process
-        formatted_info_process = {
-            "model": self.info_process.get("model"),
-            "tokens": self.info_process.get("tokens"),
-            "cost": {
-                "input_cost_usd": self.input_cost,
-                "output_cost_usd": self.output_cost,
-                "total_cost_usd": self.input_cost + self.output_cost,
-                "total_cost_brl": (self.input_cost + self.output_cost) * self.rate
-            },
-            "duration_s": self.info_process.get("duration_s"),
-        }
-
-        self.save_payload = {
-            "job_id": self.job_id,
-            "metadata": self.metadata_data,
-            "content": self.agent_response.get("content"),
-            "process_info": formatted_info_process
-        }
-
-        self.api_response = {
-            "job_id": self.job_id,
-            "content": self.agent_response.get("content"),
-        }
-    
-    def _save(self):
-        # Save processed result in database
-        document_store = DocumentStore()
-        document_store.save_payload(
-            database_name=self.database_name,
-            collection_name=self.collection_name,
-            payload=self.save_payload
-        )
+# python -m src.agents.sheet_analyzer.agent

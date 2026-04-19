@@ -1,19 +1,21 @@
 import requests
 import json
 
+PORT = "8000" # 7777 8000
+
 def get_agents():
-    response = requests.get("http://localhost:7777/agents").json()
+    response = requests.get(f"http://localhost:{PORT}/agents").json()
     print(response)
 
     return response
 
 class AgentRequest:
-    def __init__(self, agent_id: str, host: str = "localhost:7777"):
+    def __init__(self, agent_id: str, host: str = f"localhost:{PORT}"):
         self.agent_id = agent_id
         self.host = host
         self.url = f"http://{host}/agents/{agent_id}/runs"
     
-    def _get_connection(self, data: dict):
+    def get_connection(self, data: dict):
         self.response = requests.post(self.url, data=data, stream=True)
 
         return self.response
@@ -64,11 +66,11 @@ class AgentRequest:
 
                     # tool começou
                     elif event_type == "ToolCallStarted":
-                        print(f"\n🔧 TOOL CHAMADA: {event.get('tool_name')}")
+                        print(f"\n🔧 TOOL CHAMADA: {event.get("tool", {}).get("tool_name")}")
 
                     # tool terminou
                     elif event_type == "ToolCallCompleted":
-                        print(f"\n✅ TOOL FINALIZADA: {event.get('tool_name')}")
+                        print(f"\n✅ TOOL FINALIZADA: {event.get('tool', {}).get('tool_name')}")
 
                 except:
                     pass
@@ -102,12 +104,13 @@ class AgentRequest:
         print("\nStream salvo com sucesso!")
 
 if __name__ == "__main__":
-    request = AgentRequest(agent_id="base-agent")
-    request._get_connection(
+    request = AgentRequest(agent_id="rag_agent")
+    request.get_connection(
         data={
-            "message": "O que as pessoas tem dito sobre as olimpiadas de inverno?",
-            "session_id": "session-1",
-            "stream": "true"
+            "message": "Quais arquivos estão na base?",
+            "session_id": "session-1234567",
+            "stream": "true",
+            #"stream": "false",
         }
     )
     request.stream_with_tools()
@@ -115,4 +118,5 @@ if __name__ == "__main__":
     # Explique o que é RAG
     # http://localhost:7777/docs
 
-# python -m src.agents.agent_flow.stream_agent
+
+# python -m src.agents.utils.test_agents.api_agent

@@ -1,15 +1,13 @@
 import os
+import json
+import pandas as pd
+
 from dotenv import load_dotenv
 from typing import Any, List
-from pydantic import BaseModel
 
 from agno.tools import Toolkit
 
 # Dataframe Analyzer Packages
-import json
-import pandas as pd
-
-from io import BytesIO
 from src.dataframe_analyzers.pd_df_agent.agent import DataframeAgent
 
 load_dotenv()
@@ -31,11 +29,13 @@ class DataframeAnalyzer(Toolkit):
     """
     def __init__(
         self,
+        dataframe: pd.DataFrame,
         enable_dataframe_analyzer: bool = True,
         all: bool = False,
         TOOL_RESPONSER: Any = None,
         **kwargs,
     ):
+        self.dataframe = dataframe
         self.TOOL_RESPONSER = TOOL_RESPONSER
         tools: List[Any] = []
 
@@ -77,46 +77,32 @@ class DataframeAnalyzer(Toolkit):
             str: A report containing analysis results, insights, and possible visualizations. IN MARKDOWN
         """
         try:
-            """
-            with open("src/dataframe_analyzers/pd_df_agent/supermarket_sales.csv", "rb") as f:
-                file_bytes = f.read()
-
-            df = pd.read_csv(BytesIO(file_bytes))
             agent = DataframeAgent(
-                dataframe=df,
+                dataframe=self.dataframe,
             )
 
             report = agent.run_agent(query)
+            response = report["output"]
 
-            print(json.dumps(report, indent=4))
-            #"""
-
-            md = """
-### 📊 Análise do Gráfico de Barras: Quantidade de Pessoas por Gênero
-
-O gráfico de barras apresenta a quantidade de pessoas por gênero. Nele, é possível observar a distribuição entre os gêneros representados na base de dados.
-
-A barra correspondente a cada gênero indica a quantidade de indivíduos, permitindo uma comparação visual clara entre eles.
-
-Esse tipo de visualização é útil para:
-- entender a demografia da amostra  
-- apoiar análises mais profundas  
-- identificar possíveis diferenças de comportamento ou preferências entre grupos
-"""
-
-            report = "Montre para o usuário o gráfico gerado: ![Graph_1](https://hsenyunovbrmjejxqvjn.supabase.co/storage/v1/object/public/images/image_generations/img_1771170203179075400QhZ3)"
-            print(md)
-
-            # Collect metadata
-            self._update_response("dataframe_analyzer", {"md": md})
+            self._update_response("dataframe_analyzer", {"response": response})
 
         except Exception as e:
             return f"Failed to generate context of research: {str(e)}"
 
-        return report
+        return response
+
 
 if __name__ == "__main__":
-    tool = DataframeAnalyzer()
-    tool.dataframe_analyzer("Gere um grafico de barras da quantidade de pessoas por genero")
+    from io import BytesIO
+
+    with open("src/dataframe_analyzers/pd_df_agent/test/supermarket_sales.csv", "rb") as f:
+        file_bytes = f.read()
+
+    df = pd.read_csv(BytesIO(file_bytes))
+
+    tool = DataframeAnalyzer(dataframe=df)
+    tool.dataframe_analyzer(
+        "Qual a média de preço?"
+    )
 
 # python -m src.agents.sheet_analyzer.toolkit
