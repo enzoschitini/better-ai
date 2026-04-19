@@ -26,7 +26,7 @@ if __name__ == "__main__":
     agent, tool_context = agno.create_agent(
         "DataframeAgent",
         {
-            "session_id": "session_01",
+            "session_id": "12345",
             "user_id": "user_01",
             "dataframe": df
         }
@@ -36,8 +36,8 @@ if __name__ == "__main__":
     # RUN
     # =========================
     runner = RunAgent(agent=agent)
-    #runner.debug(ask="Gere um grafico da média de idade por genero")
-    runner.agent_os()
+    runner.debug(ask="Qual a proporção de homens e mulheres?")
+    #runner.agent_os()
 
     # =========================
     # TOOL METADATA

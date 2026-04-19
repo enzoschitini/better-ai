@@ -11,7 +11,6 @@ from src.agents.agno_ai_agents.agents import BaseAgent, ToolContext
 load_dotenv()
 
 class DataframeAgent(BaseAgent):
-
     def _validate_metadata(self, metadata: dict):
         if "session_id" not in metadata:
             raise ValueError("metadata must contain 'session_id'")
