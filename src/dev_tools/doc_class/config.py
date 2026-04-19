@@ -47,7 +47,7 @@ class GenereteDocStringConfig:
     - NÃO retorne apenas as docstrings isoladas
     - A saída final deve ser o código original + docstrings inseridas
     
-    IDIOMA DO CONTEÚDO: PORTUGUÊS BRASIL
+    IDIOMA DO CONTEÚDO: INGLÊS US
     """
 
     description: str = """
