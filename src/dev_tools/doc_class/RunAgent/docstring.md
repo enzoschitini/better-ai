@@ -1,3 +1,4 @@
+```python
 import json
 from pydantic import BaseModel
 from dotenv import load_dotenv
@@ -63,7 +64,7 @@ class RunAgent:
         if tool_response:
             print(f"\nTool Responses:\n{tool_response.get_metadata()}")
         
-        print(f"\nResponse: {formated_response["content"]}")
+        print(f'\nResponse: {formated_response["content"]}')
         return formated_response
 
     def agent_os(
@@ -103,6 +104,4 @@ if __name__ == "__main__":
 
     runner = RunAgent(agent=agent)
     response = runner.debug()
-
-# python -m src.agents.ultils.test_agents.run_agent
-
+```
