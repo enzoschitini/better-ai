@@ -6,8 +6,8 @@ from agno.models.openai import OpenAIChat
 
 from agno.memory.manager import MemoryManager
 
-from src.agents.ultils.database import Database
-from src.agents.ultils.tool_response import ToolResponse
+from src.agents.utils.database import Database
+from src.agents.utils.tool_response import ToolResponse
 from src.agents.rag_agent.toolkit import RetrievalAugmentedGeneration
 from src.agents.rag_agent.config import DEFAULT_MODEL, PROMPT
 
@@ -88,7 +88,7 @@ def get_agent():
 
 if __name__ == "__main__":
     import json
-    from src.agents.ultils.test_agents.run_agent import RunAgent
+    from src.agents.utils.test_agents.run_agent import RunAgent
 
     runner = RunAgent(agent=agent)
     ASK = """

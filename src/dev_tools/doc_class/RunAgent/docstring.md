@@ -7,8 +7,8 @@ from agno.agent import Agent
 from agno.os import AgentOS
 from agno.models.groq import Groq
 
-from src.agents.ultils.tool_response import ToolResponse
-from src.agents.ultils.test_agents.format_response import FormatAgentResponse
+from src.agents.utils.tool_response import ToolResponse
+from src.agents.utils.test_agents.format_response import FormatAgentResponse
 
 load_dotenv()
 

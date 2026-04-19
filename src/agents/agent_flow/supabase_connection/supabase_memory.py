@@ -4,7 +4,7 @@ from agno.models.openai import OpenAIChat
 from agno.db.postgres import PostgresDb
 import os
 from dotenv import load_dotenv
-from src.agents.ultils.test_agents.run_agent import RunAgent
+from src.agents.utils.test_agents.run_agent import RunAgent
 
 load_dotenv()
 

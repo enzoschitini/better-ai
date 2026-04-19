@@ -2,9 +2,9 @@ import json
 import pandas as pd
 from io import BytesIO
 
-from src.agents.agno_ai_agents.agents import AgnoAiAgents
+from src.agents.utils.agno_ai_agents import AgnoAiAgents
 from src.agents.sheet_analyzer.agent import DataframeAgent
-from src.agents.ultils.test_agents.run_agent import RunAgent
+from src.agents.utils.test_agents.run_agent import RunAgent
 
 
 if __name__ == "__main__":

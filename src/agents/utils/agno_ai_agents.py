@@ -1,4 +1,4 @@
-from src.agents.ultils.tool_response import ToolResponse
+from src.agents.utils.tool_response import ToolResponse
 
 class ToolContext:
     def __init__(self):
@@ -29,4 +29,4 @@ class AgnoAiAgents:
         return agent, tool_context
 
 
-# python -m src.agents.ultils.agno_ai_agents
+# python -m src.agents.utils.agno_ai_agents

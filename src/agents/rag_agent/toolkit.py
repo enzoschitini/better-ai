@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 from typing import List, Any
 
 from agno.tools import Toolkit
-from src.agents.ultils.tool_response import ToolResponse
+from src.agents.utils.tool_response import ToolResponse
 
 # Retriver Packages
 from src.vector_store.pinecone.pinecone_retriever import PineconeRetriever

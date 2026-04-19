@@ -6,7 +6,7 @@ A classe `RunAgent` é projetada para gerenciar e executar operações relaciona
 
 Seu principal problema resolvido é o gerenciamento prático das operações do agente, fornecendo métodos claros e reutilizáveis para executar o agente, visualizar suas respostas de maneira estruturada, e disponibilizá-lo como um serviço web. Na prática, pode-se usá-la para desenvolver aplicações que necessitam de respostas automatizadas do agente, testar fluxos de forma detalhada, ou construir protótipos rápidos com interface web para o agente.
 
-`python -m src.agents.ultils.test_agents.run_agent`
+`python -m src.agents.utils.test_agents.run_agent`
 
 ## Fluxo de Execução
 
