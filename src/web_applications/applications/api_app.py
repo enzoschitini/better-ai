@@ -1,6 +1,6 @@
 import streamlit as st
 
-class API:
+class ApiApp:
     def __init__(self):
         pass
 

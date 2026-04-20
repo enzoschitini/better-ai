@@ -3,9 +3,7 @@ import importlib
 import logging
 import traceback
 
-from src.web_applications.config import (
-    MENU_ITEMS, PAGES
-)
+from src.web_applications.config import PAGES
 
 # -----------------------------
 # Configuração de logs
@@ -25,7 +23,11 @@ st.set_page_config(
     page_icon="AI",
     #layout="wide",
     initial_sidebar_state="expanded",
-    menu_items=MENU_ITEMS
+    menu_items={
+        "Get Help": "https://seusite.com/help",
+        "Report a bug": "https://seusite.com/bug",
+        "About": "BetterAI 🚀\nSua plataforma de IA"
+    }
 )
 
 # -----------------------------
