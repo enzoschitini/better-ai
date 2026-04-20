@@ -330,4 +330,4 @@ if __name__ == "__main__":
     page = Home()
     page.run()
 
-# streamlit run src/web_applications/applications/home/home.py
+# streamlit run src/web_applications/applications/home.py
