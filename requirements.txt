@@ -16,6 +16,7 @@ langchain-google-genai~=2.1.12
 langchain-groq~=0.3.8
 langchain-pinecone~=0.2.13
 agno~=2.5.8
+streamlit>=1.56.0
 
 # --- 3. AI MODELS & SDKs ---
 # SDKs nativos para quando você precisar de recursos não suportados pelo LangChain
