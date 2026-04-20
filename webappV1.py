@@ -1,9 +1,6 @@
 import streamlit as st
 import importlib
 
-# -----------------------------
-# Configuração da página
-# -----------------------------
 st.set_page_config(
     page_title="BetterAI",
     page_icon="AI",
@@ -41,33 +38,26 @@ PAGES = {
 # Helpers
 # -----------------------------
 def get_class_name(module_name: str) -> str:
+    """
+    Converte:
+    text_to_aquarela → TextToAquarela
+    api → API
+    """
     if module_name.upper() == "API":
         return "API"
     return "".join(word.capitalize() for word in module_name.split("_"))
 
 
-def is_valid_page(module_name: str) -> bool:
-    for section in PAGES.values():
-        for group in section.values():
-            if module_name in group.values():
-                return True
-    return False
-
-
-def set_page(module_name: str):
-    st.session_state.page_module = module_name
-    st.query_params["page"] = module_name
-
-
-@st.cache_resource
 def load_page(module_name: str):
+    """
+    Import dinâmico seguro
+    """
     module_path = f"src.web_applications.applications.{module_name}"
-
+    
     try:
         module = importlib.import_module(module_path)
     except ModuleNotFoundError:
-        st.error(f"🚫 Módulo não encontrado:\n\n`{module_path}`")
-        st.info("Verifique se o arquivo existe e o nome está correto.")
+        st.error(f"Módulo não encontrado: {module_path}")
         st.stop()
 
     class_name = get_class_name(module_name)
@@ -75,27 +65,17 @@ def load_page(module_name: str):
     try:
         page_class = getattr(module, class_name)
     except AttributeError:
-        st.error(
-            f"🚫 Classe não encontrada:\n\n"
-            f"`{class_name}` em `{module_name}.py`"
-        )
-        st.info("Verifique se o nome da classe corresponde ao padrão esperado.")
+        st.error(f"Classe '{class_name}' não encontrada em {module_name}.py")
         st.stop()
 
-    return page_class
+    return page_class()
 
 
 # -----------------------------
-# Estado inicial + URL sync
+# Estado inicial
 # -----------------------------
-query_params = st.query_params
-
 if "page_module" not in st.session_state:
     st.session_state.page_module = None
-
-# Se vier da URL
-if "page" in query_params:
-    st.session_state.page_module = query_params["page"]
 
 
 # -----------------------------
@@ -108,48 +88,30 @@ with st.sidebar:
         label_visibility="collapsed"
     )
 
-    current_page = st.session_state.page_module
-
     for group_name, pages in PAGES[context].items():
-
-        if group_name == "Main":
-            expanded_state = True
-        else:
-            expanded_state = False
-
-        with st.expander(group_name, expanded=expanded_state):
+        with st.expander(group_name, expanded=True):
             for label, module_name in pages.items():
-
-                is_active = module_name == current_page
-
-                if st.button(
-                    f"{label}",
-                    use_container_width=True,
-                ):
-                    set_page(module_name)
+                if st.button(label, use_container_width=True):
+                    st.session_state.page_module = module_name
 
 
 # -----------------------------
 # Página padrão
 # -----------------------------
 if st.session_state.page_module is None:
+    # pega a primeira página do primeiro grupo
     first_group = next(iter(PAGES[context].values()))
     first_page_module = next(iter(first_group.values()))
-    set_page(first_page_module)
-
-
-# -----------------------------
-# Validação de página
-# -----------------------------
-if not is_valid_page(st.session_state.page_module):
-    st.error("Página não encontrada")
-    st.stop()
+    st.session_state.page_module = first_page_module
 
 
 # -----------------------------
 # Renderização
 # -----------------------------
-with st.spinner("Carregando página..."):
-    page_class = load_page(st.session_state.page_module)
-    page = page_class()
-    page.run()
+page = load_page(st.session_state.page_module)
+page.run()
+
+
+from src.web_applications.config import PAGES
+
+# streamlit run webapp.py
