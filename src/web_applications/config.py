@@ -1,10 +1,18 @@
 ABOUT = """
-BetterAI 🚀\nSua plataforma de IA
+# BetterAI 🚀
+
+## Multiple AI Models, One Unified Back-end IA
+
+BetterAI is a platform designed to make artificial intelligence **practical, scalable, and accessible** for real-world applications.
+
+Instead of building complex AI infrastructure from scratch, BetterAI provides a solid foundation that allows teams to integrate intelligent capabilities directly into their systems, workflows, and products.
+
+From document analysis to advanced data exploration, BetterAI enables organizations to transform data into **actionable intelligence**.
 """
 
 MENU_ITEMS = {
-    "Get Help": "https://seusite.com/help",
-    "Report a bug": "https://seusite.com/bug",
+    #"Get Help": "https://seusite.com/help",
+    #"Report a bug": "https://seusite.com/bug",
     "About": ABOUT
 }
 
