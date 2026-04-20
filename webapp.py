@@ -1,7 +1,17 @@
 import streamlit as st
 import importlib
 
-st.set_page_config(page_title="BetterAI", page_icon="AI")
+st.set_page_config(
+    page_title="BetterAI",
+    page_icon="AI",
+    #layout="wide",
+    initial_sidebar_state="expanded",
+    menu_items={
+        "Get Help": "https://seusite.com/help",
+        "Report a bug": "https://seusite.com/bug",
+        "About": "BetterAI 🚀\nSua plataforma de IA"
+    }
+)
 
 # -----------------------------
 # Configuração das páginas
