@@ -55,4 +55,5 @@ dependencies = [
     "inflect~=7.5.0",
     "groq~=0.37.1",
     "pandasai>=2.0.24",
+    "streamlit>=1.56.0",
 ]
