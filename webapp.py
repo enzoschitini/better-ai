@@ -75,7 +75,7 @@ def load_page(module_name: str):
         module = importlib.import_module(module_path)
     except ModuleNotFoundError as e:
         handle_error(
-            "Módulo não encontrado",
+            "Module not found",
             e,
             debug=True
         )
@@ -86,7 +86,7 @@ def load_page(module_name: str):
         page_class = getattr(module, class_name)
     except AttributeError as e:
         handle_error(
-            f"Classe '{class_name}' não encontrada",
+            f"Class '{class_name}' not found",
             e,
             debug=True
         )
@@ -107,7 +107,7 @@ try:
         st.session_state.page_module = query_params["page"]
         logger.info(f"Page loaded from URL: {st.session_state.page_module}")
 except Exception as e:
-    handle_error("Erro ao ler parâmetros da URL", e, debug=True)
+    handle_error("Error reading URL parameters.", e, debug=True)
 
 
 # -----------------------------
@@ -139,7 +139,7 @@ with st.sidebar:
                         set_page(module_name)
 
                 except Exception as e:
-                    handle_error("Erro ao renderizar botão", e, debug=True)
+                    handle_error("Error rendering button", e, debug=True)
 
 
 # -----------------------------
@@ -152,7 +152,7 @@ if st.session_state.page_module is None:
         logger.info(f"Setting default page: {first_page_module}")
         set_page(first_page_module)
     except Exception as e:
-        handle_error("Erro ao definir página padrão", e, debug=True)
+        handle_error("Error setting default page.", e, debug=True)
 
 
 # -----------------------------
@@ -160,14 +160,14 @@ if st.session_state.page_module is None:
 # -----------------------------
 if not is_valid_page(st.session_state.page_module):
     logger.warning(f"Invalid page: {st.session_state.page_module}")
-    handle_error("Página não encontrada")
+    handle_error("Page not found")
 
 
 # -----------------------------
 # Renderização
 # -----------------------------
 try:
-    with st.spinner("Carregando página..."):
+    with st.spinner("Loading page..."):
         page_class = load_page(st.session_state.page_module)
         page = page_class()
 
@@ -175,5 +175,5 @@ try:
         page.run()
 
 except Exception as e:
-    handle_error("Erro inesperado ao renderizar a página", e, debug=True)
+    handle_error("Unexpected error while rendering the page.", e, debug=True)
 
