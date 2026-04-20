@@ -123,7 +123,7 @@ with st.sidebar:
     current_page = st.session_state.page_module
 
     for group_name, pages in PAGES[context].items():
-        expanded_state = group_name == "Main"
+        expanded_state = group_name in ["Main", "Docs"]
 
         with st.expander(group_name, expanded=expanded_state):
             for label, module_name in pages.items():
@@ -176,3 +176,4 @@ try:
 
 except Exception as e:
     handle_error("Erro inesperado ao renderizar a página", e, debug=True)
+
