@@ -1,5 +1,17 @@
 import streamlit as st
 import importlib
+import logging
+import traceback
+
+# -----------------------------
+# Configuração de logs
+# -----------------------------
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s"
+)
+
+logger = logging.getLogger(__name__)
 
 # -----------------------------
 # Configuração da página
@@ -55,8 +67,24 @@ def is_valid_page(module_name: str) -> bool:
 
 
 def set_page(module_name: str):
+    logger.info(f"Navigating to page: {module_name}")
     st.session_state.page_module = module_name
     st.query_params["page"] = module_name
+    st.rerun()
+
+
+def handle_error(title: str, error: Exception = None, debug: bool = False):
+    logger.error(f"{title} | {str(error)}")
+    
+    st.error(f"⚠️ {title}")
+
+    if debug and error:
+        st.code(traceback.format_exc())
+
+    if st.button("Voltar para Home"):
+        set_page("home")
+
+    st.stop()
 
 
 @st.cache_resource
@@ -64,23 +92,25 @@ def load_page(module_name: str):
     module_path = f"src.web_applications.applications.{module_name}"
 
     try:
+        logger.info(f"Loading module: {module_path}")
         module = importlib.import_module(module_path)
-    except ModuleNotFoundError:
-        st.error(f"🚫 Módulo não encontrado:\n\n`{module_path}`")
-        st.info("Verifique se o arquivo existe e o nome está correto.")
-        st.stop()
+    except ModuleNotFoundError as e:
+        handle_error(
+            "Módulo não encontrado",
+            e,
+            debug=True
+        )
 
     class_name = get_class_name(module_name)
 
     try:
         page_class = getattr(module, class_name)
-    except AttributeError:
-        st.error(
-            f"🚫 Classe não encontrada:\n\n"
-            f"`{class_name}` em `{module_name}.py`"
+    except AttributeError as e:
+        handle_error(
+            f"Classe '{class_name}' não encontrada",
+            e,
+            debug=True
         )
-        st.info("Verifique se o nome da classe corresponde ao padrão esperado.")
-        st.stop()
 
     return page_class
 
@@ -93,9 +123,12 @@ query_params = st.query_params
 if "page_module" not in st.session_state:
     st.session_state.page_module = None
 
-# Se vier da URL
-if "page" in query_params:
-    st.session_state.page_module = query_params["page"]
+try:
+    if "page" in query_params:
+        st.session_state.page_module = query_params["page"]
+        logger.info(f"Page loaded from URL: {st.session_state.page_module}")
+except Exception as e:
+    handle_error("Erro ao ler parâmetros da URL", e, debug=True)
 
 
 # -----------------------------
@@ -111,45 +144,56 @@ with st.sidebar:
     current_page = st.session_state.page_module
 
     for group_name, pages in PAGES[context].items():
-
-        if group_name == "Main":
-            expanded_state = True
-        else:
-            expanded_state = False
+        expanded_state = group_name == "Main"
 
         with st.expander(group_name, expanded=expanded_state):
             for label, module_name in pages.items():
 
-                is_active = module_name == current_page
+                try:
+                    is_active = module_name == current_page
 
-                if st.button(
-                    f"{label}",
-                    use_container_width=True,
-                ):
-                    set_page(module_name)
+                    if st.button(
+                        f"{label}",
+                        use_container_width=True,
+                        type="primary" if is_active else "secondary"
+                    ):
+                        set_page(module_name)
+
+                except Exception as e:
+                    handle_error("Erro ao renderizar botão", e, debug=True)
 
 
 # -----------------------------
 # Página padrão
 # -----------------------------
 if st.session_state.page_module is None:
-    first_group = next(iter(PAGES[context].values()))
-    first_page_module = next(iter(first_group.values()))
-    set_page(first_page_module)
+    try:
+        first_group = next(iter(PAGES[context].values()))
+        first_page_module = next(iter(first_group.values()))
+        logger.info(f"Setting default page: {first_page_module}")
+        set_page(first_page_module)
+    except Exception as e:
+        handle_error("Erro ao definir página padrão", e, debug=True)
 
 
 # -----------------------------
 # Validação de página
 # -----------------------------
 if not is_valid_page(st.session_state.page_module):
-    st.error("Página não encontrada")
-    st.stop()
+    logger.warning(f"Invalid page: {st.session_state.page_module}")
+    handle_error("Página não encontrada")
 
 
 # -----------------------------
 # Renderização
 # -----------------------------
-with st.spinner("Carregando página..."):
-    page_class = load_page(st.session_state.page_module)
-    page = page_class()
-    page.run()
+try:
+    with st.spinner("Carregando página..."):
+        page_class = load_page(st.session_state.page_module)
+        page = page_class()
+
+        logger.info(f"Running page: {st.session_state.page_module}")
+        page.run()
+
+except Exception as e:
+    handle_error("Erro inesperado ao renderizar a página", e, debug=True)
