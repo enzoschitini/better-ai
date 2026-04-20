@@ -1,18 +1,38 @@
 import streamlit as st
+from src.web_applications.applications.home import Home
 
 st.set_page_config(page_title="BetterAI", page_icon="AI")
-st.image("images/Frame 27346.png")
+
+# Estado inicial
+if "page" not in st.session_state:
+    st.session_state.page = None
+
+# Configuração das páginas
+PAGES = {
+    "Applications": ["Home", "Text to Aquarela", "Image to Aquarela"],
+    "Documentation": ["API", "Tutoriais"]
+}
 
 with st.sidebar:
+    # Contexto (selectbox sem label)
     context = st.selectbox(
-        label="",
-        options=["Applications", "Documentation"],
+        "",
+        ["Applications", "Documentation"],
+        label_visibility="collapsed"
     )
 
-    if context == "Applications":
-        st.write("Applications")
+    # Botões das páginas
+    for page in PAGES[context]:
+        if st.button(page, use_container_width=True):
+            st.session_state.page = page
 
-    elif context == "Documentation":
-        st.write("Documentation")
+# Página padrão (caso nenhuma tenha sido clicada ainda)
+if st.session_state.page is None:
+    st.session_state.page = PAGES[context][0]
+
+# --- Render ---
+if st.session_state.page == "Home":
+    home = Home()
+    home.run()
 
 # streamlit run src/web_applications/app.py
