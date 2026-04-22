@@ -18,12 +18,14 @@ MENU_ITEMS = {
 
 PAGES = {
     "Applications": {
-        "Main": {
+        "Introduction": {
             "Home": "home",
         },
-        "Aquarela": {
-            "Text to Aquarela": "text_to_aquarela",
-            "Image to Aquarela": "image_to_aquarela",
+        "Vector Store": {
+            "Embedding File": "text_to_aquarela",
+            "Update Metadata": "update_metadata",
+            "Delete Vectors": "delete_vectors",
+            "Retriver": "retriver",
         },
     },
     "Documentation": {

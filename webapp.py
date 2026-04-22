@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 # Configuração da página
 # -----------------------------
 st.set_page_config(
-    page_title="BetterAI",
+    page_title="BetterAI - Unified AI Platform",
     page_icon="AI",
     #layout="wide",
     initial_sidebar_state="expanded",
@@ -123,7 +123,7 @@ with st.sidebar:
     current_page = st.session_state.page_module
 
     for group_name, pages in PAGES[context].items():
-        expanded_state = group_name in ["Main", "Docs"]
+        expanded_state = group_name in ["Introduction", "Main", "Docs"]
 
         with st.expander(group_name, expanded=expanded_state):
             for label, module_name in pages.items():
