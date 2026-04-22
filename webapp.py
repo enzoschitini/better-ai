@@ -123,7 +123,7 @@ with st.sidebar:
     current_page = st.session_state.page_module
 
     for group_name, pages in PAGES[context].items():
-        expanded_state = group_name in ["Introduction", "Main", "Docs"]
+        expanded_state = group_name in ["Introduction", "Main", "Docs", "Health"]  # Grupos expandidos por padrão
 
         with st.expander(group_name, expanded=expanded_state):
             for label, module_name in pages.items():

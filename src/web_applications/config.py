@@ -28,8 +28,8 @@ PAGES = {
             "Retriver": "retriver",
         },
     },
-    "Documentation": {
-        "Docs": {
+    "Web Services": {
+        "Health": {
             "API_APP": "api_app",
             "Tutoriais": "tutoriais",
         }
