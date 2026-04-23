@@ -28,6 +28,9 @@ PAGES = {
             "Delete Vectors": "delete_vectors",
             "Retriver": "retriver",
         },
+        "Image Generation": {
+            "Da-Vinci": "image_generation",
+        }
     },
     "Web Services": {
         "Health": {
