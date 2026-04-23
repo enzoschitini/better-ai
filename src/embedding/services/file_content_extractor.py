@@ -185,9 +185,9 @@ class FileContentExtractor:
         return {"file_content": response}
 
 if __name__ == "__main__":
-    path = "local/test files"
+    path = "doc/test files"
 
-    # Exemplo de uso
+    # Example usage
     with open(f"{path}/Candidatura.pdf", "rb") as f:
         file_bytes = BytesIO(f.read())
 
