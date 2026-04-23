@@ -322,7 +322,7 @@ class Home:
 
         st.title("BetterAI — Where Intelligence Finds Purpose")
         st.markdown(CONTENT)
-    
+
     def run(self):
         self.head()
 
