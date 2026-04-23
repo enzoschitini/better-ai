@@ -20,6 +20,7 @@ PAGES = {
     "Applications": {
         "Introduction": {
             "Home": "home",
+            "Idle": "idle",
         },
         "Vector Store": {
             "Embedding File": "text_to_aquarela",
@@ -35,3 +36,5 @@ PAGES = {
         }
     }
 }
+
+# streamlit run webapp.py

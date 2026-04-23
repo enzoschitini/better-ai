@@ -3,6 +3,7 @@ import importlib
 import logging
 import traceback
 
+from src.web_applications.utils.render_components import Component
 from src.web_applications.config import (
     MENU_ITEMS, PAGES
 )
@@ -27,6 +28,11 @@ st.set_page_config(
     initial_sidebar_state="expanded",
     menu_items=MENU_ITEMS
 )
+
+# -----------------------------
+# Estilos customizados
+# -----------------------------
+component = Component()
 
 # -----------------------------
 # Helpers
@@ -114,6 +120,8 @@ except Exception as e:
 # Sidebar
 # -----------------------------
 with st.sidebar:
+    #component.image("images/idle.png", width=120)
+    #st.write("")
     context = st.selectbox(
         "",
         list(PAGES.keys()),
@@ -177,3 +185,4 @@ try:
 except Exception as e:
     handle_error("Unexpected error while rendering the page.", e, debug=True)
 
+# streamlit run webapp.py
