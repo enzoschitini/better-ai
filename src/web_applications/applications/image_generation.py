@@ -13,21 +13,20 @@ class ImageGeneration:
             del st.session_state.messages
     
     def head(self):
-        self.component.image("images/idle.png", width=150)
+        self.component.text("Generate Images With Da-Vinci", size=30, align="center")
         st.write("")
-
-        self.component.text("Ask your agent to do something!", size=30, align="center")
 
     def generate_image(
         self,
         user_prompt="Generate an image of a futuristic city skyline at sunset, with flying cars and neon lights.",
         instructions="Use vibrant colors and a cyberpunk aesthetic.",
+        config=None,
         image_bytes=None
     ):
         id_generator = IDGenerator()
         unique_id = id_generator.timestamp()
 
-        service = ImageGeneratorService()
+        service = ImageGeneratorService(content_config=config)
 
         parts = service.build_parts(
             user_prompt=user_prompt,
@@ -66,9 +65,16 @@ class ImageGeneration:
                 "content": prompt
             })
 
-            import time
-            time.sleep(3)  # Simula tempo de processamento
-            image = "data/img/1776967078833188700CceF_1.png"
+            config = {
+                "temperature": st.session_state.get("temperature", 0.7),
+                "aspect_ratio": st.session_state.get("aspect_ratio", "1:1")
+            }
+
+            image = self.generate_image(
+                user_prompt=prompt,
+                instructions=st.session_state.instructions,
+                config=config
+            )
 
             st.session_state.messages.append({
                 "role": "assistant",
@@ -76,10 +82,15 @@ class ImageGeneration:
                 "image": image
             })
 
-        # 👇 DEPOIS: decide o que mostrar no topo
         if len(st.session_state.messages) == 0:
             self.head()
-        else:
+
+        with st.expander("Config", expanded=False):
+            st.write("Here you could show the config used for generation, or allow the user to customize it before generating the image.")
+
+            st.session_state.instructions = st.text_area("Instructions", value="Use vibrant colors.", height=200)
+            st.session_state.temperature = st.number_input("Temperature", min_value=0.0, max_value=1.0, value=0.7)
+            st.session_state.aspect_ratio = st.selectbox("Dimensions", ["1:1", "3:4", "4:3", "9:16", "16:9"], index=0) 
             st.button("Reset Chat", on_click=self._reset_chat)
 
         # 👇 Renderiza histórico
