@@ -198,6 +198,6 @@ class WebAPP:
             self._handle_error("Unexpected error while rendering the page.", e, debug=True)
 
 web_app = WebAPP()
-web_app.run()
+web_app.run("image_generation")
 
 # streamlit run webapp.py
