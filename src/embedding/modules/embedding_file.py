@@ -1,24 +1,15 @@
 import json
-
 from io import BytesIO
 
 from src.embedding.services.file_content_extractor import FileContentExtractor
 from src.vector_store.pinecone.pinecone_vectorstore_services import PineconeVectorService
 from src.database.no_relational_db.router import DocumentStore
+from src.embedding.aggregates.aggregate_embedding_content import AggregateEmbeddingContent
+from src.utils.manager_process_informations import ManagerProcessInformations
 
 from src.tokens_calculate.token_counter import TokenCounter
 from src.tokens_calculate.model_pricing import ModelPricingFactory
 from src.tokens_calculate.exchange_rate.exchange_rate import ExchangeRateService
-
-class AggregateEmbeddingContent:
-    def __init__(self, pipeline):
-        self.pipeline = pipeline
-
-    def process(self):
-        return {
-            "additional_content": "This is additional content generated from the pipeline.",
-            "generated_tags": "#finance, #report, #2026"
-        }
 
 CONFIG = {
     "save_global": False,
@@ -26,25 +17,6 @@ CONFIG = {
     "database_name": "embedding_db",
     "collection_name": "embedding_processes"
 }
-
-class ManagerProcessInformations:
-    def __init__(self, file_name: str = "embedding_process_output"):
-        self.process_payload = {}
-        self.file_name = file_name
-    
-    def add(self, key: str, value):
-        self.process_payload[key] = value
-    
-    def remove(self, key: str):
-        if key in self.process_payload:
-            del self.process_payload[key]
-    
-    def get_payload(self):
-        return self.process_payload
-    
-    def save(self):
-        with open(f"{self.file_name}.json", "w") as f:
-            json.dump(self.process_payload, f, indent=4, default=str)
 
 class EmbeddingFile(ManagerProcessInformations):
     def __init__(self, payload: dict):
