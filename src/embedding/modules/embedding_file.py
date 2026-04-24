@@ -4,6 +4,7 @@ from io import BytesIO
 
 from src.embedding.services.file_content_extractor import FileContentExtractor
 from src.vector_store.pinecone.pinecone_vectorstore_services import PineconeVectorService
+from src.database.no_relational_db.router import DocumentStore
 
 from src.tokens_calculate.token_counter import TokenCounter
 from src.tokens_calculate.model_pricing import ModelPricingFactory
@@ -104,6 +105,7 @@ class EmbeddingFile:
     def save_to_vector_db(self, embedding_content: str, embedding_metadata: dict, flags: dict = None):
         # Aqui você implementaria a lógica para salvar os vetores de embedding e seus metadados em um banco de dados de vetores
         # Pode ser uma chamada para um serviço externo ou uma operação local, dependendo da sua arquitetura
+        return 0
 
         if flags:
             embedding_metadata = {**embedding_metadata, **flags}  # Adiciona as flags aos metadados
@@ -122,6 +124,21 @@ class EmbeddingFile:
 
         print(embed_response)
         return embed_response
+    
+    def save_process(
+        self,
+        payload: dict,
+    ):
+        manager = DocumentStore()
+        save_response = manager.save_payload(
+            database_name="embedding_db",
+            collection_name="embedding_processes",
+            payload=payload
+        )
+
+        print(save_response)
+
+        return save_response
         
 
 
@@ -219,5 +236,7 @@ embed_response = embedder.save_to_vector_db(
     embedding_metadata=final_embedding_metadata,
     #flags={"group": "test_group"}
 )
+
+response = embedder.save_process(payload=payload)
 
 # python -m src.embedding.modules.embedding_file
