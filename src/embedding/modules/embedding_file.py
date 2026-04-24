@@ -52,6 +52,18 @@ class EmbeddingFile(ManagerProcessInformations):
         self.payload = payload
         self.add("payload", self.payload)
     
+    def _calculate_content_usage(self, model: str, content: str) -> dict:
+        pricing = ModelPricingFactory.create(model)
+        counter = TokenCounter(model)
+
+        tokens = counter.count(content)
+        cost = pricing.cost(tokens)
+
+        return {
+            "caracter_count": len(content),
+            "tokens": tokens,
+            "cost_usd": f"{cost:.6f}"
+        }
 
     def extract_content(self, file_extension: str, file_bytes: bytes) -> str:
         try:
@@ -94,28 +106,15 @@ class EmbeddingFile(ManagerProcessInformations):
         self.add("embedding_metadata", final_embedding_metadata)
 
         return final_embedding_content, final_embedding_metadata
-    
-    def _calculate_cost(self, model: str, content: str) -> dict:
-        pricing = ModelPricingFactory.create(model)
-        counter = TokenCounter(model)
 
-        tokens = counter.count(content)
-        cost = pricing.cost(tokens)
-
-        return {
-            "caracter_count": len(content),
-            "tokens": tokens,
-            "cost_usd": f"{cost:.6f}"
-        }
-
-    def calculate_cost(self, model: str, final_embedding_content: dict) -> dict:
+    def calculate_total_usage(self, model: str, final_embedding_content: dict) -> dict:
         exchange_service = ExchangeRateService()
         usd_rate = exchange_service.get_usd_rate()
 
         parts_cost_info = {}
 
         for key, value in final_embedding_content.items():
-            parts_cost_info[key] = self._calculate_cost(model, value)
+            parts_cost_info[key] = self._calculate_content_usage(model, value)
 
         total_caracter_count = sum(part["caracter_count"] for part in parts_cost_info.values())
         total_tokens = sum(part["tokens"] for part in parts_cost_info.values())
@@ -135,10 +134,6 @@ class EmbeddingFile(ManagerProcessInformations):
         return usege_informations
     
     def save_to_vector_db(self, embedding_content: str, embedding_metadata: dict, flags: dict = None):
-        # Aqui você implementaria a lógica para salvar os vetores de embedding e seus metadados em um banco de dados de vetores
-        # Pode ser uma chamada para um serviço externo ou uma operação local, dependendo da sua arquitetura
-        #return 0
-
         if flags:
             embedding_metadata = {**embedding_metadata, **flags}  # Adiciona as flags aos metadados
         
@@ -178,18 +173,18 @@ class EmbeddingFile(ManagerProcessInformations):
         return save_response
     
     def embed(self):
-        file_content = self.extract_content(payload["file_info"]["extension"], payload["file_info"]["bytes"])
+        file_content = self.extract_content(self.payload["file_info"]["extension"], self.payload["file_info"]["bytes"])
 
         final_embedding_content, final_embedding_metadata = self.generate_embedding_payload(
-            identifiers=payload["identifiers"],
-            file_info=payload["file_info"],
+            identifiers=self.payload["identifiers"],
+            file_info=self.payload["file_info"],
             file_content=file_content,
-            embedding_metadata=payload["embedding_metadata"],
-            pipeline=payload["pipeline"]
+            embedding_metadata=self.payload["embedding_metadata"],
+            pipeline=self.payload["pipeline"]
         )
 
-        usege_informations = self.calculate_cost(
-            model=payload["embedding_settings"]["model"], 
+        usege_informations = self.calculate_total_usage(
+            model=self.payload["embedding_settings"]["model"], 
             final_embedding_content=final_embedding_content
         )
 
@@ -206,17 +201,6 @@ class EmbeddingFile(ManagerProcessInformations):
 
 
 
-    # Step 1: Configure and validate the payload
-    # Step 2: Download the file from the provided URL
-    # Step 3: Extract content from the file
-    # Step 4: Generate embedding payload
-    # Step 5: Calculate cost
-    # Step 6: Embedding content and store vectors
-    # Step 7: Save process
-    # Step 8: Delete temporary files and clean up resources
-    # Step 9: Return response with embedding information and cost details
-
-# Carregar um arquivo
 
 
 
@@ -269,14 +253,27 @@ def generate_payload():
         }
     }
 
+    #print(json.dumps(payload, indent=4, default=str))
+
     return payload
 
 
 
 payload = generate_payload()
-#print(json.dumps(payload, indent=4, default=str))
 
 embedder = EmbeddingFile(payload)
 embedder.embed()
+embedder.save()  # Salva o estado completo do processo em um arquivo JSON
+
+
+    # Step 1: Configure and validate the payload
+    # Step 2: Download the file from the provided URL
+    # Step 3: Extract content from the file
+    # Step 4: Generate embedding payload
+    # Step 5: Calculate cost
+    # Step 6: Embedding content and store vectors
+    # Step 7: Save process
+    # Step 8: Delete temporary files and clean up resources
+    # Step 9: Return response with embedding information and cost details
 
 # python -m src.embedding.modules.embedding_file
