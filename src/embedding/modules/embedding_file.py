@@ -27,8 +27,28 @@ CONFIG = {
     "collection_name": "embedding_processes"
 }
 
-class EmbeddingFile:
+class ManagerProcessInformations:
+    def __init__(self, file_name: str = "embedding_process_output"):
+        self.process_payload = {}
+        self.file_name = file_name
+    
+    def add(self, key: str, value):
+        self.process_payload[key] = value
+    
+    def remove(self, key: str):
+        if key in self.process_payload:
+            del self.process_payload[key]
+    
+    def get_payload(self):
+        return self.process_payload
+    
+    def save(self):
+        with open(f"{self.file_name}.json", "w") as f:
+            json.dump(self.process_payload, f, indent=4, default=str)
+
+class EmbeddingFile(ManagerProcessInformations):
     def __init__(self, payload: dict):
+        super().__init__()
         self.payload = payload
     
 
@@ -148,9 +168,10 @@ class EmbeddingFile:
         return save_response
     
     def embed(self):
-        process_payload["payload"] = self.payload
+        self.add("payload", self.payload)
+
         file_content = self.extract_content(payload["file_info"]["extension"], payload["file_info"]["bytes"])
-        process_payload["file_content"] = file_content
+        self.add("file_content", file_content)
 
         final_embedding_content, final_embedding_metadata = self.generate_embedding_payload(
             identifiers=payload["identifiers"],
@@ -160,8 +181,8 @@ class EmbeddingFile:
             pipeline=payload["pipeline"]
         )
 
-        process_payload["embedding_content"] = final_embedding_content
-        process_payload["embedding_metadata"] = final_embedding_metadata
+        self.add("embedding_content", final_embedding_content)
+        self.add("embedding_metadata", final_embedding_metadata)
 
         print("Final Embedding Content:")
         print(json.dumps(final_embedding_content, indent=4, default=str))
@@ -173,7 +194,7 @@ class EmbeddingFile:
             final_embedding_content=final_embedding_content
         )
 
-        process_payload["usage_informations"] = usege_informations
+        self.add("usage_informations", usege_informations)
 
         embed_response = self.save_to_vector_db(
             embedding_content=json.dumps(final_embedding_content),
@@ -181,13 +202,13 @@ class EmbeddingFile:
             #flags={"group": "test_group"}
         )
 
-        process_payload["embedding_response"] = embed_response
+        self.add("embedding_response", embed_response)
 
         save_response = self.save_process(payload=payload)
-        process_payload["save_response"] = save_response
+        self.add("save_response", save_response)
 
-        with open("embedding_process_output.json", "w") as f:
-            json.dump(process_payload, f, indent=4, default=str)
+        self.save()
+
 
 
     # Step 1: Configure and validate the payload
@@ -257,8 +278,6 @@ def generate_payload():
 
 
 
-
-process_payload = {}
 payload = generate_payload()
 #print(json.dumps(payload, indent=4, default=str))
 
