@@ -78,24 +78,28 @@ class EmbeddingFile:
         exchange_service = ExchangeRateService()
         usd_rate = exchange_service.get_usd_rate()
 
-        total_cost_info = {}
         parts_cost_info = {}
 
         for key, value in final_embedding_content.items():
-            print(key)
-            print(value)
             parts_cost_info[key] = self._calculate_cost(model, value, usd_rate)
-        
-        total_cost_info["parts"] = parts_cost_info
 
-        total_cost_info["total_caracter_count"] = sum(part["caracter_count"] for part in parts_cost_info.values())
-        total_cost_info["total_tokens"] = sum(part["tokens"] for part in parts_cost_info.values())
-        total_cost_info["total_cost_usd"] = f"{sum(float(part['cost_usd']) for part in parts_cost_info.values()):.8f}"
+        total_caracter_count = sum(part["caracter_count"] for part in parts_cost_info.values())
+        total_tokens = sum(part["tokens"] for part in parts_cost_info.values())
+        total_cost_usd = f"{sum(float(part['cost_usd']) for part in parts_cost_info.values()):.8f}"
 
-        total_cost_info["exchange_rate"] = usd_rate
-        
-        print("Cost details for each content piece:")
-        print(json.dumps(total_cost_info, indent=4))
+        response = {
+            "total_caracter_count": total_caracter_count,
+            "total_tokens": total_tokens,
+            "total_cost_usd": total_cost_usd,
+            "exchange_rate": usd_rate
+        }
+
+        # 👇 só adiciona parts se tiver mais de um item
+        if len(parts_cost_info) > 1:
+            response["parts"] = parts_cost_info
+
+        print(json.dumps(response, indent=4))
+        return response
         
 
 
