@@ -2,10 +2,11 @@ import json
 from io import BytesIO
 
 from src.embedding.services.file_content_extractor import FileContentExtractor
-from src.vector_store.pinecone.pinecone_vectorstore_services import PineconeVectorService
-from src.database.no_relational_db.router import DocumentStore
 from src.embedding.aggregates.aggregate_embedding_content import AggregateEmbeddingContent
 from src.utils.manager_process_informations import ManagerProcessInformations
+
+from src.vector_store.pinecone.pinecone_vectorstore_services import PineconeVectorService
+from src.database.no_relational_db.router import DocumentStore
 
 from src.tokens_calculate.token_counter import TokenCounter
 from src.tokens_calculate.model_pricing import ModelPricingFactory
