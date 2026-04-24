@@ -3,7 +3,10 @@ import json
 from io import BytesIO
 
 from src.embedding.services.file_content_extractor import FileContentExtractor
+
+from src.tokens_calculate.token_counter import TokenCounter
 from src.tokens_calculate.model_pricing import ModelPricingFactory
+from src.tokens_calculate.exchange_rate.exchange_rate import ExchangeRateService
 
 class AggregateEmbeddingContent:
     def __init__(self, pipeline):
@@ -58,13 +61,43 @@ class EmbeddingFile:
         
         return final_embedding_content, final_embedding_metadata
     
+    def _calculate_cost(self, model: str, content: str, usd_rate: int) -> dict:
+        pricing = ModelPricingFactory.create(model)
+        counter = TokenCounter(model)
+
+        tokens = counter.count(content)
+        cost = pricing.cost(tokens)
+
+        return {
+            "caracter_count": len(content),
+            "tokens": tokens,
+            "cost_usd": f"{cost:.8f}"
+        }
+
     def calculate_cost(self, model: str, final_embedding_content: dict) -> dict:
+        exchange_service = ExchangeRateService()
+        usd_rate = exchange_service.get_usd_rate()
+
+        total_cost_info = {}
+        parts_cost_info = {}
 
         for key, value in final_embedding_content.items():
             print(key)
             print(value)
+            parts_cost_info[key] = self._calculate_cost(model, value, usd_rate)
         
-        pricing = ModelPricingFactory.create(model)
+        total_cost_info["parts"] = parts_cost_info
+
+        total_cost_info["total_caracter_count"] = sum(part["caracter_count"] for part in parts_cost_info.values())
+        total_cost_info["total_tokens"] = sum(part["tokens"] for part in parts_cost_info.values())
+        total_cost_info["total_cost_usd"] = f"{sum(float(part['cost_usd']) for part in parts_cost_info.values()):.8f}"
+
+        total_cost_info["exchange_rate"] = usd_rate
+        
+        print("Cost details for each content piece:")
+        print(json.dumps(total_cost_info, indent=4))
+        
+
 
     # Step 1: Configure and validate the payload
     # Step 2: Download the file from the provided URL
