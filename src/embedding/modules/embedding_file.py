@@ -50,18 +50,20 @@ class EmbeddingFile(ManagerProcessInformations):
     def __init__(self, payload: dict):
         super().__init__()
         self.payload = payload
+        self.add("payload", self.payload)
     
 
     def extract_content(self, file_extension: str, file_bytes: bytes) -> str:
         try:
-            print(f"Extracting content from file with extension: {file_extension}")
             extractor = FileContentExtractor(file_bytes, file_extension)
             result = extractor.extract()
         except Exception as e:
             raise RuntimeError(f"Error extracting content: {str(e)}")
-        
-        print(f"Extracted content length: {len(result['file_content'])} characters")
-        return result["file_content"]
+
+        file_content = result["file_content"]
+        self.add("file_content", file_content)
+
+        return file_content
     
     def generate_embedding_payload(
         self,
@@ -87,7 +89,10 @@ class EmbeddingFile(ManagerProcessInformations):
             "file_extension": file_info["extension"],
             **(embedding_metadata or {})  # evita erro se for None
         }
-        
+
+        self.add("embedding_content", final_embedding_content)
+        self.add("embedding_metadata", final_embedding_metadata)
+
         return final_embedding_content, final_embedding_metadata
     
     def _calculate_cost(self, model: str, content: str) -> dict:
@@ -126,7 +131,7 @@ class EmbeddingFile(ManagerProcessInformations):
         if len(parts_cost_info) > 1:
             usege_informations["parts"] = parts_cost_info
 
-        print(json.dumps(usege_informations, indent=4))
+        self.add("usage_informations", usege_informations)
         return usege_informations
     
     def save_to_vector_db(self, embedding_content: str, embedding_metadata: dict, flags: dict = None):
@@ -149,29 +154,31 @@ class EmbeddingFile(ManagerProcessInformations):
             batch_size=CONFIG["batch_size"]
         )
 
-        print(embed_response)
+        self.add("embedding_response", embed_response)
         return embed_response
     
     def save_process(
         self,
-        payload: dict,
+        usege_informations: dict,
+        embed_response: dict
     ):
         manager = DocumentStore()
+
+        save_payload = self.payload.copy()
+        save_payload["usage_informations"] = usege_informations
+        save_payload["embedding_response"] = embed_response
+
         save_response = manager.save_payload(
             database_name=CONFIG["database_name"],
             collection_name=CONFIG["collection_name"],
-            payload=payload
+            payload=save_payload
         )
 
-        print(save_response)
-
+        self.add("save_response", save_response)
         return save_response
     
     def embed(self):
-        self.add("payload", self.payload)
-
         file_content = self.extract_content(payload["file_info"]["extension"], payload["file_info"]["bytes"])
-        self.add("file_content", file_content)
 
         final_embedding_content, final_embedding_metadata = self.generate_embedding_payload(
             identifiers=payload["identifiers"],
@@ -181,33 +188,21 @@ class EmbeddingFile(ManagerProcessInformations):
             pipeline=payload["pipeline"]
         )
 
-        self.add("embedding_content", final_embedding_content)
-        self.add("embedding_metadata", final_embedding_metadata)
-
-        print("Final Embedding Content:")
-        print(json.dumps(final_embedding_content, indent=4, default=str))
-        print("\nFinal Embedding Metadata:")
-        print(json.dumps(final_embedding_metadata, indent=4, default=str))
-
         usege_informations = self.calculate_cost(
             model=payload["embedding_settings"]["model"], 
             final_embedding_content=final_embedding_content
         )
 
-        self.add("usage_informations", usege_informations)
-
         embed_response = self.save_to_vector_db(
             embedding_content=json.dumps(final_embedding_content),
             embedding_metadata=final_embedding_metadata,
-            #flags={"group": "test_group"}
+            flags={"group": "test_group"}
         )
 
-        self.add("embedding_response", embed_response)
-
-        save_response = self.save_process(payload=payload)
-        self.add("save_response", save_response)
-
-        self.save()
+        self.save_process(
+            usege_informations=usege_informations,
+            embed_response=embed_response
+        )
 
 
 
