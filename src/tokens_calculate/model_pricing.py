@@ -1,13 +1,19 @@
-class ModelPricing:
-    """
-    Classe que representa o modelo de precificação para diferentes modelos de linguagem, permitindo calcular o custo com base no número de tokens de entrada e saída.
+from abc import ABC, abstractmethod
 
-    Args: 
-    :param model (str): O nome do modelo para o qual se deseja calcular os custos.    
 
-    Methods:
-            generate_post(topic): Explica o metodo em uma frase
-    """
+class BasePricing(ABC):
+    def __init__(self, model: str):
+        self.model = model
+
+    @abstractmethod
+    def cost(self, tokens: int) -> float:
+        pass
+
+
+# ========================
+# CHAT MODELS
+# ========================
+class ChatModelPricing(BasePricing):
 
     COST_MODELS = {
         # Cost per million tokens in USD
@@ -16,24 +22,80 @@ class ModelPricing:
 
     def __init__(self, model: str):
         if model not in self.COST_MODELS:
-            raise ValueError(f"Modelo não suportado: {model}")
-        self.model = model
+            raise ValueError(f"Modelo de chat não suportado: {model}")
+        super().__init__(model)
         self.prices = self.COST_MODELS[model]
 
-    def input_rate_per_token(self) -> float:
-        """
-        Retorna a taxa de custo por token para entradas, convertendo o custo por milhão de tokens para por token.
+    def input_cost(self, tokens: int) -> float:
+        return (self.prices["input"] / 1_000_000) * tokens
 
-        Returns:
-                float: O custo por token de entrada em dólares.
-        """
-        return self.prices["input"] / 1_000_000
+    def output_cost(self, tokens: int) -> float:
+        return (self.prices["output"] / 1_000_000) * tokens
 
-    def output_rate_per_token(self) -> float:
-        """
-        Retorna a taxa de custo por token para saídas, convertendo o custo por milhão de tokens para por token.
+    def total_cost(self, input_tokens: int, output_tokens: int) -> float:
+        return self.input_cost(input_tokens) + self.output_cost(output_tokens)
 
-        Returns:
-                float: O custo por token de saída em dólares.
-        """
-        return self.prices["output"] / 1_000_000
+    def cost(self, tokens: int) -> float:
+        raise NotImplementedError("Use input_cost/output_cost para chat models")
+
+
+# ========================
+# EMBEDDING MODELS
+# ========================
+class EmbeddingModelPricing(BasePricing):
+
+    COST_MODELS = {
+        "text-embedding-3-small": 0.020,
+        "text-embedding-ada-002": 0.10,
+        "text-embedding-3-large": 0.13
+    }
+
+    def __init__(self, model: str):
+        if model not in self.COST_MODELS:
+            raise ValueError(f"Modelo de embedding não suportado: {model}")
+        super().__init__(model)
+        self.price_per_million = self.COST_MODELS[model]
+
+    def cost(self, tokens: int) -> float:
+        return (self.price_per_million / 1_000_000) * tokens
+
+
+# ========================
+# FACTORY
+# ========================
+class ModelPricingFactory:
+
+    @staticmethod
+    def create(model: str) -> BasePricing:
+        if model in ChatModelPricing.COST_MODELS:
+            return ChatModelPricing(model)
+
+        if model in EmbeddingModelPricing.COST_MODELS:
+            return EmbeddingModelPricing(model)
+
+        raise ValueError(f"Modelo não suportado: {model}")
+
+if __name__ == "__main__":
+    # Embedding
+    model = "text-embedding-3-large"
+    pricing = ModelPricingFactory.create(model)
+
+    tokens = 5000
+    cost = pricing.cost(tokens)
+
+    print(f"Custo embedding: ${cost:.6}")
+
+    # Chat
+    model = "gpt-4.1-mini"
+    pricing = ModelPricingFactory.create(model)
+
+    input_tokens = 3000
+    output_tokens = 1000
+
+    cost = pricing.total_cost(input_tokens, output_tokens)
+
+    print(f"Custo total: ${cost:.6}")
+
+"""
+Aggiustare src.tokens_calculate.module
+"""

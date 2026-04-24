@@ -3,6 +3,7 @@ import json
 from io import BytesIO
 
 from src.embedding.services.file_content_extractor import FileContentExtractor
+from src.tokens_calculate.model_pricing import ModelPricingFactory
 
 class AggregateEmbeddingContent:
     def __init__(self, pipeline):
@@ -56,6 +57,14 @@ class EmbeddingFile:
         }
         
         return final_embedding_content, final_embedding_metadata
+    
+    def calculate_cost(self, model: str, final_embedding_content: dict) -> dict:
+
+        for key, value in final_embedding_content.items():
+            print(key)
+            print(value)
+        
+        pricing = ModelPricingFactory.create(model)
 
     # Step 1: Configure and validate the payload
     # Step 2: Download the file from the provided URL
@@ -95,7 +104,7 @@ def generate_payload():
         },
 
         "embedding_settings": {
-            "model": "text-embedding-3-small",
+            "model": "text-embedding-3-large",
             "dimensions": 1536,
             "chunk_size": 500,
             "chunk_overlap": 50,
@@ -133,5 +142,7 @@ print("Final Embedding Content:")
 print(json.dumps(final_embedding_content, indent=4, default=str))
 print("\nFinal Embedding Metadata:")
 print(json.dumps(final_embedding_metadata, indent=4, default=str))
+
+embedder.calculate_cost(model=payload["embedding_settings"]["model"], final_embedding_content=final_embedding_content)
 
 # python -m src.embedding.modules.embedding_file

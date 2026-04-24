@@ -5,9 +5,9 @@ from src.embedding.tokens_calculator.dollar_rates import DollarRateService
 class EmbeddingCostCalculator:
     # Por 1k tokens (1.000)
     MODEL_PRICES = {
-        "text-embedding-3-small": 0.00002,
-        "text-embedding-ada-002": 0.00010,
-        "text-embedding-3-large": 0.00013
+        "text-embedding-3-small": 0.020,
+        "text-embedding-ada-002": 0.10,
+        "text-embedding-3-large": 0.13
 
     }
 
