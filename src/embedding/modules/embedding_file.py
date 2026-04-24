@@ -146,7 +146,48 @@ class EmbeddingFile:
         print(save_response)
 
         return save_response
-        
+    
+    def embed(self):
+        process_payload["payload"] = self.payload
+        file_content = self.extract_content(payload["file_info"]["extension"], payload["file_info"]["bytes"])
+        process_payload["file_content"] = file_content
+
+        final_embedding_content, final_embedding_metadata = self.generate_embedding_payload(
+            identifiers=payload["identifiers"],
+            file_info=payload["file_info"],
+            file_content=file_content,
+            embedding_metadata=payload["embedding_metadata"],
+            pipeline=payload["pipeline"]
+        )
+
+        process_payload["embedding_content"] = final_embedding_content
+        process_payload["embedding_metadata"] = final_embedding_metadata
+
+        print("Final Embedding Content:")
+        print(json.dumps(final_embedding_content, indent=4, default=str))
+        print("\nFinal Embedding Metadata:")
+        print(json.dumps(final_embedding_metadata, indent=4, default=str))
+
+        usege_informations = self.calculate_cost(
+            model=payload["embedding_settings"]["model"], 
+            final_embedding_content=final_embedding_content
+        )
+
+        process_payload["usage_informations"] = usege_informations
+
+        embed_response = self.save_to_vector_db(
+            embedding_content=json.dumps(final_embedding_content),
+            embedding_metadata=final_embedding_metadata,
+            #flags={"group": "test_group"}
+        )
+
+        process_payload["embedding_response"] = embed_response
+
+        save_response = self.save_process(payload=payload)
+        process_payload["save_response"] = save_response
+
+        with open("embedding_process_output.json", "w") as f:
+            json.dump(process_payload, f, indent=4, default=str)
 
 
     # Step 1: Configure and validate the payload
@@ -219,48 +260,9 @@ def generate_payload():
 
 process_payload = {}
 payload = generate_payload()
-process_payload["payload"] = payload
 #print(json.dumps(payload, indent=4, default=str))
 
 embedder = EmbeddingFile(payload)
-file_content = embedder.extract_content(payload["file_info"]["extension"], payload["file_info"]["bytes"])
-process_payload["file_content"] = file_content
-
-final_embedding_content, final_embedding_metadata = embedder.generate_embedding_payload(
-    identifiers=payload["identifiers"],
-    file_info=payload["file_info"],
-    file_content=file_content,
-    embedding_metadata=payload["embedding_metadata"],
-    pipeline=payload["pipeline"]
-)
-
-process_payload["embedding_content"] = final_embedding_content
-process_payload["embedding_metadata"] = final_embedding_metadata
-
-print("Final Embedding Content:")
-print(json.dumps(final_embedding_content, indent=4, default=str))
-print("\nFinal Embedding Metadata:")
-print(json.dumps(final_embedding_metadata, indent=4, default=str))
-
-usege_informations = embedder.calculate_cost(
-    model=payload["embedding_settings"]["model"], 
-    final_embedding_content=final_embedding_content
-)
-
-process_payload["usage_informations"] = usege_informations
-
-embed_response = embedder.save_to_vector_db(
-    embedding_content=json.dumps(final_embedding_content),
-    embedding_metadata=final_embedding_metadata,
-    #flags={"group": "test_group"}
-)
-
-process_payload["embedding_response"] = embed_response
-
-save_response = embedder.save_process(payload=payload)
-process_payload["save_response"] = save_response
-
-with open("embedding_process_output.json", "w") as f:
-    json.dump(process_payload, f, indent=4, default=str)
+embedder.embed()
 
 # python -m src.embedding.modules.embedding_file
