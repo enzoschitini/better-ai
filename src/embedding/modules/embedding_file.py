@@ -61,7 +61,7 @@ class EmbeddingFile:
         
         return final_embedding_content, final_embedding_metadata
     
-    def _calculate_cost(self, model: str, content: str, usd_rate: int) -> dict:
+    def _calculate_cost(self, model: str, content: str) -> dict:
         pricing = ModelPricingFactory.create(model)
         counter = TokenCounter(model)
 
@@ -71,7 +71,7 @@ class EmbeddingFile:
         return {
             "caracter_count": len(content),
             "tokens": tokens,
-            "cost_usd": f"{cost:.8f}"
+            "cost_usd": f"{cost:.6f}"
         }
 
     def calculate_cost(self, model: str, final_embedding_content: dict) -> dict:
@@ -81,11 +81,11 @@ class EmbeddingFile:
         parts_cost_info = {}
 
         for key, value in final_embedding_content.items():
-            parts_cost_info[key] = self._calculate_cost(model, value, usd_rate)
+            parts_cost_info[key] = self._calculate_cost(model, value)
 
         total_caracter_count = sum(part["caracter_count"] for part in parts_cost_info.values())
         total_tokens = sum(part["tokens"] for part in parts_cost_info.values())
-        total_cost_usd = f"{sum(float(part['cost_usd']) for part in parts_cost_info.values()):.8f}"
+        total_cost_usd = f"{sum(float(part['cost_usd']) for part in parts_cost_info.values()):.6f}"
 
         response = {
             "total_caracter_count": total_caracter_count,
@@ -94,7 +94,6 @@ class EmbeddingFile:
             "exchange_rate": usd_rate
         }
 
-        # 👇 só adiciona parts se tiver mais de um item
         if len(parts_cost_info) > 1:
             response["parts"] = parts_cost_info
 
@@ -114,6 +113,13 @@ class EmbeddingFile:
     # Step 9: Return response with embedding information and cost details
 
 # Carregar um arquivo
+
+
+
+
+
+
+
 
 def generate_payload():
     with open("doc/test files/Candidatura.pdf", "rb") as f:
@@ -165,12 +171,12 @@ payload = generate_payload()
 #print(json.dumps(payload, indent=4, default=str))
 
 embedder = EmbeddingFile(payload)
-#extract_content_data = embedder.extract_content(payload["file_info"]["extension"], payload["file_info"]["bytes"])
+file_content = embedder.extract_content(payload["file_info"]["extension"], payload["file_info"]["bytes"])
 
 final_embedding_content, final_embedding_metadata = embedder.generate_embedding_payload(
     identifiers=payload["identifiers"],
     file_info=payload["file_info"],
-    file_content="This is the extracted content from the file. It can be very long, so we will only use a snippet for embedding.",
+    file_content=file_content,
     embedding_metadata=payload["embedding_metadata"],
     pipeline=payload["pipeline"]
 )
