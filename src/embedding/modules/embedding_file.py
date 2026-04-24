@@ -3,6 +3,7 @@ import json
 from io import BytesIO
 
 from src.embedding.services.file_content_extractor import FileContentExtractor
+from src.vector_store.pinecone.pinecone_vectorstore_services import PineconeVectorService
 
 from src.tokens_calculate.token_counter import TokenCounter
 from src.tokens_calculate.model_pricing import ModelPricingFactory
@@ -87,7 +88,7 @@ class EmbeddingFile:
         total_tokens = sum(part["tokens"] for part in parts_cost_info.values())
         total_cost_usd = f"{sum(float(part['cost_usd']) for part in parts_cost_info.values()):.6f}"
 
-        response = {
+        usege_informations = {
             "total_caracter_count": total_caracter_count,
             "total_tokens": total_tokens,
             "total_cost_usd": total_cost_usd,
@@ -95,10 +96,32 @@ class EmbeddingFile:
         }
 
         if len(parts_cost_info) > 1:
-            response["parts"] = parts_cost_info
+            usege_informations["parts"] = parts_cost_info
 
-        print(json.dumps(response, indent=4))
-        return response
+        print(json.dumps(usege_informations, indent=4))
+        return usege_informations
+    
+    def save_to_vector_db(self, embedding_content: str, embedding_metadata: dict, flags: dict = None):
+        # Aqui você implementaria a lógica para salvar os vetores de embedding e seus metadados em um banco de dados de vetores
+        # Pode ser uma chamada para um serviço externo ou uma operação local, dependendo da sua arquitetura
+
+        if flags:
+            embedding_metadata = {**embedding_metadata, **flags}  # Adiciona as flags aos metadados
+        
+        pine_service = PineconeVectorService(
+            embedding_model_name="text-embedding-3-large", 
+            dimensions=3072
+        )
+
+        embed_response = pine_service.generate_vectors(
+            text=embedding_content,
+            metadata=embedding_metadata,
+            save_global=False,
+            batch_size=200
+        )
+
+        print(embed_response)
+        return embed_response
         
 
 
@@ -176,7 +199,7 @@ file_content = embedder.extract_content(payload["file_info"]["extension"], paylo
 final_embedding_content, final_embedding_metadata = embedder.generate_embedding_payload(
     identifiers=payload["identifiers"],
     file_info=payload["file_info"],
-    file_content=file_content,
+    file_content=file_content[:100],
     embedding_metadata=payload["embedding_metadata"],
     pipeline=payload["pipeline"]
 )
@@ -186,6 +209,15 @@ print(json.dumps(final_embedding_content, indent=4, default=str))
 print("\nFinal Embedding Metadata:")
 print(json.dumps(final_embedding_metadata, indent=4, default=str))
 
-embedder.calculate_cost(model=payload["embedding_settings"]["model"], final_embedding_content=final_embedding_content)
+usege_informations = embedder.calculate_cost(
+    model=payload["embedding_settings"]["model"], 
+    final_embedding_content=final_embedding_content
+)
+
+embed_response = embedder.save_to_vector_db(
+    embedding_content=json.dumps(final_embedding_content),
+    embedding_metadata=final_embedding_metadata,
+    #flags={"group": "test_group"}
+)
 
 # python -m src.embedding.modules.embedding_file
