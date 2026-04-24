@@ -19,7 +19,14 @@ class AggregateEmbeddingContent:
             "additional_content": "This is additional content generated from the pipeline.",
             "generated_tags": "#finance, #report, #2026"
         }
-    
+
+CONFIG = {
+    "save_global": False,
+    "batch_size": 200,
+    "database_name": "embedding_db",
+    "collection_name": "embedding_processes"
+}
+
 class EmbeddingFile:
     def __init__(self, payload: dict):
         self.payload = payload
@@ -105,21 +112,21 @@ class EmbeddingFile:
     def save_to_vector_db(self, embedding_content: str, embedding_metadata: dict, flags: dict = None):
         # Aqui você implementaria a lógica para salvar os vetores de embedding e seus metadados em um banco de dados de vetores
         # Pode ser uma chamada para um serviço externo ou uma operação local, dependendo da sua arquitetura
-        return 0
+        #return 0
 
         if flags:
             embedding_metadata = {**embedding_metadata, **flags}  # Adiciona as flags aos metadados
         
         pine_service = PineconeVectorService(
-            embedding_model_name="text-embedding-3-large", 
-            dimensions=3072
+            embedding_model_name=payload["embedding_settings"]["model"], 
+            dimensions=payload["embedding_settings"]["dimensions"]
         )
 
         embed_response = pine_service.generate_vectors(
             text=embedding_content,
             metadata=embedding_metadata,
-            save_global=False,
-            batch_size=200
+            save_global=CONFIG["save_global"],
+            batch_size=CONFIG["batch_size"]
         )
 
         print(embed_response)
@@ -131,8 +138,8 @@ class EmbeddingFile:
     ):
         manager = DocumentStore()
         save_response = manager.save_payload(
-            database_name="embedding_db",
-            collection_name="embedding_processes",
+            database_name=CONFIG["database_name"],
+            collection_name=CONFIG["collection_name"],
             payload=payload
         )
 
@@ -207,19 +214,28 @@ def generate_payload():
 
     return payload
 
+
+
+
+process_payload = {}
 payload = generate_payload()
+process_payload["payload"] = payload
 #print(json.dumps(payload, indent=4, default=str))
 
 embedder = EmbeddingFile(payload)
 file_content = embedder.extract_content(payload["file_info"]["extension"], payload["file_info"]["bytes"])
+process_payload["file_content"] = file_content
 
 final_embedding_content, final_embedding_metadata = embedder.generate_embedding_payload(
     identifiers=payload["identifiers"],
     file_info=payload["file_info"],
-    file_content=file_content[:100],
+    file_content=file_content,
     embedding_metadata=payload["embedding_metadata"],
     pipeline=payload["pipeline"]
 )
+
+process_payload["embedding_content"] = final_embedding_content
+process_payload["embedding_metadata"] = final_embedding_metadata
 
 print("Final Embedding Content:")
 print(json.dumps(final_embedding_content, indent=4, default=str))
@@ -231,12 +247,20 @@ usege_informations = embedder.calculate_cost(
     final_embedding_content=final_embedding_content
 )
 
+process_payload["usage_informations"] = usege_informations
+
 embed_response = embedder.save_to_vector_db(
     embedding_content=json.dumps(final_embedding_content),
     embedding_metadata=final_embedding_metadata,
     #flags={"group": "test_group"}
 )
 
-response = embedder.save_process(payload=payload)
+process_payload["embedding_response"] = embed_response
+
+save_response = embedder.save_process(payload=payload)
+process_payload["save_response"] = save_response
+
+with open("embedding_process_output.json", "w") as f:
+    json.dump(process_payload, f, indent=4, default=str)
 
 # python -m src.embedding.modules.embedding_file
