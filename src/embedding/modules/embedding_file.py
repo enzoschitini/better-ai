@@ -18,7 +18,7 @@ from src.utils.unique_id_factory import IDGenerator
 CONFIG = {
     "embedding_settings": {
         "model": "text-embedding-3-large",
-        "dimensions": 1536,
+        "dimensions": 3072,
         "chunk_size": 500,
         "chunk_overlap": 50,
         "normalize": True,
@@ -206,6 +206,7 @@ class EmbeddingFile(ManagerProcessInformations):
             )
             # {'deleted_vectors': 134, 'namespace': 'embed_module'}
             # {'deleted_vectors': 0}
+            print(delete)
         except Exception as e:
             raise RuntimeError(f"Failed to delete vectors: {str(e)}")        
 
@@ -254,7 +255,7 @@ class EmbeddingFile(ManagerProcessInformations):
         embed_response: dict
     ):
         try:
-            manager = DocumentStore(backend="aws")
+            manager = DocumentStore()
 
             save_payload = self.payload.copy()
             save_payload["file_info"].pop("bytes", None)
@@ -274,7 +275,7 @@ class EmbeddingFile(ManagerProcessInformations):
 
         except Exception as e:
             # Delete vectores
-            #self._roolback_vector_db()
+            self._roolback_vector_db()
             self.save()
             raise RuntimeError(f"Failed to save process metadata: {str(e)}")
 
@@ -348,7 +349,7 @@ def generate_payload():
 
         "embedding_settings": {
             "model": "text-embedding-3-large",
-            "dimensions": 1536,
+            "dimensions": 3072,
             "chunk_size": 500,
             "chunk_overlap": 50,
             "normalize": True,

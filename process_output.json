@@ -18,7 +18,7 @@
         },
         "embedding_settings": {
             "model": "text-embedding-3-large",
-            "dimensions": 1536,
+            "dimensions": 3072,
             "chunk_size": 500,
             "chunk_overlap": 50,
             "normalize": true,
@@ -83,17 +83,17 @@
             "namespace_global": null,
             "batch_count": 1,
             "chunks_ids": [
-                "7e12dc4d-ca69-4b56-8214-38b85ec8e5af",
-                "1d0072e9-c4ef-449b-87cd-4d93edda8bdd",
-                "334aa04d-2234-4c6c-9c0a-849ef87bb32e",
-                "0ca2fb8d-c303-45e5-8d3e-869bb0e24d7a",
-                "fa4aeb06-8443-4611-ad69-c77d7db5a55a",
-                "02c985eb-58ac-448c-bbba-6388925b00c4"
+                "93048899-ed6f-411e-aedf-d6307dcfdbf7",
+                "daf61b26-d61c-49e4-b28b-197a3ccf1bd9",
+                "09765059-57d6-428a-b450-4422e59a22cb",
+                "2c9c9752-c1a4-43de-8a9f-ed1e870033e6",
+                "2a575ad9-b308-46c4-8b2a-7e83a34fcf0a",
+                "49595105-b327-4f24-aa96-20224a77cdde"
             ]
         }
     },
     "save_response": {
         "status": "success",
-        "inserted_id": "2b5da287-f6c9-4ed3-9903-b316873ab101"
+        "inserted_id": "31112382-370c-4400-983c-9c0145992062"
     }
 }

@@ -80,6 +80,6 @@ class TestPineconeVectorStore:
 
 if __name__ == "__main__":
     tester = TestPineconeVectorStore()
-    tester.retriver()
+    tester.delete()
 
 # python -m src.vector_store.pinecone.test
