@@ -23,8 +23,11 @@ class EmbeddingFile(ManagerProcessInformations):
     def __init__(self, payload: dict):
         super().__init__()
         self.payload = payload
+
+    def _manage_context(self):
+        self.start()
         self.add("payload", self.payload)
-    
+
     def _calculate_content_usage(self, model: str, content: str) -> dict:
         pricing = ModelPricingFactory.create(model)
         counter = TokenCounter(model)
@@ -133,6 +136,7 @@ class EmbeddingFile(ManagerProcessInformations):
         manager = DocumentStore()
 
         save_payload = self.payload.copy()
+        save_payload["file_info"].pop("bytes", None)
         save_payload["usage_informations"] = usege_informations
         save_payload["embedding_response"] = embed_response
 
@@ -172,6 +176,11 @@ class EmbeddingFile(ManagerProcessInformations):
             embed_response=embed_response
         )
 
+        return {
+            "job_id": self.payload.get("job_id"),
+            "file_id": self.payload.get("identifiers", {}).get("file_id")
+        }
+
 
 
 
@@ -193,7 +202,7 @@ def generate_payload():
             "client_id": "client_abc",
             "workspace_id": "workspace_001",
             "user_id": "user_789",
-            "file_id": "file_xyz"
+            "file_id": "file_xyz" # Può essere creato
         },
 
         "pipeline": {
@@ -235,6 +244,7 @@ def generate_payload():
 payload = generate_payload()
 
 embedder = EmbeddingFile(payload)
+embedder._manage_context()
 embedder.embed()
 embedder.save()  # Salva o estado completo do processo em um arquivo JSON
 
@@ -249,4 +259,4 @@ embedder.save()  # Salva o estado completo do processo em um arquivo JSON
     # Step 8: Delete temporary files and clean up resources
     # Step 9: Return response with embedding information and cost details
 
-# python -m src.embedding.modules.embedding_file
+#   
