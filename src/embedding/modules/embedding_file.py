@@ -26,6 +26,8 @@ CONFIG = {
         "batch_size": 200,
     },
 
+    "pinecone_namespace": "embed_module",
+
     "database_name": "embedding_db",
     "collection_name": "embedding_processes"
 }
@@ -75,6 +77,12 @@ class EmbeddingFile(ManagerProcessInformations):
 
             if missing_fields:
                 raise ValueError(f"Missing required file_info fields: {missing_fields}")
+            
+            self.pinecone_namespace=CONFIG["pinecone_namespace"],
+            self.database_name=CONFIG["database_name"],
+            self.collection_name=CONFIG["collection_name"],
+
+            self._get_vector_db()
 
         except Exception as e:
             raise RuntimeError(f"Failed to initialize EmbeddingFile: {str(e)}")
@@ -178,18 +186,35 @@ class EmbeddingFile(ManagerProcessInformations):
 
         except Exception as e:
             raise RuntimeError(f"Failed to calculate usage summary: {str(e)}")
+    
+    def _get_vector_db(self):
+        try:
+            self.pine_service = PineconeVectorService(
+                embedding_model_name=self.payload["embedding_settings"]["model"], 
+                dimensions=self.payload["embedding_settings"]["dimensions"]
+            )
+
+        except Exception as e:
+            raise RuntimeError(f"Failed to load vector store database: {str(e)}")
+    
+    def _roolback_vector_db(self):
+        try:
+            delete = self.pine_service.delete_documents(
+                target_feature="file_id", 
+                target_id=self.payload["identifiers"]["file_id"], 
+                namespace=self.pinecone_namespace
+            )
+            # {'deleted_vectors': 134, 'namespace': 'embed_module'}
+            # {'deleted_vectors': 0}
+        except Exception as e:
+            raise RuntimeError(f"Failed to delete vectors: {str(e)}")        
 
     def store_embeddings(self, embedding_content: str, embedding_metadata: dict, flags: dict = None):
         try:
             if flags:
                 embedding_metadata = {**embedding_metadata, **flags}  # Adiciona as flags aos metadados
-            
-            pine_service = PineconeVectorService(
-                embedding_model_name=self.payload["embedding_settings"]["model"], 
-                dimensions=self.payload["embedding_settings"]["dimensions"]
-            )
 
-            embed_response = pine_service.generate_vectors(
+            embed_response = self.pine_service.generate_vectors(
                 text=embedding_content,
                 metadata=embedding_metadata,
                 save_global=self.payload["embedding_settings"]["save_global"],
@@ -208,7 +233,7 @@ class EmbeddingFile(ManagerProcessInformations):
         embed_response: dict
     ):
         try:
-            manager = DocumentStore(backend="aws")
+            manager = DocumentStore()
 
             save_payload = self.payload.copy()
             save_payload["file_info"].pop("bytes", None)
@@ -216,8 +241,8 @@ class EmbeddingFile(ManagerProcessInformations):
             save_payload["embedding_response"] = embed_response
 
             save_response = manager.save_payload(
-                database_name=CONFIG["database_name"],
-                collection_name=CONFIG["collection_name"],
+                database_name=self.database_name,
+                collection_name=self.collection_name,
                 payload=save_payload
             )
 
@@ -226,6 +251,7 @@ class EmbeddingFile(ManagerProcessInformations):
 
         except Exception as e:
             # Delete vectores
+            #self._roolback_vector_db()
             raise RuntimeError(f"Failed to save process metadata: {str(e)}")
 
     def run(self):
