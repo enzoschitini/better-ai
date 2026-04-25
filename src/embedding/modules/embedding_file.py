@@ -66,30 +66,30 @@ class EmbeddingFile(ManagerProcessInformations):
             aggregate_content = AggregateEmbeddingContent(pipeline)
             additional_content = aggregate_content.process()
         
-        final_embedding_content = {
+        prepared_content = {
             "file_content": file_content,
             **(additional_content if pipeline else {})
         }
 
-        final_embedding_metadata = {
+        prepared_metadata = {
             **identifiers,  # espalha tudo aqui
             "file_name": file_info["name"],
             "file_extension": file_info["extension"],
             **(embedding_metadata or {})  # evita erro se for None
         }
 
-        self.add("embedding_content", final_embedding_content)
-        self.add("embedding_metadata", final_embedding_metadata)
+        self.add("embedding_content", prepared_content)
+        self.add("embedding_metadata", prepared_metadata)
 
-        return final_embedding_content, final_embedding_metadata
+        return prepared_content, prepared_metadata
 
-    def calculate_usage_summary(self, model: str, final_embedding_content: dict) -> dict:
+    def calculate_usage_summary(self, model: str, prepared_content: dict) -> dict:
         exchange_service = ExchangeRateService()
         usd_rate = exchange_service.get_usd_rate()
 
         parts_cost_info = {}
 
-        for key, value in final_embedding_content.items():
+        for key, value in prepared_content.items():
             parts_cost_info[key] = self._calculate_usage(model, value)
 
         total_caracter_count = sum(part["caracter_count"] for part in parts_cost_info.values())
@@ -152,7 +152,7 @@ class EmbeddingFile(ManagerProcessInformations):
     def run(self):
         file_content = self.extract_file_content(self.payload["file_info"]["extension"], self.payload["file_info"]["bytes"])
 
-        final_embedding_content, final_embedding_metadata = self.build_embedding_payload(
+        prepared_content, prepared_metadata = self.build_embedding_payload(
             identifiers=self.payload["identifiers"],
             file_info=self.payload["file_info"],
             file_content=file_content,
@@ -162,12 +162,12 @@ class EmbeddingFile(ManagerProcessInformations):
 
         usage_summary = self.calculate_usage_summary(
             model=self.payload["embedding_settings"]["model"], 
-            final_embedding_content=final_embedding_content
+            prepared_content=prepared_content
         )
 
         embed_response = self.store_embeddings(
-            embedding_content=json.dumps(final_embedding_content),
-            embedding_metadata=final_embedding_metadata,
+            embedding_content=json.dumps(prepared_content),
+            embedding_metadata=prepared_metadata,
             flags={"group": "test_group"}
         )
 
