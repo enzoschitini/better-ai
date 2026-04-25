@@ -13,16 +13,64 @@ from src.tokens_calculate.model_pricing import ModelPricingFactory
 from src.tokens_calculate.exchange_rate.exchange_rate import ExchangeRateService
 
 CONFIG = {
-    "save_global": False,
-    "batch_size": 200,
+    "embedding_settings": {
+        "model": "text-embedding-3-large",
+        "dimensions": 1536,
+        "chunk_size": 500,
+        "chunk_overlap": 50,
+        "normalize": True,
+        "save_global": False,
+        "batch_size": 200,
+    },
+
     "database_name": "embedding_db",
     "collection_name": "embedding_processes"
 }
+import uuid
+from copy import deepcopy
 
 class EmbeddingFile(ManagerProcessInformations):
-    def __init__(self, payload: dict):
+    def __init__(self, payload: dict | None):
         super().__init__()
-        self.payload = payload
+
+        # Garante que payload é um dict válido
+        payload = payload or {}
+
+        # Deep copy para evitar efeitos colaterais externos
+        self.payload = deepcopy(payload)
+
+        if not self.payload.get("job_id"):
+            raise ValueError("Missing required field: job_id")
+
+        # 🔹 Normaliza estrutura base
+        self.payload.setdefault("embedding_settings", {})
+        self.payload.setdefault("identifiers", {})
+        self.payload.setdefault("file_info", {})
+        self.payload.setdefault("embedding_metadata", {})
+        self.payload.setdefault("pipeline", None)
+
+        # 🔹 Merge de embedding_settings com CONFIG
+        self.payload["embedding_settings"] = {
+            **CONFIG["embedding_settings"],
+            **self.payload.get("embedding_settings", {})
+        }
+
+        # 🔹 Garantir identifiers mínimo
+        identifiers = self.payload["identifiers"]
+
+        if not identifiers.get("file_id"):
+            identifiers["file_id"] = str(uuid.uuid4())
+
+        self.payload["identifiers"] = identifiers
+
+        # 🔹 Validação mínima de file_info (opcional mas recomendado)
+        file_info = self.payload["file_info"]
+
+        required_file_fields = ["name", "extension", "bytes"]
+        missing_fields = [f for f in required_file_fields if f not in file_info]
+
+        if missing_fields:
+            raise ValueError(f"Missing required file_info fields: {missing_fields}")
 
     def _init_tracking(self):
         self.start()
@@ -114,15 +162,15 @@ class EmbeddingFile(ManagerProcessInformations):
             embedding_metadata = {**embedding_metadata, **flags}  # Adiciona as flags aos metadados
         
         pine_service = PineconeVectorService(
-            embedding_model_name=payload["embedding_settings"]["model"], 
-            dimensions=payload["embedding_settings"]["dimensions"]
+            embedding_model_name=self.payload["embedding_settings"]["model"], 
+            dimensions=self.payload["embedding_settings"]["dimensions"]
         )
 
         embed_response = pine_service.generate_vectors(
             text=embedding_content,
             metadata=embedding_metadata,
-            save_global=CONFIG["save_global"],
-            batch_size=CONFIG["batch_size"]
+            save_global=self.payload["embedding_settings"]["save_global"],
+            batch_size=self.payload["embedding_settings"]["batch_size"]
         )
 
         self.add("embedding_response", embed_response)
@@ -189,8 +237,6 @@ class EmbeddingFile(ManagerProcessInformations):
 
 
 
-
-
 def generate_payload():
     with open("doc/test files/Candidatura.pdf", "rb") as f:
         file_bytes = BytesIO(f.read())
@@ -221,7 +267,9 @@ def generate_payload():
             "dimensions": 1536,
             "chunk_size": 500,
             "chunk_overlap": 50,
-            "normalize": True
+            "normalize": True,
+            "save_global": False,
+            "batch_size": 200,
         },
 
         "file_info": {
