@@ -1,5 +1,6 @@
 import json
 from io import BytesIO
+from copy import deepcopy
 
 from src.embedding.services.file_content_extractor import FileContentExtractor
 from src.embedding.aggregates.aggregate_embedding_content import AggregateEmbeddingContent
@@ -11,6 +12,8 @@ from src.database.no_relational_db.router import DocumentStore
 from src.tokens_calculate.token_counter import TokenCounter
 from src.tokens_calculate.model_pricing import ModelPricingFactory
 from src.tokens_calculate.exchange_rate.exchange_rate import ExchangeRateService
+
+from src.utils.unique_id_factory import IDGenerator
 
 CONFIG = {
     "embedding_settings": {
@@ -26,8 +29,6 @@ CONFIG = {
     "database_name": "embedding_db",
     "collection_name": "embedding_processes"
 }
-import uuid
-from copy import deepcopy
 
 class EmbeddingFile(ManagerProcessInformations):
     def __init__(self, payload: dict | None):
@@ -59,7 +60,8 @@ class EmbeddingFile(ManagerProcessInformations):
         identifiers = self.payload["identifiers"]
 
         if not identifiers.get("file_id"):
-            identifiers["file_id"] = str(uuid.uuid4())
+            id_generator = IDGenerator()
+            identifiers["file_id"] = id_generator.timestamp()
 
         self.payload["identifiers"] = identifiers
 
