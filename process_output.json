@@ -50,7 +50,7 @@
         "language": "en",
         "tags": "#finance, #report, #2026"
     },
-    "usage_informations": {
+    "usage_summary": {
         "total_caracter_count": 11011,
         "total_tokens": 3074,
         "total_cost_usd": "0.000399",
@@ -81,17 +81,17 @@
             "namespace_global": null,
             "batch_count": 1,
             "chunks_ids": [
-                "25bc1394-0a0c-4079-87c0-16bba0aeea9a",
-                "d9f4f9ea-2533-4429-82f6-0de6ccb741fb",
-                "165e5f38-d41a-4f32-b240-848f1ddad28a",
-                "0cf3afba-4985-46a8-9de8-48bd4727c47a",
-                "a0fb8782-339b-46e9-8b34-de2cf2b9656c",
-                "84f9f9c3-09f5-4401-a0f0-2e8fce809577"
+                "2309c1bf-7bba-4dd7-b2c6-316aa1273e04",
+                "36d13c3c-a53c-4f9a-bfe9-7789393a4bcd",
+                "83326a1c-ffaa-4cb5-be23-2827255e1870",
+                "11b311f1-3e7b-4632-8ad0-ae91b1f37a97",
+                "16ed16c7-4b1b-456a-878a-45ec3f5c4f9f",
+                "539d4857-6164-478d-9f68-f96fdd0e3b64"
             ]
         }
     },
     "save_response": {
         "status": "success",
-        "inserted_id": "e88b6932-7d39-46b5-9eb4-676bece99066"
+        "inserted_id": "8a5b0cfe-836f-43e7-9fa6-85e3b55e02a6"
     }
 }

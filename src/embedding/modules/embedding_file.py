@@ -24,11 +24,11 @@ class EmbeddingFile(ManagerProcessInformations):
         super().__init__()
         self.payload = payload
 
-    def _manage_context(self):
+    def _init_tracking(self):
         self.start()
         self.add("payload", self.payload)
 
-    def _calculate_content_usage(self, model: str, content: str) -> dict:
+    def _calculate_usage(self, model: str, content: str) -> dict:
         pricing = ModelPricingFactory.create(model)
         counter = TokenCounter(model)
 
@@ -41,7 +41,7 @@ class EmbeddingFile(ManagerProcessInformations):
             "cost_usd": f"{cost:.6f}"
         }
 
-    def extract_content(self, file_extension: str, file_bytes: bytes) -> str:
+    def extract_file_content(self, file_extension: str, file_bytes: bytes) -> str:
         try:
             extractor = FileContentExtractor(file_bytes, file_extension)
             result = extractor.extract()
@@ -53,7 +53,7 @@ class EmbeddingFile(ManagerProcessInformations):
 
         return file_content
     
-    def generate_embedding_payload(
+    def build_embedding_payload(
         self,
         identifiers: dict, # Em __init__ trata adicionando pelo menos file_id
         file_info: dict,
@@ -83,20 +83,20 @@ class EmbeddingFile(ManagerProcessInformations):
 
         return final_embedding_content, final_embedding_metadata
 
-    def calculate_total_usage(self, model: str, final_embedding_content: dict) -> dict:
+    def calculate_usage_summary(self, model: str, final_embedding_content: dict) -> dict:
         exchange_service = ExchangeRateService()
         usd_rate = exchange_service.get_usd_rate()
 
         parts_cost_info = {}
 
         for key, value in final_embedding_content.items():
-            parts_cost_info[key] = self._calculate_content_usage(model, value)
+            parts_cost_info[key] = self._calculate_usage(model, value)
 
         total_caracter_count = sum(part["caracter_count"] for part in parts_cost_info.values())
         total_tokens = sum(part["tokens"] for part in parts_cost_info.values())
         total_cost_usd = f"{sum(float(part['cost_usd']) for part in parts_cost_info.values()):.6f}"
 
-        usege_informations = {
+        usage_summary = {
             "total_caracter_count": total_caracter_count,
             "total_tokens": total_tokens,
             "total_cost_usd": total_cost_usd,
@@ -104,12 +104,12 @@ class EmbeddingFile(ManagerProcessInformations):
         }
 
         if len(parts_cost_info) > 1:
-            usege_informations["parts"] = parts_cost_info
+            usage_summary["parts"] = parts_cost_info
 
-        self.add("usage_informations", usege_informations)
-        return usege_informations
+        self.add("usage_summary", usage_summary)
+        return usage_summary 
     
-    def save_to_vector_db(self, embedding_content: str, embedding_metadata: dict, flags: dict = None):
+    def store_embeddings(self, embedding_content: str, embedding_metadata: dict, flags: dict = None):
         if flags:
             embedding_metadata = {**embedding_metadata, **flags}  # Adiciona as flags aos metadados
         
@@ -128,16 +128,16 @@ class EmbeddingFile(ManagerProcessInformations):
         self.add("embedding_response", embed_response)
         return embed_response
     
-    def save_process(
+    def save_process_metadata(
         self,
-        usege_informations: dict,
+        usage_summary: dict,
         embed_response: dict
     ):
         manager = DocumentStore()
 
         save_payload = self.payload.copy()
         save_payload["file_info"].pop("bytes", None)
-        save_payload["usage_informations"] = usege_informations
+        save_payload["usage_summary"] = usage_summary 
         save_payload["embedding_response"] = embed_response
 
         save_response = manager.save_payload(
@@ -149,10 +149,10 @@ class EmbeddingFile(ManagerProcessInformations):
         self.add("save_response", save_response)
         return save_response
     
-    def embed(self):
-        file_content = self.extract_content(self.payload["file_info"]["extension"], self.payload["file_info"]["bytes"])
+    def run(self):
+        file_content = self.extract_file_content(self.payload["file_info"]["extension"], self.payload["file_info"]["bytes"])
 
-        final_embedding_content, final_embedding_metadata = self.generate_embedding_payload(
+        final_embedding_content, final_embedding_metadata = self.build_embedding_payload(
             identifiers=self.payload["identifiers"],
             file_info=self.payload["file_info"],
             file_content=file_content,
@@ -160,19 +160,19 @@ class EmbeddingFile(ManagerProcessInformations):
             pipeline=self.payload["pipeline"]
         )
 
-        usege_informations = self.calculate_total_usage(
+        usage_summary = self.calculate_usage_summary(
             model=self.payload["embedding_settings"]["model"], 
             final_embedding_content=final_embedding_content
         )
 
-        embed_response = self.save_to_vector_db(
+        embed_response = self.store_embeddings(
             embedding_content=json.dumps(final_embedding_content),
             embedding_metadata=final_embedding_metadata,
             flags={"group": "test_group"}
         )
 
-        self.save_process(
-            usege_informations=usege_informations,
+        self.save_process_metadata(
+            usage_summary=usage_summary,
             embed_response=embed_response
         )
 
@@ -244,8 +244,8 @@ def generate_payload():
 payload = generate_payload()
 
 embedder = EmbeddingFile(payload)
-embedder._manage_context()
-embedder.embed()
+embedder._init_tracking()
+embedder.run()
 embedder.save()  # Salva o estado completo do processo em um arquivo JSON
 
 
