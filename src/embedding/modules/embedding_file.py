@@ -78,9 +78,9 @@ class EmbeddingFile(ManagerProcessInformations):
             if missing_fields:
                 raise ValueError(f"Missing required file_info fields: {missing_fields}")
             
-            self.pinecone_namespace=CONFIG["pinecone_namespace"],
-            self.database_name=CONFIG["database_name"],
-            self.collection_name=CONFIG["collection_name"],
+            self.pinecone_namespace=CONFIG["pinecone_namespace"]
+            self.database_name=CONFIG["database_name"]
+            self.collection_name=CONFIG["collection_name"]
 
             self._get_vector_db()
 
@@ -213,13 +213,34 @@ class EmbeddingFile(ManagerProcessInformations):
         try:
             if flags:
                 embedding_metadata = {**embedding_metadata, **flags}  # Adiciona as flags aos metadados
-
+            
+            
             embed_response = self.pine_service.generate_vectors(
                 text=embedding_content,
                 metadata=embedding_metadata,
                 save_global=self.payload["embedding_settings"]["save_global"],
                 batch_size=self.payload["embedding_settings"]["batch_size"]
             )
+            """
+
+            embed_response = {
+                "status": "success",
+                "message": "Embeddings saved successfully.",
+                "embedding_informations": {
+                    "namespace_main": "embed_module",
+                    "namespace_global": None,
+                    "batch_count": 1,
+                    "chunks_ids": [
+                        "64e871d9-0bab-417c-b3af-d037a7d0d8e5",
+                        "da7fada9-3aad-4d7f-826c-c3021276d72e",
+                        "80430b5f-6ed6-4d28-90d4-6a9d6eb78528",
+                        "ea004fc4-4a40-4434-8cb6-9736756ced8d",
+                        "b60c1e81-3424-4fdc-a743-250eb320eba1",
+                        "83e486be-1244-4d97-9325-1f0d3e921a27"
+                    ]
+                }
+            }
+            """
 
             self.add("embedding_response", embed_response)
             return embed_response
@@ -233,12 +254,14 @@ class EmbeddingFile(ManagerProcessInformations):
         embed_response: dict
     ):
         try:
-            manager = DocumentStore()
+            manager = DocumentStore(backend="aws")
 
             save_payload = self.payload.copy()
             save_payload["file_info"].pop("bytes", None)
             save_payload["usage_summary"] = usage_summary 
             save_payload["embedding_response"] = embed_response
+
+            #print(f"\nsave_payload: {json.dumps(save_payload, indent=4)}")
 
             save_response = manager.save_payload(
                 database_name=self.database_name,
@@ -252,6 +275,7 @@ class EmbeddingFile(ManagerProcessInformations):
         except Exception as e:
             # Delete vectores
             #self._roolback_vector_db()
+            self.save()
             raise RuntimeError(f"Failed to save process metadata: {str(e)}")
 
     def run(self):
