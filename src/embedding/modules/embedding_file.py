@@ -277,7 +277,11 @@ class EmbeddingFile(ManagerProcessInformations):
     def run(self):
         try:
             tracer.INFO("Embedding started...")
-            file_content = self.extract_file_content(self.payload["file_info"]["extension"], self.payload["file_info"]["bytes"])
+
+            file_content = self.extract_file_content(
+                self.payload["file_info"]["extension"], 
+                self.payload["file_info"]["bytes"]
+            )
 
             prepared_content, prepared_metadata = self.build_embedding_payload(
                 identifiers=self.payload["identifiers"],
