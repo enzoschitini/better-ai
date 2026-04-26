@@ -23,7 +23,7 @@ PAGES = {
             "Idle": "idle",
         },
         "Vector Store": {
-            "Embedding File": "text_to_aquarela",
+            "Embedding File": "embeddingfile",
             "Update Metadata": "update_metadata",
             "Delete Vectors": "delete_vectors",
             "Retriver": "retriver",
