@@ -14,6 +14,14 @@ from src.tokens_calculate.model_pricing import ModelPricingFactory
 from src.tokens_calculate.exchange_rate.exchange_rate import ExchangeRateService
 
 from src.utils.unique_id_factory import IDGenerator
+from src.tracing.tracing_core import ApplicationTracing
+
+tracer = ApplicationTracing(
+    flag="Embedding File",
+    file_name="embedding_file.py",
+    log_file_name="embedding_file",
+    show_info_logs=True
+)
 
 CONFIG = {
     "embedding_settings": {
@@ -35,32 +43,31 @@ CONFIG = {
 class EmbeddingFile(ManagerProcessInformations):
     def __init__(self, payload: dict | None):
         try:
-
             super().__init__()
 
-            # Garante que payload é um dict válido
+            # Guarantee that payload is a valid dict
             payload = payload or {}
 
-            # Deep copy para evitar efeitos colaterais externos
+            # Deep copy to avoid external effects
             self.payload = deepcopy(payload)
 
             if not self.payload.get("job_id"):
                 raise ValueError("Missing required field: job_id")
 
-            # 🔹 Normaliza estrutura base
+            # Normaliza estrutura base
             self.payload.setdefault("embedding_settings", {})
             self.payload.setdefault("identifiers", {})
             self.payload.setdefault("file_info", {})
             self.payload.setdefault("embedding_metadata", {})
             self.payload.setdefault("pipeline", None)
 
-            # 🔹 Merge de embedding_settings com CONFIG
+            # Merge embedding_settings with CONFIG
             self.payload["embedding_settings"] = {
                 **CONFIG["embedding_settings"],
                 **self.payload.get("embedding_settings", {})
             }
 
-            # 🔹 Garantir identifiers mínimo
+            # Ensure minimum identifiers
             identifiers = self.payload["identifiers"]
 
             if not identifiers.get("file_id"):
@@ -69,7 +76,7 @@ class EmbeddingFile(ManagerProcessInformations):
 
             self.payload["identifiers"] = identifiers
 
-            # 🔹 Validação mínima de file_info (opcional mas recomendado)
+            # Minimum file_info validation (optional but recommended)
             file_info = self.payload["file_info"]
 
             required_file_fields = ["name", "extension", "bytes"]
@@ -110,14 +117,39 @@ class EmbeddingFile(ManagerProcessInformations):
         except Exception as e:
             raise RuntimeError(f"Failed to calculate usage: {str(e)}")
 
+    def _get_vector_db(self):
+        try:
+            self.pine_service = PineconeVectorService(
+                embedding_model_name=self.payload["embedding_settings"]["model"], 
+                dimensions=self.payload["embedding_settings"]["dimensions"]
+            )
+
+        except Exception as e:
+            raise RuntimeError(f"Failed to load vector store database: {str(e)}")
+    
+    def _rollback_vector_store(self):
+        try:
+            tracer.ERROR("Error saving process metadata, initiating rollback.")
+            delete = self.pine_service.delete_documents(
+                target_feature="file_id", 
+                target_id=self.payload["identifiers"]["file_id"], 
+                namespace=self.pinecone_namespace
+            )
+            self.add("roolback_vector_db", delete)
+            tracer.INFO("Rollback completed successfully.")
+        except Exception as e:
+            raise RuntimeError(f"Failed to rollback vector store: {str(e)}")   
+
     def extract_file_content(self, file_extension: str, file_bytes: bytes) -> str:
         try:
+            tracer.INFO("Extracting content from the file")
             extractor = FileContentExtractor(file_bytes, file_extension)
             result = extractor.extract()
 
             file_content = result["file_content"]
             self.add("file_content", file_content)
 
+            tracer.INFO("Content extracted successfully.")
             return file_content
 
         except Exception as e:
@@ -133,7 +165,7 @@ class EmbeddingFile(ManagerProcessInformations):
     ):  
         try:
             if pipeline:
-                # Processar o pipeline para gerar conteúdo adicional
+                tracer.INFO("Process the pipeline to generate additional content")
                 aggregate_content = AggregateEmbeddingContent(pipeline)
                 additional_content = aggregate_content.process()
             
@@ -143,14 +175,16 @@ class EmbeddingFile(ManagerProcessInformations):
             }
 
             prepared_metadata = {
-                **identifiers,  # espalha tudo aqui
+                **identifiers,
                 "file_name": file_info["name"],
                 "file_extension": file_info["extension"],
-                **(embedding_metadata or {})  # evita erro se for None
+                **(embedding_metadata or {})
             }
 
             self.add("embedding_content", prepared_content)
             self.add("embedding_metadata", prepared_metadata)
+
+            tracer.INFO("prepared_content and prepared_metadata were successfully generated.")
 
             return prepared_content, prepared_metadata
 
@@ -159,12 +193,14 @@ class EmbeddingFile(ManagerProcessInformations):
 
     def calculate_usage_summary(self, model: str, prepared_content: dict) -> dict:
         try:
+            tracer.INFO("Collecting dollar exchange rate")
             exchange_service = ExchangeRateService()
             usd_rate = exchange_service.get_usd_rate()
 
             parts_cost_info = {}
 
             for key, value in prepared_content.items():
+                tracer.INFO("Calculating the cost for the parties")
                 parts_cost_info[key] = self._calculate_usage(model, value)
 
             total_caracter_count = sum(part["caracter_count"] for part in parts_cost_info.values())
@@ -182,39 +218,20 @@ class EmbeddingFile(ManagerProcessInformations):
                 usage_summary["parts"] = parts_cost_info
 
             self.add("usage_summary", usage_summary)
+
+            tracer.INFO("Usage summary calculated successfully.")
             return usage_summary 
 
         except Exception as e:
-            raise RuntimeError(f"Failed to calculate usage summary: {str(e)}")
-    
-    def _get_vector_db(self):
-        try:
-            self.pine_service = PineconeVectorService(
-                embedding_model_name=self.payload["embedding_settings"]["model"], 
-                dimensions=self.payload["embedding_settings"]["dimensions"]
-            )
-
-        except Exception as e:
-            raise RuntimeError(f"Failed to load vector store database: {str(e)}")
-    
-    def _roolback_vector_db(self):
-        try:
-            delete = self.pine_service.delete_documents(
-                target_feature="file_id", 
-                target_id=self.payload["identifiers"]["file_id"], 
-                namespace=self.pinecone_namespace
-            )
-            # {'deleted_vectors': 134, 'namespace': 'embed_module'}
-            # {'deleted_vectors': 0}
-            print(delete)
-        except Exception as e:
-            raise RuntimeError(f"Failed to delete vectors: {str(e)}")        
+            raise RuntimeError(f"Failed to calculate usage summary: {str(e)}")     
 
     def store_embeddings(self, embedding_content: str, embedding_metadata: dict, flags: dict = None):
         try:
             if flags:
-                embedding_metadata = {**embedding_metadata, **flags}  # Adiciona as flags aos metadados
+                tracer.INFO("Add the flags to the metadata")
+                embedding_metadata = {**embedding_metadata, **flags}
             
+            tracer.INFO("Performing embedding")
             
             embed_response = self.pine_service.generate_vectors(
                 text=embedding_content,
@@ -222,28 +239,9 @@ class EmbeddingFile(ManagerProcessInformations):
                 save_global=self.payload["embedding_settings"]["save_global"],
                 batch_size=self.payload["embedding_settings"]["batch_size"]
             )
-            """
-
-            embed_response = {
-                "status": "success",
-                "message": "Embeddings saved successfully.",
-                "embedding_informations": {
-                    "namespace_main": "embed_module",
-                    "namespace_global": None,
-                    "batch_count": 1,
-                    "chunks_ids": [
-                        "64e871d9-0bab-417c-b3af-d037a7d0d8e5",
-                        "da7fada9-3aad-4d7f-826c-c3021276d72e",
-                        "80430b5f-6ed6-4d28-90d4-6a9d6eb78528",
-                        "ea004fc4-4a40-4434-8cb6-9736756ced8d",
-                        "b60c1e81-3424-4fdc-a743-250eb320eba1",
-                        "83e486be-1244-4d97-9325-1f0d3e921a27"
-                    ]
-                }
-            }
-            """
 
             self.add("embedding_response", embed_response)
+            tracer.INFO("Embedding successfully completed.")
             return embed_response
 
         except Exception as e:
@@ -262,8 +260,6 @@ class EmbeddingFile(ManagerProcessInformations):
             save_payload["usage_summary"] = usage_summary 
             save_payload["embedding_response"] = embed_response
 
-            #print(f"\nsave_payload: {json.dumps(save_payload, indent=4)}")
-
             save_response = manager.save_payload(
                 database_name=self.database_name,
                 collection_name=self.collection_name,
@@ -271,16 +267,16 @@ class EmbeddingFile(ManagerProcessInformations):
             )
 
             self.add("save_response", save_response)
+            tracer.INFO("Process metadata saved successfully.")
             return save_response
 
         except Exception as e:
-            # Delete vectores
-            self._roolback_vector_db()
-            self.save()
+            self._rollback_vector_store()
             raise RuntimeError(f"Failed to save process metadata: {str(e)}")
 
     def run(self):
         try:
+            tracer.INFO("Embedding started...")
             file_content = self.extract_file_content(self.payload["file_info"]["extension"], self.payload["file_info"]["bytes"])
 
             prepared_content, prepared_metadata = self.build_embedding_payload(
@@ -298,14 +294,15 @@ class EmbeddingFile(ManagerProcessInformations):
 
             embed_response = self.store_embeddings(
                 embedding_content=json.dumps(prepared_content),
-                embedding_metadata=prepared_metadata,
-                flags={"group": "test_group"}
+                embedding_metadata=prepared_metadata
             )
 
             self.save_process_metadata(
                 usage_summary=usage_summary,
                 embed_response=embed_response
             )
+
+            tracer.INFO("Embedding flow completed successfully.")
 
             return {
                 "job_id": self.payload.get("job_id"),
@@ -314,82 +311,3 @@ class EmbeddingFile(ManagerProcessInformations):
 
         except Exception as e:
             raise RuntimeError(f"Embedding process execution failed: {str(e)}")
-
-
-
-
-
-
-
-
-def generate_payload():
-    with open("doc/test files/Candidatura.pdf", "rb") as f:
-        file_bytes = BytesIO(f.read())
-
-    payload = {
-        "job_id": "job_12345",
-
-        "identifiers": {
-            "client_id": "client_abc",
-            "workspace_id": "workspace_001",
-            "user_id": "user_789",
-            "file_id": "file_xyz" # Può essere creato
-        },
-
-        "pipeline": {
-            "generate_tags": True,
-        },
-
-        "embedding_metadata": {
-            "source": "uploaded_file",
-            "origin": "web_app",
-            "language": "en",
-            "tags": "#finance, #report, #2026"
-        },
-
-        "embedding_settings": {
-            "model": "text-embedding-3-large",
-            "dimensions": 3072,
-            "chunk_size": 500,
-            "chunk_overlap": 50,
-            "normalize": True,
-            "save_global": False,
-            "batch_size": 200,
-        },
-
-        "file_info": {
-            "name": "example.pdf",
-            "extension": "pdf",
-            "mime_type": "application/pdf",
-            "size_bytes": 204800,
-            "size_kb": 200,
-            "size_mb": 0.2,
-            "bytes": file_bytes#[:20]
-        }
-    }
-
-    #print(json.dumps(payload, indent=4, default=str))
-
-    return payload
-
-
-
-payload = generate_payload()
-
-embedder = EmbeddingFile(payload)
-embedder._init_tracking()
-embedder.run()
-embedder.save()  # Salva o estado completo do processo em um arquivo JSON
-
-
-    # Step 1: Configure and validate the payload
-    # Step 2: Download the file from the provided URL
-    # Step 3: Extract content from the file
-    # Step 4: Generate embedding payload
-    # Step 5: Calculate cost
-    # Step 6: Embedding content and store vectors
-    # Step 7: Save process
-    # Step 8: Delete temporary files and clean up resources
-    # Step 9: Return response with embedding information and cost details
-
-#   

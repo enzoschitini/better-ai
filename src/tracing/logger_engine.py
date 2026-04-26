@@ -36,6 +36,8 @@ class LoggerEngine:
     # GET BOOL ENV
     # =========================================================
     def _get_env_bool(self, env_name: str, default: bool = None) -> bool:
+        if default:
+            return default
         if os.getenv(env_name):
             BOOL_MAP = {
                 "true": True,
