@@ -51,7 +51,7 @@
         "origin": "web_app",
         "language": "en",
         "tags": "#finance, #report, #2026",
-        "created_at": "2026-04-26 18:55:15"
+        "created_at": "2026-04-26 19:17:40"
     },
     "usage_summary": {
         "total_caracter_count": 11011,
@@ -84,17 +84,17 @@
             "namespace_global": null,
             "batch_count": 1,
             "chunks_ids": [
-                "33115c41-044c-4139-93e1-ec63a034c5eb",
-                "33ecbc41-b8c0-4109-af60-c4ab6fa15997",
-                "72676758-a908-4ec6-89e8-6cefa71d3d6c",
-                "06e28b45-6fda-49d8-82ca-c73f01dc4300",
-                "3e20a5d9-71af-4d6e-b893-88fd3188e355",
-                "f009f988-6bd4-42af-a7cf-b3a9fa68b57f"
+                "87db6634-fdef-4fcb-a10f-79d818f501a7",
+                "3f6af5c5-6cbd-4598-94e3-fc2c1b816b21",
+                "b5776975-09ec-4bdf-a9d7-ae20563f20b9",
+                "dafbeb43-bedf-4033-8378-01a442375e26",
+                "6fd13679-6e97-4f2f-acb8-2f8e5eae3c79",
+                "552c8682-a4d4-4482-bbaf-c28b88c742b3"
             ]
         }
     },
     "save_response": {
         "status": "success",
-        "inserted_id": "5c609915-c5da-433e-b4bc-ee6a2cc4c4ea"
+        "inserted_id": "6a003598-0be5-4022-9611-d4303fc15948"
     }
 }

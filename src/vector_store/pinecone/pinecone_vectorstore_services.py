@@ -1,4 +1,6 @@
 import os
+import logging
+
 from typing import List, Optional, Dict, Any
 
 from dotenv import load_dotenv
@@ -13,7 +15,7 @@ from src.vector_store.config import PineconeVectorStoreConfig
 from src.tracing.tracing_core import ApplicationTracing
 
 load_dotenv()
-
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 tracer = ApplicationTracing(
     flag="PineconeVectorService",
