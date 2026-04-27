@@ -1,3 +1,4 @@
+```python
 import json
 import time
 
@@ -29,6 +30,21 @@ tracer = ApplicationTracing(
 )
 
 class EmbeddingFile(ManagerProcessInformations):
+    """
+    This class handles the process of embedding file content into a vector database. It manages extraction of file content,
+    preparation of embedding payloads, usage calculation, embedding storage, and saving process metadata with rollback support.
+    
+    Args: 
+    :param payload (dict): A dictionary containing job and file information, embedding metadata, and pipeline details. Default is None.
+
+    Methods:
+        extract_file_content(): Extracts the textual content from binary file data.
+        build_embedding_payload(): Prepares the content and metadata for embedding.
+        calculate_usage_summary(): Calculates token usage and cost summary based on the prepared content and model.
+        store_embeddings(): Stores the generated embeddings in the configured vector store.
+        save_process_metadata(): Saves metadata about the embedding process to a document store.
+        run(): Executes the entire embedding process from extraction to saving metadata.
+    """
     def __init__(self, payload: dict | None):
         try:
             super().__init__()
@@ -90,6 +106,12 @@ class EmbeddingFile(ManagerProcessInformations):
             raise RuntimeError(f"Failed to initialize EmbeddingFile: {str(e)}")
 
     def _init_tracking(self):
+        """
+        Initializes and starts the tracking of the embedding process, adding the payload to the tracked information.
+
+        Raises:
+            RuntimeError: If initializing the tracking fails.
+        """
         try:
             self.start()
             self.add("payload", self.payload)
@@ -97,6 +119,19 @@ class EmbeddingFile(ManagerProcessInformations):
             raise RuntimeError(f"Failed to initialize tracking: {str(e)}")
 
     def _calculate_usage(self, model: str, content: str) -> dict:
+        """
+        Calculates the token usage and cost for given content based on the specified model.
+
+        Args: 
+            model (str): The name of the embedding model to use for token counting and pricing.
+            content (str): The text content to analyze for token usage.
+
+        Returns:
+                dict: A dictionary containing character count, tokens count, and cost in USD as a string with 6 decimals.
+
+        Raises:
+                RuntimeError: If there is an error during the usage calculation.
+        """
         try:
             pricing = ModelPricingFactory.create(model)
             counter = TokenCounter(model)
@@ -113,6 +148,13 @@ class EmbeddingFile(ManagerProcessInformations):
             raise RuntimeError(f"Failed to calculate usage: {str(e)}")
 
     def _get_vector_db(self):
+        """
+        Initializes and configures the Pinecone vector database client and service
+        using the vector store settings from the payload or config.
+
+        Raises:
+                RuntimeError: If loading the vector store database fails.
+        """
         try:
             self.pine_client = PineconeClient(
                 index_name=self.vector_db_settings.get("index_name"),
@@ -131,6 +173,16 @@ class EmbeddingFile(ManagerProcessInformations):
             raise RuntimeError(f"Failed to load vector store database: {str(e)}")
     
     def _rollback_vector_store(self):
+        """
+        Performs a rollback by deleting documents associated with the current file_id 
+        in both the main and global namespaces of the vector store to maintain consistency in case of failures.
+
+        Returns:
+                dict: A dictionary recording the results of deletions in main and global namespaces.
+
+        Raises:
+                RuntimeError: If the rollback process fails.
+        """
         try:
             tracer.ERROR("Error saving process metadata, initiating rollback.")
 
@@ -162,6 +214,19 @@ class EmbeddingFile(ManagerProcessInformations):
             raise RuntimeError(f"Failed to rollback vector store: {str(e)}")   
 
     def extract_file_content(self, file_extension: str, file_bytes: bytes) -> str:
+        """
+        Extracts textual content from a file given its extension and byte data.
+
+        Args:
+            file_extension (str): The file extension indicating the file type.
+            file_bytes (bytes): The raw bytes of the file to be processed.
+
+        Returns:
+                str: The extracted textual content from the file.
+
+        Raises:
+                RuntimeError: If extraction fails.
+        """
         try:
             tracer.INFO("Extracting content from the file")
             extractor = FileContentExtractor(file_bytes, file_extension)
@@ -184,6 +249,25 @@ class EmbeddingFile(ManagerProcessInformations):
         embedding_metadata: dict = None,
         pipeline: dict = None,
     ):  
+        """
+        Builds and prepares the payload for embedding by combining file content with additional pipeline-processed content 
+        and metadata including identifiers and embedding metadata.
+
+        Args:
+            identifiers (dict): Identifiers related to the embedding content (e.g., file_id).
+            file_info (dict): Dictionary containing file information such as name and extension.
+            file_content (str): The textual content extracted from the file.
+            embedding_metadata (dict, optional): Additional metadata for embedding, defaults to None.
+            pipeline (dict, optional): Pipeline configuration dict to generate extra content, defaults to None.
+
+        Returns:
+                tuple: A tuple containing:
+                    - prepared_content (dict): Dictionary with the main and additional content for embedding.
+                    - prepared_metadata (dict): Metadata dictionary including identifiers and file information.
+
+        Raises:
+                RuntimeError: If building the embedding payload fails.
+        """
         try:
             if pipeline:
                 tracer.INFO("Process the pipeline to generate additional content")
@@ -213,6 +297,21 @@ class EmbeddingFile(ManagerProcessInformations):
             raise RuntimeError(f"Failed to build embedding payload: {str(e)}")
 
     def calculate_usage_summary(self, model: str, prepared_content: dict) -> dict:
+        """
+        Computes the usage summary including token counts and associated cost in USD 
+        for all parts of the prepared content using the specified embedding model.
+
+        Args:
+            model (str): The name of the embedding model to use for token cost calculation.
+            prepared_content (dict): The dictionary containing all parts of the content to be evaluated.
+
+        Returns:
+                dict: A usage summary containing total characters, tokens, cost in USD, exchange rate, 
+                      and breakdown by parts if applicable.
+
+        Raises:
+                RuntimeError: If calculation of usage summary fails.
+        """
         try:
             tracer.INFO("Collecting dollar exchange rate")
             exchange_service = ExchangeRateService()
@@ -247,6 +346,20 @@ class EmbeddingFile(ManagerProcessInformations):
             raise RuntimeError(f"Failed to calculate usage summary: {str(e)}")     
 
     def store_embeddings(self, embedding_content: str, embedding_metadata: dict, flags: dict = None):
+        """
+        Performs embedding creation and storage in the vector database, optionally merging additional flags into metadata.
+
+        Args:
+            embedding_content (str): The JSON string of content to embed.
+            embedding_metadata (dict): Metadata associated with the embedding content.
+            flags (dict, optional): Optional flags to be merged with metadata, defaults to None.
+
+        Returns:
+                dict: The response returned from the embedding storage service.
+
+        Raises:
+                RuntimeError: If storing embeddings fails.
+        """
         try:
             if flags:
                 tracer.INFO("Add the flags to the metadata")
@@ -273,6 +386,20 @@ class EmbeddingFile(ManagerProcessInformations):
         usage_summary: dict,
         embed_response: dict
     ):
+        """
+        Saves metadata about the embedding process including usage summary and embedding response 
+        into a document store and triggers rollback if saving fails.
+
+        Args:
+            usage_summary (dict): The usage summary dictionary containing cost and token counts.
+            embed_response (dict): The response data from the embedding storage operation.
+
+        Returns:
+                dict: The response from saving the payload in the document store.
+
+        Raises:
+                RuntimeError: If saving metadata fails, after rolling back vector store changes.
+        """
         try:
             manager = DocumentStore()
             #erro = 1 / 0
@@ -299,6 +426,16 @@ class EmbeddingFile(ManagerProcessInformations):
             raise RuntimeError(f"Failed to save process metadata: {str(e)}")
 
     def run(self):
+        """
+        Executes the full embedding process, including file content extraction, payload build,
+        usage summary calculation, embedding storage, and metadata saving.
+
+        Returns:
+                dict: A dictionary containing job_id and file_id to identify the embedding job.
+
+        Raises:
+                RuntimeError: If any step in the embedding process fails.
+        """
         try:
             tracer.INFO("Embedding started...")
 
@@ -339,3 +476,4 @@ class EmbeddingFile(ManagerProcessInformations):
 
         except Exception as e:
             raise RuntimeError(f"Embedding process execution failed: {str(e)}")
+```
