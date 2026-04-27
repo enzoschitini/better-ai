@@ -37,7 +37,6 @@ def generate_payload(view: bool = False):
             "chunk_size": 500,
             "chunk_overlap": 50,
             "normalize": True,
-            "save_global": False,
             "batch_size": 200,
         },
 

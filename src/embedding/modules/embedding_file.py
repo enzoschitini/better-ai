@@ -1,11 +1,14 @@
 import json
+import os
 from io import BytesIO
 from copy import deepcopy
+from dotenv import load_dotenv
 
 from src.embedding.services.file_content_extractor import FileContentExtractor
 from src.embedding.aggregates.aggregate_embedding_content import AggregateEmbeddingContent
 from src.utils.manager_process_informations import ManagerProcessInformations
 
+from src.vector_store.pinecone.pinecone_client import PineconeClient
 from src.vector_store.pinecone.pinecone_vectorstore_services import PineconeVectorService
 from src.database.no_relational_db.router import DocumentStore
 
@@ -25,20 +28,26 @@ tracer = ApplicationTracing(
 
 CONFIG = {
     "embedding_settings": {
+        "index_name": "backai-vectorstore",
+        "main_namespace": "embed_module2",
+        "global_namespace": "global",
+        "save_global": True,
+
         "model": "text-embedding-3-large",
         "dimensions": 3072,
         "chunk_size": 500,
         "chunk_overlap": 50,
         "normalize": True,
-        "save_global": False,
         "batch_size": 200,
     },
 
-    "pinecone_namespace": "embed_module",
+    
 
     "database_name": "embedding_db",
     "collection_name": "embedding_processes"
 }
+
+load_dotenv()
 
 class EmbeddingFile(ManagerProcessInformations):
     def __init__(self, payload: dict | None):
@@ -85,7 +94,7 @@ class EmbeddingFile(ManagerProcessInformations):
             if missing_fields:
                 raise ValueError(f"Missing required file_info fields: {missing_fields}")
             
-            self.pinecone_namespace=CONFIG["pinecone_namespace"]
+            self.main_namespace=CONFIG["embedding_settings"]["main_namespace"]
             self.database_name=CONFIG["database_name"]
             self.collection_name=CONFIG["collection_name"]
 
@@ -119,9 +128,19 @@ class EmbeddingFile(ManagerProcessInformations):
 
     def _get_vector_db(self):
         try:
+            self.embedding_settings = self.payload["embedding_settings"]
+
+            self.pine_client = PineconeClient(
+                index_name=self.embedding_settings.get("index_name"),
+                main_namespace=self.embedding_settings.get("main_namespace"),
+                global_namespace=self.embedding_settings.get("global_namespace", None),
+                embedding_model=self.embedding_settings.get("model")
+            )
+
             self.pine_service = PineconeVectorService(
-                embedding_model_name=self.payload["embedding_settings"]["model"], 
-                dimensions=self.payload["embedding_settings"]["dimensions"]
+                vector_client=self.pine_client,
+                embedding_model_name=self.embedding_settings.get("model"), 
+                dimensions=self.embedding_settings.get("dimensions")
             )
 
         except Exception as e:
@@ -133,7 +152,7 @@ class EmbeddingFile(ManagerProcessInformations):
             delete = self.pine_service.delete_documents(
                 target_feature="file_id", 
                 target_id=self.payload["identifiers"]["file_id"], 
-                namespace=self.pinecone_namespace
+                namespace=self.main_namespace
             )
             self.add("roolback_vector_db", delete)
             tracer.INFO("Rollback completed successfully.")
@@ -232,12 +251,15 @@ class EmbeddingFile(ManagerProcessInformations):
                 embedding_metadata = {**embedding_metadata, **flags}
             
             tracer.INFO("Performing embedding")
+
+            print(f"\nGlobal: {self.embedding_settings.get("global_namespace", None)}\n")
+            print(f"Global: {self.embedding_settings.get("save_global", False)}\n")
             
             embed_response = self.pine_service.generate_vectors(
                 text=embedding_content,
                 metadata=embedding_metadata,
-                save_global=self.payload["embedding_settings"]["save_global"],
-                batch_size=self.payload["embedding_settings"]["batch_size"]
+                save_global=self.embedding_settings.get("save_global", False),
+                batch_size=self.embedding_settings.get("batch_size", 200),
             )
 
             self.add("embedding_response", embed_response)
