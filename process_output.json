@@ -34,14 +34,11 @@
         },
         "vector_db_settings": {
             "index_name": "backai-vectorstore",
-            "main_namespace": "embed_module2",
+            "main_namespace": "embedding_file",
             "global_namespace": "global",
             "save_global": true,
             "model": "text-embedding-3-large",
             "dimensions": 3072,
-            "chunk_size": 500,
-            "chunk_overlap": 50,
-            "normalize": true,
             "batch_size": 200
         }
     },
@@ -62,7 +59,7 @@
         "origin": "web_app",
         "language": "en",
         "tags": "#finance, #report, #2026",
-        "created_at": "2026-04-27 15:36:10"
+        "created_at": "2026-04-27 17:47:26"
     },
     "usage_summary": {
         "total_caracter_count": 11011,
@@ -91,21 +88,21 @@
         "status": "success",
         "message": "Embeddings saved successfully.",
         "embedding_informations": {
-            "namespace_main": "embed_module2",
+            "namespace_main": "embedding_file",
             "namespace_global": "global",
             "batch_count": 1,
             "chunks_ids": [
-                "19a773a5-3343-4e05-8222-29907d4ba1f0",
-                "c8967256-0ecf-4576-9ded-475cfdacc91d",
-                "0619a28d-a941-442a-a4f9-61f1b5c18262",
-                "83aebbbf-a2d6-4e3a-9e4f-13b7fd877a6a",
-                "6035b2e5-6464-4389-b5c2-17ea24fd861b",
-                "663cf0cb-43cf-41f3-b9a8-27dada7aff77"
+                "20a4a9ef-b5fb-49a9-b995-4dd1cdc49b0e",
+                "c4c920e4-25a7-48bf-aa20-111cf20151fa",
+                "552b7551-b625-4006-876d-ac477e0796f4",
+                "8e5fc6d1-5a5a-49ec-b80b-22cc48e01874",
+                "512ef811-523c-43c6-b7ed-e5174dc69949",
+                "cbe70645-6510-4d8a-81c2-c8f31820267f"
             ]
         }
     },
     "save_response": {
         "status": "success",
-        "inserted_id": "e4357090-4f63-4bac-b519-e06b2bd0c778"
+        "inserted_id": "d817d107-bb60-4791-a170-8493c254647c"
     }
 }

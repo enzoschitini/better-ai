@@ -1,25 +1,25 @@
 import json
-import os
 import time
 
-from io import BytesIO
 from copy import deepcopy
-from dotenv import load_dotenv
+
+from src.tracing.tracing_core import ApplicationTracing
+from src.database.no_relational_db.router import DocumentStore
 
 from src.embedding.services.file_content_extractor import FileContentExtractor
 from src.embedding.aggregates.aggregate_embedding_content import AggregateEmbeddingContent
-from src.utils.manager_process_informations import ManagerProcessInformations
+from src.embedding.modules.config import GetConfig
 
 from src.vector_store.pinecone.pinecone_client import PineconeClient
 from src.vector_store.pinecone.pinecone_vectorstore_services import PineconeVectorService
-from src.database.no_relational_db.router import DocumentStore
 
 from src.tokens_calculate.token_counter import TokenCounter
 from src.tokens_calculate.model_pricing import ModelPricingFactory
 from src.tokens_calculate.exchange_rate.exchange_rate import ExchangeRateService
 
 from src.utils.unique_id_factory import IDGenerator
-from src.tracing.tracing_core import ApplicationTracing
+from src.utils.manager_process_informations import ManagerProcessInformations
+
 
 tracer = ApplicationTracing(
     flag="Embedding File",
@@ -27,27 +27,6 @@ tracer = ApplicationTracing(
     log_file_name="embedding_file",
     show_info_logs=True
 )
-
-CONFIG = {
-    "vector_db_settings": {
-        "index_name": "backai-vectorstore",
-        "main_namespace": "embed_module2",
-        "global_namespace": "global",
-        "save_global": True,
-
-        "model": "text-embedding-3-large",
-        "dimensions": 3072,
-        "chunk_size": 500,
-        "chunk_overlap": 50,
-        "normalize": True,
-        "batch_size": 200,
-    },
-
-    "database_name": "embedding_db",
-    "collection_name": "embedding_processes"
-}
-
-load_dotenv()
 
 class EmbeddingFile(ManagerProcessInformations):
     def __init__(self, payload: dict | None):
@@ -70,9 +49,13 @@ class EmbeddingFile(ManagerProcessInformations):
             self.payload.setdefault("embedding_metadata", {})
             self.payload.setdefault("pipeline", None)
 
-            # Merge vector_db_settings with CONFIG
+            # Get default config values
+            config = GetConfig()
+            self.config = config.embedding_file()
+
+            # Merge vector_db_settings with config
             self.payload["vector_db_settings"] = {
-                **CONFIG["vector_db_settings"],
+                **self.config["vector_db_settings"],
                 **self.payload.get("vector_db_settings", {})
             }
 
@@ -98,8 +81,8 @@ class EmbeddingFile(ManagerProcessInformations):
             self.main_namespace = self.vector_db_settings.get("main_namespace")
             self.global_namespace = self.vector_db_settings.get("global_namespace")
 
-            self.database_name=CONFIG["database_name"]
-            self.collection_name=CONFIG["collection_name"]
+            self.database_name=self.config["database_name"]
+            self.collection_name=self.config["collection_name"]
 
             self._get_vector_db()
 
@@ -292,7 +275,7 @@ class EmbeddingFile(ManagerProcessInformations):
     ):
         try:
             manager = DocumentStore()
-            erro = 1 / 0
+            #erro = 1 / 0
 
             save_payload = self.payload.copy()
             save_payload["file_info"].pop("bytes", None)
