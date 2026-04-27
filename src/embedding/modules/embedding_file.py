@@ -41,8 +41,6 @@ CONFIG = {
         "batch_size": 200,
     },
 
-    
-
     "database_name": "embedding_db",
     "collection_name": "embedding_processes"
 }
@@ -94,7 +92,10 @@ class EmbeddingFile(ManagerProcessInformations):
             if missing_fields:
                 raise ValueError(f"Missing required file_info fields: {missing_fields}")
             
-            self.main_namespace=CONFIG["embedding_settings"]["main_namespace"]
+            self.embedding_settings = self.payload["embedding_settings"]
+            self.main_namespace = self.embedding_settings.get("main_namespace")
+            self.global_namespace = self.embedding_settings.get("global_namespace")
+
             self.database_name=CONFIG["database_name"]
             self.collection_name=CONFIG["collection_name"]
 
@@ -128,8 +129,6 @@ class EmbeddingFile(ManagerProcessInformations):
 
     def _get_vector_db(self):
         try:
-            self.embedding_settings = self.payload["embedding_settings"]
-
             self.pine_client = PineconeClient(
                 index_name=self.embedding_settings.get("index_name"),
                 main_namespace=self.embedding_settings.get("main_namespace"),
@@ -149,13 +148,29 @@ class EmbeddingFile(ManagerProcessInformations):
     def _rollback_vector_store(self):
         try:
             tracer.ERROR("Error saving process metadata, initiating rollback.")
-            delete = self.pine_service.delete_documents(
+
+            delete_main_namespace = self.pine_service.delete_documents(
                 target_feature="file_id", 
                 target_id=self.payload["identifiers"]["file_id"], 
                 namespace=self.main_namespace
             )
-            self.add("roolback_vector_db", delete)
+
+            delete_global_namespace = self.pine_service.delete_documents(
+                target_feature="file_id", 
+                target_id=self.payload["identifiers"]["file_id"], 
+                namespace=self.global_namespace
+            )
+
+            delete = {
+                "main_namespace": delete_main_namespace,
+                "global_namespace": delete_global_namespace
+            }
+
             tracer.INFO("Rollback completed successfully.")
+
+            self.add("roolback_vector_db", delete)
+            return delete
+
         except Exception as e:
             raise RuntimeError(f"Failed to rollback vector store: {str(e)}")   
 
@@ -275,7 +290,7 @@ class EmbeddingFile(ManagerProcessInformations):
         embed_response: dict
     ):
         try:
-            manager = DocumentStore()
+            manager = DocumentStore(backend="aws")
 
             save_payload = self.payload.copy()
             save_payload["file_info"].pop("bytes", None)
@@ -293,7 +308,9 @@ class EmbeddingFile(ManagerProcessInformations):
             return save_response
 
         except Exception as e:
-            self._rollback_vector_store()
+            delete = self._rollback_vector_store()
+            tracer.ERROR(f"Rollback executed: {delete}")
+
             raise RuntimeError(f"Failed to save process metadata: {str(e)}")
 
     def run(self):
