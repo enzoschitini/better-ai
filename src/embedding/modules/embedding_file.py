@@ -1,5 +1,7 @@
 import json
 import os
+import time
+
 from io import BytesIO
 from copy import deepcopy
 from dotenv import load_dotenv
@@ -27,7 +29,7 @@ tracer = ApplicationTracing(
 )
 
 CONFIG = {
-    "embedding_settings": {
+    "vector_db_settings": {
         "index_name": "backai-vectorstore",
         "main_namespace": "embed_module2",
         "global_namespace": "global",
@@ -62,16 +64,16 @@ class EmbeddingFile(ManagerProcessInformations):
                 raise ValueError("Missing required field: job_id")
 
             # Normaliza estrutura base
-            self.payload.setdefault("embedding_settings", {})
+            self.payload.setdefault("vector_db_settings", {})
             self.payload.setdefault("identifiers", {})
             self.payload.setdefault("file_info", {})
             self.payload.setdefault("embedding_metadata", {})
             self.payload.setdefault("pipeline", None)
 
-            # Merge embedding_settings with CONFIG
-            self.payload["embedding_settings"] = {
-                **CONFIG["embedding_settings"],
-                **self.payload.get("embedding_settings", {})
+            # Merge vector_db_settings with CONFIG
+            self.payload["vector_db_settings"] = {
+                **CONFIG["vector_db_settings"],
+                **self.payload.get("vector_db_settings", {})
             }
 
             # Ensure minimum identifiers
@@ -92,9 +94,9 @@ class EmbeddingFile(ManagerProcessInformations):
             if missing_fields:
                 raise ValueError(f"Missing required file_info fields: {missing_fields}")
             
-            self.embedding_settings = self.payload["embedding_settings"]
-            self.main_namespace = self.embedding_settings.get("main_namespace")
-            self.global_namespace = self.embedding_settings.get("global_namespace")
+            self.vector_db_settings = self.payload["vector_db_settings"]
+            self.main_namespace = self.vector_db_settings.get("main_namespace")
+            self.global_namespace = self.vector_db_settings.get("global_namespace")
 
             self.database_name=CONFIG["database_name"]
             self.collection_name=CONFIG["collection_name"]
@@ -130,16 +132,16 @@ class EmbeddingFile(ManagerProcessInformations):
     def _get_vector_db(self):
         try:
             self.pine_client = PineconeClient(
-                index_name=self.embedding_settings.get("index_name"),
-                main_namespace=self.embedding_settings.get("main_namespace"),
-                global_namespace=self.embedding_settings.get("global_namespace", None),
-                embedding_model=self.embedding_settings.get("model")
+                index_name=self.vector_db_settings.get("index_name"),
+                main_namespace=self.vector_db_settings.get("main_namespace"),
+                global_namespace=self.vector_db_settings.get("global_namespace", None),
+                embedding_model=self.vector_db_settings.get("model")
             )
 
             self.pine_service = PineconeVectorService(
                 vector_client=self.pine_client,
-                embedding_model_name=self.embedding_settings.get("model"), 
-                dimensions=self.embedding_settings.get("dimensions")
+                embedding_model_name=self.vector_db_settings.get("model"), 
+                dimensions=self.vector_db_settings.get("dimensions")
             )
 
         except Exception as e:
@@ -154,6 +156,8 @@ class EmbeddingFile(ManagerProcessInformations):
                 target_id=self.payload["identifiers"]["file_id"], 
                 namespace=self.main_namespace
             )
+
+            time.sleep(1)
 
             delete_global_namespace = self.pine_service.delete_documents(
                 target_feature="file_id", 
@@ -266,15 +270,12 @@ class EmbeddingFile(ManagerProcessInformations):
                 embedding_metadata = {**embedding_metadata, **flags}
             
             tracer.INFO("Performing embedding")
-
-            print(f"\nGlobal: {self.embedding_settings.get("global_namespace", None)}\n")
-            print(f"Global: {self.embedding_settings.get("save_global", False)}\n")
             
             embed_response = self.pine_service.generate_vectors(
                 text=embedding_content,
                 metadata=embedding_metadata,
-                save_global=self.embedding_settings.get("save_global", False),
-                batch_size=self.embedding_settings.get("batch_size", 200),
+                save_global=self.vector_db_settings.get("save_global", False),
+                batch_size=self.vector_db_settings.get("batch_size", 200),
             )
 
             self.add("embedding_response", embed_response)
@@ -290,7 +291,8 @@ class EmbeddingFile(ManagerProcessInformations):
         embed_response: dict
     ):
         try:
-            manager = DocumentStore(backend="aws")
+            manager = DocumentStore()
+            erro = 1 / 0
 
             save_payload = self.payload.copy()
             save_payload["file_info"].pop("bytes", None)
@@ -331,7 +333,7 @@ class EmbeddingFile(ManagerProcessInformations):
             )
 
             usage_summary = self.calculate_usage_summary(
-                model=self.payload["embedding_settings"]["model"], 
+                model=self.payload["vector_db_settings"]["model"], 
                 prepared_content=prepared_content
             )
 
