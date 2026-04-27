@@ -8,6 +8,8 @@ from src.web_applications.config import (
     MENU_ITEMS, PAGES
 )
 
+# streamlit run webapp.py
+
 # -----------------------------
 # Configuração de logs
 # -----------------------------
