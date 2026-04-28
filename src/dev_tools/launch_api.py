@@ -16,6 +16,9 @@ from fastapi import FastAPI, UploadFile, HTTPException, Request, Form, Body, Dep
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
+# Utils
+from src.utils.load_file.load_request_file import LoadRequestFile
+
 class ASCII_API:
     def __init__(self):
         pass
@@ -53,21 +56,61 @@ app = FastAPI()
 def healthy():
     return {"status": "ok"}
 
+# curl -X GET "http://localhost:8000/healthy"
 # uvicorn src.dev_tools.launch_api:app --reload
 # uvicorn app:app --reload
 
 # ------------------------------------------------- #
 
-from agno.os import AgentOS
-from src.agents.utils.test_agents.run_agent import RunAgent
-from src.agents.rag_agent.agent import get_agent
+from src.embedding.modules.embedding_file import EmbeddingFile
 
-agent_os = AgentOS(
-    id="my-first-os",
-    agents=[get_agent()],
+@app.post(
+    "/vector-store/embedding-file",
+    #dependencies=[Depends(Authorization.multikey)],
+    summary="Process a file upload, generates embeddings, and stores vectors with metadata."
 )
 
-app = agent_os.get_app()
-#agent_os.serve(app=app)
+async def embedding_file(
+    payload: str = Form(...),
+    file: UploadFile = File(...),
+):
+    embedding_payload = json.loads(payload)
 
+    loader = await LoadRequestFile(
+        file=file,
+        allowed_extensions=["txt", "md", "pdf", "doc", "docx", "odt", "rtf", "csv", "xls", "xlsx", "ppt", "pptx",],
+        max_size_mb=50
+    ).load()
+
+    file_info = {
+        "name": loader.filename,
+        "extension": loader.extension,
+        "mime_type": loader.mimetype,
+        "size_bytes": loader.size_bytes,
+        "size_mb": round(loader.size_mb, 2),
+        "bytes": loader.bytes
+    }
+
+    embedding_payload["file_info"] = file_info
+
+    #"""
+    embedder = EmbeddingFile(embedding_payload)
+    embedder._init_tracking()
+    response_embed = embedder.run()
+    embedder.save()
+    #"""
+    response = {
+        "message": "File processed successfully",
+        #"file_informations": file_info,
+    }
+
+    return JSONResponse(content=response_embed)
+
+# CULR:
+"""
+curl --location 'http://localhost:8000/vector-store/embedding-file' \
+--header 'accept: application/json' \
+--form 'payload="{\"job_id\":\"job_12345\"}"' \
+--form 'file=@"/C:/Users/enzo_silva/Downloads/files/Fiat Test Chat/Titan Oranch.pdf"'
+"""
 
