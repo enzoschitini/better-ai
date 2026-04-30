@@ -24,21 +24,6 @@ tracer = ApplicationTracing(
 )
 
 
-def trace(method_name: str):
-    def decorator(func):
-        def wrapper(*args, **kwargs):
-            tracer.INFO(method_name, "Execution started")
-            try:
-                result = func(*args, **kwargs)
-                tracer.INFO(method_name, "Execution finished successfully")
-                return result
-            except Exception as e:
-                tracer.ERROR(method_name, "Execution failed")
-                raise
-        return wrapper
-    return decorator
-
-
 class PineconeVectorService:
     """
     Service responsável por:
@@ -129,14 +114,12 @@ class PineconeVectorService:
             )
 
         except Exception as e:
-            tracer.ERROR("__init__", "Initialization failed", error=e)
+            tracer.ERROR("__init__", f"Initialization failed - {str(e)}")
             raise
 
     # ======================================================
     # Helpers
     # ======================================================
-
-    @trace("split_text")
     def split_text(
         self,
         text: str,
@@ -167,7 +150,6 @@ class PineconeVectorService:
             for chunk in chunks
         ]
 
-    @trace("delete_documents")
     def delete_documents(
         self,
         target_feature: str,
@@ -229,20 +211,17 @@ class PineconeVectorService:
         except Exception as e:
             tracer.ERROR(
                 "delete_documents",
-                "Deletion failed",
+                f"Deletion failed - {str(e)}",
                 metadata={
                     "target_feature": target_feature,
                     "target_id": target_id,
-                },
-                error=e
+                }
             )
             raise
 
     # ======================================================
     # Search
     # ======================================================
-
-    @trace("document_search")
     def document_search(
         self,
         query: str,
@@ -284,16 +263,13 @@ class PineconeVectorService:
         except Exception as e:
             tracer.ERROR(
                 "document_search",
-                "Search failed",
-                error=e
+                f"Document search failed - {str(e)}",
             )
             raise RuntimeError("Document search failed.") from e
 
     # ======================================================
     # Embeddings
     # ======================================================
-
-    @trace("generate_vectors")
     def generate_vectors(
         self,
         text: str,
@@ -340,9 +316,8 @@ class PineconeVectorService:
         except Exception as error:
             tracer.ERROR(
                 "generate_vectors",
-                "Batch failed, starting rollback",
-                metadata={"batch_number": batch_number},
-                error=error
+                f"Batch failed, starting rollback - {str(error)}",
+                metadata={"batch_number": batch_number}
             )
 
             # rollback

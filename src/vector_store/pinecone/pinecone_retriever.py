@@ -13,24 +13,6 @@ tracer = ApplicationTracing(
 )
 
 
-def trace(method_name: str):
-    """
-    Decorator para padronizar logging e captura de erros.
-    """
-    def decorator(func):
-        def wrapper(*args, **kwargs):
-            tracer.INFO(method_name, "Execution started")
-            try:
-                result = func(*args, **kwargs)
-                tracer.INFO(method_name, "Execution finished successfully")
-                return result
-            except Exception as e:
-                tracer.ERROR(method_name, "Execution failed")
-                raise
-        return wrapper
-    return decorator
-
-
 class PineconeRetriever:
     """
     Serviço responsável por realizar operações de recuperação
@@ -102,14 +84,12 @@ class PineconeRetriever:
             )
 
         except Exception as e:
-            tracer.ERROR("__init__", "Failed to initialize retriever", error=e)
+            tracer.ERROR("__init__", f"Failed to initialize retriever - {str(e)}")
             raise
 
     # ======================================================
     # Similarity Search
     # ======================================================
-
-    @trace("similarity_search")
     def similarity_search(
         self,
         query: str,
@@ -168,8 +148,7 @@ class PineconeRetriever:
         except Exception as e:
             tracer.ERROR(
                 "similarity_search",
-                "Failed to generate embedding",
-                error=e
+                f"Failed to generate embedding - {str(e)}"
             )
             raise RuntimeError("Failed to generate query embedding.") from e
 
@@ -196,9 +175,8 @@ class PineconeRetriever:
         except Exception as e:
             tracer.ERROR(
                 "similarity_search",
-                "Invalid filter",
-                metadata={"filter_search": filter_search},
-                error=e
+                f"Invalid filter - {str(e)}",
+                metadata={"filter_search": filter_search}
             )
             raise ValueError("Invalid search filter.") from e
 
@@ -223,8 +201,7 @@ class PineconeRetriever:
         except Exception as e:
             tracer.ERROR(
                 "similarity_search",
-                "Pinecone query failed",
-                error=e
+                f"Pinecone query failed - {str(e)}"
             )
             raise RuntimeError("Failure to query Pinecone.") from e
 
@@ -256,8 +233,7 @@ class PineconeRetriever:
         except Exception as e:
             tracer.ERROR(
                 "similarity_search",
-                "Failed to process results",
-                error=e
+                f"Failed to process results - {str(e)}"
             )
             raise RuntimeError("Failed to process search results.") from e
 
@@ -266,8 +242,6 @@ class PineconeRetriever:
     # ======================================================
     # Metadata Search
     # ======================================================
-
-    @trace("get_all_docs_by_metadata")
     def get_all_docs_by_metadata(
         self,
         batch_size: int | None = None,
@@ -381,12 +355,11 @@ class PineconeRetriever:
         except Exception as e:
             tracer.ERROR(
                 "get_all_docs_by_metadata",
-                "Failed during paginated retrieval",
+                f"Failed during paginated retrieval - {str(e)}",
                 metadata={
                     "target_key": target_key,
                     "target_value": target_value,
-                },
-                error=e
+                }
             )
             raise RuntimeError(
                 "Failed to retrieve vectors by target."
