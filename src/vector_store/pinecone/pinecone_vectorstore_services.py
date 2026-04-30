@@ -117,6 +117,17 @@ class PineconeVectorService:
             tracer.ERROR("__init__", f"Initialization failed - {str(e)}")
             raise
 
+
+
+
+
+
+
+
+
+
+
+
     # ======================================================
     # Helpers
     # ======================================================
@@ -134,6 +145,7 @@ class PineconeVectorService:
         )
 
         chunks = splitter.split_text(text)
+        # example ["xxxxxxxxxxx", "zzzzzzzzzzz"]
 
         tracer.DEBUG(
             "split_text",
@@ -145,10 +157,22 @@ class PineconeVectorService:
 
     @staticmethod
     def build_documents(chunks: List[str], metadata: Dict[str, Any]) -> List[Document]:
+        """
+        chunks = ['Era uma vez uma cidade onde ninguém sonhava.\n\nNão porque fosse proibido, nem porque f... claro, ideias novas, perguntas perigosas.', 'Primeiro raros. Depois confusos. Depois intensos.\n\nE com eles vieram risos inesperado...que, de certa forma… nunca foi necessária.'],
+        metadata = {'file_id': 'test_file_12345', 'created_at': '2026-04-30 19:49:35'}
+        """
         return [
             Document(page_content=chunk, metadata={**metadata})
             for chunk in chunks
         ]
+
+
+
+
+
+
+
+
 
     def delete_documents(
         self,
@@ -219,53 +243,11 @@ class PineconeVectorService:
             )
             raise
 
-    # ======================================================
-    # Search
-    # ======================================================
-    def document_search(
-        self,
-        query: str,
-        k: int = 3,
-        namespace: str = None,
-        filter: dict = None,
-    ):
 
-        selected_namespace = namespace or self.client.main_namespace
 
-        vectordb = self.client.create_vector_store(
-            embedding_model=self.embeddings_model,
-            namespace=selected_namespace
-        )
 
-        try:
-            results = vectordb.similarity_search(
-                query=query,
-                k=k,
-                filter=filter
-            )
 
-            formatted = {}
 
-            for r in results:
-                formatted[r.id] = {
-                    "metadata": r.metadata,
-                    "page_content": r.page_content
-                }
-
-            tracer.DEBUG(
-                "document_search",
-                "Search completed",
-                metadata={"results_count": len(formatted)}
-            )
-
-            return formatted
-
-        except Exception as e:
-            tracer.ERROR(
-                "document_search",
-                f"Document search failed - {str(e)}",
-            )
-            raise RuntimeError("Document search failed.") from e
 
     # ======================================================
     # Embeddings
@@ -284,7 +266,12 @@ class PineconeVectorService:
         chunks = self.split_text(text)
         documents = self.build_documents(chunks, metadata)
 
-        batch_size = (
+        """
+        [Document(metadata={'file_id': 'test_file_12345', 'created_at': '2026-04-30 19:49:35'}...laro, ideias novas, perguntas perigosas.'),
+        Document(metadata={'file_id': 'test_file_12345', 'created_at': '2026-04-30 19:49:35'}...e, de certa forma… nunca foi necessária.')],
+        """
+
+        batch_size = ( # 100
             min(batch_size, self.embedding_batch_size)
             if batch_size and batch_size > 0
             else self.embedding_batch_size
@@ -297,6 +284,50 @@ class PineconeVectorService:
             for i in range(0, len(documents), batch_size):
                 batch_docs = documents[i: i + batch_size]
                 batch_number += 1
+
+                texts = [doc.page_content for doc in batch_docs]
+                metadatas = [doc.metadata for doc in batch_docs]
+
+                embeddings = self.embeddings_model.embed_documents(texts)         
+                # [[0.0006260871887207031, -0.01071929931640625, -0.0006003379821777344, 0.01102447509765625, -0.03997802734375, -0.00811767578125, 0.00514984130859375, 0.028533935546875, -0.027587890625, 0.0021533966064453125, 0.0136871337890625, 0.05810546875, -0.03985595703125, 0.01318359375, 0.0206298828125, 0.0272064208984375, 0.00434112548828125, 0.01045989990234375, -0.0028591156005859375, ...], [0.030303955078125, 0.004589080810546875, -0.0083160400390625, 0.0243377685546875, -0.0289764404296875, 0.0159454345703125, -0.03228759765625, 0.02490234375, -0.043670654296875, -0.02734375, 0.0219573974609375, 0.053070068359375, -0.038604736328125, 0.0155487060546875, -0.004741668701171875, -0.02117919921875, 0.0191192626953125, 0.0126953125, -0.0227813720703125, ...]]       
+
+                """
+                texts = [doc.page_content for doc in batch_docs]
+                metadatas = [doc.metadata for doc in batch_docs]
+
+                # 🔥 1. gerar embeddings (AGORA você tem acesso)
+                embeddings = self.embeddings_model.embed_documents(texts)
+
+                # 🔥 2. (opcional) salvar localmente
+                for text, emb in zip(texts, embeddings):
+                    print("TEXT:", text[:50])
+                    print("EMB SIZE:", len(emb))
+
+                # 🔥 3. enviar pro Pinecone manualmente
+                vectors = [
+                    {
+                        "id": f"{metadata.get('file_id')}_{batch_number}_{i}",
+                        "values": emb,
+                        "metadata": metadata
+                    }
+                    for i, (emb, metadata) in enumerate(zip(embeddings, metadatas))
+                ]
+
+                self.client.index.upsert(
+                    vectors=vectors,
+                    namespace=self.client.main_namespace
+                )
+
+                ids = [v["id"] for v in vectors]
+                all_ids.extend(ids)
+
+                # 🔥 4. global (se quiser)
+                if save_global:
+                    self.client.index.upsert(
+                        vectors=vectors,
+                        namespace=self.client.global_namespace
+                    )
+                """
 
                 tracer.DEBUG(
                     "generate_vectors",
@@ -342,6 +373,9 @@ class PineconeVectorService:
                 "batch": batch_number
             }
 
+        """
+        response = {'status': 'success', 'message': 'Embeddings saved successfully.', 'embedding_informations': {'namespace_main': 'embedding_file', 'namespace_global': 'embed_module', 'batch_count': 1, 'chunks_ids': [...]}}
+        """
         response = {
             "status": "success",
             "message": "Embeddings saved successfully.",
@@ -364,3 +398,23 @@ class PineconeVectorService:
         )
 
         return response
+
+
+
+if __name__ == "__main__":
+    import json
+
+    pine_client = PineconeClient(
+        index_name="backai-vectorstore",
+        main_namespace="embedding_file",
+    )
+
+    service = PineconeVectorService(pine_client)
+    response = service.generate_vectors(
+        text="Teste de geração de embeddings com o Pinecone Vector Service",
+        metadata={"file_id": "test_file_12345"},
+        save_global=True
+    )
+    print(json.dumps(response, indent=4, default=str))
+
+# python -m src.vector_store.pinecone.pinecone_vectorstore_services
