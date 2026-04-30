@@ -18,28 +18,6 @@ tracer = ApplicationTracing(
 )
 
 
-def trace(method_name: str):
-    """
-    Decorator para padronizar logging e captura de erros.
-    """
-    def decorator(func):
-        def wrapper(*args, **kwargs):
-            tracer.INFO(method_name, "Execution started")
-            try:
-                result = func(*args, **kwargs)
-                tracer.INFO(method_name, "Execution finished successfully")
-                return result
-            except Exception as e:
-                tracer.ERROR(
-                    method_name,
-                    "Execution failed",
-                    error=e
-                )
-                raise
-        return wrapper
-    return decorator
-
-
 class PineconeClient:
     """
     Cliente unificado responsável por:
@@ -61,6 +39,7 @@ class PineconeClient:
         tracer.INFO("__init__", "Initializing client")
 
         try:
+            erro = 1 / 0  # Teste de captura de erro
             # ======================================================
             # Credenciais
             # ======================================================
@@ -137,14 +116,12 @@ class PineconeClient:
             self._init_embeddings()
 
         except Exception as e:
-            tracer.ERROR("__init__", "Client initialization failed", error=e)
+            tracer.ERROR("__init__", f"Client initialization failed - {str(e)}")
             raise
 
     # ======================================================
     # Internals
     # ======================================================
-
-    @trace("_init_pinecone")
     def _init_pinecone(self) -> None:
         tracer.DEBUG("_init_pinecone", "Connecting to Pinecone")
 
@@ -157,7 +134,6 @@ class PineconeClient:
             metadata={"index_name": self.index_name}
         )
 
-    @trace("_init_embeddings")
     def _init_embeddings(self, model_name: Optional[str] = None) -> None:
         model = model_name or self.embedding_model_name
 
@@ -190,7 +166,6 @@ class PineconeClient:
 
         return resolved
 
-    @trace("create_vector_store")
     def create_vector_store(
         self,
         namespace: Optional[str] = None,
@@ -215,3 +190,10 @@ class PineconeClient:
         )
 
         return vector_store
+
+if __name__ == "__main__":
+    client = PineconeClient()
+    vector_store = client.create_vector_store()
+    print("Pinecone Client initialized and VectorStore created successfully.")
+
+# python -m src.vector_store.pinecone.pinecone_client
