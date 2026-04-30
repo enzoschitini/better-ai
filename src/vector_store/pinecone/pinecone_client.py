@@ -39,7 +39,6 @@ class PineconeClient:
         tracer.INFO("__init__", "Initializing client")
 
         try:
-            erro = 1 / 0  # Teste de captura de erro
             # ======================================================
             # Credenciais
             # ======================================================

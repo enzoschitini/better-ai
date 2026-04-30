@@ -9,46 +9,13 @@ from src.tracing.tracing_core import ApplicationTracing
 tracer = ApplicationTracing(
     flag="PineconeRetriever",
     file_name="pinecone_retriever.py",
-    log_file_name="pinecone_module"
+    log_file_name="pinecone_module",
+    show_info_logs=True
 )
 
 
 class PineconeRetriever:
-    """
-    Serviço responsável por realizar operações de recuperação
-    (retrieval) de vetores no Pinecone.
-
-    Esta classe atua como uma camada de acesso ao índice vetorial,
-    encapsulando:
-    - Buscas por similaridade
-    - Recuperação de vetores por metadados
-    - Interação direta com o índice Pinecone
-
-    Seu objetivo é oferecer uma API clara e segura para leitura
-    de dados vetoriais.
-    """
-
     def __init__(self, client: Optional[PineconeClient] = None):
-        """
-        Inicializa o PineconeRetriever a partir de um PineconeClient.
-
-        Responsabilidades:
-        - Validar a dependência principal (PineconeClient)
-        - Extrair e armazenar os componentes necessários para consulta:
-            - índice
-            - mecanismo de embeddings
-            - namespace padrão
-
-        Parâmetros:
-        - client (PineconeClient): 
-            Objeto previamente configurado contendo:
-            - index: referência ao índice Pinecone
-            - embeddings: provedor de embeddings
-            - namespace: namespace padrão para consultas
-
-        Exceções:
-        - ValueError: se o client não for fornecido
-        """
         tracer.INFO("__init__", "Initializing retriever")
 
         try:
@@ -96,32 +63,6 @@ class PineconeRetriever:
         k: int = 5,
         filter_search: Optional[Dict[str, Any]] = None,
     ) -> List[Dict[str, Any]]:
-        """
-        Executa uma busca por similaridade vetorial no índice Pinecone.
-
-        Responsabilidades:
-        - Validar os parâmetros de entrada (query e k)
-        - Gerar o embedding da consulta textual
-        - Construir filtros compatíveis com o Pinecone ($eq ou $in)
-        - Executar a consulta vetorial no índice
-        - Normalizar a resposta para o formato interno da aplicação
-
-        Parâmetros:
-        - query (str): Texto usado como base para a busca por similaridade.
-        - k (int): Quantidade máxima de resultados a serem retornados.
-        - filter_search (Optional[Dict[str, Any]]): 
-            Filtro opcional no formato {campo: valor} ou {campo: [valores]}.
-            Exemplo:
-                {"file_id": "abc123"}
-                {"file_id": ["a", "b", "c"]}
-
-        Retorno:
-        - List[Dict[str, Any]]: Lista de documentos similares contendo:
-            - id: identificador do vetor
-            - text: conteúdo textual (se existir no metadata)
-            - metadata: metadados associados ao vetor
-            - score: score de similaridade retornado pelo Pinecone
-        """
         # ==========================
         # Validações
         # ==========================
@@ -249,37 +190,6 @@ class PineconeRetriever:
         target_key: str = "file_id",
         target_value: Union[str, List[str]] = None,
     ) -> List[Dict[str, Any]]:
-        """
-        Recupera vetores do Pinecone com base em um filtro direto por metadata.
-
-        Esta função NÃO realiza busca semântica. Ela utiliza um vetor "dummy"
-        apenas para satisfazer o contrato da API do Pinecone, enquanto a
-        recuperação real é feita exclusivamente via filtro por metadata
-        (target_key / target_value).
-
-        É possível buscar por um único valor ou por uma lista de valores,
-        utilizando automaticamente os operadores `$eq` ou `$in`.
-
-        O método faz paginação explícita para garantir a recuperação de
-        TODOS os vetores associados ao filtro informado.
-
-        Responsabilidades:
-        - Montar dinamicamente o filtro de metadata
-        - Executar queries paginadas no Pinecone
-        - Normalizar o retorno para o formato interno da aplicação
-
-        Limitações conhecidas:
-        - A API do Pinecone exige a presença de um vetor na query
-        - A ordem dos resultados não é garantida
-        - O campo `score` não possui significado semântico neste contexto
-
-        :param batch_size: Quantidade máxima de vetores retornados por requisição.
-                        Controla paginação, uso de memória e latência.
-        :param dimension: Dimensão do vetor do índice (necessária para o dummy vector).
-        :param target_key: Chave do metadata usada como filtro (ex: file_id, user_id).
-        :param target_value: Valor ou lista de valores usados no filtro.
-        :return: Lista de vetores recuperados do Pinecone.
-        """
         if not target_value:
             tracer.ERROR(
                 "get_all_docs_by_metadata",
@@ -366,3 +276,42 @@ class PineconeRetriever:
             ) from e
 
         return results
+
+
+
+
+
+
+
+
+
+if __name__ == "__main__":
+    import json
+
+    pine_client = PineconeClient(
+        index_name="backai-vectorstore",
+        main_namespace="embedding_file",
+    )
+
+    retriver = PineconeRetriever(pine_client)
+
+    # Similarity search
+    similarity_results = retriver.similarity_search(
+        query="What is the capital of France?",
+        k=5
+    )
+
+    print("Similarity Search Results:")
+    print(json.dumps(similarity_results, indent=2))
+
+    # Metadata search
+    metadata_results = retriver.get_all_docs_by_metadata(
+        target_key="file_extension",
+        target_value="pdf",
+        batch_size=10
+    )
+
+    print("\nMetadata Search Results:")
+    print(json.dumps(metadata_results, indent=2))
+
+# python -m src.vector_store.pinecone.pinecone_retriever
