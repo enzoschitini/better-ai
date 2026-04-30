@@ -28,8 +28,8 @@ class ASCII_API:
         # 97m Bianco
 
         logo = """
-        \033[97m
-        ╔═══════════════════════════════════════════════════════════════════════╗
+        
+        \033[1;36m╔═══════════════════════════════════════════════════════════════════════╗
 
             ██████╗ ███████╗████████╗████████╗███████╗██████╗      █████╗ ██╗ ✦
             ██╔══██╗██╔════╝╚══██╔══╝╚══██╔══╝██╔════╝██╔══██╗    ██╔══██╗██║
@@ -38,10 +38,11 @@ class ASCII_API:
             ██████╔╝███████╗   ██║      ██║   ███████╗██║  ██║    ██║  ██║██║
             ╚═════╝ ╚══════╝   ╚═╝      ╚═╝   ╚══════╝╚═╝  ╚═╝    ╚═╝  ╚═╝╚═╝
 
-        ╚═══════════════════════════════════════════════════════════════════════╝
+        ╚═══════════════════════════════════════════════════════════════════════╝\033[0m
 
-                          ✦  Where intelligence finds purpose. ✦
-        \033[0m
+                          \033[1;32m✦ Where intelligence finds purpose. ✦\033[0m
+
+
         """
         print(logo)
 
@@ -74,37 +75,50 @@ async def embedding_file(
     payload: str = Form(...),
     file: UploadFile = File(...),
 ):
-    embedding_payload = json.loads(payload)
+    try:
+        embedding_payload = json.loads(payload)
+        allowed_extensions = [
+            "txt", "md", "pdf", "doc", "docx", "odt", "rtf", 
+            "csv", "xls", "xlsx", 
+            "ppt", "pptx",
+        ]
 
-    loader = await LoadRequestFile(
-        file=file,
-        allowed_extensions=["txt", "md", "pdf", "doc", "docx", "odt", "rtf", "csv", "xls", "xlsx", "ppt", "pptx",],
-        max_size_mb=50
-    ).load()
+        loader = await LoadRequestFile(
+            file=file,
+            allowed_extensions=allowed_extensions,
+            max_size_mb=50
+        ).load()
 
-    file_info = {
-        "name": loader.filename,
-        "extension": loader.extension,
-        "mime_type": loader.mimetype,
-        "size_bytes": loader.size_bytes,
-        "size_mb": round(loader.size_mb, 2),
-        "bytes": loader.bytes
-    }
+        #erro = 1 / 0
 
-    embedding_payload["file_info"] = file_info
+        file_info = {
+            "name": loader.filename,
+            "extension": loader.extension,
+            "mime_type": loader.mimetype,
+            "size_bytes": loader.size_bytes,
+            "size_mb": round(loader.size_mb, 2),
+            "bytes": loader.bytes
+        }
 
-    #"""
-    embedder = EmbeddingFile(embedding_payload)
-    embedder._init_tracking()
-    response_embed = embedder.run()
-    embedder.save()
-    #"""
-    response = {
-        "message": "File processed successfully",
-        #"file_informations": file_info,
-    }
+        embedding_payload["file_info"] = file_info
 
-    return JSONResponse(content=response_embed)
+        embedder = EmbeddingFile(embedding_payload)
+        embedder._init_tracking()
+        response = embedder.run()
+        embedder.save()
+
+        return JSONResponse(content=response)
+    
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={
+                "status": "error",
+                "status_code": 500,
+                "job_id": embedding_payload.get("job_id", "unknown"),
+                "detail": f"Error: {str(e)}"
+            }
+        )
 
 # CULR:
 """

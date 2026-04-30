@@ -105,7 +105,12 @@ class LoggerEngine:
         if logger.handlers:
             logger.handlers.clear()
 
-        formatter = logging.Formatter(
+        ascii_formatter = logging.Formatter(
+            "\033[1;36m%(asctime)s\033[0m | \033[1;32m%(levelname)s\033[0m | %(name)s | \033[1;32m%(message)s\033[0m"
+        )
+    
+
+        log_formatter = logging.Formatter(
             "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
         )
 
@@ -113,13 +118,13 @@ class LoggerEngine:
         if save_logs:
             file_handler = logging.FileHandler(f"{self.log_file_name}.log")
             file_handler.setLevel(logging.DEBUG)
-            file_handler.setFormatter(formatter)
+            file_handler.setFormatter(log_formatter)
             logger.addHandler(file_handler)
 
         # CONSOLE
         console_handler = logging.StreamHandler()
         console_handler.setLevel(logging.DEBUG if show_info_logs else logging.ERROR)
-        console_handler.setFormatter(formatter)
+        console_handler.setFormatter(ascii_formatter)
         logger.addHandler(console_handler)
 
         return logger

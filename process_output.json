@@ -2,11 +2,11 @@
     "payload": {
         "job_id": "job_12345",
         "file_info": {
-            "name": "Titan Oranch.pdf",
+            "name": "Endurance.pdf",
             "extension": "pdf",
             "mime_type": "application/pdf",
-            "size_bytes": 170534,
-            "size_mb": 0.16
+            "size_bytes": 136927,
+            "size_mb": 0.13
         },
         "vector_db_settings": {
             "index_name": "backai-vectorstore",
@@ -18,26 +18,26 @@
             "batch_size": 200
         },
         "identifiers": {
-            "file_id": "1777377821652551600OQjK"
+            "file_id": "17775620881233850003wBr"
         },
         "embedding_metadata": {},
         "pipeline": null
     },
-    "file_content": "Ficha técnica – TITANO RANCH 2.2 AT DIESEL \nMotor  \nPosição: Dianteiro, longitudinal  \nNúmero de cilindros: 4 em linha  \nDiâmetro x curso: 85,0 x 96,0 mm \nCilindrada total: 2.179 cm³ \nAdmissão: Turbo com geometria variável \nTaxa de compressão: 16:1 \nPotência: 180 cv a 3.750 rpm \nTorque: 400 Nm a 2.000 rpm  \nNº de válvulas por cilindro: 4 \nComando de válvulas: Duplo, no cabeçote \nInjeção: Direta  \nCombustível: Diesel  \n \nTransmissão \nCâmbio: automático, com seis marchas  \n \nRelações de marcha:  \n1ª: 4,065 \n2ª: 2,371 \n3ª: 1,551 \n4ª: 1,157 \n5ª: 0,853 \n6ª: 0,674 \n \nRé: 3,200 \nDiferencial: 4,200 \nTração: 4X4 com reduzida de 1:2,72 \n \nSistema de freios   \nDianteiro: A disco ventilado (diâmetro de 332 x 32 mm) com pinça flutuante e dois \ncilindros de comando \nTraseiro: A tambor (diâmetro de 11”) com sapatas autocentrantes e regulagem \nautomática de jogo pelo acionamento do freio de estacionamento \n \nSuspensão dianteira \nTipo: Independente, com quatro braços oscilantes com barra estabilizadora   \nAmortecedores: telescópicos de duplo efeito \nElemento elástico: molas helicoidais de flexibilidade constante \n \nSuspensão traseira \nTipo: Dependente, Eixo rígido  \nAmortecedores: telescópicos de duplo efeito \nElemento elástico: Feixe de molas de 4 lâminas e dupla flexibilidade \n \nDireção \nAssistência: Hidráulica \nDiâmetro mínimo de curva: 14,0 m (considerar a medida meio fio a meio fio/kerb to \nkerb) \n \nRodas \nMedidas: 18” x 7,5” – liga-leve \nPneus: 265/60 R18 \n \nPeso do veículo \nEm ordem de marcha: 2.150 kg  \nCapacidade de carga: 1.020 kg \n \nDimensões externas/capacidades \nComprimento: 5.330 mm \nLargura da carroceria: 1.963 mm (s/espelhos) e 2.221 mm (c/espelhos) \nAltura do veículo: 1.858 mm / 1.897 mm (com barras longitudinais) \nDistância entre eixos: 3.180 mm \nAltura mínima do solo: 235 mm \nÂngulo de entrada: 29°  \nÂngulo de saída: 27º  \nTanque de combustível: 80 litros \nComprimento máximo da caçamba: 1.630 mm  \nLargura máxima da caçamba: 1.600 mm  \nAltura máxima da caçamba: 516 mm  \nVolume útil da caçamba (até o limite da carroceria): 1.220 litros (NET) \n \nPerformance \n0 a 100 km/h: 12,4 s  \nVelocidade máxima: 175 km/h  \n \nConsumo PBEV \nUrbano: 8,5 km/l  \nEstrada: 9,2 km/l \n",
+    "file_content": "Ficha técnica – TITANO ENDURANCE 2.2 MT DIESEL \nMotor  \nPosição: Dianteiro, longitudinal \nNúmero de cilindros: 4 em linha  \nDiâmetro x curso: 85,0 x 96,0 mm \nCilindrada total: 2.179 cm³ \nAdmissão: Turbo com geometria variável \nTaxa de compressão: 16:1 \nPotência: 180 cv a 3.750 rpm \nTorque: 370 Nm a 2.000 rpm   \nNº de válvulas por cilindro: 4 \nComando de válvulas: Duplo, no cabeçote \nInjeção: Direta  \nCombustível: Diesel  \n \nTransmissão \nCâmbio: mecânico, com seis marchas  \n \nRelações de marchas:  \n1ª: 4,942 \n2ª: 2,696 \n3ª: 1,527 \n4ª: 1,000 \n5ª: 0,749 \n6ª: 0,634 \n \nRé: 4,597 \nDiferencial: 4,200 \nTração: 4X4 com reduzida de 1:2,72 \n \nSistema de freios \nDianteiro: A disco ventilado (diâmetro de 332 x 32 mm) com pinça flutuante e dois \ncilindros de comando \nTraseiro: A tambor (diâmetro de 11”) com sapatas autocentrantes e regulagem \nautomática de jogo pelo acionamento do freio de estacionamento \n \nSuspensão dianteira \nTipo: Independente, com quatro braços oscilantes com barra estabilizadora   \nAmortecedores: telescópicos de duplo efeito \nElemento elástico: molas helicoidais de flexibilidade constante \n \nSuspensão traseira \nTipo: Dependente, Eixo rígido  \nAmortecedores: telescópicos de duplo efeito \nElemento elástico: Feixe de molas de 4 lâminas e dupla flexibilidade \n \nDireção \nAssistência: Hidráulica \n \nRodas \nMedidas: 17” x 7,5” – aço estampado  \nPneus: 265/65 R17 \n \nPeso do veículo \nEm ordem de marcha: 2.039 kg  \nCapacidade de carga: 1.020 kg \nReboque com freio: 3.500 kg \n \nDimensões externas/capacidades \nComprimento: 5.330 mm \nLargura da carroceria: 1.963 mm (s/espelhos) e 2.221 mm (c/espelhos) \nAltura do veículo: 1.858 mm / 1.897 mm (com barras longitudinais) \nDistância entre eixos: 3.180 mm \nAltura mínima do solo: 235 mm \nÂngulo de entrada: 29°  \nÂngulo de saída: 27º  \nTanque de combustível: 80 litros \nComprimento máximo da caçamba: 1.630 mm  \nLargura máxima da caçamba: 1.600 mm  \nAltura máxima da caçamba: 516 mm  \nVolume útil da caçamba (até o limite da carroceria): 1.314 litros (NET) \n \nPerformance \n0 a 100 km/h: 14,7 s  \nVelocidade máxima: 175 km/h  \n \nConsumo PBEV \nUrbano: 9,6 km/l  \nEstrada: 9,6 km/l  \n \n \n",
     "embedding_content": {
-        "file_content": "Ficha técnica – TITANO RANCH 2.2 AT DIESEL \nMotor  \nPosição: Dianteiro, longitudinal  \nNúmero de cilindros: 4 em linha  \nDiâmetro x curso: 85,0 x 96,0 mm \nCilindrada total: 2.179 cm³ \nAdmissão: Turbo com geometria variável \nTaxa de compressão: 16:1 \nPotência: 180 cv a 3.750 rpm \nTorque: 400 Nm a 2.000 rpm  \nNº de válvulas por cilindro: 4 \nComando de válvulas: Duplo, no cabeçote \nInjeção: Direta  \nCombustível: Diesel  \n \nTransmissão \nCâmbio: automático, com seis marchas  \n \nRelações de marcha:  \n1ª: 4,065 \n2ª: 2,371 \n3ª: 1,551 \n4ª: 1,157 \n5ª: 0,853 \n6ª: 0,674 \n \nRé: 3,200 \nDiferencial: 4,200 \nTração: 4X4 com reduzida de 1:2,72 \n \nSistema de freios   \nDianteiro: A disco ventilado (diâmetro de 332 x 32 mm) com pinça flutuante e dois \ncilindros de comando \nTraseiro: A tambor (diâmetro de 11”) com sapatas autocentrantes e regulagem \nautomática de jogo pelo acionamento do freio de estacionamento \n \nSuspensão dianteira \nTipo: Independente, com quatro braços oscilantes com barra estabilizadora   \nAmortecedores: telescópicos de duplo efeito \nElemento elástico: molas helicoidais de flexibilidade constante \n \nSuspensão traseira \nTipo: Dependente, Eixo rígido  \nAmortecedores: telescópicos de duplo efeito \nElemento elástico: Feixe de molas de 4 lâminas e dupla flexibilidade \n \nDireção \nAssistência: Hidráulica \nDiâmetro mínimo de curva: 14,0 m (considerar a medida meio fio a meio fio/kerb to \nkerb) \n \nRodas \nMedidas: 18” x 7,5” – liga-leve \nPneus: 265/60 R18 \n \nPeso do veículo \nEm ordem de marcha: 2.150 kg  \nCapacidade de carga: 1.020 kg \n \nDimensões externas/capacidades \nComprimento: 5.330 mm \nLargura da carroceria: 1.963 mm (s/espelhos) e 2.221 mm (c/espelhos) \nAltura do veículo: 1.858 mm / 1.897 mm (com barras longitudinais) \nDistância entre eixos: 3.180 mm \nAltura mínima do solo: 235 mm \nÂngulo de entrada: 29°  \nÂngulo de saída: 27º  \nTanque de combustível: 80 litros \nComprimento máximo da caçamba: 1.630 mm  \nLargura máxima da caçamba: 1.600 mm  \nAltura máxima da caçamba: 516 mm  \nVolume útil da caçamba (até o limite da carroceria): 1.220 litros (NET) \n \nPerformance \n0 a 100 km/h: 12,4 s  \nVelocidade máxima: 175 km/h  \n \nConsumo PBEV \nUrbano: 8,5 km/l  \nEstrada: 9,2 km/l \n"
+        "file_content": "Ficha técnica – TITANO ENDURANCE 2.2 MT DIESEL \nMotor  \nPosição: Dianteiro, longitudinal \nNúmero de cilindros: 4 em linha  \nDiâmetro x curso: 85,0 x 96,0 mm \nCilindrada total: 2.179 cm³ \nAdmissão: Turbo com geometria variável \nTaxa de compressão: 16:1 \nPotência: 180 cv a 3.750 rpm \nTorque: 370 Nm a 2.000 rpm   \nNº de válvulas por cilindro: 4 \nComando de válvulas: Duplo, no cabeçote \nInjeção: Direta  \nCombustível: Diesel  \n \nTransmissão \nCâmbio: mecânico, com seis marchas  \n \nRelações de marchas:  \n1ª: 4,942 \n2ª: 2,696 \n3ª: 1,527 \n4ª: 1,000 \n5ª: 0,749 \n6ª: 0,634 \n \nRé: 4,597 \nDiferencial: 4,200 \nTração: 4X4 com reduzida de 1:2,72 \n \nSistema de freios \nDianteiro: A disco ventilado (diâmetro de 332 x 32 mm) com pinça flutuante e dois \ncilindros de comando \nTraseiro: A tambor (diâmetro de 11”) com sapatas autocentrantes e regulagem \nautomática de jogo pelo acionamento do freio de estacionamento \n \nSuspensão dianteira \nTipo: Independente, com quatro braços oscilantes com barra estabilizadora   \nAmortecedores: telescópicos de duplo efeito \nElemento elástico: molas helicoidais de flexibilidade constante \n \nSuspensão traseira \nTipo: Dependente, Eixo rígido  \nAmortecedores: telescópicos de duplo efeito \nElemento elástico: Feixe de molas de 4 lâminas e dupla flexibilidade \n \nDireção \nAssistência: Hidráulica \n \nRodas \nMedidas: 17” x 7,5” – aço estampado  \nPneus: 265/65 R17 \n \nPeso do veículo \nEm ordem de marcha: 2.039 kg  \nCapacidade de carga: 1.020 kg \nReboque com freio: 3.500 kg \n \nDimensões externas/capacidades \nComprimento: 5.330 mm \nLargura da carroceria: 1.963 mm (s/espelhos) e 2.221 mm (c/espelhos) \nAltura do veículo: 1.858 mm / 1.897 mm (com barras longitudinais) \nDistância entre eixos: 3.180 mm \nAltura mínima do solo: 235 mm \nÂngulo de entrada: 29°  \nÂngulo de saída: 27º  \nTanque de combustível: 80 litros \nComprimento máximo da caçamba: 1.630 mm  \nLargura máxima da caçamba: 1.600 mm  \nAltura máxima da caçamba: 516 mm  \nVolume útil da caçamba (até o limite da carroceria): 1.314 litros (NET) \n \nPerformance \n0 a 100 km/h: 14,7 s  \nVelocidade máxima: 175 km/h  \n \nConsumo PBEV \nUrbano: 9,6 km/l  \nEstrada: 9,6 km/l  \n \n \n"
     },
     "embedding_metadata": {
-        "file_id": "1777377821652551600OQjK",
-        "file_name": "Titan Oranch.pdf",
+        "file_id": "17775620881233850003wBr",
+        "file_name": "Endurance.pdf",
         "file_extension": "pdf",
-        "created_at": "2026-04-28 12:03:43"
+        "created_at": "2026-04-30 15:14:50"
     },
     "usage_summary": {
-        "total_caracter_count": 2201,
-        "total_tokens": 843,
-        "total_cost_usd": "0.000110",
-        "exchange_rate": 4.97
+        "total_caracter_count": 2151,
+        "total_tokens": 826,
+        "total_cost_usd": "0.000107",
+        "exchange_rate": 4.9985
     },
     "embedding_response": {
         "status": "success",
@@ -47,12 +47,12 @@
             "namespace_global": "global",
             "batch_count": 1,
             "chunks_ids": [
-                "9dc2d8bc-7182-4a82-9b24-158e3aca3a09"
+                "8a0c6559-a5e1-48dc-9a11-b50b0b1e3946"
             ]
         }
     },
     "save_response": {
         "status": "success",
-        "inserted_id": "2de7c912-9ffd-414e-97b3-19d85af355a7"
+        "inserted_id": "ae9e5487-a855-4373-85f7-b45fbb7b7a70"
     }
 }
