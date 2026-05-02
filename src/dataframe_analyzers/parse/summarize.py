@@ -3,7 +3,7 @@ import pandas as pd
 from io import BytesIO
 
 from src.dataframe_analyzers.pd_df_agent.agent import DataframeAgent
-from src.vector_store.pinecone.test import TestPineconeVectorStore
+from vector_store.pinecone.test.test import TestPineconeVectorStore
 from src.vector_store.pinecone.utils.retrieval_manager import RetrievalManager
 
 from src.content_parse.content_parsing_agent import ContentParsingAgent

@@ -5,14 +5,26 @@ from src.vector_store.pinecone.retriever import PineconeRetriever
 from src.vector_store.pinecone.embedding import PineconeEmbedding
 
 class TestPineconeVectorStore:
-    def __init__(self):
-        pass
+    def __init__(
+        self,
+        index_name: str = None,
+        main_namespace: str = None,
+        global_namespace: str = None,
+        embedding_model_name: str = None,
+        dimensions: int = None
+    ):
+        self.index_name = index_name or "backai-vectorstore"
+        self.main_namespace = main_namespace or "main_namespace"
+        self.global_namespace = global_namespace or "global_namespace"
+
+        self.embedding_model_name = embedding_model_name or "text-embedding-3-large"
+        self.dimensions = dimensions or 3072
 
     def get_client(self):
         pine_client = PineconeClient(
-            index_name="backai-vectorstore",
-            main_namespace="test_namespace",
-            global_namespace="global_namespace"
+            index_name=self.index_name,
+            main_namespace=self.main_namespace,
+            global_namespace=self.global_namespace
         )
 
         return pine_client
@@ -45,14 +57,11 @@ class TestPineconeVectorStore:
         embedding_content: str = None,
         embedding_metadata: dict = {"user_id": "user_1234567", "source": "embedding_test.py"}
     ):
-        pine_service = PineconeVectorService(embedding_model_name="text-embedding-3-large", dimensions=3072)
+        pine_service = PineconeEmbedding(embedding_model_name=self.embedding_model_name, dimensions=self.dimensions)
 
         if embedding_content == None:
-            embedding_content = """
-        Embeddings are vector representations of data (such as text, documents, or images) that capture their semantic meaning in a numerical space.
-        This technique allows for the comparison of content by similarity, enabling semantic searches, classification, recommendation, and information retrieval.
-        By transforming unstructured data into vectors, embeddings make it possible to efficiently index and query large volumes of information in vector databases.
-        """
+            with open("src/vector_store/pinecone/test/example_text.txt", "r") as file:
+                embedding_content = file.read()
 
         response = pine_service.generate_vectors(
             text=str(embedding_content),
@@ -69,9 +78,12 @@ class TestPineconeVectorStore:
         self,
         target_feature: str = "source",
         target_id: str = "embedding_test.py",
-        namespace: str = "betterai-embeddings-dev"
+        namespace: str = None
     ):
-        pine_service = PineconeVectorService(embedding_model_name="text-embedding-3-large", dimensions=3072)
+        if namespace is None:
+            namespace = self.main_namespace
+            
+        pine_service = PineconeEmbedding(embedding_model_name=self.embedding_model_name, dimensions=self.dimensions)
 
         delete = pine_service.delete_documents(target_feature, target_id, namespace)
         print(f"\n{delete}\n")
@@ -80,6 +92,6 @@ class TestPineconeVectorStore:
 
 if __name__ == "__main__":
     tester = TestPineconeVectorStore()
-    tester.delete()
+    tester.embedding()
 
-# python -m src.vector_store.pinecone.test
+# python -m src.vector_store.pinecone.test.test_services
