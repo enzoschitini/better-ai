@@ -18,13 +18,13 @@ load_dotenv()
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
 tracer = ApplicationTracing(
-    flag="PineconeVectorService",
+    flag="PineconeEmbedding",
     file_name="pinecone_vector_service.py",
     log_file_name="pinecone_module"
 )
 
 
-class PineconeVectorService:
+class PineconeEmbedding:
     """
     Service responsável por:
     - transformar texto em chunks
@@ -165,9 +165,137 @@ class PineconeVectorService:
             Document(page_content=chunk, metadata={**metadata})
             for chunk in chunks
         ]
+    
+    def generate_embeddings(self, texts: List[str]) -> List[List[float]]:
+        return self.embeddings_model.embed_documents(texts)         
+        
 
 
 
+
+
+
+
+
+
+    # ======================================================
+    # Embeddings
+    # ======================================================
+    def generate_vectors(
+        self,
+        text: str,
+        metadata: dict,
+        save_global: bool = False,
+        batch_size: int | None = None,
+    ):
+
+        dt_utc = datetime.now(timezone.utc).replace(microsecond=0, tzinfo=None)
+        metadata["created_at"] = str(dt_utc)
+
+        chunks = self.split_text(text)
+        documents = self.build_documents(chunks, metadata)
+
+        """
+        [Document(metadata={'file_id': 'test_file_12345', 'created_at': '2026-04-30 19:49:35'}...laro, ideias novas, perguntas perigosas.'),
+        Document(metadata={'file_id': 'test_file_12345', 'created_at': '2026-04-30 19:49:35'}...e, de certa forma… nunca foi necessária.')],
+        """
+
+        batch_size = ( # 100
+            min(batch_size, self.embedding_batch_size)
+            if batch_size and batch_size > 0
+            else self.embedding_batch_size
+        )
+
+        main_namespace_ids = []
+        global_namespace_ids = []
+        batch_number = 0
+
+        try:
+            for i in range(0, len(documents), batch_size):
+                batch_docs = documents[i: i + batch_size]
+                batch_number += 1
+
+                tracer.DEBUG(
+                    "generate_vectors",
+                    "Processing batch",
+                    metadata={
+                        "batch_number": batch_number,
+                        "batch_size": len(batch_docs)
+                    }
+                )
+
+                ids = self.main_vectordb.add_documents(batch_docs)
+                main_namespace_ids.extend(ids)
+
+                if save_global:
+                    ids = self.global_vectordb.add_documents(batch_docs)
+                    global_namespace_ids.extend(ids)
+
+        except Exception as error:
+            tracer.ERROR(
+                "generate_vectors",
+                f"Batch failed, starting rollback - {str(error)}",
+                metadata={"batch_number": batch_number}
+            )
+
+            # rollback
+            self.delete_documents(
+                "file_id",
+                metadata.get("file_id"),
+                self.client.main_namespace
+            )
+
+            if save_global:
+                self.delete_documents(
+                    "file_id",
+                    metadata.get("file_id"),
+                    self.client.global_namespace
+                )
+
+            return {
+                "status": "error",
+                "message": "Error saving embeddings in Pinecone.",
+                "error": str(error),
+                "saved_ids": {
+                    "main_namespace": main_namespace_ids,
+                    "global_namespace": global_namespace_ids if save_global else []
+                },
+                "batch": batch_number
+            }
+
+        # 1. Creiamo la struttura base della risposta
+        response = {
+            "status": "success",
+            "message": "Embeddings saved successfully.",
+            "embedding_informations": {
+                "batch_count": batch_number,
+                "main_namespace": {
+                    "namespace": self.client.main_namespace,
+                    "chunks_saved": len(main_namespace_ids),
+                    "chunks_ids": main_namespace_ids
+                }
+            }
+        }
+
+        # 2. Aggiungiamo il blocco 'global_namespace' solo se save_global è True
+        if save_global:
+            response["embedding_informations"]["global_namespace"] = {
+                "namespace": self.client.global_namespace,
+                "chunks_saved": len(global_namespace_ids),
+                "chunks_ids": global_namespace_ids
+            }
+
+        tracer.DEBUG(
+            "generate_vectors",
+            "All batches processed",
+            metadata={
+                "total_batches": batch_number,
+                "total_vectors": len(main_namespace_ids) + len(global_namespace_ids) if save_global else len(main_namespace_ids),
+                "response": response,
+            }
+        )
+
+        return response
 
 
 
@@ -248,159 +376,6 @@ class PineconeVectorService:
 
 
 
-
-    # ======================================================
-    # Embeddings
-    # ======================================================
-    def generate_vectors(
-        self,
-        text: str,
-        metadata: dict,
-        save_global: bool = False,
-        batch_size: int | None = None,
-    ):
-
-        dt_utc = datetime.now(timezone.utc).replace(microsecond=0, tzinfo=None)
-        metadata["created_at"] = str(dt_utc)
-
-        chunks = self.split_text(text)
-        documents = self.build_documents(chunks, metadata)
-
-        """
-        [Document(metadata={'file_id': 'test_file_12345', 'created_at': '2026-04-30 19:49:35'}...laro, ideias novas, perguntas perigosas.'),
-        Document(metadata={'file_id': 'test_file_12345', 'created_at': '2026-04-30 19:49:35'}...e, de certa forma… nunca foi necessária.')],
-        """
-
-        batch_size = ( # 100
-            min(batch_size, self.embedding_batch_size)
-            if batch_size and batch_size > 0
-            else self.embedding_batch_size
-        )
-
-        all_ids = []
-        batch_number = 0
-
-        try:
-            for i in range(0, len(documents), batch_size):
-                batch_docs = documents[i: i + batch_size]
-                batch_number += 1
-
-                texts = [doc.page_content for doc in batch_docs]
-                metadatas = [doc.metadata for doc in batch_docs]
-
-                embeddings = self.embeddings_model.embed_documents(texts)         
-                # [[0.0006260871887207031, -0.01071929931640625, -0.0006003379821777344, 0.01102447509765625, -0.03997802734375, -0.00811767578125, 0.00514984130859375, 0.028533935546875, -0.027587890625, 0.0021533966064453125, 0.0136871337890625, 0.05810546875, -0.03985595703125, 0.01318359375, 0.0206298828125, 0.0272064208984375, 0.00434112548828125, 0.01045989990234375, -0.0028591156005859375, ...], [0.030303955078125, 0.004589080810546875, -0.0083160400390625, 0.0243377685546875, -0.0289764404296875, 0.0159454345703125, -0.03228759765625, 0.02490234375, -0.043670654296875, -0.02734375, 0.0219573974609375, 0.053070068359375, -0.038604736328125, 0.0155487060546875, -0.004741668701171875, -0.02117919921875, 0.0191192626953125, 0.0126953125, -0.0227813720703125, ...]]       
-
-                """
-                texts = [doc.page_content for doc in batch_docs]
-                metadatas = [doc.metadata for doc in batch_docs]
-
-                # 🔥 1. gerar embeddings (AGORA você tem acesso)
-                embeddings = self.embeddings_model.embed_documents(texts)
-
-                # 🔥 2. (opcional) salvar localmente
-                for text, emb in zip(texts, embeddings):
-                    print("TEXT:", text[:50])
-                    print("EMB SIZE:", len(emb))
-
-                # 🔥 3. enviar pro Pinecone manualmente
-                vectors = [
-                    {
-                        "id": f"{metadata.get('file_id')}_{batch_number}_{i}",
-                        "values": emb,
-                        "metadata": metadata
-                    }
-                    for i, (emb, metadata) in enumerate(zip(embeddings, metadatas))
-                ]
-
-                self.client.index.upsert(
-                    vectors=vectors,
-                    namespace=self.client.main_namespace
-                )
-
-                ids = [v["id"] for v in vectors]
-                all_ids.extend(ids)
-
-                # 🔥 4. global (se quiser)
-                if save_global:
-                    self.client.index.upsert(
-                        vectors=vectors,
-                        namespace=self.client.global_namespace
-                    )
-                """
-
-                tracer.DEBUG(
-                    "generate_vectors",
-                    "Processing batch",
-                    metadata={
-                        "batch_number": batch_number,
-                        "batch_size": len(batch_docs)
-                    }
-                )
-
-                ids = self.main_vectordb.add_documents(batch_docs)
-                all_ids.extend(ids)
-
-                if save_global:
-                    self.global_vectordb.add_documents(batch_docs)
-
-        except Exception as error:
-            tracer.ERROR(
-                "generate_vectors",
-                f"Batch failed, starting rollback - {str(error)}",
-                metadata={"batch_number": batch_number}
-            )
-
-            # rollback
-            self.delete_documents(
-                "file_id",
-                metadata.get("file_id"),
-                self.client.main_namespace
-            )
-
-            if save_global:
-                self.delete_documents(
-                    "file_id",
-                    metadata.get("file_id"),
-                    self.client.global_namespace
-                )
-
-            return {
-                "status": "error",
-                "message": "Error saving embeddings in Pinecone.",
-                "error": str(error),
-                "saved_ids": all_ids,
-                "batch": batch_number
-            }
-
-        """
-        response = {'status': 'success', 'message': 'Embeddings saved successfully.', 'embedding_informations': {'namespace_main': 'embedding_file', 'namespace_global': 'embed_module', 'batch_count': 1, 'chunks_ids': [...]}}
-        """
-        response = {
-            "status": "success",
-            "message": "Embeddings saved successfully.",
-            "embedding_informations": {
-                "namespace_main": self.client.main_namespace,
-                "namespace_global": self.client.global_namespace if save_global else None,
-                "batch_count": batch_number,
-                "chunks_ids": all_ids
-            }
-        }
-
-        tracer.DEBUG(
-            "generate_vectors",
-            "All batches processed",
-            metadata={
-                "total_batches": batch_number,
-                "total_vectors": len(all_ids),
-                "response": response,
-            }
-        )
-
-        return response
-
-
-
 if __name__ == "__main__":
     import json
 
@@ -409,7 +384,7 @@ if __name__ == "__main__":
         main_namespace="embedding_file",
     )
 
-    service = PineconeVectorService(pine_client)
+    service = PineconeEmbedding(pine_client)
     response = service.generate_vectors(
         text="Teste de geração de embeddings com o Pinecone Vector Service",
         metadata={"file_id": "test_file_12345"},
