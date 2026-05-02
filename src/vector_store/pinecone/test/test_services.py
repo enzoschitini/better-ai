@@ -27,27 +27,30 @@ class TestPineconeVectorStore:
             global_namespace=self.global_namespace
         )
 
+        self.pine_client = pine_client
+
         return pine_client
 
     def retriver(
         self, 
         query: str = "Quais arquivos estão na base?",
         filter_search: dict = {
-            "file_id": [
-                "21d75dca2eec7b02080327f40220e20dxx2"
+            "source": [
+                "example_text.txt",
             ]
         },
         k: int = 5
         ):
 
-        retriver = PineconeRetriever()
+        retriver = PineconeRetriever(client=self.pine_client)
 
         result = retriver.similarity_search(
             query=query,
             filter_search=filter_search,
             k=k
         )
-
+        
+        print("✅ Similarity Search Results:")
         print(json.dumps(result, indent=2))
 
         return result
@@ -55,12 +58,16 @@ class TestPineconeVectorStore:
     def embedding(
         self,
         embedding_content: str = None,
-        embedding_metadata: dict = {"user_id": "user_1234567", "source": "embedding_test.py"}
+        embedding_metadata: dict = {"file_id": "file_1234567890", "user_id": "user_1234567", "source": "example_text.txt"}
     ):
-        pine_service = PineconeEmbedding(embedding_model_name=self.embedding_model_name, dimensions=self.dimensions)
+        pine_service = PineconeEmbedding(
+            vector_client=self.pine_client,
+            embedding_model_name=self.embedding_model_name, 
+            dimensions=self.dimensions
+        )
 
         if embedding_content == None:
-            with open("src/vector_store/pinecone/test/example_text.txt", "r") as file:
+            with open("src/vector_store/pinecone/test/example_text.txt", "r", encoding="utf-8") as file:
                 embedding_content = file.read()
 
         response = pine_service.generate_vectors(
@@ -70,28 +77,37 @@ class TestPineconeVectorStore:
             batch_size=200
         )
 
-        print("✅ Vectors generated and saved to Pinecone:", response)
+        print("✅ Vectors generated and saved to Pinecone:")
+        print(json.dumps(response, indent=4, default=str))
 
         return response
 
     def delete(
         self,
         target_feature: str = "source",
-        target_id: str = "embedding_test.py",
-        namespace: str = None
+        target_id: str = "example_text.txt",
+        namespace: str = None,
+        features: list = ["file_id", "source"]
     ):
         if namespace is None:
             namespace = self.main_namespace
             
-        pine_service = PineconeEmbedding(embedding_model_name=self.embedding_model_name, dimensions=self.dimensions)
+        pine_service = PineconeEmbedding(
+            vector_client=self.pine_client,
+            embedding_model_name=self.embedding_model_name,
+            dimensions=self.dimensions
+        )
 
-        delete = pine_service.delete_documents(target_feature, target_id, namespace)
-        print(f"\n{delete}\n")
+        delete = pine_service.delete_documents(target_feature, target_id, namespace, features)
+        
+        print(f"✅ Vectors with {target_feature}='{target_id}' deleted from namespace '{namespace}'.")
+        print(json.dumps(delete, indent=4, default=str))
 
         return delete
 
 if __name__ == "__main__":
     tester = TestPineconeVectorStore()
-    tester.embedding()
+    tester.get_client()
+    tester.delete()
 
 # python -m src.vector_store.pinecone.test.test_services
