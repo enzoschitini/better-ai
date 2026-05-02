@@ -23,18 +23,57 @@ tracer = ApplicationTracing(
     log_file_name="pinecone_module"
 )
 
+class EmbeddingHelpers:
+    def split_text(
+        self,
+        text: str,
+        chunk_size: int | None = None,
+        chunk_overlap: int | None = None,
+    ) -> List[str]:
+            
+        try:
+            splitter = RecursiveCharacterTextSplitter(
+                chunk_size=chunk_size or self.chunk_size,
+                chunk_overlap=chunk_overlap or self.chunk_overlap,
+                separators=self.separators,
+            )
+
+            chunks = splitter.split_text(text)
+            # example ["xxxxxxxxxxx", "zzzzzzzzzzz"]
+
+            tracer.DEBUG(
+                "split_text",
+                "Text split into chunks",
+                metadata={"chunks": len(chunks)}
+            )
+
+            return chunks
+        except Exception as e:
+            raise RuntimeError(f"Error splitting text into chunks: {str(e)}")
+
+    @staticmethod
+    def build_documents(chunks: List[str], metadata: Dict[str, Any]) -> List[Document]:
+        """
+        chunks = ['Era uma vez uma cidade onde ninguém sonhava.\n\nNão porque fosse proibido, nem porque f... claro, ideias novas, perguntas perigosas.', 'Primeiro raros. Depois confusos. Depois intensos.\n\nE com eles vieram risos inesperado...que, de certa forma… nunca foi necessária.'],
+        metadata = {'file_id': 'test_file_12345', 'created_at': '2026-04-30 19:49:35'}
+        """
+        try:
+            return [
+                Document(page_content=chunk, metadata={**metadata})
+                for chunk in chunks
+            ]
+        except Exception as e:
+            raise RuntimeError(f"Error building Document objects: {str(e)}")
+    
+    def generate_embeddings(self, texts: List[str]) -> List[List[float]]:
+        try:
+            return self.embeddings_model.embed_documents(texts)
+        except Exception as e:
+            raise RuntimeError(f"Error generating embeddings: {str(e)}")
 
 
 
-
-class PineconeEmbedding:
-    """
-    Service responsável por:
-    - transformar texto em chunks
-    - gerar embeddings
-    - salvar nos namespaces
-    """
-
+class PineconeEmbedding(EmbeddingHelpers):
     def __init__(
         self,
         vector_client: Optional[PineconeClient] = None,
@@ -119,64 +158,6 @@ class PineconeEmbedding:
         except Exception as e:
             tracer.ERROR("__init__", f"Initialization failed - {str(e)}")
             raise
-
-
-
-
-
-
-
-
-
-
-
-
-    # ======================================================
-    # Helpers
-    # ======================================================
-    def split_text(
-        self,
-        text: str,
-        chunk_size: int | None = None,
-        chunk_overlap: int | None = None,
-    ) -> List[str]:
-
-        splitter = RecursiveCharacterTextSplitter(
-            chunk_size=chunk_size or self.chunk_size,
-            chunk_overlap=chunk_overlap or self.chunk_overlap,
-            separators=self.separators,
-        )
-
-        chunks = splitter.split_text(text)
-        # example ["xxxxxxxxxxx", "zzzzzzzzzzz"]
-
-        tracer.DEBUG(
-            "split_text",
-            "Text split into chunks",
-            metadata={"chunks": len(chunks)}
-        )
-
-        return chunks
-
-    @staticmethod
-    def build_documents(chunks: List[str], metadata: Dict[str, Any]) -> List[Document]:
-        """
-        chunks = ['Era uma vez uma cidade onde ninguém sonhava.\n\nNão porque fosse proibido, nem porque f... claro, ideias novas, perguntas perigosas.', 'Primeiro raros. Depois confusos. Depois intensos.\n\nE com eles vieram risos inesperado...que, de certa forma… nunca foi necessária.'],
-        metadata = {'file_id': 'test_file_12345', 'created_at': '2026-04-30 19:49:35'}
-        """
-        return [
-            Document(page_content=chunk, metadata={**metadata})
-            for chunk in chunks
-        ]
-    
-    def generate_embeddings(self, texts: List[str]) -> List[List[float]]:
-        return self.embeddings_model.embed_documents(texts)         
-        
-
-
-
-
-
 
 
     def generate_vectors(
@@ -294,10 +275,6 @@ class PineconeEmbedding:
         )
 
         return response
-
-
-
-
 
 
     def delete_documents(
