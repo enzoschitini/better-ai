@@ -1,7 +1,7 @@
 import os
 from typing import List, Optional, Dict, Any, Union
 
-from src.vector_store.pinecone.pinecone_client import PineconeClient
+from src.vector_store.pinecone.client import PineconeClient
 from src.vector_store.config import PineconeVectorStoreConfig
 from src.tracing.tracing_core import ApplicationTracing
 
@@ -290,7 +290,7 @@ if __name__ == "__main__":
 
     pine_client = PineconeClient(
         index_name="backai-vectorstore",
-        main_namespace="embedding_file",
+        main_namespace="betterai-embeddings-dev",
     )
 
     retriver = PineconeRetriever(pine_client)
@@ -314,4 +314,4 @@ if __name__ == "__main__":
     print("\nMetadata Search Results:")
     print(json.dumps(metadata_results, indent=2))
 
-# python -m src.vector_store.pinecone.pinecone_retriever
+# python -m src.vector_store.pinecone.retriever

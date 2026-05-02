@@ -1,8 +1,8 @@
 import json
 
-from src.vector_store.pinecone.pinecone_client import PineconeClient
-from src.vector_store.pinecone.pinecone_retriever import PineconeRetriever
-from src.vector_store.pinecone.pinecone_vectorstore_services import PineconeVectorService
+from src.vector_store.pinecone.client import PineconeClient
+from src.vector_store.pinecone.retriever import PineconeRetriever
+from src.vector_store.pinecone.embedding import PineconeEmbedding
 
 class TestPineconeVectorStore:
     def __init__(self):

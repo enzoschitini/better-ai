@@ -8,15 +8,15 @@ tracer = ApplicationTracing()
 # ------------------------------------------------------------- #
 
 import json
-from src.vector_store.pinecone.pinecone_vectorstore_services import PineconeVectorService
-from src.vector_store.pinecone.pinecone_client import PineconeClient
+from src.vector_store.pinecone.embedding import PineconeEmbedding
+from src.vector_store.pinecone.client import PineconeClient
 
 pine_client = PineconeClient(
     index_name="backai-vectorstore",
     main_namespace="embedding_file",
 )
 
-service = PineconeVectorService(pine_client)
+service = PineconeEmbedding(pine_client)
 response = service.generate_vectors(
     text="""
 Era uma vez uma cidade onde ninguém sonhava.

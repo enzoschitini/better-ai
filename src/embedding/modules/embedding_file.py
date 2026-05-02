@@ -10,8 +10,8 @@ from src.embedding.services.file_content_extractor import FileContentExtractor
 from src.embedding.aggregates.aggregate_embedding_content import AggregateEmbeddingContent
 from src.embedding.modules.config import GetConfig
 
-from src.vector_store.pinecone.pinecone_client import PineconeClient
-from src.vector_store.pinecone.pinecone_vectorstore_services import PineconeVectorService
+from src.vector_store.pinecone.client import PineconeClient
+from src.vector_store.pinecone.embedding import PineconeEmbedding
 
 from src.tokens_calculate.token_counter import TokenCounter
 from src.tokens_calculate.model_pricing import ModelPricingFactory
@@ -162,7 +162,7 @@ class EmbeddingFile(ManagerProcessInformations):
                 embedding_model=self.vector_db_settings.get("model")
             )
 
-            self.pine_service = PineconeVectorService(
+            self.pine_service = PineconeEmbedding(
                 vector_client=self.pine_client,
                 embedding_model_name=self.vector_db_settings.get("model"), 
                 dimensions=self.vector_db_settings.get("dimensions")

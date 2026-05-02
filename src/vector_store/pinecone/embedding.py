@@ -10,7 +10,7 @@ from langchain_openai import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 
-from src.vector_store.pinecone.pinecone_client import PineconeClient
+from src.vector_store.pinecone.client import PineconeClient
 from src.vector_store.config import PineconeVectorStoreConfig
 from src.tracing.tracing_core import ApplicationTracing
 
@@ -370,4 +370,4 @@ if __name__ == "__main__":
     )
     print(json.dumps(response, indent=4, default=str))
 
-# python -m src.vector_store.pinecone.pinecone_vectorstore_services
+# python -m src.vector_store.pinecone.embedding
