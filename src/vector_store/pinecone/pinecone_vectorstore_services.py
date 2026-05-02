@@ -24,6 +24,9 @@ tracer = ApplicationTracing(
 )
 
 
+
+
+
 class PineconeEmbedding:
     """
     Service responsável por:
@@ -176,11 +179,6 @@ class PineconeEmbedding:
 
 
 
-
-
-    # ======================================================
-    # Embeddings
-    # ======================================================
     def generate_vectors(
         self,
         text: str,
@@ -306,8 +304,11 @@ class PineconeEmbedding:
         self,
         target_feature: str,
         target_id: str,
-        namespace: str
+        namespace: str,
+        features: list = None
     ):
+        if features and target_feature not in features:
+            raise ValueError(f"Target feature '{target_feature}' not in provided features list")
 
         namespace = namespace or self.namespace
 
