@@ -141,8 +141,7 @@ class PineconeEmbedding(EmbeddingHelpers):
             )
 
         except Exception as e:
-            tracer.ERROR("__init__", f"Initialization failed - {str(e)}")
-            raise
+            raise RuntimeError(f"Initialization failed - {str(e)}")
 
 
     def generate_vectors(
@@ -321,15 +320,7 @@ class PineconeEmbedding(EmbeddingHelpers):
             return {"deleted_vectors": 0}
 
         except Exception as e:
-            tracer.ERROR(
-                "delete_documents",
-                f"Deletion failed - {str(e)}",
-                metadata={
-                    "target_feature": target_feature,
-                    "target_id": target_id,
-                }
-            )
-            raise
+            raise RuntimeError(f"Error deleting documents: {str(e)}")
 
 
 

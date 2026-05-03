@@ -21,16 +21,6 @@ tracer = ApplicationTracing(
 )
 
 class PineconeClient:
-    """
-    Cliente unificado responsável por:
-    - Carregar credenciais
-    - Inicializar Pinecone
-    - Inicializar embeddings
-    - Criar VectorStores
-    - Criar Retrievers
-    - Gerenciar namespaces
-    """
-
     def __init__(
         self,
         index_name: Optional[str] = None,
@@ -41,39 +31,21 @@ class PineconeClient:
         tracer.INFO("__init__", "Initializing client")
 
         try:
-            # ======================================================
-            # Credenciais
-            # ======================================================
             self.openai_key = os.getenv("OPENAI_API_KEY")
             self.pinecone_key = os.getenv("PINECONE_API_KEY")
             self.config = PineconeVectorStoreConfig()
 
             if not self.openai_key or not self.pinecone_key:
-                tracer.ERROR(
-                    "__init__",
-                    "Missing API keys",
-                    metadata={
-                        "openai_key_exists": bool(self.openai_key),
-                        "pinecone_key_exists": bool(self.pinecone_key),
-                    }
-                )
                 raise EnvironmentError(
                     "OPENAI_API_KEY or PINECONE_API_KEY not found."
                 )
 
-            # ======================================================
-            # Configurações
-            # ======================================================
             self.index_name = (
                 index_name
                 or os.getenv("PINECONE_INDEX_NAME", self.config.index_name)
             )
 
             if not self.index_name:
-                tracer.ERROR(
-                    "__init__",
-                    "Index name not provided",
-                )
                 raise ValueError(
                     "index_name not provided or defined in PINECONE_INDEX_NAME."
                 )
@@ -110,19 +82,12 @@ class PineconeClient:
                 }
             )
 
-            # ======================================================
-            # Inicializações
-            # ======================================================
             self._init_pinecone()
             self._init_embeddings()
 
         except Exception as e:
-            tracer.ERROR("__init__", f"Client initialization failed - {str(e)}")
-            raise
+            raise RuntimeError(f"Failed to initialize PineconeClient: {str(e)}")
 
-    # ======================================================
-    # Internals
-    # ======================================================
     def _init_pinecone(self) -> None:
         tracer.DEBUG("_init_pinecone", "Connecting to Pinecone")
 
@@ -146,14 +111,7 @@ class PineconeClient:
 
         self.embedding_model = OpenAIEmbeddings(model=model)
 
-    # ======================================================
-    # Public API
-    # ======================================================
-
     def get_namespace(self, namespace: Optional[str] = None) -> str:
-        """
-        Resolve namespace padrão.
-        """
         resolved = namespace or self.main_namespace
 
         tracer.DEBUG(
@@ -172,9 +130,7 @@ class PineconeClient:
         namespace: Optional[str] = None,
         embedding_model: Optional[OpenAIEmbeddings] = None,
     ) -> PineconeVectorStore:
-        """
-        Cria um VectorStore para ingestão ou busca.
-        """
+        
         resolved_namespace = self.get_namespace(namespace)
 
         tracer.DEBUG(
@@ -197,4 +153,4 @@ if __name__ == "__main__":
     vector_store = client.create_vector_store()
     print("Pinecone Client initialized and VectorStore created successfully.")
 
-# python -m src.vector_store.pinecone.pinecone_client
+# python -m src.vector_store.pinecone.client

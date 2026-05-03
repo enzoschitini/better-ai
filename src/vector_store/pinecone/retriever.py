@@ -1,21 +1,16 @@
-import os
 import logging
-
-from dotenv import load_dotenv
 from typing import List, Optional, Dict, Any, Union
 
 from src.vector_store.pinecone.client import PineconeClient
 from src.vector_store.config import PineconeVectorStoreConfig
 from src.tracing.tracing_core import ApplicationTracing
 
-load_dotenv()
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
 tracer = ApplicationTracing(
     flag="PineconeRetriever",
     file_name="pinecone_retriever.py",
-    log_file_name="pinecone_module",
-    show_info_logs=True
+    log_file_name="pinecone_module"
 )
 
 class PineconeRetriever:
@@ -46,8 +41,7 @@ class PineconeRetriever:
             )
 
         except Exception as e:
-            tracer.ERROR("__init__", f"Failed to initialize retriever - {str(e)}")
-            raise
+            raise RuntimeError(f"Failed to initialize retriever - {str(e)}")
 
     def similarity_search(
         self,
@@ -57,11 +51,9 @@ class PineconeRetriever:
     ) -> List[Dict[str, Any]]:
         
         if not query:
-            tracer.ERROR("similarity_search", "Empty query received")
             raise ValueError("The search query cannot be empty.")
 
         if k <= 0:
-            tracer.ERROR("similarity_search", "Invalid k value", metadata={"k": k})
             raise ValueError("The parameter k must be greater than zero.")
 
         try:
@@ -74,11 +66,7 @@ class PineconeRetriever:
             query_vector = self.embeddings.embed_query(query)
 
         except Exception as e:
-            tracer.ERROR(
-                "similarity_search",
-                f"Failed to generate embedding - {str(e)}"
-            )
-            raise RuntimeError("Failed to generate query embedding.") from e
+            raise RuntimeError(f"Failed to generate embedding - {str(e)}")
 
         filter_query: Optional[Dict[str, Any]] = None
 
@@ -98,12 +86,7 @@ class PineconeRetriever:
                 )
 
         except Exception as e:
-            tracer.ERROR(
-                "similarity_search",
-                f"Invalid filter - {str(e)}",
-                metadata={"filter_search": filter_search}
-            )
-            raise ValueError("Invalid search filter.") from e
+            raise ValueError(f"Invalid filter - {str(e)}")
 
         try:
             tracer.DEBUG(
@@ -121,11 +104,7 @@ class PineconeRetriever:
             )
 
         except Exception as e:
-            tracer.ERROR(
-                "similarity_search",
-                f"Pinecone query failed - {str(e)}"
-            )
-            raise RuntimeError("Failure to query Pinecone.") from e
+            raise RuntimeError(f"Failure to query Pinecone - {str(e)}")
 
         documents: List[Dict[str, Any]] = []
 
@@ -150,11 +129,7 @@ class PineconeRetriever:
             )
 
         except Exception as e:
-            tracer.ERROR(
-                "similarity_search",
-                f"Failed to process results - {str(e)}"
-            )
-            raise RuntimeError("Failed to process search results.") from e
+            raise RuntimeError(f"Failed to process search results - {str(e)}")
 
         return documents
 
@@ -165,11 +140,8 @@ class PineconeRetriever:
         target_key: str = "file_id",
         target_value: Union[str, List[str]] = None,
     ) -> List[Dict[str, Any]]:
+
         if not target_value:
-            tracer.ERROR(
-                "get_all_docs_by_metadata",
-                "target_value is empty"
-            )
             raise ValueError("target_value cannot be empty.")
 
         batch_size = (
@@ -237,17 +209,7 @@ class PineconeRetriever:
             )
 
         except Exception as e:
-            tracer.ERROR(
-                "get_all_docs_by_metadata",
-                f"Failed during paginated retrieval - {str(e)}",
-                metadata={
-                    "target_key": target_key,
-                    "target_value": target_value,
-                }
-            )
-            raise RuntimeError(
-                "Failed to retrieve vectors by target."
-            ) from e
+            raise RuntimeError(f"Failed to retrieve vectors by target - {str(e)}")
 
         return results
 
