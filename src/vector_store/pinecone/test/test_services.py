@@ -31,7 +31,7 @@ class TestPineconeVectorStore:
 
         return pine_client
 
-    def retriver(
+    def retriever(
         self, 
         query: str = "Quais arquivos estão na base?",
         filter_search: dict = {
@@ -108,6 +108,8 @@ class TestPineconeVectorStore:
 if __name__ == "__main__":
     tester = TestPineconeVectorStore()
     tester.get_client()
+    tester.embedding()
+    tester.retriever()
     tester.delete()
 
 # python -m src.vector_store.pinecone.test.test_services
