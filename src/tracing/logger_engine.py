@@ -116,7 +116,8 @@ class LoggerEngine:
 
         # FILE
         if save_logs:
-            file_handler = logging.FileHandler(f"{self.log_file_name}.log")
+            os.makedirs("logs", exist_ok=True)
+            file_handler = logging.FileHandler(f"logs/{self.log_file_name}.log")
             file_handler.setLevel(logging.DEBUG)
             file_handler.setFormatter(log_formatter)
             logger.addHandler(file_handler)
