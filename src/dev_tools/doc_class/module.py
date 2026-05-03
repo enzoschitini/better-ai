@@ -77,6 +77,6 @@ class ClassDoc:
             raise RuntimeError("Erro: ClassDoc.generate_doc", str(e))
 
 if __name__ == "__main__":
-    ClassDoc("PineconeRetriever").run()
+    ClassDoc("PineconeEmbedding").run()
 
 # python -m src.dev_tools.doc_class.module

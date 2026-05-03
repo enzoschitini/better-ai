@@ -29,7 +29,18 @@ class EmbeddingHelpers:
         chunk_size: int | None = None,
         chunk_overlap: int | None = None,
     ) -> List[str]:
-            
+        """
+        Splits the provided text into chunks using a recursive character splitter,
+        respecting specified chunk size and overlap settings or defaults.
+
+        Args:
+        text (str): The text content to be split into smaller chunks.
+        chunk_size (int | None): Optional size limit for each chunk; if None, use default chunk_size attribute.
+        chunk_overlap (int | None): Optional overlap size between consecutive chunks; if None, use default chunk_overlap attribute.
+
+        Returns:
+        List[str]: A list of text chunks split from the original text.
+        """
         try:
             splitter = RecursiveCharacterTextSplitter(
                 chunk_size=chunk_size or self.chunk_size,
@@ -38,7 +49,6 @@ class EmbeddingHelpers:
             )
 
             chunks = splitter.split_text(text)
-            # example ["xxxxxxxxxxx", "zzzzzzzzzzz"]
 
             tracer.DEBUG(
                 "split_text",
@@ -53,8 +63,7 @@ class EmbeddingHelpers:
     @staticmethod
     def build_documents(chunks: List[str], metadata: Dict[str, Any]) -> List[Document]:
         """
-        chunks = ['Era uma vez uma cidade onde ninguém sonhava.\n\nNão porque fosse proibido, nem porque f... claro, ideias novas, perguntas perigosas.', 'Primeiro raros. Depois confusos. Depois intensos.\n\nE com eles vieram risos inesperado...que, de certa forma… nunca foi necessária.'],
-        metadata = {'file_id': 'test_file_12345', 'created_at': '2026-04-30 19:49:35'}
+        Creates Document objects from text chunks, attaching the given metadata to each document.
         """
         try:
             return [
@@ -65,6 +74,15 @@ class EmbeddingHelpers:
             raise RuntimeError(f"Error building Document objects: {str(e)}")
     
     def generate_embeddings(self, texts: List[str]) -> List[List[float]]:
+        """
+        Generates embeddings vectors for a list of texts using the embeddings model.
+
+        Args:
+        texts (List[str]): The list of text strings to embed.
+
+        Returns:
+        List[List[float]]: A list containing embedding vectors corresponding to each input text.
+        """
         try:
             return self.embeddings_model.embed_documents(texts)
         except Exception as e:
@@ -151,19 +169,27 @@ class PineconeEmbedding(EmbeddingHelpers):
         save_global: bool = False,
         batch_size: int | None = None,
     ):
+        """
+        Processes the input text by splitting it into chunks, creating Documents,
+        generating embeddings, and saving these embeddings in Pinecone vector stores.
+        Handles batching and optionally saves embeddings in a global namespace as well.
 
+        Args:
+            text (str): The full text content to generate vector embeddings from.
+            metadata (dict): Dictionary metadata to associate with each vector embedding.
+            save_global (bool): Whether to save embeddings also in the global namespace. Default is False.
+            batch_size (int | None): Optional number of documents to embed per batch; defaults to internal config batch size.
+
+        Returns:
+            dict: A dictionary indicating success or error status, messages, and detailed embedding information.
+        """
         dt_utc = datetime.now(timezone.utc).replace(microsecond=0, tzinfo=None)
         metadata["created_at"] = str(dt_utc)
 
         chunks = self.split_text(text)
         documents = self.build_documents(chunks, metadata)
 
-        """
-        [Document(metadata={'file_id': 'test_file_12345', 'created_at': '2026-04-30 19:49:35'}...laro, ideias novas, perguntas perigosas.'),
-        Document(metadata={'file_id': 'test_file_12345', 'created_at': '2026-04-30 19:49:35'}...e, de certa forma… nunca foi necessária.')],
-        """
-
-        batch_size = ( # 100
+        batch_size = (
             min(batch_size, self.embedding_batch_size)
             if batch_size and batch_size > 0
             else self.embedding_batch_size
@@ -265,6 +291,23 @@ class PineconeEmbedding(EmbeddingHelpers):
         namespace: str,
         features: list = None
     ):
+        """
+        Deletes vectors from the Pinecone index matching a specific feature and id within a given namespace.
+        Supports batch deletion for efficient processing and includes validation for the presence of the target feature.
+
+        Args:
+            target_feature (str): The metadata feature key to filter vectors for deletion.
+            target_id (str): The specific feature value identifying which vectors to delete.
+            namespace (str): The Pinecone namespace where deletion occurs.
+            features (list): Optional list of valid feature keys; if provided, target_feature must be included.
+
+        Returns:
+            dict: Information about the number of deleted vectors and the namespace they were deleted from.
+
+        Raises:
+            ValueError: If target_feature is not found in the features list when features is provided.
+            RuntimeError: If an error occurs during the deletion process.
+        """
         if features and target_feature not in features:
             raise ValueError(f"Target feature '{target_feature}' not in provided features list")
 
@@ -321,26 +364,3 @@ class PineconeEmbedding(EmbeddingHelpers):
 
         except Exception as e:
             raise RuntimeError(f"Error deleting documents: {str(e)}")
-
-
-
-
-
-
-if __name__ == "__main__":
-    import json
-
-    pine_client = PineconeClient(
-        index_name="backai-vectorstore",
-        main_namespace="embedding_file",
-    )
-
-    service = PineconeEmbedding(pine_client)
-    response = service.generate_vectors(
-        text="Teste de geração de embeddings com o Pinecone Vector Service",
-        metadata={"file_id": "test_file_12345"},
-        save_global=True
-    )
-    print(json.dumps(response, indent=4, default=str))
-
-# python -m src.vector_store.pinecone.embedding
