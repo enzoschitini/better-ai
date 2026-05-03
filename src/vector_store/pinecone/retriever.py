@@ -1,10 +1,15 @@
 import os
+import logging
+
+from dotenv import load_dotenv
 from typing import List, Optional, Dict, Any, Union
 
 from src.vector_store.pinecone.client import PineconeClient
 from src.vector_store.config import PineconeVectorStoreConfig
 from src.tracing.tracing_core import ApplicationTracing
 
+load_dotenv()
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 tracer = ApplicationTracing(
     flag="PineconeRetriever",
@@ -13,29 +18,19 @@ tracer = ApplicationTracing(
     show_info_logs=True
 )
 
-
 class PineconeRetriever:
     def __init__(self, client: Optional[PineconeClient] = None):
         tracer.INFO("__init__", "Initializing retriever")
 
         try:
-            # ==========================
-            # Validação / Injeção
-            # ==========================
             if not client:
                 tracer.DEBUG("__init__", "No client provided, creating default client")
                 client = PineconeClient()
 
-            # ==========================
-            # Configurações
-            # ==========================
             self.config = PineconeVectorStoreConfig()
             self.batch_size = self.config.embedding_batch_size
             self.dimension = self.config.dimensions
 
-            # ==========================
-            # Dependências
-            # ==========================
             self.index = client.index
             self.embeddings = client.embedding_model
             self.namespace = client.main_namespace
@@ -54,18 +49,13 @@ class PineconeRetriever:
             tracer.ERROR("__init__", f"Failed to initialize retriever - {str(e)}")
             raise
 
-    # ======================================================
-    # Similarity Search
-    # ======================================================
     def similarity_search(
         self,
         query: str,
         k: int = 5,
         filter_search: Optional[Dict[str, Any]] = None,
     ) -> List[Dict[str, Any]]:
-        # ==========================
-        # Validações
-        # ==========================
+        
         if not query:
             tracer.ERROR("similarity_search", "Empty query received")
             raise ValueError("The search query cannot be empty.")
@@ -74,9 +64,6 @@ class PineconeRetriever:
             tracer.ERROR("similarity_search", "Invalid k value", metadata={"k": k})
             raise ValueError("The parameter k must be greater than zero.")
 
-        # ==========================
-        # Embedding
-        # ==========================
         try:
             tracer.DEBUG(
                 "similarity_search",
@@ -93,9 +80,6 @@ class PineconeRetriever:
             )
             raise RuntimeError("Failed to generate query embedding.") from e
 
-        # ==========================
-        # Filtro
-        # ==========================
         filter_query: Optional[Dict[str, Any]] = None
 
         try:
@@ -121,9 +105,6 @@ class PineconeRetriever:
             )
             raise ValueError("Invalid search filter.") from e
 
-        # ==========================
-        # Query Pinecone
-        # ==========================
         try:
             tracer.DEBUG(
                 "similarity_search",
@@ -146,9 +127,6 @@ class PineconeRetriever:
             )
             raise RuntimeError("Failure to query Pinecone.") from e
 
-        # ==========================
-        # Normalização
-        # ==========================
         documents: List[Dict[str, Any]] = []
 
         try:
@@ -180,9 +158,6 @@ class PineconeRetriever:
 
         return documents
 
-    # ======================================================
-    # Metadata Search
-    # ======================================================
     def get_all_docs_by_metadata(
         self,
         batch_size: int | None = None,
@@ -209,7 +184,6 @@ class PineconeRetriever:
 
         dummy_vector = [0.0] * dimension
 
-        # Filtro dinâmico
         if isinstance(target_value, list):
             filter_query = {target_key: {"$in": target_value}}
         else:

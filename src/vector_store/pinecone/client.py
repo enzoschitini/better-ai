@@ -1,22 +1,24 @@
 import os
-from typing import Optional
+import logging
 
+from typing import Optional
 from dotenv import load_dotenv
-from langchain_openai import OpenAIEmbeddings
+
 import pinecone
+from langchain_openai import OpenAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
 
 from src.vector_store.config import PineconeVectorStoreConfig
 from src.tracing.tracing_core import ApplicationTracing
 
 load_dotenv()
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 tracer = ApplicationTracing(
     flag="PineconeClient",
     file_name="pinecone_client.py",
     log_file_name="pinecone_module"
 )
-
 
 class PineconeClient:
     """

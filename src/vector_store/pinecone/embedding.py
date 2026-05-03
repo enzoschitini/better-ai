@@ -1,14 +1,13 @@
 import os
 import logging
 
-from typing import List, Optional, Dict, Any
-
 from dotenv import load_dotenv
 from datetime import datetime, timezone
+from typing import List, Optional, Dict, Any
 
+from langchain_core.documents import Document
 from langchain_openai import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_core.documents import Document
 
 from src.vector_store.pinecone.client import PineconeClient
 from src.vector_store.config import PineconeVectorStoreConfig
@@ -72,7 +71,6 @@ class EmbeddingHelpers:
             raise RuntimeError(f"Error generating embeddings: {str(e)}")
 
 
-
 class PineconeEmbedding(EmbeddingHelpers):
     def __init__(
         self,
@@ -90,7 +88,6 @@ class PineconeEmbedding(EmbeddingHelpers):
             self.client = vector_client
             self.config = PineconeVectorStoreConfig()
 
-            # Configs
             self.chunk_size = self.config.chunk_size
             self.chunk_overlap = self.config.chunk_overlap
             self.separators = self.config.separators
@@ -99,7 +96,6 @@ class PineconeEmbedding(EmbeddingHelpers):
             self.delete_batch_size = self.config.delete_batch_size
             self.embedding_batch_size = self.config.embedding_batch_size
 
-            # Embeddings
             self.embeddings_model = OpenAIEmbeddings(
                 model=embedding_model_name or os.getenv(
                     "OPENAI_EMBEDDING_MODEL",
@@ -109,7 +105,6 @@ class PineconeEmbedding(EmbeddingHelpers):
 
             self.dimensions = dimensions or self.config.dimensions
 
-            # Vector stores
             self.global_vectordb = self.client.create_vector_store(
                 embedding_model=self.embeddings_model,
                 namespace=self.client.global_namespace
@@ -124,33 +119,23 @@ class PineconeEmbedding(EmbeddingHelpers):
                 "__init__",
                 "Vector service initialized",
                 metadata={
-                    # Configurações de chunking
                     "chunk_size": self.chunk_size,
                     "chunk_overlap": self.chunk_overlap,
                     "separators": self.separators,
 
-                    # Configurações de busca / controle
                     "top_k": self.top_k,
                     "delete_batch_size": self.delete_batch_size,
                     "embedding_batch_size": self.embedding_batch_size,
 
-                    # Embeddings
                     "embedding_model": embedding_model_name or os.getenv(
                         "OPENAI_EMBEDDING_MODEL",
                         self.config.embedding_model
                     ),
 
-                    # Estrutura vetorial
                     "dimensions": self.dimensions,
-
-                    # Namespaces
                     "main_namespace": self.client.main_namespace,
                     "global_namespace": self.client.global_namespace,
-
-                    # Infra
                     "index_name": getattr(self.client, "index_name", None),
-
-                    # Flags implícitas
                     "has_custom_client": vector_client is not None,
                 }
             )
@@ -217,7 +202,6 @@ class PineconeEmbedding(EmbeddingHelpers):
                 metadata={"batch_number": batch_number}
             )
 
-            # rollback
             self.delete_documents(
                 "file_id",
                 metadata.get("file_id"),
@@ -242,7 +226,6 @@ class PineconeEmbedding(EmbeddingHelpers):
                 "batch": batch_number
             }
 
-        # 1. Creiamo la struttura base della risposta
         response = {
             "status": "success",
             "message": "Embeddings saved successfully.",
@@ -256,7 +239,6 @@ class PineconeEmbedding(EmbeddingHelpers):
             }
         }
 
-        # 2. Aggiungiamo il blocco 'global_namespace' solo se save_global è True
         if save_global:
             response["embedding_informations"]["global_namespace"] = {
                 "namespace": self.client.global_namespace,
