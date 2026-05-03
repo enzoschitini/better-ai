@@ -92,8 +92,13 @@ if __name__ == "__main__":
     input_tokens = 3000
     output_tokens = 1000
 
+    input_cost = pricing.input_cost(input_tokens)
+    output_cost = pricing.output_cost(output_tokens)
+
     cost = pricing.total_cost(input_tokens, output_tokens)
 
+    print(f"Custo input: ${input_cost:.6}")
+    print(f"Custo output: ${output_cost:.6}")
     print(f"Custo total: ${cost:.6}")
 
 """

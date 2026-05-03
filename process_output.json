@@ -59,7 +59,7 @@
         "origin": "web_app",
         "language": "en",
         "tags": "#finance, #report, #2026",
-        "created_at": "2026-05-03 12:35:53"
+        "created_at": "2026-05-03 12:42:14"
     },
     "usage_summary": {
         "total_caracter_count": 11011,
@@ -93,30 +93,30 @@
                 "namespace": "embedding_file",
                 "chunks_saved": 6,
                 "chunks_ids": [
-                    "f715c874-9578-46bb-8ccd-69e2d513564c",
-                    "8cbf0ab7-2b18-4137-80fc-c16371f4c52d",
-                    "4cd2b993-c5b9-4cf2-b94c-103e7dce1a9d",
-                    "936226fa-cec8-4b8c-ba47-c470859cc767",
-                    "1ccd7101-980a-4fec-976c-3be4c4ba80fc",
-                    "091debef-a6ef-4726-98c0-39e8e6f2aec7"
+                    "00cda346-3f7c-4995-aaf0-14242fb29f86",
+                    "513e1143-f48d-494f-859e-14e339cbfc27",
+                    "63b74059-11a2-4bb0-9405-b13535440171",
+                    "acb2c903-d06d-41ad-b380-2b7f4fb04d1e",
+                    "dab94e4d-1ad9-4353-8959-373101e52a2b",
+                    "a8c74bbc-afaa-4fe4-b4b9-b493c08f548c"
                 ]
             },
             "global_namespace": {
                 "namespace": "global",
                 "chunks_saved": 6,
                 "chunks_ids": [
-                    "5a87cbe2-8590-4ab1-8a8b-ab3d8d3ddbc1",
-                    "c8855486-ae77-4dd3-8722-d1a7e2652e24",
-                    "9a0fd8c7-5dbb-443d-8149-a7ac0e9a6048",
-                    "e1f2281b-dedd-46b8-a374-6c5e57cfbbec",
-                    "04a4c687-ff2c-4645-a179-7a314ae6886b",
-                    "455fcac7-5b3c-4205-998e-f3bd0cf7b3d5"
+                    "36224858-ef08-473d-8846-a4a6a23e28fa",
+                    "5431aea8-7a19-4e9a-8ac1-2653630dd99e",
+                    "820ea865-5bef-4ccb-b82a-06c89ecc0f5c",
+                    "b25b138c-4de7-44e5-9110-ee6eb6357935",
+                    "36faf39a-76dc-41c3-acb9-a7f9b9757aa8",
+                    "ed13b3d1-f03c-451e-a53b-fb7430ffb785"
                 ]
             }
         }
     },
     "save_response": {
         "status": "success",
-        "inserted_id": "2ea0f86b-f3c0-44eb-a8c3-ce8ee3ca1d77"
+        "inserted_id": "8382447d-29af-459f-8d7e-cc150f594bc5"
     }
 }
