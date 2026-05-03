@@ -1,3 +1,4 @@
+```python
 import os
 import logging
 
@@ -105,6 +106,12 @@ class PineconeClient:
     def _init_pinecone(self) -> None:
         """
         Initializes the connection to the Pinecone service, setting up the client and index.
+
+        Args:
+            None
+
+        Returns:
+            None
         """
         tracer.DEBUG("_init_pinecone", "Connecting to Pinecone")
 
@@ -123,6 +130,9 @@ class PineconeClient:
 
         Args:
             model_name (str, optional): Name of the embedding model to initialize. Defaults to the client's embedding model name.
+
+        Returns:
+            None
         """
         model = model_name or self.embedding_model_name
 
@@ -193,5 +203,4 @@ if __name__ == "__main__":
     client = PineconeClient()
     vector_store = client.create_vector_store()
     print("Pinecone Client initialized and VectorStore created successfully.")
-
-# python -m src.vector_store.pinecone.client
+```
