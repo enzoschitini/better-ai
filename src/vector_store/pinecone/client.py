@@ -188,10 +188,3 @@ class PineconeClient:
         )
 
         return vector_store
-
-if __name__ == "__main__":
-    client = PineconeClient()
-    vector_store = client.create_vector_store()
-    print("Pinecone Client initialized and VectorStore created successfully.")
-
-# python -m src.vector_store.pinecone.client

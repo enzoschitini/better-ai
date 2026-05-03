@@ -1,3 +1,4 @@
+```python
 import logging
 from typing import List, Optional, Dict, Any, Union
 
@@ -256,3 +257,43 @@ class PineconeRetriever:
             raise RuntimeError(f"Failed to retrieve vectors by target - {str(e)}")
 
         return results
+
+
+
+
+
+
+
+
+
+if __name__ == "__main__":
+    import json
+
+    pine_client = PineconeClient(
+        index_name="backai-vectorstore",
+        main_namespace="betterai-embeddings-dev",
+    )
+
+    retriver = PineconeRetriever(pine_client)
+
+    # Similarity search
+    similarity_results = retriver.similarity_search(
+        query="What is the capital of France?",
+        k=5
+    )
+
+    print("Similarity Search Results:")
+    print(json.dumps(similarity_results, indent=2))
+
+    # Metadata search
+    metadata_results = retriver.get_all_docs_by_metadata(
+        target_key="file_extension",
+        target_value="pdf",
+        batch_size=10
+    )
+
+    print("\nMetadata Search Results:")
+    print(json.dumps(metadata_results, indent=2))
+
+# python -m src.vector_store.pinecone.retriever
+```

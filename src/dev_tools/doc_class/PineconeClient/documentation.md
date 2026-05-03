@@ -198,3 +198,14 @@ vector_store = client.create_vector_store()
 vector_store_custom = client.create_vector_store(namespace="ns_custom")
 # Cria store com namespace customizado
 ```
+
+## Uso
+
+```python
+if __name__ == "__main__":
+    client = PineconeClient()
+    vector_store = client.create_vector_store()
+    print("Pinecone Client initialized and VectorStore created successfully.")
+
+# python -m src.vector_store.pinecone.client
+```
