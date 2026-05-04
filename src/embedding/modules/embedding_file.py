@@ -270,13 +270,16 @@ class EmbeddingFile(ManagerProcessInformations):
         try:
             if pipeline:
                 tracer.INFO("Process the pipeline to generate additional content")
-                aggregate_content = AggregateEmbeddingContent(pipeline)
-                additional_content = aggregate_content.process()
-            
-            prepared_content = {
-                "file_content": file_content,
-                **(additional_content if pipeline else {})
-            }
+                aggregate_content = AggregateEmbeddingContent(
+                    payload=self.payload, 
+                    pipeline=pipeline, 
+                    file_content=file_content
+                )
+
+                prepared_content = aggregate_content.process()
+
+            else:
+                prepared_content = {"file_content": file_content}
 
             prepared_metadata = {
                 **identifiers,
