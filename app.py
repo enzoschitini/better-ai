@@ -271,7 +271,7 @@ async def image_generation(
 async def document_parse(
     job_id: str = Form(...),
     metadata: str = Form(...),
-    schema: str = Form(...),
+    document_schema: str = Form(...),
     file: UploadFile = File(...),
     config: Optional[str] = Form(None),
 ):
@@ -288,7 +288,7 @@ async def document_parse(
         parser = DocumentParse(
             job_id=job_id,
             metadata=metadata,
-            schema=schema,
+            schema=document_schema,
             config=config,
             file_bytes=file_bytes,
             file_extension=file_extension

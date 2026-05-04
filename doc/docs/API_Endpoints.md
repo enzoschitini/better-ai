@@ -223,7 +223,7 @@ curl --location 'http://localhost:8000/parse-content/document-parse' \
 --header 'SecretKey: Bearer betterai-dev-6c6febc5-de97-464a-929b-cce1b2278de1' \
 --form 'job_id="teste"' \
 --form 'metadata="{\"value1\": \"value3\"}"' \
---form 'schema="{
+--form 'document_schema="{
   \"summary\": {
     \"type\": \"str\",
     \"description\": \"Resumo do conteúdo do arquivo\"
