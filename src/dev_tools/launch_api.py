@@ -63,7 +63,7 @@ def healthy():
 
 # ------------------------------------------------- #
 
-from src.embedding.modules.embedding_file import EmbeddingFile
+from src.embedding.applications import EmbeddingFile
 
 @app.post(
     "/vector-store/embedding-file",
