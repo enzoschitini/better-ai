@@ -3,6 +3,7 @@ from rich.console import Console
 from rich.panel import Panel
 
 from src.agents.files_talk.agent import FileTalkAgent
+from src.agents.files_talk.config import AGENT_AI_BANNER
 
 from src.agents.utils.agno_ai_agents import AgnoAiAgents
 from src.agents.utils.test_agents.run_agent import RunAgent
@@ -31,6 +32,7 @@ if __name__ == "__main__":
 
     console = Console()
     runner = RunAgent(agent=agent)
+    print(AGENT_AI_BANNER)
 
     while True:
         ask = input("\n>>> ")

@@ -68,7 +68,7 @@ class RetrievalAugmentedGeneration(Toolkit):
                 indicating that a valid query is required.
 
             max_results (int):
-                The maximum number of documents to retrieve. Must be between 1 and 15.
+                The maximum number of documents to retrieve. Must be between 10 and 50. (MIN=10, MAX=50)
                 Values outside this range may be automatically adjusted or return an error.
 
         Returns:
@@ -86,7 +86,7 @@ class RetrievalAugmentedGeneration(Toolkit):
 
             documents = retriver.similarity_search(
                 query=query,
-                k=max_results,
+                k=max(10, min(max_results, 50)),
                 filter_search=self.filter_search
             )
 
