@@ -38,6 +38,15 @@ class Embeddingfile:
         if not uploaded_files:
             return []
 
+        MAX_FILES = 5
+
+        if len(uploaded_files) > MAX_FILES:
+            st.error(
+                f"Você pode enviar no máximo "
+                f"{MAX_FILES} arquivos."
+            )
+            return []
+
         valid_files = []
 
         for uploaded_file in uploaded_files:
