@@ -6,6 +6,7 @@ from src.agents.files_talk.agent import FileTalkAgent
 
 from src.agents.utils.agno_ai_agents import AgnoAiAgents
 from src.agents.utils.test_agents.run_agent import RunAgent
+from src.utils.unique_id_factory import IDGenerator
 
 if __name__ == "__main__":
     # =========================
@@ -20,10 +21,10 @@ if __name__ == "__main__":
     agent, tool_context = agno.create_agent(
         "FileTalkAgent",
         {
-            "session_id": "12345",
+            "session_id": IDGenerator().uuid(),
             "user_id": "user_01",
             "filter_search": {
-                "file_id": ["candidatura", "tenerezza", "cucinare"]
+                "knowledge_base_id": ["test_agent"]
             }
         }
     )

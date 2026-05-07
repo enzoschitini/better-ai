@@ -34,8 +34,8 @@
         },
         "vector_db_settings": {
             "index_name": "backai-vectorstore",
-            "main_namespace": "embedding_file",
-            "global_namespace": "global",
+            "main_namespace": "embedding_file_agent",
+            "global_namespace": "global_vectorstore",
             "save_global": true,
             "model": "text-embedding-3-large",
             "dimensions": 3072,
@@ -59,13 +59,13 @@
         "origin": "web_app",
         "language": "en",
         "tags": "#finance, #report, #2026",
-        "created_at": "2026-05-06 19:38:51"
+        "created_at": "2026-05-07 18:08:57"
     },
     "usage_summary": {
         "total_caracter_count": 11011,
         "total_tokens": 3074,
         "total_cost_usd": "0.000399",
-        "exchange_rate": 4.9274,
+        "exchange_rate": 4.917,
         "parts": {
             "file_content": {
                 "caracter_count": 10932,
@@ -90,33 +90,33 @@
         "embedding_informations": {
             "batch_count": 1,
             "main_namespace": {
-                "namespace": "embedding_file",
+                "namespace": "embedding_file_agent",
                 "chunks_saved": 6,
                 "chunks_ids": [
-                    "10d21a5d-5fc1-467a-af89-34947357d441",
-                    "2d3a9408-8b77-4ca0-bcbe-371652e72fc1",
-                    "8473a585-2b6c-46a1-b42f-70414a16c454",
-                    "47971120-0d8d-4415-b402-4ac2ab62a588",
-                    "bd809785-601e-4fa6-ac35-74837675e7e7",
-                    "6aa41c78-6915-4d77-bbe8-91d9fab4d0b4"
+                    "fae75efe-801a-4908-947d-fcb14d18fbb9",
+                    "262be0cb-4ef2-44ec-8975-881ca2a4c35e",
+                    "2017c699-6f2b-4b0b-ae82-792fdaf9ed99",
+                    "861aa883-27b3-444a-81f1-39ff43c81b8d",
+                    "6e5f65a1-3a20-484f-8bae-4104d9f9b724",
+                    "7b3262ce-d3fe-4028-ad49-cb5b5e302c76"
                 ]
             },
             "global_namespace": {
-                "namespace": "global",
+                "namespace": "global_vectorstore",
                 "chunks_saved": 6,
                 "chunks_ids": [
-                    "b4f85f39-766e-4b3b-932e-dddcc69f5ff7",
-                    "0f0b5143-ed1c-4cbd-8422-9e1d6fae80fa",
-                    "59ab9a82-999f-4328-8e98-a87e53e50a9f",
-                    "6d338f4d-d244-481d-891c-3193029eb715",
-                    "47fb4d36-607b-4f56-86ad-8f3afe6f386d",
-                    "0308fccc-3b89-4f34-a33f-3baa9403901e"
+                    "f7be8495-84c1-4cbc-a6d6-a4c16d5086f1",
+                    "c7adf96d-537e-416b-b59b-202b397dde00",
+                    "858d297f-f4b4-4bbc-88a8-16743033da1b",
+                    "548511c8-0958-4b66-8fbc-acc6cca90516",
+                    "23f98a21-b24b-488a-8399-d4d823400da4",
+                    "5aa48768-2fd0-49b7-8653-695a0cf21359"
                 ]
             }
         }
     },
     "save_response": {
         "status": "success",
-        "inserted_id": "556c8e4b-9343-432f-9839-44fea9ed55da"
+        "inserted_id": "abc6dd8f-10be-4d86-a026-d340b2dcd827"
     }
 }
