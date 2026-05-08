@@ -261,9 +261,8 @@ class Embeddingfile:
                     "Embedding queue finished."
                 )
 
-                st.subheader("Results")
-
-                st.json(results)
+                #st.subheader("Results")
+                #st.json(results)
 
             finally:
                 st.session_state.is_embedding = False
