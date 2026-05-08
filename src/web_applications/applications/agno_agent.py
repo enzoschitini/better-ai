@@ -34,13 +34,7 @@ class AgnoAgent:
                     "knowledge_base_id": ["test_agent"]
                 }
             }
-        )   
-
-        
-
-
-
-
+        ) 
 
         # Inicializa histórico
         if "messages" not in st.session_state:
@@ -67,16 +61,19 @@ class AgnoAgent:
 
             # Gera resposta fake
             response = runner.js_response(ask=prompt)
+            content = response["content"]
+            
+            print(f"{json.dumps(tool_context.tool_responser.get_metadata(), indent=4, ensure_ascii=False)}")
 
             # Salva resposta
             st.session_state.messages.append({
                 "role": "assistant",
-                "content": response["content"]
+                "content": content
             })
 
             # Mostra resposta
             with st.chat_message("assistant"):
-                st.markdown(response["content"])
+                st.markdown(content)
 
 
     def run(self):

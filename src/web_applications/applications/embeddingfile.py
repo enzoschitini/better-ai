@@ -269,6 +269,7 @@ class Embeddingfile:
 
     def run(self):
         self.app()
+        return "success"
 
 
 if __name__ == "__main__":
