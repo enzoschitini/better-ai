@@ -18,8 +18,12 @@ class AgnoAgent:
         }
 
     def app(self):
-        st.title("BetterAI — Agno Agent")
-        st.write("### Where Intelligence Finds Purpose")
+        st.title("ChatAI - Talk to your data")
+        st.info(
+            "Bem-vindo(a) ao ChatAI! Faça o upload dos seus arquivos e converse com eles de forma inteligente!"
+        )
+
+        st.divider()
 
         agno = AgnoAiAgents()
         agno.register("FileTalkAgent", FileTalkAgent)
@@ -27,7 +31,7 @@ class AgnoAgent:
         # =========================
         # CREATE
         # =========================
-        st.write(self.filter_search)
+        #st.write(self.filter_search)
         agent, tool_context = agno.create_agent(
             "FileTalkAgent",
             {
@@ -64,7 +68,7 @@ class AgnoAgent:
             response = runner.js_response(ask=prompt)
             content = response["content"]
             
-            print(f"{json.dumps(tool_context.tool_responser.get_metadata(), indent=4, ensure_ascii=False)}")
+            #print(f"{json.dumps(tool_context.tool_responser.get_metadata(), indent=4, ensure_ascii=False)}")
 
             # Salva resposta
             st.session_state.messages.append({

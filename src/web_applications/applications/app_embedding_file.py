@@ -12,7 +12,6 @@ class AppEmbeddingFile:
     ALLOWED_EXTENSIONS = {
         "txt", "md", "markdown", "html",
         "pdf", "doc", "docx", "ppt", "pptx",
-        "csv", "xls", "xlsx", "xml", "json"
     }
 
     def __init__(self, knowledge_base_id: str = None):
@@ -163,7 +162,7 @@ class AppEmbeddingFile:
         # ---- ACTION ----
 
         if st.button(
-            "Embedding Files",
+            "Send files for embedding",
             disabled=st.session_state.is_embedding
         ):
 

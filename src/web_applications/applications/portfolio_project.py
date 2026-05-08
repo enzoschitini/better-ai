@@ -3,14 +3,18 @@ from src.web_applications.applications.agno_agent import AgnoAgent
 from src.web_applications.applications.app_embedding_file import AppEmbeddingFile
 from src.utils.unique_id_factory import IDGenerator
 
-generate_id = IDGenerator()
-knowledge_base_id = generate_id.timestamp("kb", "_")
-
 class PortfolioProject:
     def __init__(self):
-        pass
+        self.generate_id = IDGenerator()
 
     def app(self):
+        if "knowledge_base_id" not in st.session_state:
+            st.session_state.knowledge_base_id = (
+                self.generate_id.timestamp("kb", "_")
+            )
+
+        knowledge_base_id = st.session_state.knowledge_base_id
+
         embed = AppEmbeddingFile(knowledge_base_id=knowledge_base_id)
         agent = AgnoAgent(filter_search={"knowledge_base_id": [knowledge_base_id]})
 
@@ -18,7 +22,7 @@ class PortfolioProject:
 
         with st.sidebar:
             embed.run()
-            st.write(knowledge_base_id)
+            #st.write(knowledge_base_id)
         
 
     def run(self):
