@@ -22,6 +22,11 @@ PAGES = {
             "Home": "home",
             "Idle": "idle",
         },
+
+        "Agents": {
+            "Agno Agent": "agno_agent",
+        },
+
         "Vector Store": {
             "Embedding File": "embeddingfile",
             "Update Metadata": "update_metadata",

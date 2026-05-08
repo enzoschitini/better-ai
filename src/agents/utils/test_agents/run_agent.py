@@ -31,7 +31,7 @@ class RunAgent:
     def debug(self, ask: str = "Hello!"):
         self.agent.print_response(ask)
 
-    def js_reponse(self, ask: str = "Hello!", path: str = None, tool_response: ToolResponse = None):
+    def js_response(self, ask: str = "Hello!", path: str = None, tool_response: ToolResponse = None):
         """
         Runs the agent with the specified input string and returns a formatted JSON response.
         Optionally saves the response to a JSON file and prints additional tool metadata if provided.
@@ -58,12 +58,12 @@ class RunAgent:
         path = path or "src/agents"
         formatter.save_json(formated_response, f"{path}/agent_response.json")
 
-        print(json.dumps(formated_response, indent=2))
+        #print(json.dumps(formated_response, indent=2))
 
-        if tool_response:
-            print(f"\nTool Responses:\n{tool_response.get_metadata()}")
+        #if tool_response:
+            #print(f"\nTool Responses:\n{tool_response.get_metadata()}")
         
-        print(f"\nResponse: {formated_response["content"]}")
+        #print(f"\nResponse: {formated_response["content"]}")
         return formated_response
 
     def agent_os(
