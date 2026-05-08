@@ -36,12 +36,48 @@ class AgnoAgent:
             }
         )   
 
-        runner = RunAgent(agent=agent)
-        ask = st.text_input("Ask something to the agent:")
-        response = runner.js_response(ask=ask)
+        
 
-        st.subheader("Agent Response")
-        st.write(response["content"])
+
+
+
+
+        # Inicializa histórico
+        if "messages" not in st.session_state:
+            st.session_state.messages = []
+
+        runner = RunAgent(agent=agent)
+
+        # Mostrar histórico
+        for msg in st.session_state.messages:
+            with st.chat_message(msg["role"]):
+                st.markdown(msg["content"])
+
+        # Input do usuário
+        if prompt := st.chat_input("Digite sua mensagem..."):
+            # Salva mensagem do usuário
+            st.session_state.messages.append({
+                "role": "user",
+                "content": prompt
+            })
+
+            # Mostra mensagem do usuário
+            with st.chat_message("user"):
+                st.markdown(prompt)
+
+            # Gera resposta fake
+            response = runner.js_response(ask=prompt)
+
+            # Salva resposta
+            st.session_state.messages.append({
+                "role": "assistant",
+                "content": response["content"]
+            })
+
+            # Mostra resposta
+            with st.chat_message("assistant"):
+                st.markdown(response["content"])
+
 
     def run(self):
         self.app()
