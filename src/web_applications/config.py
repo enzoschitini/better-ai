@@ -25,10 +25,11 @@ PAGES = {
 
         "Agents": {
             "Agno Agent": "agno_agent",
+            "Portfolio Project": "portfolio_project",
         },
 
         "Vector Store": {
-            "Embedding File": "embeddingfile",
+            "Embedding File": "embedding_file",
             "Update Metadata": "update_metadata",
             "Delete Vectors": "delete_vectors",
             "Retriver": "retriver",

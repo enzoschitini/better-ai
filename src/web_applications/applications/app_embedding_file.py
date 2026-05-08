@@ -6,7 +6,7 @@ from src.embedding.modules.embedding_file import EmbeddingFile
 id_gen = IDGenerator()
 
 
-class Embeddingfile:
+class AppEmbeddingFile:
     MAX_SIZE_MB = 50
 
     ALLOWED_EXTENSIONS = {
@@ -15,8 +15,8 @@ class Embeddingfile:
         "csv", "xls", "xlsx", "xml", "json"
     }
 
-    def __init__(self):
-        pass
+    def __init__(self, knowledge_base_id: str = None):
+        self.knowledge_base_id = knowledge_base_id or id_gen.timestamp("kb", "_")
 
     def _embedding(self, payload: dict):
         embedder = EmbeddingFile(payload)
@@ -98,7 +98,7 @@ class Embeddingfile:
         # ---- SESSION STATE ----
 
         if "embedding_metadata" not in st.session_state:
-            st.session_state.embedding_metadata = {}
+            st.session_state.embedding_metadata = {"knowledge_base_id": self.knowledge_base_id}
 
         if "is_embedding" not in st.session_state:
             st.session_state.is_embedding = False
@@ -117,6 +117,7 @@ class Embeddingfile:
 
         # ---- METADATA ----
 
+        """
         with st.expander("Metadata"):
 
             col1, col2 = st.columns(2)
@@ -148,11 +149,12 @@ class Embeddingfile:
 
             with col_clear:
                 if st.button("CLEAR"):
-                    st.session_state.embedding_metadata = {}
+                    st.session_state.embedding_metadata = {"knowledge_base_id": self.knowledge_base_id}
 
             st.subheader("Current Metadata")
 
             st.json(st.session_state.embedding_metadata)
+        """
 
         # ---- FILES ----
 
@@ -269,11 +271,10 @@ class Embeddingfile:
 
     def run(self):
         self.app()
-        return "success"
 
 
 if __name__ == "__main__":
-    page = Embeddingfile()
+    page = AppEmbeddingFile()
     page.run()
 
-# streamlit run src/web_applications/applications/embeddingfile.py
+# streamlit run src/web_applications/applications/app_embedding_file.py

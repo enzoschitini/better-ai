@@ -12,8 +12,10 @@ from src.agents.utils.test_agents.run_agent import RunAgent
 from src.utils.unique_id_factory import IDGenerator
 
 class AgnoAgent:
-    def __init__(self):
-        pass
+    def __init__(self, filter_search: dict = None):
+        self.filter_search = filter_search or {
+            "knowledge_base_id": ["test_agent"]
+        }
 
     def app(self):
         st.title("BetterAI — Agno Agent")
@@ -25,14 +27,13 @@ class AgnoAgent:
         # =========================
         # CREATE
         # =========================
+        st.write(self.filter_search)
         agent, tool_context = agno.create_agent(
             "FileTalkAgent",
             {
                 "session_id": IDGenerator().uuid(),
                 "user_id": "user_01",
-                "filter_search": {
-                    "knowledge_base_id": ["test_agent"]
-                }
+                "filter_search": self.filter_search
             }
         ) 
 
