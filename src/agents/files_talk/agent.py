@@ -24,7 +24,7 @@ class FileTalkAgent(BaseAgent):
 
     def create_agent(self, metadata: dict, tool_context: ToolContext):
         self._validate_metadata(metadata)
-        db = Database(local=True, local_path="src/agents/files_talk/data")
+        db = Database(local=True, local_path="src/agents/files_talk")
 
         return Agent(
             id="files_talk_agent",
