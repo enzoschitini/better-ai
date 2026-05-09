@@ -49,6 +49,19 @@ if __name__ == "__main__":
         target_names=["knowledge_base_id"],
         target_values=["test_agent"]
     )
-        
+
+
+payload = {
+    "vector_db_settings": {
+        "index_name": "test-agent",
+        "embedding_model": "text-embedding-3-small",
+        "main_namespace": "test_agent",
+        "global_namespace": "global",
+        "save_global": True
+    },
+    "target_key": "knowledge_base_id",
+    "target_value": "test_agent",
+    "targets_to_limit": ["knowledge_base_id"]
+}
 
 # python -m src.embedding.modules.delete_embeddings
