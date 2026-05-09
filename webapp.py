@@ -200,6 +200,6 @@ class WebAPP:
             self._handle_error("Unexpected error while rendering the page.", e, debug=True)
 
 web_app = WebAPP()
-web_app.run("embeddingfile")
+web_app.run("portfolio_project")
 
 # streamlit run webapp.py

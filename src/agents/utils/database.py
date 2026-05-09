@@ -24,11 +24,12 @@ class Database:
     def __new__(
         cls,
         local: bool = False,
+        local_path: str | None = "src/agents/database",
         database_name: str | None = None,
         database_url: str | None = None,
     ):
         if local:
-            return cls._local_database(database_name)
+            return cls._local_database(database_name, local_path)
         return cls._supabase(database_url, database_name)
 
     @staticmethod
@@ -48,7 +49,7 @@ class Database:
         return "agent_db"
 
     @staticmethod
-    def _get_database_local_storage(database_name: str | None):
+    def _get_database_local_storage(database_name: str | None, local_path: str | None):
         """
         Constructs the local SQLite database file path based on the database name.
         Defaults to 'src/agents/database/agno.db' if no database_name is provided.
@@ -59,10 +60,9 @@ class Database:
         Returns:
             str: The full path to the local SQLite database file.
         """
-        path = "src/agents/database"
         if database_name:
-            return f"{path}/{database_name}.db"
-        return f"{path}/agno.db"
+            return f"{local_path}/{database_name}.db"
+        return f"{local_path}/agno.db"
 
     @staticmethod
     def _get_database_url(database_url: str | None):
@@ -120,7 +120,7 @@ class Database:
         )
 
     @classmethod
-    def _local_database(cls, database_name: str | None):
+    def _local_database(cls, database_name: str | None, local_path: str | None):
         """
         Creates and returns a SqliteDb instance configured for local file storage,
         using the specified database name to determine the file path.
@@ -132,7 +132,7 @@ class Database:
             SqliteDb: An instance of SqliteDb configured for local use.
         """
         return SqliteDb(
-            db_file=cls._get_database_local_storage(database_name),
+            db_file=cls._get_database_local_storage(database_name, local_path),
 
             session_table="sessions",
             memory_table="memories",

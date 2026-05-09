@@ -31,18 +31,24 @@ class DeleteEmbeddings:
 
         for target_name, target_value in zip(target_names, target_values):
             self.pine_service.delete_documents(
-                target_name=target_name,
-                target_values=target_value,
+                target_feature=target_name,
+                target_id=target_value,
                 namespace=self.vector_db_settings.get("main_namespace")
             )
 
             if self.vector_db_settings.get("save_global", True):
                 self.pine_service.delete_documents(
-                    target_name=target_name,
-                    target_values=target_value,
+                    target_feature=target_name,
+                    target_id=target_value,
                     namespace=self.vector_db_settings.get("global_namespace")
                 )
-        
+
+if __name__ == "__main__":
+    delete_embeddings = DeleteEmbeddings()
+    delete_embeddings.delete(
+        target_names=["knowledge_base_id"],
+        target_values=["test_agent"]
+    )
         
 
 # python -m src.embedding.modules.delete_embeddings

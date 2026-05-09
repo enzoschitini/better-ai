@@ -8,7 +8,7 @@ class GetConfig:
         return {
             "vector_db_settings": {
                 "index_name": "backai-vectorstore",
-                "main_namespace": "embedding_file",
+                "main_namespace": "embedding_file_agent",
                 "global_namespace": "global_vectorstore",
                 "save_global": True,
 
@@ -25,7 +25,7 @@ class GetConfig:
         return {
             "vector_db_settings": {
                 "index_name": "backai-vectorstore",
-                "main_namespace": "embedding_file",
+                "main_namespace": "embedding_file_agent",
                 "global_namespace": "global_vectorstore",
                 "save_global": True,
 
