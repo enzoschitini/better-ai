@@ -8,7 +8,7 @@ tracer = ApplicationTracing(
     flag="Delete Embeddings",
     file_name="delete_embeddings.py",
     log_file_name="delete_embeddings",
-    show_info_logs=True
+    show_info_logs=False
 )
 
 class DeleteEmbeddings:
@@ -243,30 +243,3 @@ class DeleteEmbeddings:
         )
 
         return results
-
-if __name__ == "__main__":
-    import json
-
-    payload = {
-        "vector_db_settings": {
-            "index_name": "test-agent",
-            "embedding_model": "text-embedding-3-small",
-            "main_namespace": "test_agent",
-            "global_namespace": "global",
-        },
-        "target_keys": ["knowledge_base_id"],
-        "target_values": ["test_agent"],
-        "targets_to_limit": ["knowledge_base_id"]
-    }
-
-    delete_embeddings = DeleteEmbeddings()
-    result = delete_embeddings.delete(
-        target_keys=payload["target_keys"],
-        target_values=payload["target_values"],
-        targets_to_limit=payload["targets_to_limit"]
-    )
-
-    print(json.dumps(result, indent=2))
-
-
-# python -m src.embedding.modules.delete_embeddings

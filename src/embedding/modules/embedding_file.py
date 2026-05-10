@@ -24,7 +24,7 @@ tracer = ApplicationTracing(
     flag="Embedding File",
     file_name="embedding_file.py",
     log_file_name="embedding_file",
-    show_info_logs=True
+    show_info_logs=False
 )
 
 class EmbeddingFile(ManagerProcessInformations):

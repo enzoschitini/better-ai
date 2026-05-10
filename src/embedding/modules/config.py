@@ -7,8 +7,8 @@ class GetConfig:
     def vector_db_settings(self):
         return {
             "index_name": "backai-vectorstore",
-            "main_namespace": "knowledge_base",
-            "global_namespace": "global_vectorstore",
+            "main_namespace": os.getenv("PINECONE_NAMESPACE"),
+            "global_namespace": os.getenv("PINECONE_GLOBAL_NAMESPACE"),
             "save_global": True,
 
             "model": "text-embedding-3-large",
