@@ -5,7 +5,7 @@
             "client_id": "client_abc",
             "workspace_id": "workspace_001",
             "user_id": "user_789",
-            "file_id": "1778425973729552400a9xL"
+            "file_id": "file_xyz"
         },
         "pipeline": {
             "generate_tags": true
@@ -52,14 +52,14 @@
         "client_id": "client_abc",
         "workspace_id": "workspace_001",
         "user_id": "user_789",
-        "file_id": "1778425973729552400a9xL",
+        "file_id": "file_xyz",
         "file_name": "example.pdf",
         "file_extension": "pdf",
         "source": "uploaded_file",
         "origin": "web_app",
         "language": "en",
         "tags": "#finance, #report, #2026",
-        "created_at": "2026-05-10 15:12:55"
+        "created_at": "2026-05-10 15:18:46"
     },
     "usage_summary": {
         "total_caracter_count": 11011,
@@ -93,30 +93,30 @@
                 "namespace": "knowledge_base",
                 "chunks_saved": 6,
                 "chunks_ids": [
-                    "73feef7d-2591-4beb-823e-3908f514dc26",
-                    "c306fcc7-577f-4cc0-b4be-86b130ac0785",
-                    "01eda732-2afe-4bd5-aba2-9ddf2a8c9f36",
-                    "e669f57f-2615-4bc2-a50a-dbe2c5d65fc6",
-                    "2ba55545-0321-4e89-8403-35edbbad0d86",
-                    "b10fa983-a9d1-4fc8-818d-c89831664c63"
+                    "2cc8cb53-c416-4056-b9cd-7bd35f3a09f1",
+                    "0f5987b5-cad1-43a2-af01-faf51b275843",
+                    "d93c3d91-415b-424f-8363-5cb0d666dee2",
+                    "877a2ba8-006a-401c-b09d-e2ff3cbd83a5",
+                    "1b9e54dd-8ccf-45e6-8da6-2130c961c00b",
+                    "932981f2-2648-4217-9692-e172fbda6203"
                 ]
             },
             "global_namespace": {
                 "namespace": "global_vectorstore",
                 "chunks_saved": 6,
                 "chunks_ids": [
-                    "bab79795-65de-449f-8a62-9de9bf8f3241",
-                    "4d409565-32ee-4459-84a5-6b698fd958aa",
-                    "3ab20440-3a04-4718-8242-35e61a0635c6",
-                    "b4c0bb07-4013-4f6a-a6b3-3e86f3763647",
-                    "30e7d40c-a890-480a-a0b1-e80465f7cdea",
-                    "01d2ef3d-ddb3-41d3-abe0-9e8f1548b356"
+                    "aaeb9d47-5e3c-4be7-a3dd-da47dc816e43",
+                    "42cf738f-117f-4bad-8b03-37937fc96a22",
+                    "864ce520-8e01-4910-b071-2c976d5cc068",
+                    "962e0954-2ad5-4973-907f-c2c0a5a3c35c",
+                    "9ded9f17-94b6-4107-9891-e6f0518f062e",
+                    "851f9f14-5396-43d3-b6c5-bc3972aa787c"
                 ]
             }
         }
     },
     "save_response": {
         "status": "success",
-        "inserted_id": "79f67442-f9d9-4d39-bc3a-affa855b553f"
+        "inserted_id": "3e7b9e5f-8199-495b-a26a-9e43e86bf67d"
     }
 }
