@@ -155,7 +155,7 @@ class EmbeddingFile(ManagerProcessInformations):
         """
         try:
             vector_db_connection = VectorDBConnection(vector_db_settings=self.vector_db_settings)
-            self.pine_client, self.pine_service = vector_db_connection.get_pinecone_vector_db()
+            self.pine_client, self.pine_service = vector_db_connection.get_vector_db()
 
         except Exception as e:
             raise RuntimeError(f"Failed to load vector store database: {str(e)}")

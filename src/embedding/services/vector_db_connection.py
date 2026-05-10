@@ -1,16 +1,24 @@
 
 from src.vector_store.pinecone.client import PineconeClient
 from src.vector_store.pinecone.embedding import PineconeEmbedding
+from src.embedding.modules.config import GetConfig
 
 class VectorDBConnection(PineconeClient, PineconeEmbedding):
-    def __init__(self, vector_db_settings, *args, **kwargs):
+    def __init__(self, vector_db_settings=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
-        self.vector_db_settings = vector_db_settings
+
+        self.config = GetConfig()
+        default_settings = self.config.vector_db_settings()
+
+        self.vector_db_settings = {
+            **default_settings,
+            **(vector_db_settings or {})
+        }
+
         self.pinecone_client = None
         self.pinecone_embedding = None
 
-    def get_pinecone_vector_db(self):
+    def get_vector_db(self):
         """
         Initializes and configures the Pinecone vector database client and service
         using the vector store settings from the payload or config.
@@ -20,16 +28,16 @@ class VectorDBConnection(PineconeClient, PineconeEmbedding):
         """
         try:
             self.pinecone_client = PineconeClient(
-                index_name=self.vector_db_settings.get("index_name", "backai-vectorstore"),
-                main_namespace=self.vector_db_settings.get("main_namespace", "embedding_file"),
-                global_namespace=self.vector_db_settings.get("global_namespace", "global_vectorstore"),
-                embedding_model=self.vector_db_settings.get("model", "text-embedding-3-large"),
+                index_name=self.vector_db_settings.get("index_name"),
+                main_namespace=self.vector_db_settings.get("main_namespace"),
+                global_namespace=self.vector_db_settings.get("global_namespace"),
+                embedding_model=self.vector_db_settings.get("model"),
             )
 
             self.pinecone_embedding = PineconeEmbedding(
                 vector_client=self.pinecone_client,
-                embedding_model_name=self.vector_db_settings.get("model", "text-embedding-3-large"), 
-                dimensions=self.vector_db_settings.get("dimensions", 3072),
+                embedding_model_name=self.vector_db_settings.get("model"), 
+                dimensions=self.vector_db_settings.get("dimensions"),
             )
 
             return self.pinecone_client, self.pinecone_embedding
