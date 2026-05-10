@@ -31,7 +31,7 @@ Este serviço é ideal para aplicações que lidam com grandes volumes de dados 
 | Método           | Descrição                                      |
 |------------------|------------------------------------------------|
 | `__init__`       | Inicializa o serviço, configura cliente e parâmetros. |
-| `generate_vectors`| Cria e salva embeddings de texto dividido em chunks. |
+| `embedding_document`| Cria e salva embeddings de texto dividido em chunks. |
 | `delete_documents`| Deleta vetores no Pinecone com base em filtros metadata. |
 | `split_text`     | Divide um texto longo em múltiplos pedaços.   |
 | `build_documents` | Cria objetos Document com conteúdo e metadados. (método estático) |
@@ -111,7 +111,7 @@ service_custom = PineconeEmbedding(
 
 ---
 
-### 2. `generate_vectors`
+### 2. `embedding_document`
 
 ### Descrição
 
@@ -135,7 +135,7 @@ Processa texto longo, divide em chunks, cria documentos associando metadados, ge
 ### Exemplos
 
 ```python
-response = service.generate_vectors(
+response = service.embedding_document(
     text="Um texto muito longo que precisa ser dividido e vetorizado...",
     metadata={"file_id": "doc_001"},
     save_global=True,
@@ -283,7 +283,7 @@ service = PineconeEmbedding(vector_client=pine_client, embedding_model_name="tex
 
 texto = "Este é um exemplo de texto que será dividido, embeddado e armazenado."
 
-response = service.generate_vectors(
+response = service.embedding_document(
     text=texto,
     metadata={"file_id": "exemplo_12345"},
     save_global=True

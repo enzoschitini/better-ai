@@ -358,7 +358,7 @@ class EmbeddingFile(ManagerProcessInformations):
             
             tracer.INFO("Performing embedding")
             
-            embed_response = self.pine_service.generate_vectors(
+            embed_response = self.pine_service.embedding_document(
                 text=embedding_content,
                 metadata=embedding_metadata,
                 save_global=self.vector_db_settings.get("save_global", False),

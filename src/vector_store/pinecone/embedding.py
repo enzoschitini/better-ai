@@ -162,7 +162,7 @@ class PineconeEmbedding(EmbeddingHelpers):
             raise RuntimeError(f"Initialization failed - {str(e)}")
 
 
-    def generate_vectors(
+    def embedding_document(
         self,
         text: str,
         metadata: dict,
@@ -205,7 +205,7 @@ class PineconeEmbedding(EmbeddingHelpers):
                 batch_number += 1
 
                 tracer.DEBUG(
-                    "generate_vectors",
+                    "embedding_document",
                     "Processing batch",
                     metadata={
                         "batch_number": batch_number,
@@ -222,7 +222,7 @@ class PineconeEmbedding(EmbeddingHelpers):
 
         except Exception as error:
             tracer.ERROR(
-                "generate_vectors",
+                "embedding_document",
                 f"Batch failed, starting rollback - {str(error)}",
                 metadata={"batch_number": batch_number}
             )
@@ -272,7 +272,7 @@ class PineconeEmbedding(EmbeddingHelpers):
             }
 
         tracer.DEBUG(
-            "generate_vectors",
+            "embedding_document",
             "All batches processed",
             metadata={
                 "total_batches": batch_number,

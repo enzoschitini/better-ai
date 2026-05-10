@@ -70,7 +70,7 @@ class TestPineconeVectorStore:
             with open("src/vector_store/pinecone/test/example_text.txt", "r", encoding="utf-8") as file:
                 embedding_content = file.read()
 
-        response = pine_service.generate_vectors(
+        response = pine_service.embedding_document(
             text=str(embedding_content),
             metadata=embedding_metadata,
             save_global=False,
