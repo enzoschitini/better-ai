@@ -75,4 +75,4 @@ embedder.save()
 # Step 8: Delete temporary files and clean up resources
 # Step 9: Return response with embedding information and cost details
 
-# python -m src.embedding.test
+# python -m src.embedding.test.embbedding_file
