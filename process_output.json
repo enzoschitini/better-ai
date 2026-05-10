@@ -59,7 +59,7 @@
         "origin": "web_app",
         "language": "en",
         "tags": "#finance, #report, #2026",
-        "created_at": "2026-05-10 15:18:46"
+        "created_at": "2026-05-10 18:04:05"
     },
     "usage_summary": {
         "total_caracter_count": 11011,
@@ -93,30 +93,30 @@
                 "namespace": "knowledge_base",
                 "chunks_saved": 6,
                 "chunks_ids": [
-                    "2cc8cb53-c416-4056-b9cd-7bd35f3a09f1",
-                    "0f5987b5-cad1-43a2-af01-faf51b275843",
-                    "d93c3d91-415b-424f-8363-5cb0d666dee2",
-                    "877a2ba8-006a-401c-b09d-e2ff3cbd83a5",
-                    "1b9e54dd-8ccf-45e6-8da6-2130c961c00b",
-                    "932981f2-2648-4217-9692-e172fbda6203"
+                    "bb3fc85d-6ff0-4464-85bb-5d599018e8e5",
+                    "951bf2dd-4fd2-4cd7-9e60-713921db6165",
+                    "01463e00-a862-4673-864d-096da559bc81",
+                    "8134f3dc-b640-4b76-943a-c609986cca14",
+                    "e495eafc-8d8a-4138-bb6f-1a52461594d3",
+                    "8cd8d509-6590-4d64-aae4-7ed94fc662ec"
                 ]
             },
             "global_namespace": {
                 "namespace": "global_vectorstore",
                 "chunks_saved": 6,
                 "chunks_ids": [
-                    "aaeb9d47-5e3c-4be7-a3dd-da47dc816e43",
-                    "42cf738f-117f-4bad-8b03-37937fc96a22",
-                    "864ce520-8e01-4910-b071-2c976d5cc068",
-                    "962e0954-2ad5-4973-907f-c2c0a5a3c35c",
-                    "9ded9f17-94b6-4107-9891-e6f0518f062e",
-                    "851f9f14-5396-43d3-b6c5-bc3972aa787c"
+                    "6664f134-5855-4805-bf2e-80a19b89b097",
+                    "87fc631e-3b05-4cfd-ba4a-ecbcfd85c9a4",
+                    "b6b6bd5b-c853-4d84-b6ee-4d09d70fe9d5",
+                    "50a7d24d-b621-4549-af9b-15ec94a05493",
+                    "4e8900b3-737a-4145-b471-de0630123f6e",
+                    "ca39cb1c-cfa0-4ae1-a9b5-70819b877137"
                 ]
             }
         }
     },
     "save_response": {
         "status": "success",
-        "inserted_id": "3e7b9e5f-8199-495b-a26a-9e43e86bf67d"
+        "inserted_id": "574377b1-a6a4-4d9b-9e91-11a33f11a1f0"
     }
 }
