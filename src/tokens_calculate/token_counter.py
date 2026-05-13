@@ -1,4 +1,5 @@
 import tiktoken
+import logging
 
 class TokenCounter:
     """
@@ -15,6 +16,7 @@ class TokenCounter:
             self.encoder = tiktoken.encoding_for_model(model)
         except KeyError:
             self.encoder = tiktoken.get_encoding("cl100k_base")
+            logging.warning(f"Modelo '{model}' não encontrado. Usando codificação padrão 'cl100k_base'.")
 
     def count(self, text: str) -> int:
         """

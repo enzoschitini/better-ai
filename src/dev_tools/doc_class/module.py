@@ -9,7 +9,8 @@ tracer = ApplicationTracing(
     log_id="null",
     flag="Doc",
     file_name="module.py",
-    log_file_name="doc"
+    log_file_name="doc",
+    show_info_logs=True,
 )
 
 class ClassDoc:
@@ -76,6 +77,6 @@ class ClassDoc:
             raise RuntimeError("Erro: ClassDoc.generate_doc", str(e))
 
 if __name__ == "__main__":
-    ClassDoc("RunAgent").run()
+    ClassDoc("DeleteEmbeddings").run()
 
 # python -m src.dev_tools.doc_class.module

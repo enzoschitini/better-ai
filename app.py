@@ -13,15 +13,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from auth import Authorization
 
-# Utils
-from src.utils.load_file.load_request_file import LoadRequestFile
-
-from src.chat.AgentAsk import AgentAsk
-
 # Embedding Packages
-from src.embedding.services.payload_validation import PayloadProcessor
-from src.embedding.services.pinecone_vector_store import PineconeClient, PineconeVectorService
-from src.embedding.embedding_module import EmbeddingModule
+
 
 # Image Generation Packages (Da-Vinci)
 from src.image_generation.applications import ImageGeneration
@@ -33,6 +26,9 @@ from src.content_parse.module.applications import DocumentParse
 # Deep Research Packages
 from src.deep_research.tavily_research.tavily_core import TavilyDeepResearch
 from src.deep_research.tavily_research.context_builder import TavilyContextBuilder, TavilyResearchRunner
+
+# Utils
+from src.utils.load_file.load_request_file import LoadRequestFile
 
 
 # ================================================
@@ -106,139 +102,18 @@ def generate_id():
     return {"id": new_id}
 
 
-# ========================
-# MODELO DE ENTRADA
-# ========================
-class AgentRunRequest(BaseModel):
-    session_id: Optional[str] = Field(default=None, description="ID da sessão para manter o contexto da conversa")
-    client_id: str = Field(..., description="Identificador único do negócio")
-    metadata: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Metadados adicionais sobre o cliente ou contexto")
-    input_text: str = Field(..., description="Texto de entrada fornecido pelo usuário")
-    user_prompt: Optional[str] = Field(default="Você é um agente de IA", description="Instrução de comportamento para o modelo")
-    temperature: Optional[float] = Field(default=0.5, description="Temperatura de geração do modelo (controle de aleatoriedade)")
-    tool_kit: Optional[List[str]] = Field(default_factory=list, description="Lista de ferramentas disponíveis para o agente")
-    tool_dic: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Dicionário de configurações dinâmicas das ferramentas")
-    streaming: Optional[bool] = Field(default=False, description="Se True, habilita resposta em streaming")
-
-
-# ========================
-# MODELO DE SAÍDA
-# ========================
-class AgentRunResponse(BaseModel):
-    response: Dict[str, Any]
-
-
-# ========================
-# ENDPOINT PRINCIPAL
-# ========================
-@app.post("/run-agent", dependencies=[Depends(Authorization.multikey)], response_model=AgentRunResponse)
-def run_agent(request: AgentRunRequest):
-    """
-    Executa o agente de IA com os parâmetros fornecidos.
-    - `tool_dic` é dinâmico e pode conter qualquer estrutura.
-    - Mantém contexto entre requisições via `session_id`.
-    """
-    try:
-        result = AgentAsk(
-            input_text=request.input_text,
-            client_id=request.client_id,
-            metadata=request.metadata,
-            user_prompt=request.user_prompt,
-            temperature=request.temperature,
-            tool_kit=request.tool_kit,
-            tool_dic=request.tool_dic,
-            session_id=request.session_id,
-            streaming=request.streaming
-        )
-
-        return AgentRunResponse(
-            response=result
-        )
-
-    except Exception as e:
-        logging.error("Erro ao executar o agente: {e}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Erro ao executar o agente: {e}"
-        )
-
 
 
 # ========================
 # Embedding Services
 # ========================
 
-class EmbeddingPayload(BaseModel):
-    data: Dict[str, Any]
-
-    class Config:
-        extra = "allow"
-
-
-class EmbeddingResponse(BaseModel):
-    status: str
-    file_id: str
-    mongo_id: str
-
-@app.post("/embedding-file", response_model=EmbeddingResponse, dependencies=[Depends(Authorization.multikey)], 
-          summary="It processes the uploaded file, generates vector embeddings, and stores them in a vector database.")
-
-async def embedding_file(
-    request: Request,
-    payload: str = Form(...),
-    file: UploadFile = File(...)
-):
-    # Ensures that only 1 file was sent.
-    form = await request.form()
-    files = form.getlist("file")
-
-    if len(files) > 1:
-        raise HTTPException(
-            status_code=400,
-            detail="Only one file is allowed"
-        )
-
-    # Validates if the payload is valid JSON.
-    try:
-        payload_dict = json.loads(payload)
-        payload_obj = EmbeddingPayload(data=payload_dict)
-    except Exception as e:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Invalid payload JSON: {str(e)}"
-        )
-
-    # Checks if the file has arrived.
-    if not file or not file.filename:
-        raise HTTPException(
-            status_code=400,
-            detail="File is required"
-        )
-
-    # Process file
-    try:
-        payload_processor = PayloadProcessor(payload_obj.data)
-        valid_payload = payload_processor.process()
-
-        module = EmbeddingModule(
-            payload=valid_payload,
-            file=file
-        )
-        
-        result = await module.execute()
-        return result
-
-    except ValueError as e:
-        raise HTTPException(
-            status_code=400,
-            detail=str(e)
-        )
-
 
 # ========================
 # Delete
 # ========================
 
+"""
 class DeleteVectorsResponse(BaseModel):
     deleted_vectors: int = Field(..., description="Quantidade de vetores removidos")
     message: str = Field(..., description="Mensagem de confirmação da operação")
@@ -266,7 +141,7 @@ async def delete_vectors(
     response = pine_service.delete_documents(target_feature, target_id, namespace)
 
     return response
-
+"""
 
 # ========================
 # Image Generate
@@ -396,7 +271,7 @@ async def image_generation(
 async def document_parse(
     job_id: str = Form(...),
     metadata: str = Form(...),
-    schema: str = Form(...),
+    document_schema: str = Form(...),
     file: UploadFile = File(...),
     config: Optional[str] = Form(None),
 ):
@@ -413,7 +288,7 @@ async def document_parse(
         parser = DocumentParse(
             job_id=job_id,
             metadata=metadata,
-            schema=schema,
+            schema=document_schema,
             config=config,
             file_bytes=file_bytes,
             file_extension=file_extension

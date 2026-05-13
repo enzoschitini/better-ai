@@ -1,0 +1,176 @@
+{
+  "name": "Deep Research Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "options": {
+          "responseMode": "lastNode"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -96,
+        352
+      ],
+      "id": "cf9271d7-3e78-4179-a67a-d8c2ebca11b7",
+      "name": "When chat message received",
+      "webhookId": "d3302d10-b0ef-4776-8c73-e18285654dbc"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=Você é um agente especialista em buscas na web (Deep Research)\n\nSeu papel é responder perguntas fazendo pesquisas avançadas e verreduras na web.\n\nUse a tool Deep Research para essa terefa."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        96,
+        352
+      ],
+      "id": "54c7c970-6a73-471a-a1f0-13822740a7d0",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        48,
+        560
+      ],
+      "id": "21b6940b-662c-40a6-be29-713fe2dc9786",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "mil7LYTjgSqEZLCG",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Tool dedicata a tarefas envolvendo qualquer tipo de buscas na web (Deep Research)",
+        "method": "POST",
+        "url": "https://better-ai-dev.up.railway.app/deep-research/context-builder",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer betterai-dev-96d97aa3-492d-4ecc-9ced-3dc34c0cf062-945d3391-85dc-4a19-a054-191d048b62c0"
+            },
+            {
+              "name": "Client",
+              "value": "BETTERAI"
+            },
+            {
+              "name": "SecretKey",
+              "value": "Bearer betterai-dev-6c6febc5-de97-464a-929b-cce1b2278de1"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', ``, 'string') }}"
+            },
+            {
+              "name": "search_depth",
+              "value": "advanced"
+            },
+            {
+              "name": "max_results",
+              "value": "=50"
+            },
+            {
+              "name": "topic",
+              "value": "general"
+            },
+            {
+              "name": "include_answer",
+              "value": "true"
+            },
+            {
+              "name": "min_score",
+              "value": "0.5"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        256,
+        560
+      ],
+      "id": "e659ce5a-d98b-4919-8ffd-628000e2e2dc",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "0459cad4-3e97-4701-ba44-5fea26ec357f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2afda660bbdea8e1172cd61fbca95b401fbeb0c4c44ad7115694a540bdc20087"
+  },
+  "id": "gqtyKH84DoBs8L2j",
+  "tags": []
+}
