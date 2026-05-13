@@ -1,15 +1,18 @@
 import os
-from typing import Optional
+import logging
 
+from typing import Optional
 from dotenv import load_dotenv
-from langchain_openai import OpenAIEmbeddings
+
 import pinecone
+from langchain_openai import OpenAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
 
 from src.vector_store.config import PineconeVectorStoreConfig
 from src.tracing.tracing_core import ApplicationTracing
 
 load_dotenv()
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 tracer = ApplicationTracing(
     flag="PineconeClient",
@@ -17,40 +20,21 @@ tracer = ApplicationTracing(
     log_file_name="pinecone_module"
 )
 
-
-def trace(method_name: str):
-    """
-    Decorator para padronizar logging e captura de erros.
-    """
-    def decorator(func):
-        def wrapper(*args, **kwargs):
-            tracer.INFO(method_name, "Execution started")
-            try:
-                result = func(*args, **kwargs)
-                tracer.INFO(method_name, "Execution finished successfully")
-                return result
-            except Exception as e:
-                tracer.ERROR(
-                    method_name,
-                    "Execution failed",
-                    error=e
-                )
-                raise
-        return wrapper
-    return decorator
-
-
 class PineconeClient:
     """
-    Cliente unificado responsável por:
-    - Carregar credenciais
-    - Inicializar Pinecone
-    - Inicializar embeddings
-    - Criar VectorStores
-    - Criar Retrievers
-    - Gerenciar namespaces
-    """
+    Client class to manage connection and operations with Pinecone vector store,
+    including initialization of API keys, namespaces, and embedding models.
 
+    Args:
+        index_name (str, optional): Pinecone index name to use. Default is None.
+        main_namespace (str, optional): Primary namespace for vector storage. Default is None.
+        global_namespace (str, optional): Optional global namespace for shared vectors. Default is None.
+        embedding_model (str, optional): Name of the OpenAI embedding model to use. Default is None.
+
+    Methods:
+        get_namespace(): Resolves and returns the namespace to use for vector operations.
+        create_vector_store(): Creates and returns a PineconeVectorStore for vector operations.
+    """
     def __init__(
         self,
         index_name: Optional[str] = None,
@@ -61,39 +45,21 @@ class PineconeClient:
         tracer.INFO("__init__", "Initializing client")
 
         try:
-            # ======================================================
-            # Credenciais
-            # ======================================================
             self.openai_key = os.getenv("OPENAI_API_KEY")
             self.pinecone_key = os.getenv("PINECONE_API_KEY")
             self.config = PineconeVectorStoreConfig()
 
             if not self.openai_key or not self.pinecone_key:
-                tracer.ERROR(
-                    "__init__",
-                    "Missing API keys",
-                    metadata={
-                        "openai_key_exists": bool(self.openai_key),
-                        "pinecone_key_exists": bool(self.pinecone_key),
-                    }
-                )
                 raise EnvironmentError(
                     "OPENAI_API_KEY or PINECONE_API_KEY not found."
                 )
 
-            # ======================================================
-            # Configurações
-            # ======================================================
             self.index_name = (
                 index_name
                 or os.getenv("PINECONE_INDEX_NAME", self.config.index_name)
             )
 
             if not self.index_name:
-                tracer.ERROR(
-                    "__init__",
-                    "Index name not provided",
-                )
                 raise ValueError(
                     "index_name not provided or defined in PINECONE_INDEX_NAME."
                 )
@@ -130,22 +96,16 @@ class PineconeClient:
                 }
             )
 
-            # ======================================================
-            # Inicializações
-            # ======================================================
             self._init_pinecone()
             self._init_embeddings()
 
         except Exception as e:
-            tracer.ERROR("__init__", "Client initialization failed", error=e)
-            raise
+            raise RuntimeError(f"Failed to initialize PineconeClient: {str(e)}")
 
-    # ======================================================
-    # Internals
-    # ======================================================
-
-    @trace("_init_pinecone")
     def _init_pinecone(self) -> None:
+        """
+        Initializes the connection to the Pinecone service, setting up the client and index.
+        """
         tracer.DEBUG("_init_pinecone", "Connecting to Pinecone")
 
         self.pc = pinecone.Pinecone(api_key=self.pinecone_key)
@@ -157,8 +117,13 @@ class PineconeClient:
             metadata={"index_name": self.index_name}
         )
 
-    @trace("_init_embeddings")
     def _init_embeddings(self, model_name: Optional[str] = None) -> None:
+        """
+        Initializes the OpenAI embedding model to be used for vector operations.
+
+        Args:
+            model_name (str, optional): Name of the embedding model to initialize. Defaults to the client's embedding model name.
+        """
         model = model_name or self.embedding_model_name
 
         tracer.DEBUG(
@@ -169,13 +134,15 @@ class PineconeClient:
 
         self.embedding_model = OpenAIEmbeddings(model=model)
 
-    # ======================================================
-    # Public API
-    # ======================================================
-
     def get_namespace(self, namespace: Optional[str] = None) -> str:
         """
-        Resolve namespace padrão.
+        Resolves and returns the namespace to use, defaulting to the main namespace if none provided.
+
+        Args:
+            namespace (str, optional): Namespace override. Default is None.
+
+        Returns:
+            str: The resolved namespace string.
         """
         resolved = namespace or self.main_namespace
 
@@ -190,14 +157,20 @@ class PineconeClient:
 
         return resolved
 
-    @trace("create_vector_store")
     def create_vector_store(
         self,
         namespace: Optional[str] = None,
         embedding_model: Optional[OpenAIEmbeddings] = None,
     ) -> PineconeVectorStore:
         """
-        Cria um VectorStore para ingestão ou busca.
+        Creates and returns a PineconeVectorStore instance configured with the specified or default namespace and embedding model.
+
+        Args:
+            namespace (str, optional): Namespace to use for the vector store. Default is None.
+            embedding_model (OpenAIEmbeddings, optional): Embedding model to use. Defaults to the client's embedding model.
+
+        Returns:
+            PineconeVectorStore: Configured vector store instance ready for operations.
         """
         resolved_namespace = self.get_namespace(namespace)
 

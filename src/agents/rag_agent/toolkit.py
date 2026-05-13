@@ -5,7 +5,7 @@ from agno.tools import Toolkit
 from src.agents.utils.tool_response import ToolResponse
 
 # Retriver Packages
-from src.vector_store.pinecone.pinecone_retriever import PineconeRetriever
+from src.vector_store.pinecone.retriever import PineconeRetriever
 from src.vector_store.pinecone.utils.retrieval_manager import RetrievalManager
 
 load_dotenv()

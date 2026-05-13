@@ -18,18 +18,32 @@ MENU_ITEMS = {
 
 PAGES = {
     "Applications": {
-        "Main": {
+        "Introduction": {
             "Home": "home",
+            "Idle": "idle",
         },
-        "Aquarela": {
-            "Text to Aquarela": "text_to_aquarela",
-            "Image to Aquarela": "image_to_aquarela",
+
+        "Agents": {
+            "Agno Agent": "agno_agent",
+            "Portfolio Project": "portfolio_project",
         },
+
+        "Vector Store": {
+            "Embedding File": "embedding_file",
+            "Update Metadata": "update_metadata",
+            "Delete Vectors": "delete_vectors",
+            "Retriver": "retriver",
+        },
+        "Image Generation": {
+            "Da-Vinci": "image_generation",
+        }
     },
-    "Documentation": {
-        "Docs": {
+    "Web Services": {
+        "Health": {
             "API_APP": "api_app",
             "Tutoriais": "tutoriais",
         }
     }
 }
+
+# streamlit run webapp.py
