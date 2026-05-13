@@ -1,37 +1,30 @@
-import json
-import os
-import uuid
 import logging
 
-from pydantic import BaseModel, Field
-from typing import List, Dict, Any, Optional, Literal
-from dotenv import load_dotenv
-
-from fastapi import FastAPI, UploadFile, HTTPException, Request, Form, Depends, Header, File
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from routes.chat_routes import router as chat_router
+from routes.user_routes import router as user_router
 
 # ================================================
 # API SETTINGS
 # ================================================
 
 logging.basicConfig(
-    filename='app.log',
+    filename="app.log",
     level=logging.INFO,
-    format='%(asctime)s - %(filename)s - line: %(lineno)d - %(levelname)s - %(message)s'
+    format="%(asctime)s - %(filename)s - line: %(lineno)s - %(levelname)s - %(message)s"
 )
 
 app = FastAPI(
     title="BetterAI Chat API",
     description="""
-API para interação com o agente de IA BetterAI 🤖  
+API para interação com o agente de IA BetterAI 🤖
 Permite o envio de mensagens e manutenção de contexto de sessão entre interações.
     """,
     version="1.0.0"
 )
 
-# Lista de domínios confiáveis (coloca aqui apenas os que realmente vão acessar a API)
 origins = [
     "https://better-ai.up.railway.app",
     "https://better-ai-homol.up.railway.app",
@@ -41,16 +34,25 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,         # apenas origens confiáveis
-    allow_credentials=True,        # habilita envio de cookies/autenticação
-    allow_methods=["GET", "POST"], # apenas os métodos realmente usados
-    allow_headers=["Authorization", "Content-Type"],  # cabeçalhos necessários
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
-load_dotenv()
+# ================================================
+# HEALTHCHECK
+# ================================================
 
-# uvicorn web_api:app --reload
-
-@app.get("/healthy1")
+@app.get("/healthy")
 def healthy():
     return {"status": "ok"}
+
+# ================================================
+# ROUTES
+# ================================================
+
+app.include_router(chat_router)
+app.include_router(user_router)
+
+# uvicorn web_api:app --reload
