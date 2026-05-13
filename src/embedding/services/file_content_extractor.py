@@ -9,9 +9,9 @@ import pandas as pd
 
 
 class FileProcessorStrategy:
-    """Interface base para processadores de arquivos ou mídias."""
+    """Interface for file processing strategies."""
     def extract_content(self, file_bytes: BytesIO) -> str:
-        raise NotImplementedError("O método extract_content deve ser implementado.")
+        raise NotImplementedError("The method extract_content must be implemented by subclasses.")
 
 
 class PDFProcessor(FileProcessorStrategy):
@@ -57,25 +57,52 @@ class MarkdownProcessor(FileProcessorStrategy):
 
 class CSVXLSProcessor(FileProcessorStrategy):
     def __init__(self, ext: str):
-        self.ext = ext
+        self.ext = ext.lower()
 
-    def extract_content(self, file_bytes: BytesIO) -> str:
+    def _read_csv_safe(self, file_bytes: BytesIO) -> pd.DataFrame:
+        strategies = [
+            {"sep": ";", "encoding": "utf-8"},
+            {"sep": ";", "encoding": "latin-1"},
+            {"sep": ",", "encoding": "utf-8"},
+        ]
+
+        for strat in strategies:
+            try:
+                file_bytes.seek(0)
+                return pd.read_csv(
+                    file_bytes,
+                    engine="python",
+                    quotechar='"',
+                    on_bad_lines="skip",
+                    **strat
+                )
+            except Exception:
+                continue
+
+        raise ValueError("Is not possible to read the CSV file with the provided strategies.")
+
+    def extract_content(self, file_bytes: BytesIO, s3_url: str | None = None) -> str:
         file_bytes.seek(0)
+
         if self.ext == "csv":
-            df = pd.read_csv(file_bytes)
+            df = self._read_csv_safe(file_bytes)
+
         elif self.ext == "xlsx":
-            df = pd.read_excel(file_bytes, engine='openpyxl')
+            df = pd.read_excel(file_bytes, engine="openpyxl")
         elif self.ext == "xls":
             try:
-                df = pd.read_excel(file_bytes, engine='xlrd')
+                df = pd.read_excel(file_bytes, engine="xlrd")
             except Exception:
                 file_bytes.seek(0)
-                df = pd.read_csv(file_bytes)
+                df = self._read_csv_safe(file_bytes)
+
         elif self.ext == "xml":
             df = pd.read_xml(file_bytes)
+
         else:
-            raise ValueError("Formato tabular não suportado.")
-        df = df.fillna('')
+            raise ValueError("Unsupported file extension")
+
+        df = df.fillna("").astype(str)
         return df.to_markdown(index=False)
 
 
@@ -105,27 +132,27 @@ class TextProcessor(FileProcessorStrategy):
 
 
 class FileProcessorFactory:
-    """Seleciona a estratégia adequada conforme a extensão do arquivo."""
+    """Selects the appropriate strategy based on the file extension."""
 
     @staticmethod
     def get_processor(ext: str) -> FileProcessorStrategy:
         ext = ext.lower().replace(".", "")
 
         mapping = {
-            # Arquivos de texto
+            # Text files
             "txt": TextProcessor,
             "md": MarkdownProcessor,
             "markdown": MarkdownProcessor,
             "html": HTMLProcessor,
 
-            # Arquivos de documentos
+            # Document files
             "pdf": PDFProcessor,
             "doc": DocxProcessor,
             "docx": DocxProcessor,
             "ppt": PptxProcessor,
             "pptx": PptxProcessor,
 
-            # Arquivos de dados estruturados
+            # Structured data files
             "csv": lambda: CSVXLSProcessor("csv"),
             "xls": lambda: CSVXLSProcessor("xls"),
             "xlsx": lambda: CSVXLSProcessor("xlsx"),
@@ -135,17 +162,17 @@ class FileProcessorFactory:
 
 
         if ext not in mapping:
-            raise ValueError(f"Extensão de arquivo não suportada: {ext}")
+            raise ValueError(f"Unsupported file extension: {ext}")
 
         processor = mapping[ext]
         return processor() if callable(processor) else processor
 
-# Classe Principal
+# Main Class
 
 class FileContentExtractor:
     """
-    Classe principal para extrair conteúdo de arquivos e mídias.
-    Retorna um JSON no formato {"file_content": "..."}.
+    Main class for extracting content from files and media.
+    Returns a JSON in the format {"file_content": "..."}.
     """
 
     def __init__(self, file_bytes: BytesIO, file_extension: str):
@@ -155,17 +182,17 @@ class FileContentExtractor:
 
     def extract(self) -> dict:
         response = self.processor.extract_content(self.file_bytes)
-        return {"response": response}
+        return {"file_content": response}
 
 if __name__ == "__main__":
-    path = "local/test files"
+    path = "doc/test files"
 
-    # Exemplo de uso
+    # Example usage
     with open(f"{path}/Candidatura.pdf", "rb") as f:
         file_bytes = BytesIO(f.read())
 
     extractor = FileContentExtractor(file_bytes, "pdf")
     result = extractor.extract()
-    print(result["response"][:500])  # Imprime os primeiros 500 caracteres do conteúdo extraído
+    print(result["file_content"][:500])  # Imprime os primeiros 500 caracteres do conteúdo extraído
 
 # python -m src.embedding.services.file_content_extractor

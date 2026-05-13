@@ -6,7 +6,7 @@ from io import BytesIO
 from src.content_parse.content_parsing_agent import ContentParsingAgent
 from src.content_parse.config import DocumentParseConfig
 from src.embedding.services.file_content_extractor import FileContentExtractor
-from src.tokens_calculate.module import ModelPricing, ExchangeRateService
+from src.tokens_calculate.module import ModelPricingFactory, ExchangeRateService
 from src.database.no_relational_db.router import DocumentStore
 from src.tracing.tracing_core import ApplicationTracing
 
@@ -14,6 +14,8 @@ tracer = ApplicationTracing(
     flag="DocumentParse",
     file_name="document_parse",
     log_file_name="parse",
+    show_info_logs=True,
+    format_metadata=True
 )
 
 
@@ -116,7 +118,7 @@ class DocumentParse:
         )
         self.result_extract = extractor.extract()
 
-        if self.result_extract["response"] == None or self.result_extract["response"].strip() == "":
+        if self.result_extract["file_content"] == None or self.result_extract["file_content"].strip() == "":
             raise HTTPException(status_code=400, detail="Failed to extract content from file")
         tracer.INFO(func_name="_extract_file_content", message="Content extracted successfully from file")
     
@@ -129,7 +131,7 @@ class DocumentParse:
         tracer.INFO(func_name="_parse_content", message="Parsing content with agent")
         agent_parser = ContentParsingAgent(
             input_data={
-                "file_content": self.result_extract["response"]
+                "file_content": self.result_extract["file_content"]
             },
             output_data=self.schema_data,
             config_data=self.config_data
@@ -147,12 +149,22 @@ class DocumentParse:
         # Calculate tokens and cost
         self.info_process = self.agent_response.get("metadata", {})
 
-        model_pricing = ModelPricing(self.info_process.get("model").get("id"))
-        self.input_cost = model_pricing.input_rate_per_token() * self.info_process.get("tokens").get("input_tokens", 0)
-        self.output_cost = model_pricing.output_rate_per_token() * self.info_process.get("tokens").get("output_tokens", 0)
+        # model_pricing = ModelPricing(self.info_process.get("model").get("id"))
+        # self.input_cost = model_pricing.input_rate_per_token() * self.info_process.get("tokens").get("input_tokens", 0)
+        # self.output_cost = model_pricing.output_rate_per_token() * self.info_process.get("tokens").get("output_tokens", 0)
+
+        model = self.info_process.get("model", {}).get("id")
+        pricing = ModelPricingFactory.create(model)
+
+        input_tokens = self.info_process.get("tokens", {}).get("input_tokens", 0)
+        output_tokens = self.info_process.get("tokens", {}).get("output_tokens", 0)
+
+        self.input_cost = pricing.input_cost(input_tokens)
+        self.output_cost = pricing.output_cost(output_tokens)
 
         service = ExchangeRateService()
         self.rate = service.get_usd_rate()
+
         tracer.DEBUG(
             func_name="_calculate_costs",
             message="Calculated costs",
@@ -218,3 +230,46 @@ class DocumentParse:
             payload=self.save_payload
         )
         tracer.INFO(func_name="_save", message="Saved processed result in database")
+
+if __name__ == "__main__":
+    # Exemplo de uso
+    job_id = "job_123"
+    metadata = """{"user_id": "user_456"}"""
+
+    schema = """
+    {
+    "summary": {
+        "type": "str",
+        "description": "Resumo do conteúdo do arquivo"
+    }
+    }
+    """
+    config = """
+    {
+    "model_provider": "OpenAI",
+    "model_id": "gpt-4.1-mini",
+    "max_input_tokens": 1000000,
+    "debug_mode": true,
+    "instructions": "Extraia dados do texto",
+    "description": "Leia o texto e extraia as informações relevantes conforme o esquema definido. Retorne um JSON estruturado com os dados extraídos. Caso não encontre alguma informação, retorne null para aquele campo."
+    }
+    """
+
+    with open("doc\\test files\\Endurance.pdf", "rb") as f:
+        file_bytes = BytesIO(f.read())
+
+    parser = DocumentParse(
+        job_id=job_id,
+        metadata=metadata,
+        schema=schema,
+        config=config,
+        file_bytes=file_bytes,
+        file_extension="pdf"
+    )
+
+    response = parser.run()
+
+    print("\nResposta do parser:")
+    print(json.dumps(response, indent=2))
+
+# python -m src.content_parse.module.document_parse
