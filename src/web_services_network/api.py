@@ -36,4 +36,12 @@ class API:
             allow_headers=CONFIG["allowed_headers"],
         )
 
+        self.app = app
+
         return app
+    
+    def include_routers(self, routers: list, app: FastAPI = None):
+        if app is None:
+            app = self.app
+        for router in routers:
+            app.include_router(router)
