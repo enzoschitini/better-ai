@@ -1,12 +1,12 @@
-from src.web_services_network.api import API
+from src.web_services_network.api import WebServiceAPI
 
 from src.web_services_network.routes.main import router as main_router
 from src.web_services_network.routes.chat_routes import router as chat_router
 from src.web_services_network.routes.user_routes import router as user_router
 
-api = API()
-app = api.initialize()
-api.healthcheck()
+web_service = WebServiceAPI()
+app = web_service.initialize()
+web_service._register_default_routes()
 
 ROUTES = [
     main_router,
@@ -14,7 +14,7 @@ ROUTES = [
     user_router
 ]
 
-api.include_routers(ROUTES)
+web_service.include_routers(ROUTES)
 
 
 
