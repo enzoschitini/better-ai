@@ -45,3 +45,8 @@ class API:
             app = self.app
         for router in routers:
             app.include_router(router)
+    
+    def healthcheck(self):
+        @self.app.get("/healthy")
+        def healthy():
+            return {"status": "ok"}
