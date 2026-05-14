@@ -18,6 +18,24 @@ CONFIG = {
     ],
     "allowed_methods": ["GET", "POST"],
     "allowed_headers": ["Authorization", "Content-Type"],
+
+    "banner": """
+    \033[97m
+    ╔═════════════════════════════════════════════════════════════════════════╗
+
+        ██████╗ ███████╗████████╗████████╗███████╗██████╗      █████╗ ██╗ ✦
+        ██╔══██╗██╔════╝╚══██╔══╝╚══██╔══╝██╔════╝██╔══██╗    ██╔══██╗██║
+        ██████╔╝█████╗     ██║      ██║   █████╗  ██████╔╝    ███████║██║
+        ██╔══██╗██╔══╝     ██║      ██║   ██╔══╝  ██╔══██╗    ██╔══██║██║
+        ██████╔╝███████╗   ██║      ██║   ███████╗██║  ██║    ██║  ██║██║
+        ╚═════╝ ╚══════╝   ╚═╝      ╚═╝   ╚══════╝╚═╝  ╚═╝    ╚═╝  ╚═╝╚═╝
+
+    ╚═════════════════════════════════════════════════════════════════════════╝
+
+                        ✦  Where intelligence finds purpose. ✦
+    \033[0m
+    """
+
 }
 
 class AuthService:
@@ -64,7 +82,15 @@ class Authorization:
 
         return True
 
+
 class API:
+    def __init__(self):
+        self.logger = logging.getLogger("uvicorn.error")
+
+    def _show_cover(self):
+        self.logger.info(CONFIG["banner"])
+        self.logger.info("Web services network initialized successfully.")
+
     def initialize(self):
         app = FastAPI(
             title=CONFIG["app_name"],
@@ -81,6 +107,7 @@ class API:
         )
 
         self.app = app
+        self._show_cover()
 
         return app
     
