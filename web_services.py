@@ -1,6 +1,7 @@
 from src.web_services_network.api import API
 
-app = API().get()
+api = API()
+app = api.create()
 
 # ================================================
 # HEALTHCHECK
@@ -13,10 +14,13 @@ def healthy():
 # ================================================
 # ROUTES
 # ================================================
+
+"""
 from src.web_services_network.routes.chat_routes import router as chat_router
 from src.web_services_network.routes.user_routes import router as user_router
 
 app.include_router(chat_router)
 app.include_router(user_router)
+"""
 
-# uvicorn web_api:app --reload
+# uvicorn web_services:app --reload
