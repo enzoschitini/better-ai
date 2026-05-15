@@ -1,9 +1,10 @@
 import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
+from src.web_services_network.auth import Authorization
 from src.web_services_network.config import CONFIG
 
 class WebServiceAPI:
@@ -68,6 +69,14 @@ class WebServiceAPI:
             return {
                 "message": f"{self.config.get('app_name')} is running"
             }
+
+        @self.app.get(
+            "/healthy-authorization",
+            tags=["health"],
+            dependencies=[Depends(Authorization.multikey)]
+        )
+        async def healthy_authorization():
+            return {"status": "ok"}
 
     def include_routers(self, routers: list):
         if not self.app:
