@@ -8,9 +8,11 @@ app = FastAPI()
 class Authorization:
     @staticmethod
     def _get_header_authorization(
-        authorization: str = Header(...)
+        authorization: str = Header(...),
+        user: str = Header(..., alias="user")
     ):
         print("Authorization Header:", authorization)
+        print("User Header:", user)
 
         # validação besta
         if not authorization:
