@@ -1,4 +1,5 @@
 import logging
+import time
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Depends
@@ -14,15 +15,17 @@ class WebServiceAPI:
         self.app: FastAPI | None = None
 
     def _show_cover(self):
+        current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         banner = self.config.get("banner", "")
         
         if banner:
             self.logger.info("\n%s", banner)
 
         self.logger.info(
-            "%s v%s initialized successfully.",
+            "%s v%s initialized successfully at %s.",
             self.config.get("app_name", "API"),
-            self.config.get("version", "1.0.0")
+            self.config.get("version", "1.0.0"),
+            current_time
         )
 
     @asynccontextmanager
