@@ -1,5 +1,8 @@
 import logging
 import time
+import os
+
+from dotenv import load_dotenv
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Depends
@@ -8,11 +11,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.web_services_network.auth import Authorization
 from src.web_services_network.config import CONFIG
 
+load_dotenv()
+
 class WebServiceAPI:
     def __init__(self, config: dict = CONFIG):
         self.config = config
         self.logger = logging.getLogger("uvicorn.error")
         self.app: FastAPI | None = None
+        self.domain = os.getenv("DOMAIN", "http://localhost:8000")
 
     def _show_cover(self):
         current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -20,13 +26,11 @@ class WebServiceAPI:
         
         if banner:
             self.logger.info("\n%s", banner)
-
-        self.logger.info(
-            "%s v%s initialized successfully at %s.",
-            self.config.get("app_name", "API"),
-            self.config.get("version", "1.0.0"),
-            current_time
-        )
+        
+        self.logger.info(f"{self.config.get("app_name", "API")} initialized successfully at {current_time}.")
+        self.logger.info(f"Version: {self.config.get('version', '1.0.0')}")
+        self.logger.info(f"Domain: {self.domain}")
+        self.logger.info(f"Documentation available at: {self.domain}/docs")
 
     @asynccontextmanager
     async def _lifespan(self, app: FastAPI):

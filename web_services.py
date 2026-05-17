@@ -7,7 +7,7 @@ from src.web_services_network.routes.user_routes import router as user_router
 web_service = WebServiceAPI()
 
 app = web_service.initialize()
-web_service._register_default_routes()
+#web_service._register_default_routes()
 
 ROUTES = [
     MainRouter,
