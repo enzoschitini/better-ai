@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 import time
 import json
+import traceback
 
 from src.web_services_network.auth import Authorization
 
@@ -16,7 +17,7 @@ class FakeParse:
     def run(self):
         try:
             time.sleep(2)  # Simulate processing time
-            #erro = 1 / 0 # Forçar um erro para testar o tratamento de exceções
+            erro = 1 / 0 # Forçar um erro para testar o tratamento de exceções
             return {"message": "Documento processado"}
         except Exception as e:
             raise Exception(f"Erro ao processar o documento: {str(e)}")
@@ -66,7 +67,11 @@ def parse_document(body: DocumentParseRequest):
             "jobId": jobId,
             "status": "error",
             "status_code": 500,
-            "message": str(e),
+            "error": {
+                "type": type(e).__name__,
+                "message": str(e),
+                "traceback": traceback.format_exc()
+            },
             "time": {
                 "start": start_time,
                 "end": end_time,
