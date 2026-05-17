@@ -1,5 +1,7 @@
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
+import time
+import json
 
 from src.web_services_network.auth import Authorization
 
@@ -12,7 +14,12 @@ class FakeParse:
         pass
 
     def run(self):
-        return {"message": "Documento processado"}
+        try:
+            time.sleep(2)  # Simulate processing time
+            #erro = 1 / 0 # Forçar um erro para testar o tratamento de exceções
+            return {"message": "Documento processado"}
+        except Exception as e:
+            raise Exception(f"Erro ao processar o documento: {str(e)}")
 
 class DocumentParseRequest(BaseModel):
     text: str
@@ -26,10 +33,55 @@ class DocumentParseRequest(BaseModel):
 )
 def parse_document(body: DocumentParseRequest):
     try:
-        erro = 1 / 0
+        jobId = "12345"  # Simulate a job ID for tracking
+        start_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+
         parser = FakeParse()
-        response = parser.run()
+        parse_result = parser.run()
+
+        end_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        duration = time.mktime(time.strptime(end_time, "%Y-%m-%d %H:%M:%S")) - time.mktime(time.strptime(start_time, "%Y-%m-%d %H:%M:%S"))
+
+        response = {
+            "jobId": jobId,
+            "status": "success",
+            "status_code": 200,
+            "result": parse_result,
+            "time": {
+                "start": start_time,
+                "end": end_time,
+                "duration_seconds": duration
+            }
+        }
+
+        print(json.dumps(response, indent=4))  # Log the response in a readable format
+
         return response
 
     except Exception as e:
-        return {"error": str(e)}
+        end_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        duration = time.mktime(time.strptime(end_time, "%Y-%m-%d %H:%M:%S")) - time.mktime(time.strptime(start_time, "%Y-%m-%d %H:%M:%S"))
+
+        response = {
+            "jobId": jobId,
+            "status": "error",
+            "status_code": 500,
+            "message": str(e),
+            "time": {
+                "start": start_time,
+                "end": end_time,
+                "duration_seconds": duration
+            }
+        }
+        print(json.dumps(response, indent=4))  # Log the response in a readable format
+        return response
+
+"""
+curl -X POST "http://localhost:8000/document-parse" \
+-H "Content-Type: application/json" \
+-d '{
+    "text": "Conteúdo do documento",
+    "model": "gpt-4",
+    "max_pages": 10
+}'
+"""
