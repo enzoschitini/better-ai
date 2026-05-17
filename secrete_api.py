@@ -9,7 +9,7 @@ load_dotenv()
 app = FastAPI()
 
 # Header esperado
-api_key_scheme = APIKeyHeader(name="X-API-Key")
+
 
 
 class Authorization:
@@ -32,7 +32,7 @@ class Authorization:
     
     @staticmethod
     def validate_api_key(
-        api_key: str = Security(api_key_scheme)
+        api_key: str = Security(APIKeyHeader(name="X-API-Key"))
     ):
         expected_api_key = os.getenv("API_KEY")
 
@@ -46,6 +46,7 @@ class Authorization:
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Missing or invalid API key"
         )
+
 
 
 class RequestBody(BaseModel):

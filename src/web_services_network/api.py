@@ -74,9 +74,9 @@ class WebServiceAPI:
             }
 
         @self.app.get(
-            "/healthy-authorization",
+            "/health-authorization",
             tags=["health"],
-            dependencies=[Depends(Authorization.multikey)]
+            dependencies=[Depends(Authorization.validate_api_key)]
         )
         async def healthy_authorization():
             return {"status": "ok"}
@@ -103,3 +103,9 @@ class WebServiceAPI:
 
         return self.app
 
+"""
+curl --location 'http://localhost:8000/health'
+
+curl --location 'http://localhost:8000/health-authorization' \
+--header 'X-API-Key: betterai-dev'
+"""

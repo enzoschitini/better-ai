@@ -1,47 +1,42 @@
 import os
-from fastapi import Header, HTTPException
+from dotenv import load_dotenv
 
+from fastapi import Header, HTTPException, Security, status
+from fastapi.security import APIKeyHeader
 
-class AuthService:
-    @staticmethod
-    def validate_betterai_key(authorization: str):
-        back_end_api_key = os.getenv("BACK_END_API_KEY")
-
-        if authorization != f"Bearer {back_end_api_key}":
-            raise HTTPException(status_code=401, detail="Invalid Authorization Key")
-
-    @staticmethod
-    def validate_company_secret(client: str, secret_key: str):
-        env_key_name = f"{client.upper()}_SECRET_KEY"
-        secret_key_env = os.getenv(env_key_name)
-
-        if secret_key_env is None:
-            raise HTTPException(
-                status_code=401,
-                detail=f"Secret Key not found for client: {client}"
-            )
-
-        if secret_key != f"Bearer {secret_key_env}":
-            raise HTTPException(status_code=401, detail="Invalid Company Secret Key")
+load_dotenv()
 
 class Authorization:
     @staticmethod
-    def back_end_api_key(
-        authorization: str = Header(...)
-    ):
-        AuthService.validate_betterai_key(authorization)
-        return True
-
-    @staticmethod
-    def multikey(
+    def _get_header_authorization(
         authorization: str = Header(...),
-        client: str = Header(..., alias="Client"),
-        secret_key: str = Header(..., alias="SecretKey"),
+        user: str = Header(..., alias="user")
     ):
-        # Valida chave master (BETTERAI_API_KEY)
-        AuthService.validate_betterai_key(authorization)
+        # print("Authorization Header:", authorization)
+        # print("User Header:", user)
 
-        # Valida chave de empresa
-        AuthService.validate_company_secret(client, secret_key)
+        # validação besta
+        if not authorization:
+            return {"valid": False}
 
-        return True
+        return {
+            "valid": True,
+            "token": authorization
+        }
+    
+    @staticmethod
+    def validate_api_key(
+        api_key: str = Security(APIKeyHeader(name="X-API-Key"))
+    ):
+        expected_api_key = os.getenv("BETTERAI_API_KEY")
+
+        # print("API KEY RECEBIDA:", api_key)
+        # print("API KEY ESPERADA:", expected_api_key)
+
+        if api_key == expected_api_key:
+            return True
+
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing or invalid API key"
+        )
