@@ -15,7 +15,7 @@ class FakeParse:
     def run(self):
         try:
             time.sleep(2)  # Simulate processing time
-            #erro = 1 / 0 # Forçar um erro para testar o tratamento de exceções
+            erro = 1 / 0 # Forçar um erro para testar o tratamento de exceções
             return {"message": "Documento processado"}
         except Exception as e:
             raise Exception(f"Erro ao processar o documento: {str(e)}")

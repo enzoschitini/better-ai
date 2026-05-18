@@ -2,6 +2,7 @@ import time
 import traceback
 from src.utils.unique_id_factory import IDGenerator
 from src.web_services_network.auth import Authorization
+from src.database.no_relational_db.router import DocumentStore
 
 class RequestResorse:
     def __init__(self):
@@ -28,7 +29,7 @@ class RequestResorse:
     
     def error_response(self, error):
         self._finalize()
-        return {
+        response = {
             "jobId": self.jobId,
             "status": "error",
             "status_code": 500,
@@ -43,3 +44,16 @@ class RequestResorse:
                 "duration_seconds": self.duration
             }
         }
+
+        database = DocumentStore()
+        database.save_payload(
+            database_name="web_service_network",
+            collection_name="error_logs",
+            payload=response
+        )
+
+        response = response.copy()
+        response["error"].pop("traceback", None)
+        
+        return response
+        
