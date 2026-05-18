@@ -25,7 +25,8 @@ class WebServiceAPI:
         banner = self.config.get("banner", "")
         
         if banner:
-            self.logger.info("\n%s", banner)
+            pass
+            #self.logger.info("\n%s", banner)
         
         self.logger.info(f"{self.config.get("app_name", "API")} initialized successfully at {current_time}.")
         self.logger.info(f"Version: {self.config.get('version', '1.0.0')}")
