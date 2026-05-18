@@ -1,8 +1,9 @@
 from src.web_services_network.api import WebServiceAPI
 
 from src.web_services_network.routes.main import router as MainRouter
-from src.web_services_network.routes.chat_routes import router as chat_router
-from src.web_services_network.routes.user_routes import router as user_router
+from src.web_services_network.routes.davinci import router as DavinciRouter
+from src.web_services_network.routes.deep_research import router as DeepResearchRouter
+from src.web_services_network.routes.parse_content import router as ParseContentRouter
 
 web_service = WebServiceAPI()
 
@@ -11,8 +12,9 @@ app = web_service.initialize()
 
 ROUTES = [
     MainRouter,
-    chat_router,
-    user_router
+    DavinciRouter,
+    DeepResearchRouter,
+    ParseContentRouter
 ]
 
 web_service.include_routers(ROUTES)

@@ -17,7 +17,8 @@ router = APIRouter(
 
 load_dotenv()
 
-@router.post("/document-parse", dependencies=[Depends(Authorization.multikey)],
+@router.post("/document-parse", 
+          #dependencies=[Depends(Authorization.multikey)],
           summary="Parse and extract structured content from files using schema")
 async def document_parse(
     job_id: str = Form(...),
