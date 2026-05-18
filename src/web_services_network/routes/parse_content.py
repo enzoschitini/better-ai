@@ -6,9 +6,8 @@ from fastapi.responses import JSONResponse
 from typing import Optional, List
 from pydantic import BaseModel
 
-from src.web_services_network.request_resource import RequestResorse, Authorization
+from src.web_services_network.request_resource import RequestResorse, Authorization, LoadRequestFile
 from src.content_parse.module.applications import DocumentParse
-from src.utils.load_file.load_request_file import LoadRequestFile
 
 router = APIRouter(
     prefix="/parse-content",
@@ -18,8 +17,9 @@ router = APIRouter(
 load_dotenv()
 
 @router.post("/document-parse", 
-          #dependencies=[Depends(Authorization.multikey)],
-          summary="Parse and extract structured content from files using schema")
+    summary="Parse and extract structured content from files using schema",
+    #dependencies=[Depends(Authorization.validate_api_key)]
+)
 async def document_parse(
     job_id: str = Form(...),
     metadata: str = Form(...),

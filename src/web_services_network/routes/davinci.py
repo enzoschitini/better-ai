@@ -17,7 +17,9 @@ router = APIRouter(
 load_dotenv()
 
 @router.post("/image-generation", 
-          summary="Image generation based on prompts, settings, and optional images.")
+    summary="Image generation based on prompts, settings, and optional images.",
+    #dependencies=[Depends(Authorization.validate_api_key)]
+)
 async def image_generation(
     user_input: str = Form(...),
     instructions: Optional[str] = Form(None),

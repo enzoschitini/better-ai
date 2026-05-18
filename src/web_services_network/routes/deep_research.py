@@ -1,6 +1,3 @@
-import os
-
-from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, HTTPException, Form, File, UploadFile
 from typing import Optional, List
 from pydantic import BaseModel
@@ -14,8 +11,6 @@ router = APIRouter(
     prefix="/deep-research",
     tags=["deep-research"]
 )
-
-load_dotenv()
 
 class ContextBuilderRequest(BaseModel):
     query: str
@@ -32,9 +27,7 @@ class ContextBuilderRequest(BaseModel):
 )
 def context_builder(payload: ContextBuilderRequest):
     try:
-        researcher = TavilyDeepResearch(
-            api_key=os.getenv("TAVILY_API_KEY")
-        )
+        researcher = TavilyDeepResearch()
 
         builder = TavilyContextBuilder(
             researcher=researcher,
