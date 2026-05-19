@@ -48,8 +48,7 @@ def context_builder(payload: ContextBuilderRequest):
         return resource.success_response(markdown_context)
 
     except Exception as e:
-        response = resource.error_response(e)
-        return response
+        return resource.error_response(e)
 
 """
 curl --location 'http://127.0.0.1:8000/deep-research/context-builder' \

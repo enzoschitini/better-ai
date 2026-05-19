@@ -26,59 +26,43 @@ async def image_generation(
     config: Optional[str] = Form(None),
     files: Optional[List[UploadFile]] = File(None)
 ):
-    """
-    Endpoint responsável pela geração de imagens a partir de um prompt textual,
-    permitindo o uso de instruções adicionais, configurações customizadas e
-    arquivos de referência.
+    try:
+        resource = RequestResorse()
 
-    Parâmetros:
-    ----------
-    user_input : str
-        Prompt principal que descreve a imagem a ser gerada.
+        processor = RequestProcessor(config=config, files=files)
+        processor_result = await processor.process()
 
-    instructions : Optional[str], default=None
-        Instruções adicionais para orientar o estilo ou comportamento da geração.
+        config_dict = processor_result["config"]
+        image_bytes = processor_result["image_bytes"]
 
-    config : Optional[str], default=None
-        Configuração em formato JSON contendo parâmetros do modelo, como tamanho,
-        modelo utilizado, qualidade, entre outros.
+        generator = ImageGenerate(
+            user_input=user_input,
+            instructions=instructions,
+            config=config_dict,
+            image_bytes=image_bytes
+        )
 
-    files : Optional[List[UploadFile]], default=None
-        Lista de arquivos de referência (ex: imagens) que podem ser utilizados
-        como base para a geração.
+        result = generator.runner()
 
-    Fluxo:
-    ------
-    1. Processa a configuração e os arquivos enviados.
-    2. Extrai os bytes das imagens e normaliza os parâmetros.
-    3. Executa o gerador de imagens com os dados fornecidos.
+        return resource.success_response(result)
 
-    Retorno:
-    -------
-    Dict
-        Estrutura contendo:
-        - status: Código de status da requisição
-        - data: Resultado da geração (imagens, metadados, etc.)
-    """
+    except Exception as e:
+        return resource.error_response(e)
 
-    processor = RequestProcessor(config=config, files=files)
-    processor_result = await processor.process()
-
-    config_dict = processor_result["config"]
-    image_bytes = processor_result["image_bytes"]
-
-    generator = ImageGenerate(
-        user_input=user_input,
-        instructions=instructions,
-        config=config_dict,
-        image_bytes=image_bytes
-    )
-
-    response = generator.runner()
-
-    return {
-        "status": 200,
-        "data": response
-    }
-
-
+"""
+curl --location "http://localhost:8000/davinci/image-generation" \
+--header "Authorization: Bearer betterai-dev-96d97aa3-492d-4ecc-9ced-3dc34c0cf062-945d3391-85dc-4a19-a054-191d048b62c0" \
+--header "Client: BETTERAI" \
+--header "SecretKey: Bearer betterai-dev-6c6febc5-de97-464a-929b-cce1b2278de1" \
+--form "user_input=Crea l'immagine di una pizzeria napoletana" \
+--form "instructions=Lo stile deve essere un animazione 3d come quelle di disney" \
+--form 'config={
+  "model": "gemini-2.5-flash-image",
+  "temperature": 0.75,
+  "top_p": 0.85,
+  "max_output_tokens": 1024,
+  "aspect_ratio": "9:16",
+  "number_of_images": 2
+}' \
+--form "files=@C:/Users/schit/Downloads/img_177124504231363320002Vw.jpg"
+"""
