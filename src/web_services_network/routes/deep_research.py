@@ -27,6 +27,7 @@ class ContextBuilderRequest(BaseModel):
 )
 def context_builder(payload: ContextBuilderRequest):
     try:
+        resource = RequestResorse()
         researcher = TavilyDeepResearch()
 
         builder = TavilyContextBuilder(
@@ -44,15 +45,25 @@ def context_builder(payload: ContextBuilderRequest):
             include_answer=payload.include_answer
         )
 
-        return {
-            "status": 200,
-            "query": payload.query,
-            "result": markdown_context
-        }
+        return resource.success_response(markdown_context)
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=str(e)
-        )
+        response = resource.error_response(e)
+        return response
+
+"""
+curl --location 'http://127.0.0.1:8000/deep-research/context-builder' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer betterai-dev-96d97aa3-492d-4ecc-9ced-3dc34c0cf062-945d3391-85dc-4a19-a054-191d048b62c0' \
+--header 'Client: BETTERAI' \
+--header 'SecretKey: Bearer betterai-dev-6c6febc5-de97-464a-929b-cce1b2278de1' \
+--data '{
+    "query": "Quais as principais tendências de IA em 2026?",
+    "search_depth": "advanced",
+    "max_results": 2,
+    "topic": "general",
+    "include_answer": true,
+    "min_score": 0.5
+  }'
+"""
 
