@@ -3,13 +3,10 @@ from src.web_services_network.api import WebServiceAPI
 web_service = WebServiceAPI()
 
 app = web_service.initialize()
-#web_service._register_default_routes()
 
 ROUTES = web_service.collect_routers("src.web_services_network.routes")
 
 web_service.include_routers(ROUTES)
-
-
 
 
 # 1. Tipagem dos endpoints para facilitar a integração com outras linguagens e sistemas

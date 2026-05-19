@@ -124,13 +124,10 @@ class WebServiceAPI:
             package.__path__,
             package.__name__ + "."
         ):
-            # ignora subpackages se quiser apenas arquivos
             if is_pkg:
                 continue
 
             module = importlib.import_module(module_name)
-
-            # procura atributo "router"
             router = getattr(module, "router", None)
 
             if router:
