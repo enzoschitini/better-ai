@@ -1,6 +1,8 @@
 import logging
 import time
 import os
+import importlib
+import pkgutil
 
 from dotenv import load_dotenv
 from contextlib import asynccontextmanager
@@ -25,8 +27,7 @@ class WebServiceAPI:
         banner = self.config.get("banner", "")
         
         if banner:
-            pass
-            #self.logger.info("\n%s", banner)
+            self.logger.info("\n%s", banner)
         
         self.logger.info(f"{self.config.get("app_name", "API")} initialized successfully at {current_time}.")
         self.logger.info(f"Version: {self.config.get('version', '1.0.0')}")
@@ -113,6 +114,29 @@ class WebServiceAPI:
                 "Router included: %s",
                 getattr(router, "prefix", "no-prefix")
             )
+
+    def collect_routers(self, package_name: str):
+        routers = []
+
+        package = importlib.import_module(package_name)
+
+        for _, module_name, is_pkg in pkgutil.walk_packages(
+            package.__path__,
+            package.__name__ + "."
+        ):
+            # ignora subpackages se quiser apenas arquivos
+            if is_pkg:
+                continue
+
+            module = importlib.import_module(module_name)
+
+            # procura atributo "router"
+            router = getattr(module, "router", None)
+
+            if router:
+                routers.append(router)
+
+        return routers
 
     def get_app(self) -> FastAPI:
         if not self.app:

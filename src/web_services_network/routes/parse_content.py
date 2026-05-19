@@ -13,6 +13,7 @@ router = APIRouter(
 
 @router.post("/document-parse", 
     summary="Parse and extract structured content from files using schema",
+    description="This endpoint accepts a file along with metadata, a document schema, and optional configuration. It processes the file according to the provided schema and returns structured content based on the extracted information.",
     #dependencies=[Depends(Authorization.validate_api_key)]
 )
 async def document_parse(

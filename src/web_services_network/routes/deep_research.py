@@ -23,6 +23,7 @@ class ContextBuilderRequest(BaseModel):
 
 @router.post("/context-builder",
     summary="Builds context for deep research using TavilyDeepResearch.",
+    description="This endpoint accepts a query and parameters to perform deep research using TavilyDeepResearch. It returns a markdown-formatted context based on the research results.",
     #dependencies=[Depends(Authorization.validate_api_key)]
 )
 def context_builder(payload: ContextBuilderRequest):
