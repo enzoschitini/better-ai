@@ -100,6 +100,20 @@ class WebServiceAPI:
                 getattr(router, "prefix", "no-prefix")
             )
 
+    def test_routers(self, routers: list):
+        if not self.app:
+            raise RuntimeError(
+                "Application not initialized. Call initialize() first."
+            )
+
+        for router in routers:
+            self.app.include_router(router)
+
+            self.logger.info(
+                "Router included: %s",
+                getattr(router, "prefix", "no-prefix")
+            )
+
     def get_app(self) -> FastAPI:
         if not self.app:
             raise RuntimeError(
