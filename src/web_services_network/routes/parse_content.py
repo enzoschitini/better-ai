@@ -1,6 +1,3 @@
-import os
-
-from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, HTTPException, Form, File, UploadFile
 from fastapi.responses import JSONResponse
 from typing import Optional, List
@@ -13,8 +10,6 @@ router = APIRouter(
     prefix="/parse-content",
     tags=["parse-content"]
 )
-
-load_dotenv()
 
 @router.post("/document-parse", 
     summary="Parse and extract structured content from files using schema",
