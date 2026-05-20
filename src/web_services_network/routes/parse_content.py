@@ -17,11 +17,11 @@ router = APIRouter(
     #dependencies=[Depends(Authorization.validate_api_key)]
 )
 async def document_parse(
-    job_id: str = Form(...),
-    metadata: str = Form(...),
-    document_schema: str = Form(...),
-    file: UploadFile = File(...),
-    config: Optional[str] = Form(None),
+    job_id: str = Form(..., title="Job ID", description="Unique identifier for the parsing job"),
+    metadata: str = Form(..., title="Metadata", description="JSON string containing document metadata"),
+    document_schema: str = Form(..., title="Document Schema", description="JSON schema used to structure extracted content"),
+    file: UploadFile = File(..., title="Document File", description="Supported formats: txt, md, pdf, docx"),
+    config: Optional[str] = Form(None, title="Config", description="Optional parser configuration as JSON string"),
 ):
     try:
         resource = RequestResorse()
