@@ -11,7 +11,7 @@ from fastapi import FastAPI, UploadFile, HTTPException, Request, Form, Depends, 
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from auth import Authorization
+from web_services_network.backup.auth import Authorization
 
 # Embedding Packages
 
