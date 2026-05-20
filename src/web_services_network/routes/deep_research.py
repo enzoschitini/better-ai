@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Form, File, UploadFile
-from typing import Optional, List
-from pydantic import BaseModel
+from typing import Optional, List, Literal
+from pydantic import BaseModel, Field
 
 from src.web_services_network.request_resource import RequestResorse, Authorization
 
@@ -13,12 +13,12 @@ router = APIRouter(
 )
 
 class ContextBuilderRequest(BaseModel):
-    query: str
-    search_depth: str = "advanced"
-    max_results: int = 35
-    topic: str = "general"
-    include_answer: bool = True
-    min_score: float = 0.5
+    query: str = Field(default="What are the latest AI trends in the healthcare industry?", title="Research Query", description="The main query or subject to research.")
+    search_depth: Literal["basic", "advanced"] = Field(default="advanced", title="Search Depth", description="The depth of the research. 'basic' for a quick overview, 'advanced' for a more comprehensive search.")
+    max_results: int = Field(default=35, ge=1, le=100, title="Maximum Results", description="The maximum number of research results to retrieve and include in the context.")
+    topic: str = Field(default="general", title="Research Topic", description="The category or domain of the research. Examples: general, news, finance.")
+    include_answer: bool = Field(default=True, title="Include Answer", description="Whether to include a generated answer based on the research results in the final context.")
+    min_score: float = Field(default=0.5, ge=0.0, le=1.0, title="Minimum Score", description="The minimum relevance score (between 0 and 1) for research results to be included in the context. Results with a score below this threshold will be filtered out.")
 
 
 @router.post("/context-builder",
