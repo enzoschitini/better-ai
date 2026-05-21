@@ -65,8 +65,26 @@ class Toolkit:
       • grava dados arbitrários no `collector` (score bruto, metadados, etc.)
     """
 
-    def __init__(self) -> None:
+    def __init__(self, metadata: dict = None) -> None:
         self.collector = ToolResponseCollector()
+        self.metadata = metadata or {}
+
+    # ── interfaces pública ─────────────────────────────────────
+
+    def insert_metadata(self, dict_data: dict) -> None:
+        """Permite inserir ou atualizar metadados do toolkit."""
+        self.metadata.update(dict_data)
+    
+    def get_collector(self) -> ToolResponseCollector:
+        """Retorna o coletor para uso externo (ex: AgentExecutor)."""
+        return self.collector
+
+    def get_tools(self) -> List[BaseTool]:
+        """Retorna as tools prontas para o AgentExecutor."""
+        return [
+            self._make_similarity_search(),
+            self._make_current_datetime(),
+        ]
 
     # ── factories privadas ────────────────────────────────────
 
@@ -87,6 +105,7 @@ class Toolkit:
             collector.add(
                 tool_name="similarity_search",
                 payload={
+                    "created_by": self.metadata.get("created_by", "unknown"),
                     "query": query,
                     "k": k,
                     "raw_hits": [
@@ -140,12 +159,3 @@ class Toolkit:
             ),
             args_schema=DatetimeInput,
         )
-
-    # ── interface pública ─────────────────────────────────────
-
-    def get_tools(self) -> List[BaseTool]:
-        """Retorna as tools prontas para o AgentExecutor."""
-        return [
-            self._make_similarity_search(),
-            self._make_current_datetime(),
-        ]

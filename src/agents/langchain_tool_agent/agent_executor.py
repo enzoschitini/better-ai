@@ -119,6 +119,9 @@ def build_agent(
     llm = get_llm(provider, model, temperature)
 
     toolkit = Toolkit()
+    toolkit.insert_metadata({"created_by": "Enzo Schitini", "version": "1.0"})  # exemplo de metadado global
+    tool_collector = toolkit.get_collector()  # coletor para uso externo (ex: loop de conversa)
+
     tools   = toolkit.get_tools()
 
     prompt = build_prompt()
@@ -136,14 +139,14 @@ def build_agent(
         return_intermediate_steps=True,
     )
 
-    return executor, toolkit.collector   # ← collector viaja junto
+    return executor, tool_collector   # ← collector viaja junto
 
 
 # ──────────────────────────────────────────────
 # ENTRY POINT — loop de conversa interativo
 # ──────────────────────────────────────────────
 def main():
-    agent, collector = build_agent(provider="openai", model="gpt-4o-mini")
+    agent, tool_collector = build_agent(provider="openai", model="gpt-4o-mini")
 
     print("\n🤖 Agente Orion iniciado. Digite 'sair' para encerrar.\n")
 
@@ -152,12 +155,12 @@ def main():
         if not user_input or user_input.lower() in ("sair", "exit", "quit", "cls"):
             break
 
-        collector.clear()                           # limpa dados do turno anterior
+        tool_collector.clear()                           # limpa dados do turno anterior
         result = agent.invoke({"input": user_input})
         print(f"\nOrion: {result['output']}\n")
 
         # ── inspeciona dados laterais do turno ──────────────
-        side_data = collector.get_all()
+        side_data = tool_collector.get_all()
         if side_data:
             print("── Dados laterais das tools ──")
             for entry in side_data:
