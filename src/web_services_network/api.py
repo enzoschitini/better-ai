@@ -225,10 +225,3 @@ class WebServiceAPI:
             )
 
         return self.app
-
-"""
-curl --location 'http://localhost:8000/health'
-
-curl --location 'http://localhost:8000/health-authorization' \
---header 'X-API-Key: betterai-dev'
-"""

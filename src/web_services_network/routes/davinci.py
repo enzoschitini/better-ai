@@ -45,18 +45,3 @@ async def image_generation(
     except Exception as e:
         return resource.error_response(e)
 
-"""
-curl --location 'http://localhost:8000/davinci/image-generation' \
---header 'X-API-Key: betterai-dev-96d97aa3-492d-4ecc-9ced-3dc34c0cf062-945d3391-85dc-4a19-a054-191d048b62c0' \
---form 'user_input="Crea l'\''immagine di una pizzeria napoletana"' \
---form 'instructions="Lo stile deve essere un animazione 3d come quelle di disney"' \
---form 'config="{
-  \"model\": \"gemini-2.5-flash-image\",
-  \"temperature\": 0.75,
-  \"top_p\": 0.85,
-  \"max_output_tokens\": 1024,
-  \"aspect_ratio\": \"9:16\",
-  \"number_of_images\": 2
-}"' \
---form 'files=@"/path/to/file"'
-"""

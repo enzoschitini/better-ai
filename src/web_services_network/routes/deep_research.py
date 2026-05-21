@@ -78,17 +78,4 @@ def context_builder(payload: ContextBuilderRequest):
     except Exception as e:
         return resource.error_response(e)
 
-"""
-curl --location 'http://localhost:8000/deep-research/context-builder' \
---header 'Content-Type: application/json' \
---header 'X-API-Key: betterai-dev-96d97aa3-492d-4ecc-9ced-3dc34c0cf062-945d3391-85dc-4a19-a054-191d048b62c0' \
---data '{
-    "query": "Quais as principais tendências de IA em 2026?",
-    "search_depth": "advanced",
-    "max_results": 2,
-    "topic": "general",
-    "include_answer": true,
-    "min_score": 0.5
-  }'
-"""
 

@@ -54,24 +54,3 @@ async def document_parse(
 
     except Exception as e:
         return resource.error_response(e)
-
-"""
-curl --location 'http://localhost:8000/parse-content/document-parse' \
---header 'X-API-Key: betterai-dev-96d97aa3-492d-4ecc-9ced-3dc34c0cf062-945d3391-85dc-4a19-a054-191d048b62c0' \
---form 'job_id="teste"' \
---form 'metadata="{\"value1\": \"value3\"}"' \
---form 'document_schema="{
-  \"summary\": {
-    \"type\": \"str\",
-    \"description\": \"Resumo do conteúdo do arquivo\"
-  }
-}"' \
---form 'config="{
-  \"model_provider\": \"OpenAI\",
-  \"model_id\": \"gpt-4.1-mini\",
-  \"debug_mode\": true,
-  \"instructions\": \"Extraia dados do texto\",
-  \"description\": \"Leia o texto e extraia as informações relevantes conforme o esquema definido. Retorne um JSON estruturado com os dados extraídos. Caso não encontre alguma informação, retorne null para aquele campo.\"
-}"' \
---form 'file=@"/path/to/file"'
-"""

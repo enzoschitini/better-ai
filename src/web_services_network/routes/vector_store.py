@@ -18,7 +18,7 @@ router = APIRouter(
     "/embedding-file",
     
     summary="Process a file upload, generates embeddings, and stores vectors with metadata.",
-    #dependencies=[Depends(Authorization.multikey)],
+    dependencies=[Depends(Authorization.validate_api_key)],
 )
 
 async def embedding_file(
