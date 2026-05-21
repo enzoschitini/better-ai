@@ -96,17 +96,76 @@ curl --location 'http://localhost:8000/deep-research/context-builder' \
     "status": "success",
     "status_code": 200,
     "result": {
-        "markdown": "## Research Context\n\n### Answer\nAs principais tendências de IA em 2026 incluem agentes autônomos, modelos multimodais e IA embarcada em dispositivos de borda. Empresas como Google, OpenAI e Anthropic lideram o desenvolvimento de sistemas capazes de raciocinar em múltiplas etapas sem intervenção humana.\n\n---\n\n### Sources\n\n#### 1. The Top AI Trends Shaping 2026\n**URL:** https://techcrunch.com/2026/ai-trends\n**Score:** 0.94\n\nAgents are increasingly replacing traditional pipelines. Companies like Microsoft and Salesforce have embedded autonomous agents directly into their core products...\n\n#### 2. Multimodal AI: The Next Frontier\n**URL:** https://research.google/blog/multimodal-2026\n**Score:** 0.89\n\nWith the rise of vision-language models, enterprises are adopting multimodal AI to process documents, images and audio in unified pipelines...\n\n#### 3. Edge AI and On-Device Intelligence\n**URL:** https://www.wired.com/story/edge-ai-2026\n**Score:** 0.81\n\nSmartphones and IoT devices now run quantized LLMs locally, reducing latency and eliminating dependence on cloud infrastructure...",
+        "markdown": "...",
         "urls": [
-            "https://techcrunch.com/2026/ai-trends",
-            "https://research.google/blog/multimodal-2026",
-            "https://www.wired.com/story/edge-ai-2026"
+            "https://example.com"
         ]
     },
     "time": {
         "start": "2026-05-21 16:35:04",
         "end": "2026-05-21 16:35:11",
         "duration_seconds": 7.0
+    }
+}
+```
+
+## 4. Document Parse - */parse-content/document-parse*
+
+Recebe um arquivo e um schema JSON para extrair e estruturar seu conteúdo via LLM. Use quando precisar transformar documentos não estruturados (PDFs, Word, texto) em dados organizados e prontos para consumo.
+
+### Parâmetros
+
+| Parâmetro | Tipo | Descrição | Exemplo |
+|---|---|---|---|
+| `job_id` | `string` | Identificador único do job de parsing, definido pelo cliente. | `"job_contrato_042"` |
+| `metadata` | `string` (JSON) | Metadados auxiliares do documento, livres para uso do cliente. | `{"client": "Acme", "doc_type": "contract"}` |
+| `document_schema` | `string` (JSON) | Schema que define os campos a extrair. Cada chave recebe `type` e `description`. | `{"summary": {"type": "str", "description": "Resumo do documento"}}` |
+| `file` | `file` (upload) | Arquivo a ser processado. Formatos aceitos: `txt`, `md`, `pdf`, `docx`. Limite: 50MB. | `contrato.pdf` |
+| `config` | `string` (JSON) — opcional | Configurações do parser: modelo LLM, instruções customizadas e modo debug. | `{"model_provider": "OpenAI", "model_id": "gpt-4.1-mini", "debug_mode": false}` |
+
+### Request
+
+```bash
+curl --location 'http://localhost:8000/parse-content/document-parse' \
+--header 'X-API-Key: betterai-dev-96d97aa3-492d-4ecc-9ced-3dc34c0cf062-945d3391-85dc-4a19-a054-191d048b62c0' \
+--form 'job_id="teste"' \
+--form 'metadata="{\"value1\": \"value3\"}"' \
+--form 'document_schema="{
+  \"summary\": {
+    \"type\": \"str\",
+    \"description\": \"Resumo do conteúdo do arquivo\"
+  }
+}"' \
+--form 'config="{
+  \"model_provider\": \"OpenAI\",
+  \"model_id\": \"gpt-4.1-mini\",
+  \"debug_mode\": true,
+  \"instructions\": \"Extraia dados do texto\",
+  \"description\": \"Leia o texto e extraia as informações relevantes conforme o esquema definido. Retorne um JSON estruturado com os dados extraídos. Caso não encontre alguma informação, retorne null para aquele campo.\"
+}"' \
+--form 'file=@"/path/to/file"'
+```
+
+### Response
+
+```json
+{
+    "job_id": "job_17793923937296127003HsY",
+    "status": "success",
+    "status_code": 200,
+    "result": {
+        "job_id": "teste",
+        "content": {
+            "job_id": "teste",
+            "content": {
+                "summary": "..."
+            }
+        }
+    },
+    "time": {
+        "start": "2026-05-21 16:39:53",
+        "end": "2026-05-21 16:40:02",
+        "duration_seconds": 9.0
     }
 }
 ```
