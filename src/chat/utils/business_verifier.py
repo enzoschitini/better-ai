@@ -2,7 +2,7 @@ import json
 import logging
 from src.chat.utils.logging_utils import setup_logging
 
-setup_logging()
+#setup_logging()
 
 class BusinessVerifier:
     #logging.info("Verificando informações da empresa")
