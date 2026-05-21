@@ -9,7 +9,7 @@ from src.database.no_relational_db.router import DocumentStore
 
 class RequestResorse:
     def __init__(self):
-        self.jobId = IDGenerator.timestamp(prefix="job_")
+        self.job_id = IDGenerator.timestamp(prefix="job_")
         self.start_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
     def _finalize(self):
@@ -19,7 +19,7 @@ class RequestResorse:
     def success_response(self, result):
         self._finalize()
         return {
-            "jobId": self.jobId,
+            "job_id": self.job_id,
             "status": "success",
             "status_code": 200,
             "result": result,
@@ -33,7 +33,7 @@ class RequestResorse:
     def error_response(self, error):
         self._finalize()
         response = {
-            "jobId": self.jobId,
+            "job_id": self.job_id,
             "status": "error",
             "status_code": 500,
             "error": {
