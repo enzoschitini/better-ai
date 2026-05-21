@@ -1,6 +1,14 @@
 # Web Service Network - API
 
-...blablabla...
+A **BetterAI Web Service Network** é uma API modular de alto desempenho projetada para orquestrar serviços de inteligência artificial em produção. Ela expõe um conjunto de routers especializados — pesquisa profunda na web, parsing de documentos, geração de imagens e gerenciamento de vector stores — todos acessíveis via HTTP com autenticação por chave de API.
+
+A API é construída sobre **FastAPI** e servida com **Uvicorn**, oferecendo documentação interativa automática via Swagger UI (`/docs`) e suporte nativo a requisições assíncronas. Cada endpoint retorna respostas padronizadas com `job_id`, `status`, `result` e métricas de tempo de execução, facilitando rastreabilidade e integração com pipelines de dados.
+
+**Base URL:** `http://localhost:8000`  
+**Autenticação:** `X-API-Key` no header de todas as rotas protegidas  
+**Versão atual:** `1.0.0`
+
+[🌐 Domain](http://localhost:8000) · [🩺 Health](http://localhost:8000/health) · [📄 Documentation](http://localhost:8000/docs)
 
 ### Start application
 
