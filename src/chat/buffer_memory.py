@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 import logging
 from src.chat.utils.logging_utils import setup_logging
 
-setup_logging()
+#setup_logging()
 
 load_dotenv()
 

@@ -4,7 +4,7 @@ import logging
 
 from src.chat.utils.logging_utils import setup_logging
 
-setup_logging()
+#setup_logging()
 
 def chat_system_prompt(empresa: str, path_yaml: str = "src/chat/prompts/prompts.yaml") -> str:
     """

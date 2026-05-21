@@ -4,7 +4,7 @@ from datetime import datetime
 import logging
 from src.chat.utils.logging_utils import setup_logging
 
-setup_logging()
+#setup_logging()
 
 def estimar_tokens_completos(
     system_prompt=None,

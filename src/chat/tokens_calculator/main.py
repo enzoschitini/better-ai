@@ -3,7 +3,7 @@ from pathlib import Path
 import logging
 from src.chat.utils.logging_utils import setup_logging
 
-setup_logging()
+#setup_logging()
 
 # Adiciona a pasta "src" ao sys.path
 sys.path.append(str(Path(__file__).resolve().parents[2]))

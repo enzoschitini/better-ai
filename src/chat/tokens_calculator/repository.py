@@ -3,7 +3,7 @@ from bson import ObjectId
 import logging
 from src.chat.utils.logging_utils import setup_logging
 
-setup_logging()
+#setup_logging()
 
 class BusinessRepository:
     """Abstrai o acesso ao MongoDB e ao arquivo local JSON."""

@@ -4,10 +4,8 @@ from datetime import datetime
 from pymongo import MongoClient
 
 from dotenv import load_dotenv
-from src.chat.utils.logging_utils import setup_logging
 
 load_dotenv()
-setup_logging()
 
 class MongoDBManager:
     """

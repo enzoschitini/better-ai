@@ -1,7 +1,7 @@
 import logging
 from src.chat.utils.logging_utils import setup_logging
 
-setup_logging()
+#setup_logging()
 
 class CostCalculator:
     """Responsável por calcular e formatar custos de tokens, com logging."""
