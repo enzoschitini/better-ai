@@ -51,6 +51,8 @@ class WebServiceAPI:
         self.logger.info(f"{self.config.get("app_name", "API")} initialized successfully at {current_time}.")
         self.logger.info(f"Version: {self.config.get('version', '1.0.0')}")
         self.logger.info(f"Domain: {self.domain}")
+
+        self.logger.info(f"Health check available at: {self.domain}/health")
         self.logger.info(f"Documentation available at: {self.domain}/docs")
 
     @asynccontextmanager
