@@ -170,41 +170,74 @@ curl --location 'http://localhost:8000/parse-content/document-parse' \
 }
 ```
 
----
+## 5. Image Generation - */davinci/image-generation*
 
-#### *Author: Enzo Schitini*
-
-
-
-
-Você é um especialista em documentação técnica de APIs REST.
-
-Dado o código de um endpoint e seu curl de exemplo, gere uma documentação clara e objetiva no seguinte formato:
-
----
-
-## {N}. {Nome do Endpoint} - *{/rota/completa}*
-
-Um parágrafo descrevendo o que o endpoint faz, para que serve e quando usá-lo.
+Gera imagens a partir de um prompt textual, com suporte a instruções de estilo, configurações do modelo e imagens de referência. Use quando precisar criar ou transformar imagens de forma programática via LLM multimodal.
 
 ### Parâmetros
 
-Tabela com as colunas: Parâmetro | Tipo | Descrição | Exemplo
+| Parâmetro | Tipo | Descrição | Exemplo |
+|---|---|---|---|
+| `user_input` | `string` | Prompt principal que descreve a imagem a ser gerada. | `"Uma pizzaria napolitana à noite"` |
+| `instructions` | `string` — opcional | Instruções adicionais de estilo ou diretrizes criativas para a geração. | `"Estilo de animação 3D como as da Disney"` |
+| `config` | `string` (JSON) — opcional | Configurações do modelo: `model`, `temperature`, `top_p`, `max_output_tokens`, `aspect_ratio`, `number_of_images`. | `{"model": "gemini-2.5-flash-image", "aspect_ratio": "9:16"}` |
+| `files` | `file[]` — opcional | Imagens de referência para guiar a geração. Aceita múltiplos uploads. | `reference.png` |
 
 ### Request
 
-Bloco curl pronto para execução, com o header X-API-Key como `******`.
+```bash
+curl --location 'http://localhost:8000/davinci/image-generation' \
+--form 'user_input="Crea l'\''immagine di una pizzeria napoletana"' \
+--form 'instructions="Lo stile deve essere un animazione 3d come quelle di disney"' \
+--form 'config="{
+  \"model\": \"gemini-2.5-flash-image\",
+  \"temperature\": 0.75,
+  \"top_p\": 0.85,
+  \"max_output_tokens\": 1024,
+  \"aspect_ratio\": \"9:16\",
+  \"number_of_images\": 2
+}"' \
+--form 'files=@"/path/to/file"'
+```
 
 ### Response
 
-Bloco JSON realista simulando um retorno de sucesso, com dados coerentes ao contexto da query usada no curl.
+```json
+{
+    "status": "success",
+    "status_code": 200,
+    "result": {
+        "model": "gemini-2.5-flash-image",
+        "images": [
+            {
+                "index": 0,
+                "base64": "iVBORw0KGgoAAAANSUhEUgAAAAUA...",
+                "mime_type": "image/png",
+                "aspect_ratio": "9:16",
+                "resolution": "1080x1920"
+            },
+            {
+                "index": 1,
+                "base64": "iVBORw0KGgoAAAANSUhEUgAAAAUB...",
+                "mime_type": "image/png",
+                "aspect_ratio": "9:16",
+                "resolution": "1080x1920"
+            }
+        ],
+        "usage": {
+            "prompt_tokens": 312,
+            "output_tokens": 1024,
+            "total_tokens": 1336
+        }
+    },
+    "time": {
+        "start": "2026-05-21 17:45:10",
+        "end": "2026-05-21 17:45:23",
+        "duration_seconds": 13.2
+    }
+}
+```
 
 ---
 
-**Regras:**
-- O número `{N}` deve ser fornecido por mim junto com o código
-- A descrição do endpoint deve ser em 1–2 frases diretas, sem enrolação
-- Os tipos dos parâmetros devem refletir exatamente o que está no código (ex: `"basic" | "advanced"`, `float (0.0–1.0)`)
-- O JSON de response deve ser realista: simule dados que fariam sentido para a query do curl
-- Escreva em português, mas mantenha nomes de parâmetros, rotas e tipos em inglês
-- Não adicione seções extras além das especificadas
+#### *Author: Enzo Schitini*
