@@ -10,7 +10,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.web_services_network.auth import Authorization
+from src.web_services_network.utils.auth import Authorization
 from src.web_services_network.config import CONFIG
 
 load_dotenv()

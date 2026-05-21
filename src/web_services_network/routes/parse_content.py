@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from typing import Optional, List
 from pydantic import BaseModel
 
-from src.web_services_network.request_resource import RequestResorse, Authorization, LoadRequestFile
+from src.web_services_network.utils.request_resource import RequestResorse, Authorization, LoadRequestFile
 from src.content_parse.module.applications import DocumentParse
 
 router = APIRouter(

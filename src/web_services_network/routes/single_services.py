@@ -3,7 +3,7 @@ from pydantic import BaseModel
 import time
 import json
 
-from src.web_services_network.request_resource import RequestResorse, Authorization
+from src.web_services_network.utils.request_resource import RequestResorse, Authorization
 
 router = APIRouter(
     tags=["parses"]

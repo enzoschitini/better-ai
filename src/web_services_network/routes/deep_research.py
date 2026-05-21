@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Form, File, UploadFile
 from typing import Optional, List, Literal
 from pydantic import BaseModel, Field
 
-from src.web_services_network.request_resource import RequestResorse, Authorization
+from src.web_services_network.utils.request_resource import RequestResorse, Authorization
 
 from src.deep_research.tavily_research.tavily_core import TavilyDeepResearch
 from src.deep_research.tavily_research.context_builder import TavilyContextBuilder, TavilyResearchRunner

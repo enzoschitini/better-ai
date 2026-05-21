@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Form, File, UploadFile
 from typing import Optional, List
 from pydantic import BaseModel
 
-from src.web_services_network.request_resource import RequestResorse, Authorization
+from src.web_services_network.utils.request_resource import RequestResorse, Authorization
 
 from src.image_generation.module import ImageGenerate, RequestProcessor
 
