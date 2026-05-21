@@ -11,7 +11,7 @@ from fastapi import FastAPI, UploadFile, HTTPException, Request, Form, Depends, 
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from auth import Authorization
+from web_services_network.backup.auth import Authorization
 
 # Embedding Packages
 
@@ -198,6 +198,11 @@ def generate_image(data: GenerateRequest) -> GenerateResponse:
 
 # DAVINCI 🍌
 
+# ======================== ========================
+# SAVE ENDPOINTS
+# ======================== ========================
+
+
 @app.post("/davinci/image-generation", 
           summary="Image generation based on prompts, settings, and optional images.")
 async def image_generation(
@@ -266,6 +271,11 @@ async def image_generation(
 # Context Parser
 # ========================
 
+
+# ======================== ========================
+# SAVE ENDPOINTS
+# ======================== ========================
+
 @app.post("/parse-content/document-parse", dependencies=[Depends(Authorization.multikey)],
           summary="Parse and extract structured content from files using schema")
 async def document_parse(
@@ -309,6 +319,11 @@ async def document_parse(
 # ========================
 # Deep Research Context
 # ========================
+
+
+# ======================== ========================
+# SAVE ENDPOINTS
+# ======================== ========================
 
 class ContextBuilderRequest(BaseModel):
     query: str
