@@ -5,7 +5,7 @@ from src.chat.tokens_calculator.repository import BusinessRepository
 import logging
 from src.chat.utils.logging_utils import setup_logging
 
-setup_logging()
+#setup_logging()
 
 class BusinessPlanManager:
     """Orquestra o cálculo de custos e atualização de plano."""

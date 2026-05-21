@@ -8,10 +8,10 @@ import base64
 import requests
 import logging
 
-from src.utils.logging_utils import setup_logging
+from src.utils.logging_utils import #setup_logging
 
 load_dotenv()
-setup_logging(log_file="loggings/google_genai.log")
+#setup_logging(log_file="loggings/google_genai.log")
 
 class ClientGemini:
     """

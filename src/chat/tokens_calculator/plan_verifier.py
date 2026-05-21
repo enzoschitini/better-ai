@@ -1,7 +1,7 @@
 import logging
 from src.chat.utils.logging_utils import setup_logging
 
-setup_logging()
+#setup_logging()
 
 class PlanStatusVerifier:
     """Verifica se o uso do plano ultrapassou os limites."""

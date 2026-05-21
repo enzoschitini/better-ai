@@ -6,7 +6,7 @@ from langchain.agents import tool
 from src.chat.tools.retrieval import AnswerGenerationTool
 from src.chat.utils.logging_utils import setup_logging
 
-setup_logging()
+#setup_logging()
 
 def tool_format_output(name: str, response: str, parameters: dict = None):
     output = {

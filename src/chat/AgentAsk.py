@@ -28,7 +28,7 @@ warnings.filterwarnings("ignore", category=UserWarning)
 
 load_dotenv()
 
-setup_logging()
+#setup_logging()
 
 
 # =========================================
