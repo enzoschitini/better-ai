@@ -12,21 +12,19 @@ from src.agents.utils.test_agents.config import AGENT_AI_BANNER
 
 class AgnoAgentExecutor:
     """
-    Executor genérico para agentes Agno.
+    Orchestrates the full lifecycle of an Agno AI agent, handling setup, session management,
+    tool response display, and the interactive run loop.
 
-    Encapsula o ciclo completo: registro, criação e loop interativo.
-    session_id e user_id são opcionais — gerados/defaultados automaticamente.
+    Args:
+        :param agent_class (type): The agent class to be registered and instantiated.
+        :param params (dict | None): Optional extra parameters forwarded to the agent constructor. Default is None.
+        :param session_id (str | None): Unique identifier for the session. Default is None (auto-generated via IDGenerator).
+        :param user_id (str | None): Identifier for the user interacting with the agent. Default is "user_01".
+        :param print_tool_response (bool): Whether to print tool response metadata after each agent run. Default is False.
+        :param banner (str | None): Banner text displayed at the start of the run loop. Default is None (resolved from the agent class or AGENT_AI_BANNER).
 
-    Uso:
-        executor = AgnoAgentExecutor(
-            agent_class=FileTalkAgent,
-            params={
-                "filter_search": {
-                    "knowledge_base_id": ["test_agent"]
-                }
-            }
-        )
-        executor.run()
+    Methods:
+        run(): Starts the interactive CLI loop, reading user input and dispatching it to the agent.
     """
 
     DEFAULT_USER_ID = "user_01"
@@ -62,7 +60,13 @@ class AgnoAgentExecutor:
     # ------------------------------------------------------------------
 
     def _build_params(self) -> dict:
-        """Monta o dict de parâmetros mesclando session/user com os extras."""
+        """
+        Assembles the parameter dictionary used to instantiate the agent, merging session
+        context with any extra parameters provided at construction time.
+
+        Returns:
+            dict: A dictionary containing session_id, user_id, and any additional extra parameters.
+        """
         return {
             "session_id": self._session_id,
             "user_id": self._user_id,
@@ -70,7 +74,10 @@ class AgnoAgentExecutor:
         }
 
     def _setup(self) -> None:
-        """Registra e instancia o agente."""
+        """
+        Initializes and wires up all internal components by registering the agent class,
+        creating the agent instance with its tool context, and preparing the runner.
+        """
         agno = AgnoAiAgents()
         agno.register(self._agent_name, self._agent_class)
 
@@ -85,6 +92,10 @@ class AgnoAgentExecutor:
     # ------------------------------------------------------------------
 
     def _print_tools(self) -> None:
+        """
+        Conditionally fetches and renders the tool response metadata as a formatted Rich panel
+        in the console, only when print_tool_response is enabled.
+        """
         if not self._print_tool_response:
             return
 
@@ -102,7 +113,10 @@ class AgnoAgentExecutor:
     # ------------------------------------------------------------------
 
     def run(self) -> None:
-        """Inicia o loop interativo do agente."""
+        """
+        Starts the interactive CLI loop that continuously reads user input, dispatches it to
+        the agent via the runner, and optionally prints tool response metadata after each turn.
+        """
         print(self._banner)
 
         while True:
