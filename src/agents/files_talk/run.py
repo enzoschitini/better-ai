@@ -1,5 +1,5 @@
 from src.agents.files_talk.agent import FileTalkAgent
-from src.agents.utils.agno_agent_executor import AgnoAgentExecutor
+from src.agents.utils.test_agents.agno_agent_executor import AgnoAgentExecutor
 from src.utils.unique_id_factory import IDGenerator
 
 if __name__ == "__main__":
