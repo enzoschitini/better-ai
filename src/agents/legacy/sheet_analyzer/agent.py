@@ -4,8 +4,8 @@ from agno.agent import Agent
 from agno.models.openai import OpenAIChat
 
 from src.agents.utils.database import Database
-from src.agents.sheet_analyzer.toolkit import DataframeAnalyzer
-from src.agents.sheet_analyzer.config import DEFAULT_MODEL, PROMPT
+from agents.legacy.sheet_analyzer.toolkit import DataframeAnalyzer
+from agents.legacy.sheet_analyzer.config import DEFAULT_MODEL, PROMPT
 from src.agents.utils.agno_ai_agents import BaseAgent, ToolContext
 
 load_dotenv()

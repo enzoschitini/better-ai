@@ -1,4 +1,4 @@
-from src.agents.files_talk.agent import FileTalkAgent
+from agents.legacy.files_talk.agent import FileTalkAgent
 from src.agents.utils.test_agents.agno_agent_executor import AgnoAgentExecutor
 from src.utils.unique_id_factory import IDGenerator
 

@@ -4,8 +4,8 @@ import json
 from rich.console import Console
 from rich.panel import Panel
 
-from src.agents.files_talk.agent import FileTalkAgent
-from src.agents.files_talk.config import AGENT_AI_BANNER
+from agents.legacy.files_talk.agent import FileTalkAgent
+from agents.legacy.files_talk.config import AGENT_AI_BANNER
 
 from src.agents.utils.agno_ai_agents import AgnoAiAgents
 from src.agents.utils.test_agents.run_agent import RunAgent

@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from agno.agent import Agent
 from agno.models.openai import OpenAIChat
 
-from src.agents.deep_research.config import DEFAULT_MODEL
+from agents.legacy.deep_research.config import DEFAULT_MODEL
 from src.dev_tools.doc_class.config import (
     AgentConfig,
     GenereteDocStringConfig,

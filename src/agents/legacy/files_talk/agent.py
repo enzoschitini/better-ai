@@ -4,8 +4,8 @@ import json
 from agno.agent import Agent
 from agno.models.openai import OpenAIChat
 
-from src.agents.files_talk.toolkit import RetrievalAugmentedGeneration
-from src.agents.files_talk.config import PROMPT, DEFAULT_MODEL
+from agents.legacy.files_talk.toolkit import RetrievalAugmentedGeneration
+from agents.legacy.files_talk.config import PROMPT, DEFAULT_MODEL
 
 from src.agents.utils.database import Database
 from src.agents.utils.agno_ai_agents import BaseAgent, ToolContext

@@ -3,7 +3,7 @@ import pandas as pd
 from io import BytesIO
 
 from src.agents.utils.agno_ai_agents import AgnoAiAgents
-from src.agents.sheet_analyzer.agent import DataframeAgent
+from agents.legacy.sheet_analyzer.agent import DataframeAgent
 from src.agents.utils.test_agents.run_agent import RunAgent
 
 
