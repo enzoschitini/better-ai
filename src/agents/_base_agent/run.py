@@ -1,6 +1,6 @@
 from src.utils.unique_id_factory import IDGenerator
 
-from src.agents.base_agent.agent import BaseAgent
+from src.agents._base_agent.agent import BaseAgent
 from src.agents.utils.test_agents.agno_agent_executor import AgnoAgentExecutor
 
 
@@ -16,4 +16,4 @@ if __name__ == "__main__":
         print_tool_response=True
     ).run()
 
-# python -m src.agents.base_agent.run
+# python -m src.agents._base_agent.run

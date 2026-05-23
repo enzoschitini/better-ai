@@ -1,11 +1,11 @@
 from agno.agent import Agent
 from agno.models.openai import OpenAIChat
 
-from src.agents.base_agent.config import (
+from src.agents._base_agent.config import (
     PROMPT, DEFAULT_MODEL, LOCAL_MEMORY_DB
 )
 
-from src.agents.base_agent.tools.toolkit import BaseToolkit
+from src.agents._base_agent.tools.toolkit import BaseToolkit
 
 from src.agents.utils.database import Database
 from src.agents.utils.agno_ai_agents import BaseAgent, ToolContext
@@ -54,4 +54,4 @@ class BaseAgent(BaseAgent):
 
 # Qual a temperatura em Salvador?
 
-# python -m src.agents.base_agent.agent
+# python -m src.agents._base_agent.agent
