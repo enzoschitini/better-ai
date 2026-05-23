@@ -6,11 +6,15 @@ import random
 from agno.tools import Toolkit
 from src.agents.utils.tool_response import ToolResponse
 
+# Deep Research Packages
+from src.deep_research.tavily_research.tavily_core import TavilyDeepResearch
+from src.deep_research.tavily_research.context_builder import TavilyContextBuilder, TavilyResearchRunner
+
 load_dotenv()
 
-class BaseToolkit(Toolkit):
+class TrendRadarToolkit(Toolkit):
     """
-    BaseToolkit is a generic toolkit template for building agent tools.
+    TrendRadarToolkit is a generic toolkit template for building agent tools.
 
     Use this as a starting point for creating new toolkits by:
     - Renaming the class to reflect the toolkit's domain
@@ -110,14 +114,34 @@ class BaseToolkit(Toolkit):
         return f"The current temperature in {city} is {fake_temperature}°C."
 
 
+    def get_trends(self, query: str) -> str:
+        try:
+            if not query or not query.strip():
+                return "A valid query is required."
+
+            trends = [
+                "AI and Machine Learning",
+                "Remote Work and Digital Nomadism",
+                "Sustainable and Green Technologies",
+                "Health Tech and Telemedicine",
+                "Blockchain and Decentralized Finance (DeFi)"
+            ]
+
+            self._update_response(
+                "get_trends",
+                {"query": query, "trends": trends}
+            )
+
+        except Exception as e:
+            return f"Failed to get trends: {str(e)}"
+
+        return f"Current trends related to '{query}': {', '.join(trends)}."
+
 if __name__ == "__main__":
-    toolkit = BaseToolkit()
+    toolkit = TrendRadarToolkit()
 
-    datetime_result = toolkit.get_current_datetime("What is the current date and time?")
-    print(f"\n{datetime_result}")
-
-    temperature_result = toolkit.get_temperature("Salvador")
-    print(f"{temperature_result}\n")
+    trends_result = toolkit.get_trends("What are the current trends in technology?")
+    print(f"{trends_result}\n")
 
 
 # python -m src.agents.trend_radar.tools.toolkit
