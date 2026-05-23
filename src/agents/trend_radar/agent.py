@@ -5,7 +5,7 @@ from src.agents.trend_radar.config import (
     PROMPT, DEFAULT_MODEL, LOCAL_MEMORY_DB
 )
 
-from src.agents.trend_radar.tools.toolkit import BaseToolkit
+from src.agents.trend_radar.tools.toolkit import TrendRadarToolkit
 
 from src.agents.utils.database import Database
 from src.agents.utils.agno_ai_agents import BaseAgent, ToolContext
@@ -46,7 +46,7 @@ class BaseAgent(BaseAgent):
             stream=True,
             debug_level=True,
             tools = [
-                BaseToolkit(
+                TrendRadarToolkit(
                     TOOL_RESPONSER=tool_context.tool_responser
                 )
             ]

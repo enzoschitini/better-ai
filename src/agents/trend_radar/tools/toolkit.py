@@ -3,24 +3,18 @@ import random
 from dotenv import load_dotenv
 from typing import List, Any
 from datetime import datetime
-from pydantic import BaseModel
+from urllib.parse import urlparse
 
 from agno.tools import Toolkit
 from src.agents.utils.tool_response import ToolResponse
+
+from src.agents.trend_radar.config import ContextBuilderRequest
 
 # Deep Research Packages
 from src.deep_research.tavily_research.tavily_core import TavilyDeepResearch
 from src.deep_research.tavily_research.context_builder import TavilyContextBuilder, TavilyResearchRunner
 
 load_dotenv()
-
-class ContextBuilderRequest(BaseModel):
-    query: str
-    search_depth: str = "advanced"
-    max_results: int = 15
-    topic: str = "general"
-    include_answer: bool = True
-    min_score: float = 0.5
 
 class TrendRadarToolkit(Toolkit):
     """
@@ -58,6 +52,17 @@ class TrendRadarToolkit(Toolkit):
                 tool_name=tool_name,
                 payload=payload
             )
+
+    def _urls_to_sources(self, urls: list[str]) -> list[dict]:
+        """Internal helper to convert a list of URLs into structured source information."""
+        sources = []
+        for url in urls:
+            parsed = urlparse(url)
+            domain = f"{parsed.scheme}://{parsed.netloc}"
+            # Pega o nome do domínio sem www. e sem TLD, capitalizado
+            name = parsed.netloc.removeprefix("www.").split(".")[0].capitalize()
+            sources.append({"name": name, "domain": domain, "url": url})
+        return sources
 
     def get_trends(self, query: str) -> str:
         """
@@ -112,10 +117,11 @@ class TrendRadarToolkit(Toolkit):
 
             markdown_context = context["markdown"]
             urls = context["urls"]
+            sources = self._urls_to_sources(urls)
 
             self._update_response(
                 "get_trends",
-                {"query": query, "urls": urls}
+                {"query": query, "sources": sources}
             )
 
         except Exception as e:
