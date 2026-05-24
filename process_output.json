@@ -1,0 +1,107 @@
+{
+    "payload": {
+        "job_id": "job_12345",
+        "identifiers": {
+            "client_id": "client_abc",
+            "workspace_id": "workspace_001",
+            "user_id": "user_789",
+            "file_id": "file_xyz"
+        },
+        "pipeline": {
+            "generate_tags": true
+        },
+        "embedding_metadata": {
+            "source": "uploaded_file",
+            "origin": "web_app",
+            "language": "en",
+            "tags": "#finance, #report, #2026"
+        },
+        "embedding_settings": {
+            "model": "text-embedding-3-large",
+            "dimensions": 3072,
+            "chunk_size": 500,
+            "chunk_overlap": 50,
+            "normalize": true,
+            "batch_size": 200
+        },
+        "file_info": {
+            "name": "ITA_B2_02 Raccontare aneddoti ed episodi passati.pdf",
+            "extension": "pdf",
+            "mime_type": "application/pdf",
+            "size_bytes": 3694217,
+            "size_kb": 3607.63,
+            "size_mb": 3.52
+        },
+        "vector_db_settings": {
+            "index_name": "backai-vectorstore",
+            "main_namespace": "knowledge_base_content_agent",
+            "global_namespace": "global_knowledge_base_content_agent",
+            "save_global": false,
+            "model": "text-embedding-3-large",
+            "dimensions": 3072,
+            "batch_size": 200
+        }
+    },
+    "file_content": "Raccontare aneddoti ed episodi passati\n© 2021 Babbel GmbH, all rights reserved\nB2\nRaccontare aneddoti \ned episodi passati\nImpara a seguire la sequenza cronologica di un \nracconto e a raccontare aneddoti passati.\n© 2021 Babbel GmbH, all rights reserved\nRaccontare aneddoti ed episodi passati\n© 2021 Babbel GmbH, all rights reserved\n2\nParliamo di patrimonio artistico e culturale nel mondo\nRaccontare aneddoti ed episodi passati\n© 2021 Babbel GmbH, all rights reserved\n3\nMonumenti e \nopere storiche\nMappa mentale\nWord or \ntopic\nWord or \ntopic\nWord or \ntopic\nWord or \ntopic\nWord or \ntopic\nWord or \ntopic\nRaccontare aneddoti ed episodi passati\n© 2021 Babbel GmbH, all rights reserved\n4\nLa Torre di Pisa, anche nota come torre pendente, è il campanile della cattedrale di S. Maria \nAssunta in Piazza del Duomo a Pisa. ___________ nell’arco di due secoli e inaugurata nel 1372. Già \ndurante la costruzione, il terreno ___________ provocando la pendenza della torre. La prima fase \ndei lavori ___________ quindi a metà del terzo piano. I lavori _______ poi _______ e completati. \nDurante i lavori di consolidamento, iniziati nel 1990 e terminati alla ﬁne del 2001, la pendenza del \ncampanile ___________ tramite contrappesi di piombo. Dal marzo 2008 la torre ___________ il livello \ndeﬁnitivo di consolidamento\nCompleta il testo con i passati corretti\ncedere\nridurre\ninterrompere\ncostruire\nraggiungere\nriprendere\nAttenzione alle forme passive!\nRaccontare aneddoti ed episodi passati\n© 2021 Babbel GmbH, all rights reserved\n5\nCompleta con le forme passive\nP. prossimo\nImperfetto\nTrap. prossimo\nP. remoto\nio\nsono stato/a \namato/a\ntu\nlui/lei\nnoi\nvoi\nloro\nRaccontare aneddoti ed episodi passati\n© 2021 Babbel GmbH, all rights reserved\n6\nScegli un monumento e descrivilo\nLa Fontana di Trevi\nRoma\nIl Ponte dei Sospiri\nVenezia\nLa Mole Antonelliana \nTorino\nRaccontare aneddoti ed episodi passati\n© 2021 Babbel GmbH, all rights reserved\n7\nA: Ma come hanno fatto gli Inca a \nspostare quelle pietre giganti?\nB: Me lo chiedo anche io. Allora non \nesistevano i mezzi che abbiamo oggi.\nA: No, tutt’altro.\nEsercitati leggendo i dialoghi\nDialogo 1\nA: Che meraviglia il Taj Mahal!\nB: Come darti torto. Dicono che sia una delle \ndimostrazioni d’amore più impressionanti al \nmondo.\nA: Davvero?\nB: Sì. La moglie dell’imperatore indiano morì \ndopo aver partorito la ﬁglia, così un giorno \nlui decise di costruirle e dedicarle questo \nmausoleo.\nDialogo 2\nRaccontare aneddoti ed episodi passati\n© 2021 Babbel GmbH, all rights reserved\n8\n1.\nLa cattedrale fu costruita nel 1400. Allora / un giorno le chiese erano considerate un simbolo di \ngrandezza per l’intera città.\n2.\nAllora / un giorno l’imperatore decise di costruire un monumento in memoria di sua moglie.\n3.\nPer allora / un giorno era una scelta coraggiosa.\n4.\nMio nonno ha vissuto il boom degli anni ‘70. Tuttavia, allora / un giorno non c’era tutta questa \ntecnologia che abbiamo oggi.\n5.\nAllora / un giorno non ero ancora consapevole di cosa sarebbe successo.\n6.\nAllora / un giorno mi svegliai e decisi di cambiare la mia vita.\nScegli l’opzione corretta\nAllora equivale a “a quell’epoca”, “in quel tempo” e si trova anche in altre forme (da allora, per allora).\nPuò essere abbinato a momenti precisi nel passato (p. remoto) ma anche a situazioni prolungate (imperfetto).\nUn giorno equivale a “in un preciso momento”, pertanto si utilizza perlopiù con momenti precisi nel passato (p. remoto).\nRaccontare aneddoti ed episodi passati\n© 2021 Babbel GmbH, all rights reserved\n9\n1\n2\n3\n4\n5\n6\nAbbina gli elementi corrispondenti\n1.\nLa Torre Eiffel fu inaugurata\n2.\nMio ﬁglio ha preso\n3.\nIn Italia il 13\n4.\nIl ‘900 è stato un secolo\n5.\nIl 2 giugno si festeggia\n6.\nOggi è il 30\nA.\nun cinque a matematica.\nB.\nricco di scoperte scientiﬁche.\nC.\nla nascita della Repubblica Italiana.\nD.\nil 28 gennaio 1887.\nE.\ndel mese.\nF.\nè un numero fortunato.\nRaccontare aneddoti ed episodi passati\n© 2021 Babbel GmbH, all rights reserved\n10\nIl 10 è il mio numero fortunato. \nL’1 è il primo giorno del mese.\nI numeri cardinali possono avere funzione di sostantivo. In questa loro funzione, essi \nassumono il genere maschile e il numero variabile (es. togli tutti i 4 dal mazzo di carte).\nLa stessa regola vale per le date, dove tutti i giorni sono sostantivi numerali cardinali \nmaschili, a eccezione dell’1 che, invece, viene letto come ordinale.\nIl 1o gennaio è un giorno speciale.\nI numerali come sostantivi\nRaccontare aneddoti ed episodi passati\n© 2021 Babbel GmbH, all rights reserved\n11\nCompleta con l’espressione corretta\n    In Inghilterra il 13 è un numero sfortunato.\n1.\n___________________ in Italia è stato il secolo del Rinascimento.\n2.\nCon ___________________ non prendi nulla a briscola.\n3.\nNei dadi non c’è ___________________.\n4.\n___________________ settembre è una data tristemente nota.\n5.\n___________________ è stato l’anno in cui Einstein ha pubblicato la \nteoria della relatività generale.\n13\n1500\n2\n0\n11\n1915\nRaccontare aneddoti ed episodi passati\n© 2021 Babbel GmbH, all rights reserved\n12\nOption 1\nUn aneddoto legato a un monumento\n●\nStudente A: racconti l’aneddoto\n●\nStudente B: fai domande e ti informi\nUna curiosità legata all’architettura\n●\nStudente A: racconti una curiosità\n●\nStudente B: fai domande e rispondi\n        Scegli una situazione e crea un dialogo\nRaccontare aneddoti ed episodi passati\n© 2021 Babbel GmbH, all rights reserved\n13\nPAROLA\nOggi ho imparato una nuova...\nESPRESSIONE\nCURIOSITÀ\nCULTURALE\nSalva la \nchat!\nRaccontare aneddoti ed episodi passati\n© 2021 Babbel GmbH, all rights reserved\nSalva la \nchat!\nCon la nostra rivista\nCon i nostri podcast\nCon la tua app Babbel\n14\nE adesso? Continua a imparare con Babbel!\n",
+    "embedding_content": {
+        "file_content": "Raccontare aneddoti ed episodi passati\n© 2021 Babbel GmbH, all rights reserved\nB2\nRaccontare aneddoti \ned episodi passati\nImpara a seguire la sequenza cronologica di un \nracconto e a raccontare aneddoti passati.\n© 2021 Babbel GmbH, all rights reserved\nRaccontare aneddoti ed episodi passati\n© 2021 Babbel GmbH, all rights reserved\n2\nParliamo di patrimonio artistico e culturale nel mondo\nRaccontare aneddoti ed episodi passati\n© 2021 Babbel GmbH, all rights reserved\n3\nMonumenti e \nopere storiche\nMappa mentale\nWord or \ntopic\nWord or \ntopic\nWord or \ntopic\nWord or \ntopic\nWord or \ntopic\nWord or \ntopic\nRaccontare aneddoti ed episodi passati\n© 2021 Babbel GmbH, all rights reserved\n4\nLa Torre di Pisa, anche nota come torre pendente, è il campanile della cattedrale di S. Maria \nAssunta in Piazza del Duomo a Pisa. ___________ nell’arco di due secoli e inaugurata nel 1372. Già \ndurante la costruzione, il terreno ___________ provocando la pendenza della torre. La prima fase \ndei lavori ___________ quindi a metà del terzo piano. I lavori _______ poi _______ e completati. \nDurante i lavori di consolidamento, iniziati nel 1990 e terminati alla ﬁne del 2001, la pendenza del \ncampanile ___________ tramite contrappesi di piombo. Dal marzo 2008 la torre ___________ il livello \ndeﬁnitivo di consolidamento\nCompleta il testo con i passati corretti\ncedere\nridurre\ninterrompere\ncostruire\nraggiungere\nriprendere\nAttenzione alle forme passive!\nRaccontare aneddoti ed episodi passati\n© 2021 Babbel GmbH, all rights reserved\n5\nCompleta con le forme passive\nP. prossimo\nImperfetto\nTrap. prossimo\nP. remoto\nio\nsono stato/a \namato/a\ntu\nlui/lei\nnoi\nvoi\nloro\nRaccontare aneddoti ed episodi passati\n© 2021 Babbel GmbH, all rights reserved\n6\nScegli un monumento e descrivilo\nLa Fontana di Trevi\nRoma\nIl Ponte dei Sospiri\nVenezia\nLa Mole Antonelliana \nTorino\nRaccontare aneddoti ed episodi passati\n© 2021 Babbel GmbH, all rights reserved\n7\nA: Ma come hanno fatto gli Inca a \nspostare quelle pietre giganti?\nB: Me lo chiedo anche io. Allora non \nesistevano i mezzi che abbiamo oggi.\nA: No, tutt’altro.\nEsercitati leggendo i dialoghi\nDialogo 1\nA: Che meraviglia il Taj Mahal!\nB: Come darti torto. Dicono che sia una delle \ndimostrazioni d’amore più impressionanti al \nmondo.\nA: Davvero?\nB: Sì. La moglie dell’imperatore indiano morì \ndopo aver partorito la ﬁglia, così un giorno \nlui decise di costruirle e dedicarle questo \nmausoleo.\nDialogo 2\nRaccontare aneddoti ed episodi passati\n© 2021 Babbel GmbH, all rights reserved\n8\n1.\nLa cattedrale fu costruita nel 1400. Allora / un giorno le chiese erano considerate un simbolo di \ngrandezza per l’intera città.\n2.\nAllora / un giorno l’imperatore decise di costruire un monumento in memoria di sua moglie.\n3.\nPer allora / un giorno era una scelta coraggiosa.\n4.\nMio nonno ha vissuto il boom degli anni ‘70. Tuttavia, allora / un giorno non c’era tutta questa \ntecnologia che abbiamo oggi.\n5.\nAllora / un giorno non ero ancora consapevole di cosa sarebbe successo.\n6.\nAllora / un giorno mi svegliai e decisi di cambiare la mia vita.\nScegli l’opzione corretta\nAllora equivale a “a quell’epoca”, “in quel tempo” e si trova anche in altre forme (da allora, per allora).\nPuò essere abbinato a momenti precisi nel passato (p. remoto) ma anche a situazioni prolungate (imperfetto).\nUn giorno equivale a “in un preciso momento”, pertanto si utilizza perlopiù con momenti precisi nel passato (p. remoto).\nRaccontare aneddoti ed episodi passati\n© 2021 Babbel GmbH, all rights reserved\n9\n1\n2\n3\n4\n5\n6\nAbbina gli elementi corrispondenti\n1.\nLa Torre Eiffel fu inaugurata\n2.\nMio ﬁglio ha preso\n3.\nIn Italia il 13\n4.\nIl ‘900 è stato un secolo\n5.\nIl 2 giugno si festeggia\n6.\nOggi è il 30\nA.\nun cinque a matematica.\nB.\nricco di scoperte scientiﬁche.\nC.\nla nascita della Repubblica Italiana.\nD.\nil 28 gennaio 1887.\nE.\ndel mese.\nF.\nè un numero fortunato.\nRaccontare aneddoti ed episodi passati\n© 2021 Babbel GmbH, all rights reserved\n10\nIl 10 è il mio numero fortunato. \nL’1 è il primo giorno del mese.\nI numeri cardinali possono avere funzione di sostantivo. In questa loro funzione, essi \nassumono il genere maschile e il numero variabile (es. togli tutti i 4 dal mazzo di carte).\nLa stessa regola vale per le date, dove tutti i giorni sono sostantivi numerali cardinali \nmaschili, a eccezione dell’1 che, invece, viene letto come ordinale.\nIl 1o gennaio è un giorno speciale.\nI numerali come sostantivi\nRaccontare aneddoti ed episodi passati\n© 2021 Babbel GmbH, all rights reserved\n11\nCompleta con l’espressione corretta\n    In Inghilterra il 13 è un numero sfortunato.\n1.\n___________________ in Italia è stato il secolo del Rinascimento.\n2.\nCon ___________________ non prendi nulla a briscola.\n3.\nNei dadi non c’è ___________________.\n4.\n___________________ settembre è una data tristemente nota.\n5.\n___________________ è stato l’anno in cui Einstein ha pubblicato la \nteoria della relatività generale.\n13\n1500\n2\n0\n11\n1915\nRaccontare aneddoti ed episodi passati\n© 2021 Babbel GmbH, all rights reserved\n12\nOption 1\nUn aneddoto legato a un monumento\n●\nStudente A: racconti l’aneddoto\n●\nStudente B: fai domande e ti informi\nUna curiosità legata all’architettura\n●\nStudente A: racconti una curiosità\n●\nStudente B: fai domande e rispondi\n        Scegli una situazione e crea un dialogo\nRaccontare aneddoti ed episodi passati\n© 2021 Babbel GmbH, all rights reserved\n13\nPAROLA\nOggi ho imparato una nuova...\nESPRESSIONE\nCURIOSITÀ\nCULTURALE\nSalva la \nchat!\nRaccontare aneddoti ed episodi passati\n© 2021 Babbel GmbH, all rights reserved\nSalva la \nchat!\nCon la nostra rivista\nCon i nostri podcast\nCon la tua app Babbel\n14\nE adesso? Continua a imparare con Babbel!\n",
+        "summary": "This is additional content generated from the pipeline.",
+        "generated_tags": "#finance, #report, #2026"
+    },
+    "embedding_metadata": {
+        "client_id": "client_abc",
+        "workspace_id": "workspace_001",
+        "user_id": "user_789",
+        "file_id": "file_xyz",
+        "file_name": "ITA_B2_02 Raccontare aneddoti ed episodi passati.pdf",
+        "file_extension": "pdf",
+        "source": "uploaded_file",
+        "origin": "web_app",
+        "language": "en",
+        "tags": "#finance, #report, #2026",
+        "created_at": "2026-05-24 20:11:06"
+    },
+    "usage_summary": {
+        "total_caracter_count": 5743,
+        "total_tokens": 1911,
+        "total_cost_usd": "0.000248",
+        "exchange_rate": 5.014,
+        "parts": {
+            "file_content": {
+                "caracter_count": 5664,
+                "tokens": 1893,
+                "cost_usd": "0.000246"
+            },
+            "summary": {
+                "caracter_count": 55,
+                "tokens": 9,
+                "cost_usd": "0.000001"
+            },
+            "generated_tags": {
+                "caracter_count": 24,
+                "tokens": 9,
+                "cost_usd": "0.000001"
+            }
+        }
+    },
+    "embedding_response": {
+        "status": "success",
+        "message": "Embeddings saved successfully.",
+        "embedding_informations": {
+            "batch_count": 1,
+            "main_namespace": {
+                "namespace": "knowledge_base_content_agent",
+                "chunks_saved": 3,
+                "chunks_ids": [
+                    "4f726998-dd1f-419f-8f85-34ee0adea108",
+                    "683d9ed9-6cf8-425a-8266-0f2de5178e4a",
+                    "09d7628c-c75e-4ef7-b6d4-37fad832cb8d"
+                ]
+            }
+        }
+    },
+    "save_response": {
+        "status": "success",
+        "inserted_id": "ee5a1320-5f49-414f-8859-0fa880344707"
+    }
+}
