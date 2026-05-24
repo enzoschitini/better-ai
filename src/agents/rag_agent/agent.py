@@ -5,7 +5,7 @@ from src.agents.rag_agent.config import (
     PROMPT, DEFAULT_MODEL, LOCAL_MEMORY_DB
 )
 
-from src.agents.rag_agent.tools.toolkit import BaseToolkit
+from src.agents.rag_agent.tools.toolkit import RetrievalAugmentedGeneration
 
 from src.agents.utils.database import Database
 from src.agents.utils.agno_ai_agents import BaseAgent, ToolContext
@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-class BaseAgent(BaseAgent):
+class ContentAgent(BaseAgent):
     def _validate_metadata(self, metadata: dict):
         if "session_id" not in metadata:
             raise ValueError("metadata must contain 'session_id'")
@@ -46,12 +46,11 @@ class BaseAgent(BaseAgent):
             stream=True,
             debug_level=True,
             tools = [
-                BaseToolkit(
-                    TOOL_RESPONSER=tool_context.tool_responser
+                RetrievalAugmentedGeneration(
+                    TOOL_RESPONSER=tool_context.tool_responser,
+                    filter_search=metadata["filter_search"]
                 )
             ]
         )
-
-# Qual a temperatura em Salvador?
 
 # python -m src.agents.rag_agent.agent

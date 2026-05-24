@@ -1,14 +1,16 @@
 from src.utils.unique_id_factory import IDGenerator
 
-from src.agents.rag_agent.agent import BaseAgent
+from src.agents.rag_agent.agent import ContentAgent
 from src.agents.utils.test_agents.agno_agent_executor import AgnoAgentExecutor
 
 
 if __name__ == "__main__":
     AgnoAgentExecutor(
-        agent_class=BaseAgent,
+        agent_class=ContentAgent,
         params={
-            "citys": ["Salvador", "São Paulo", "Rio de Janeiro"]
+            "filter_search": {
+                "collection_id": ["slides_b2"]
+            }
         },
         # session_id e user_id são opcionais — omita para usar os defaults
         # session_id=IDGenerator().uuid(),
