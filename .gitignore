@@ -8,6 +8,7 @@ __pycache__/
 
 # Data
 data/
+/slides_b2
 
 # Distribution / packaging
 .Python
