@@ -133,7 +133,7 @@ if __name__ == "__main__":
     toolkit = TrendRadarToolkit()
 
     trends_result = toolkit.get_trends("What are the current trends in technology?")
-    print(f"{trends_result}\n")
+    #print(f"{trends_result}\n")
 
 
 # python -m src.agents.trend_radar.tools.toolkit
