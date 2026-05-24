@@ -1,45 +1,46 @@
-from typing import List, Any
+import pandas as pd
+from typing import Any, List
 
 from agno.tools import Toolkit
-from src.agents.utils.tool_response import ToolResponse
 
-class BaseToolkit(Toolkit):
+# Dataframe Analyzer Packages
+from src.dataframe_analyzers.pd_df_agent.agent import DataframeAgent
+
+class DataframeAnalyzer(Toolkit):
     """
-    BaseToolkit is a generic toolkit template for building agent tools.
+    Toolkit for structured data analysis using DataFrames.
 
-    Use this as a starting point for creating new toolkits by:
-    - Renaming the class to reflect the toolkit's domain
-    - Adding domain-specific tools as methods
-    - Registering them in the `tools` list inside `__init__`
+    This toolkit provides tools to:
+    - explore tabular datasets
+    - generate statistical summaries
+    - identify patterns and insights
+    - produce analytical reports
 
     Args:
-        enable_get_current_datetime (bool): Enable the current datetime tool. Default is True.
-        enable_get_temperature (bool): Enable the temperature tool. Default is True.
-        all (bool): Enable all tools. Overrides individual flags when True. Default is False.
-        TOOL_RESPONSER (ToolResponse): Optional metadata collector. Default is None.
+        enable_dataframe_analyzer (bool): Enables the dataframe analysis tool. Defaults to True.
+        all (bool): Enables all available tools. Overrides individual flags when True. Defaults to False.
+        TOOL_RESPONSER (Any): Optional object responsible for collecting tool execution metadata.
     """
     def __init__(
         self,
-        enable_get_current_datetime: bool = True,
-        enable_get_temperature: bool = True,
+        dataframe: pd.DataFrame,
+        enable_dataframe_analyzer: bool = True,
         all: bool = False,
-        TOOL_RESPONSER: ToolResponse = None,
+        TOOL_RESPONSER: Any = None,
         **kwargs,
     ):
+        self.dataframe = dataframe
         self.TOOL_RESPONSER = TOOL_RESPONSER
         tools: List[Any] = []
 
-        if all or enable_get_current_datetime:
-            tools.append(self.get_current_datetime)
+        if all or enable_dataframe_analyzer:
+            tools.append(self.dataframe_analyzer)
 
-        if all or enable_get_temperature:
-            tools.append(self.get_temperature)
-
-        super().__init__(name="base_toolkit", tools=tools, **kwargs)
-
+        super().__init__(name="dataframe_analyzer_tools", tools=tools, **kwargs)
+    
     def _update_response(self, tool_name: str, payload: dict):
         """
-        Internal helper to collect metadata about tool execution.
+        Internal helper method used to collect metadata about tool execution.
         """
         if self.TOOL_RESPONSER:
             self.TOOL_RESPONSER.add_metadata(
@@ -47,77 +48,76 @@ class BaseToolkit(Toolkit):
                 payload=payload
             )
 
-    def get_current_datetime(self, query: str) -> str:
+    def dataframe_analyzer(self, query: str) -> str:
         """
-        Returns the current date and time based on the user's query.
+        dataframe_analyzer is a tool for runs an automated analysis on a DataFrame and returns a structured report based on a user-provided query.
+
+        ⚠️ IMPORTANT:
+        - The dataset is ALREADY loaded internally.
+        - The user DOES NOT need to provide any file or data.
+        - NEVER ask the user for the dataset.
+        - ALWAYS execute the analysis using the available internal data.
+
+        The tool is responsible for:
+        - interpreting the query
+        - analyzing the internal dataframe
+        - generating insights and visualizations (if applicable)
 
         Args:
-            query (str): The user's input query. Must be a non-empty string.
+            query (str): User query or instruction related to the dataset
+                         (e.g., "analyze sales by region", "find revenue patterns").
 
         Returns:
-            str: The current date and time as a formatted string.
+            str: A report containing analysis results, insights, and possible visualizations. IN MARKDOWN
         """
         try:
-            from datetime import datetime
-            import random
-
-            if not query or not query.strip():
-                return "A valid query is required."
-
-            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-            self._update_response(
-                "get_current_datetime",
-                {"query": query, "datetime": now}
+            agent = DataframeAgent(
+                dataframe=self.dataframe,
             )
 
-        except Exception as e:
-            return f"Failed to get current datetime: {str(e)}"
+            report = agent.run_agent(query)
+            response = report["output"]
 
-        return now
-
-    def get_temperature(self, city: str) -> str:
-        """
-        Returns the current temperature for a given city.
-
-        This is a placeholder tool that simulates a weather API response.
-        Replace this method with a real weather API integration when needed.
-
-        Args:
-            city (str):
-                The name of the city to retrieve the temperature for.
-                Must be a non-empty string.
-
-        Returns:
-            str: A message containing the city name and its current temperature in Celsius.
-        """
-        try:
-            import random
-            
-            if not city or not city.strip():
-                return "A valid city name is required."
-
-            fake_temperature = round(random.uniform(10.0, 40.0), 1)
-
-            self._update_response(
-                "get_temperature",
-                {"city": city, "temperature_celsius": fake_temperature}
-            )
+            self._update_response("dataframe_analyzer", {"response": response})
 
         except Exception as e:
-            return f"Failed to get temperature: {str(e)}"
+            return f"Failed to generate context of research: {str(e)}"
 
-        return f"The current temperature in {city} is {fake_temperature}°C."
-
+        return response
 
 if __name__ == "__main__":
-    toolkit = BaseToolkit()
+    import seaborn as sns
+    import pandas as pd
+    #from sklearn.datasets import load_iris
 
-    datetime_result = toolkit.get_current_datetime("What is the current date and time?")
-    print(f"\n{datetime_result}")
+    # ── Datasets do Seaborn ──────────────────────────────────────────
+    # Todos os datasets: https://github.com/mwaskom/seaborn-data
+    # https://github.com/mwaskom/seaborn-data/blob/master/titanic.csv
+    # https://github.com/mwaskom/seaborn-data/blob/master/tips.csv
+    # https://github.com/mwaskom/seaborn-data/blob/master/penguins.csv
+    # https://github.com/mwaskom/seaborn-data/blob/master/diamonds.csv
+    # https://github.com/mwaskom/seaborn-data/blob/master/planets.csv
+    # https://github.com/mwaskom/seaborn-data/blob/master/flights.csv
 
-    temperature_result = toolkit.get_temperature("Salvador")
-    print(f"{temperature_result}\n")
+    df = sns.load_dataset("titanic")       # Titanic
+    # df = sns.load_dataset("tips")        # Gorjetas em restaurante
+    # df = sns.load_dataset("penguins")    # Pinguins (similar ao Iris)
+    # df = sns.load_dataset("diamonds")    # Diamantes
+    # df = sns.load_dataset("planets")     # Planetas
+    # df = sns.load_dataset("flights")     # Passageiros de voo por mês
+    # df = sns.load_dataset("fmri")        # Dados de neuroimagem
 
+    # ── Iris via sklearn ─────────────────────────────────────────────
+    # iris = load_iris(as_frame=True)
+    # df = iris.frame   # inclui a coluna 'target' com o número da classe
+    # df["species"] = iris.target_names[df["target"]]  # nome legível
 
-# python -m src.agents._base_agent.tools.toolkit
+    # ── Datasets nativos do pandas ───────────────────────────────────
+    # (pandas não tem datasets próprios, mas você pode puxar direto da web)
+    # df = pd.read_csv("https://raw.githubusercontent.com/mwaskom/seaborn-data/master/iris.csv")
+
+    tool = DataframeAnalyzer(dataframe=df)
+    response = tool.dataframe_analyzer("Qual o numero de sobreviventes?")
+    print(response)
+
+# python -m src.agents.datafram_agent.tools.toolkit
