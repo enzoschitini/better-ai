@@ -4,6 +4,9 @@ import time
 from io import BytesIO
 from pathlib import Path
 from src.embedding.modules.embedding_file import EmbeddingFile
+from src.utils.unique_id_factory import IDGenerator
+
+id_gen = IDGenerator()
 
 def generate_payload(file_path: Path):
     with open(file_path, "rb") as f:
@@ -12,24 +15,10 @@ def generate_payload(file_path: Path):
     file_size_bytes = file_path.stat().st_size
 
     payload = {
-        "job_id": "job_12345",
-
-        "identifiers": {
-            "client_id": "client_abc",
-            "workspace_id": "workspace_001",
-            "user_id": "user_789",
-            "file_id": "file_xyz"
-        },
-
-        "pipeline": {
-            "generate_tags": True,
-        },
+        "job_id": id_gen.timestamp(prefix="job"),
 
         "embedding_metadata": {
-            "source": "uploaded_file",
-            "origin": "web_app",
-            "language": "en",
-            "tags": "#finance, #report, #2026"
+            "collection_id": "slides_b2"
         },
 
         "embedding_settings": {
@@ -57,7 +46,7 @@ def generate_payload(file_path: Path):
 
 folder = Path("local/slides_b2")
 files = list(folder.glob("*.pdf"))
-files = files[:2]  # Process only the first 2 files for testing
+#files = files[:2]  # Process only the first 2 files for testing
 
 print(f"Found {len(files)} PDF files\n")
 
