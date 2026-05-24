@@ -5,6 +5,7 @@ from agno.tools import Toolkit
 from src.agents.utils.tool_response import ToolResponse
 
 # Retriver Packages
+from src.vector_store.pinecone.client import PineconeClient
 from src.vector_store.pinecone.retriever import PineconeRetriever
 from src.vector_store.pinecone.utils.retrieval_manager import RetrievalManager
 
@@ -82,6 +83,10 @@ class RetrievalAugmentedGeneration(Toolkit):
             - If no relevant documents are found, an empty result or informative message may be returned.
         """
         try:
+            pine_client = PineconeClient(
+                index_name="backai-vectorstore",
+                main_namespace="knowledge_base_content_agent"
+            )
             retriver = PineconeRetriever()
 
             documents = retriver.similarity_search(
@@ -109,10 +114,10 @@ if __name__ == "__main__":
 
     tool = RetrievalAugmentedGeneration(
         filter_search={
-            "file_id": ["candidatura", "tenerezza", "cucinare"]
+            "collection_id": ["slides_b2"]
         }
     )
-    result = tool.get_relevant_documents("Enzo Schitini")
+    result = tool.get_relevant_documents("Raccontare", 5)
 
     print(f"\n\n{result}\n")
 
