@@ -87,7 +87,7 @@ class RetrievalAugmentedGeneration(Toolkit):
                 index_name="backai-vectorstore",
                 main_namespace="knowledge_base_content_agent"
             )
-            retriver = PineconeRetriever()
+            retriver = PineconeRetriever(pine_client)
 
             documents = retriver.similarity_search(
                 query=query,
