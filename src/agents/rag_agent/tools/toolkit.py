@@ -1,45 +1,52 @@
+from dotenv import load_dotenv
 from typing import List, Any
 
 from agno.tools import Toolkit
 from src.agents.utils.tool_response import ToolResponse
 
-class BaseToolkit(Toolkit):
+# Retriver Packages
+from src.vector_store.pinecone.retriever import PineconeRetriever
+from src.vector_store.pinecone.utils.retrieval_manager import RetrievalManager
+
+load_dotenv()
+
+class RetrievalAugmentedGeneration(Toolkit):
     """
-    BaseToolkit is a generic toolkit template for building agent tools.
+    RetrievalAugmentedGeneration is a toolkit for retrieval-augmented generation (RAG) tasks.
+    
+    This toolkit can:
+    - Retrieve relevant documents based on a user-provided query and filter criteria.
+    - Generate a context of relevant documents for use in RAG applications.
 
-    Use this as a starting point for creating new toolkits by:
-    - Renaming the class to reflect the toolkit's domain
-    - Adding domain-specific tools as methods
-    - Registering them in the `tools` list inside `__init__`
-
+    Use this toolkit for:
+    - Responding to user queries with relevant information from a document collection.
+    - Analyzing and summarizing retrieved documents to provide concise answers.
+    - Generate insights and recommendations based on the retrieved context.
+    
     Args:
-        enable_get_current_datetime (bool): Enable the current datetime tool. Default is True.
-        enable_get_temperature (bool): Enable the temperature tool. Default is True.
+        enable_get_relevant_documents (bool): Enable the tool for retrieving relevant documents. Default is True.
         all (bool): Enable all tools. Overrides individual flags when True. Default is False.
-        TOOL_RESPONSER (ToolResponse): Optional metadata collector. Default is None.
     """
     def __init__(
         self,
-        enable_get_current_datetime: bool = True,
-        enable_get_temperature: bool = True,
+        filter_search: dict,
+        enable_get_relevant_documents: bool = True,
         all: bool = False,
         TOOL_RESPONSER: ToolResponse = None,
         **kwargs,
     ):
+        self.filter_search = filter_search
         self.TOOL_RESPONSER = TOOL_RESPONSER
         tools: List[Any] = []
 
-        if all or enable_get_current_datetime:
-            tools.append(self.get_current_datetime)
+        if all or enable_get_relevant_documents:
+            tools.append(self.get_relevant_documents)
 
-        if all or enable_get_temperature:
-            tools.append(self.get_temperature)
-
-        super().__init__(name="base_toolkit", tools=tools, **kwargs)
-
+        super().__init__(name="get_relevant_documents_tools", tools=tools, **kwargs)
+    
     def _update_response(self, tool_name: str, payload: dict):
         """
-        Internal helper to collect metadata about tool execution.
+        Internal helper method used to collect metadata about tool execution.
         """
         if self.TOOL_RESPONSER:
             self.TOOL_RESPONSER.add_metadata(
@@ -47,77 +54,66 @@ class BaseToolkit(Toolkit):
                 payload=payload
             )
 
-    def get_current_datetime(self, query: str) -> str:
+    def get_relevant_documents(self, query: str, max_results: int) -> str:
         """
-        Returns the current date and time based on the user's query.
+        Retrieve relevant documents based on a user query.
+
+        This tool performs semantic search over a document collection and returns
+        the most relevant results according to the provided query.
 
         Args:
-            query (str): The user's input query. Must be a non-empty string.
+            query (str):
+                The user's search query. Must be a non-empty string with meaningful content.
+                If the query is empty, None, or invalid, the tool will return an error message
+                indicating that a valid query is required.
+
+            max_results (int):
+                The maximum number of documents to retrieve. Must be between 1 and 15.
+                Values outside this range may be automatically adjusted or return an error.
 
         Returns:
-            str: The current date and time as a formatted string.
+            str:
+                A JSON-formatted string containing the retrieved documents and their relevance scores,
+                or an error message if the input is invalid (e.g., empty query or invalid max_results).
+
+        Notes:
+            - This tool should only be used when there is a clear search intent.
+            - Avoid calling this tool with empty or undefined query values.
+            - If no relevant documents are found, an empty result or informative message may be returned.
         """
         try:
-            from datetime import datetime
-            import random
+            retriver = PineconeRetriever()
 
-            if not query or not query.strip():
-                return "A valid query is required."
+            documents = retriver.similarity_search(
+                query=query,
+                k=max_results,
+                filter_search=self.filter_search
+            )
 
-            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            manager = RetrievalManager(docs=documents)
+            context = manager.generate_context()
 
+            # Collect metadata
             self._update_response(
-                "get_current_datetime",
-                {"query": query, "datetime": now}
+                "get_relevant_documents", 
+                {"files": manager.get_files()}
             )
 
         except Exception as e:
-            return f"Failed to get current datetime: {str(e)}"
+            return f"Failed to generate context of relevant documents: {str(e)}"
 
-        return now
-
-    def get_temperature(self, city: str) -> str:
-        """
-        Returns the current temperature for a given city.
-
-        This is a placeholder tool that simulates a weather API response.
-        Replace this method with a real weather API integration when needed.
-
-        Args:
-            city (str):
-                The name of the city to retrieve the temperature for.
-                Must be a non-empty string.
-
-        Returns:
-            str: A message containing the city name and its current temperature in Celsius.
-        """
-        try:
-            import random
-            
-            if not city or not city.strip():
-                return "A valid city name is required."
-
-            fake_temperature = round(random.uniform(10.0, 40.0), 1)
-
-            self._update_response(
-                "get_temperature",
-                {"city": city, "temperature_celsius": fake_temperature}
-            )
-
-        except Exception as e:
-            return f"Failed to get temperature: {str(e)}"
-
-        return f"The current temperature in {city} is {fake_temperature}°C."
-
+        return context
 
 if __name__ == "__main__":
-    toolkit = BaseToolkit()
+    import json
 
-    datetime_result = toolkit.get_current_datetime("What is the current date and time?")
-    print(f"\n{datetime_result}")
+    tool = RetrievalAugmentedGeneration(
+        filter_search={
+            "file_id": ["candidatura", "tenerezza", "cucinare"]
+        }
+    )
+    result = tool.get_relevant_documents("Enzo Schitini")
 
-    temperature_result = toolkit.get_temperature("Salvador")
-    print(f"{temperature_result}\n")
-
+    print(f"\n\n{result}\n")
 
 # python -m src.agents.rag_agent.tools.toolkit
