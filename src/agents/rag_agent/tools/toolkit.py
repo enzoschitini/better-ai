@@ -85,7 +85,7 @@ class RetrievalAugmentedGeneration(Toolkit):
         try:
             pine_client = PineconeClient(
                 index_name="backai-vectorstore",
-                main_namespace="knowledge_base_content_agent"
+                main_namespace="knowledge_base_content_agent_oboticario"
             )
             retriver = PineconeRetriever(pine_client)
 

@@ -18,7 +18,7 @@ def generate_payload(file_path: Path):
         "job_id": id_gen.timestamp(prefix="job"),
 
         "embedding_metadata": {
-            "collection_id": "slides_b2"
+            "collection_id": "oboticario"
         },
 
         "embedding_settings": {
@@ -44,7 +44,7 @@ def generate_payload(file_path: Path):
     return payload
 
 
-folder = Path("local/slides_b2")
+folder = Path("src/agents/rag_agent/pdfs/oboticario")
 files = list(folder.glob("*.pdf"))
 #files = files[:2]  # Process only the first 2 files for testing
 

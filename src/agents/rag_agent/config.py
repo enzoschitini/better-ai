@@ -1,4 +1,4 @@
-LOCAL_MEMORY_DB = "src/agents/rag_agent/data/chat_sessions.db"
+LOCAL_MEMORY_DB = "src/agents/rag_agent/data/"
 DEFAULT_MODEL = "gpt-4.1-mini"
 
 PROMPT = {

@@ -9,7 +9,7 @@ if __name__ == "__main__":
         agent_class=ContentAgent,
         params={
             "filter_search": {
-                "collection_id": ["slides_b2"]
+                "collection_id": ["oboticario"]
             }
         },
         # session_id e user_id são opcionais — omita para usar os defaults
