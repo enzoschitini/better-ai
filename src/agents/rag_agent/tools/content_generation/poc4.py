@@ -1,36 +1,31 @@
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import List, Optional, Tuple
+from typing import Optional, Tuple
 
 from agno.agent import Agent
 from agno.models.openai import OpenAIChat
-from pydantic import BaseModel, Field
 
 from src.vector_store.pinecone.client import PineconeClient
 from src.vector_store.pinecone.retriever import PineconeRetriever
 from src.vector_store.pinecone.utils.retrieval_manager import RetrievalManager
 
-DEFAULT_MODEL = "gpt-4.1-mini"
-
-
-class GeneratedContentParse(BaseModel):
-    title: str = Field(..., description="Main title for the generated content")
-    summary: str = Field(..., description="Short summary with 1-2 sentences")
-    body: str = Field(..., description="Main content text")
-    cta: str = Field(..., description="Call to action")
-    hashtags: List[str] = Field(
-        ..., description="Relevant social hashtags, each item must start with #"
-    )
-    sources_used: List[str] = Field(
-        ..., description="List of key source snippets or documents used"
-    )
-
-
-class ContentBatchOutput(BaseModel):
-    query: str
-    objective: str
-    content_count: int
-    items: List[GeneratedContentParse]
-
+from src.agents.rag_agent.tools.content_generation.config import (
+    GeneratedContentParse,
+    ContentBatchOutput,
+    AGENT_DESCRIPTION,
+    AGENT_INSTRUCTIONS,
+    DEFAULT_BODY_MAX_CHARS,
+    DEFAULT_BODY_MIN_CHARS,
+    DEFAULT_CONTENT_COUNT,
+    DEFAULT_MAX_RESULTS,
+    DEFAULT_MODEL,
+    PINECONE_INDEX_NAME,
+    PINECONE_MAIN_NAMESPACE,
+    PROMPT_BASE_TEMPLATE,
+    PROMPT_CORRECTION_TEMPLATE,
+    VARIATION_ANGLES,
+    VARIATION_OPENINGS,
+    VARIATION_RHYTHMS,
+)
 
 class GenerateContent:
     """Encapsulates only the logic required to generate structured content."""
@@ -55,15 +50,8 @@ class GenerateContent:
             model=OpenAIChat(id=self.model_id),
             output_schema=GeneratedContentParse,
             markdown=True,
-            instructions=[
-                "You are a content creation specialist.",
-                "Always use only the provided context as the primary source.",
-                "If context is insufficient, state what is missing instead of inventing facts.",
-                "Return polished, coherent, publication-ready content.",
-                "The output must strictly follow the requested structured fields.",
-                "Generate relevant hashtags aligned with the topic and objective.",
-            ],
-            description="Generates content using retrieval context as input.",
+            instructions=AGENT_INSTRUCTIONS,
+            description=AGENT_DESCRIPTION,
         )
 
     def _generate_single_variant(
@@ -79,58 +67,23 @@ class GenerateContent:
     ) -> Tuple[int, GeneratedContentParse]:
         creator_agent = self._build_content_creator_agent()
 
-        variation_angles = [
-            "benefit-driven narrative",
-            "practical educational approach",
-            "premium positioning perspective",
-            "problem-solution framing",
-            "light comparative framing",
-        ]
-        variation_openings = [
-            "Start with a concise insight statement.",
-            "Start with a short practical scenario.",
-            "Start with a premium brand-oriented hook.",
-            "Start with a common pain point.",
-            "Start with a contrast between options.",
-        ]
-        variation_rhythms = [
-            "Use medium paragraphs.",
-            "Use shorter paragraphs and faster pacing.",
-            "Use a more refined and descriptive pacing.",
-            "Use direct and objective pacing.",
-            "Use balanced pacing with one concise list if useful.",
-        ]
+        variation_angle = VARIATION_ANGLES[index % len(VARIATION_ANGLES)]
+        variation_opening = VARIATION_OPENINGS[index % len(VARIATION_OPENINGS)]
+        variation_rhythm = VARIATION_RHYTHMS[index % len(VARIATION_RHYTHMS)]
 
-        variation_angle = variation_angles[index % len(variation_angles)]
-        variation_opening = variation_openings[index % len(variation_openings)]
-        variation_rhythm = variation_rhythms[index % len(variation_rhythms)]
-
-        prompt_base = f"""
-Objective:
-{objective}
-
-User query for retrieval:
-{query}
-
-Retrieved context:
-{context}
-
-Additional requirements:
-{extra_requirements or "None"}
-
-Variant:
-{index + 1} of {content_count}
-
-Instructions:
-- Build the final content grounded in the retrieved context.
-- Keep a clear structure and avoid unsupported facts.
-- Make this variant distinct in angle and wording from the others.
-- Preferred angle for this variant: {variation_angle}.
-- Opening guidance: {variation_opening}
-- Writing rhythm guidance: {variation_rhythm}
-- The body field must have between {body_min_chars} and {body_max_chars} characters.
-- Include 5 to 10 relevant hashtags in the hashtags field.
-""".strip()
+        prompt_base = PROMPT_BASE_TEMPLATE.format(
+            objective=objective,
+            query=query,
+            context=context,
+            extra_requirements=extra_requirements or "None",
+            variant_number=index + 1,
+            content_count=content_count,
+            variation_angle=variation_angle,
+            variation_opening=variation_opening,
+            variation_rhythm=variation_rhythm,
+            body_min_chars=body_min_chars,
+            body_max_chars=body_max_chars,
+        )
 
         attempt = 0
         max_attempts = 3
@@ -141,13 +94,12 @@ Instructions:
             prompt = prompt_base
 
             if attempt > 1 and generated_content is not None:
-                prompt = f"""
-{prompt_base}
-
-Correction:
-- Previous body length was {len(generated_content.body)} characters.
-- Regenerate and strictly keep body length between {body_min_chars} and {body_max_chars}.
-""".strip()
+                prompt = PROMPT_CORRECTION_TEMPLATE.format(
+                    prompt_base=prompt_base,
+                    previous_body_length=len(generated_content.body),
+                    body_min_chars=body_min_chars,
+                    body_max_chars=body_max_chars,
+                )
 
             response = creator_agent.run(prompt)
             generated_content = response.content
@@ -169,7 +121,7 @@ Correction:
         self,
         query: str,
         filter_search: dict,
-        max_results: int = 5,
+        max_results: int = DEFAULT_MAX_RESULTS,
     ) -> str:
         """
         Retrieves context from the vector store to be used as input for content creation.
@@ -177,8 +129,8 @@ Correction:
         try:
 
             pine_client = PineconeClient(
-                index_name="backai-vectorstore",
-                main_namespace="knowledge_base_content_agent_oboticario"
+                index_name=PINECONE_INDEX_NAME,
+                main_namespace=PINECONE_MAIN_NAMESPACE,
             )
             retriver = PineconeRetriever(pine_client)
 
@@ -200,10 +152,10 @@ Correction:
         query: str,
         objective: str,
         filter_search: Optional[dict] = None,
-        max_results: int = 5,
-        content_count: int = 1,
-        body_min_chars: int = 700,
-        body_max_chars: int = 1200,
+        max_results: int = DEFAULT_MAX_RESULTS,
+        content_count: int = DEFAULT_CONTENT_COUNT,
+        body_min_chars: int = DEFAULT_BODY_MIN_CHARS,
+        body_max_chars: int = DEFAULT_BODY_MAX_CHARS,
         extra_requirements: Optional[str] = None,
     ) -> ContentBatchOutput:
         if content_count < 1:
@@ -264,10 +216,10 @@ if __name__ == "__main__":
         query: str,
         objective: str,
         filter_search: dict,
-        content_count: int = 1,
-        body_min_chars: int = 700,
-        body_max_chars: int = 1200,
-        max_results: int = 5,
+        content_count: int = DEFAULT_CONTENT_COUNT,
+        body_min_chars: int = DEFAULT_BODY_MIN_CHARS,
+        body_max_chars: int = DEFAULT_BODY_MAX_CHARS,
+        max_results: int = DEFAULT_MAX_RESULTS,
         model_id: str = DEFAULT_MODEL,
         extra_requirements: Optional[str] = None,
     ) -> ContentBatchOutput:
