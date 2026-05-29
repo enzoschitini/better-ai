@@ -6,6 +6,7 @@ import uuid
 
 from agno.agent import Agent
 from agno.models.openai import OpenAIChat
+from agno.models.anthropic import Claude
 from pydantic import BaseModel, Field
 
 from src.vector_store.pinecone.client import PineconeClient
@@ -204,7 +205,8 @@ def build_content_creator_agent(model_id: str = DEFAULT_MODEL) -> Agent:
     Agent specialized in generating content using an explicit external context.
     """
     return Agent(
-        model=OpenAIChat(id=model_id),
+        #model=OpenAIChat(id=model_id),
+        model=Claude(id="claude-opus-4-1-20250805"),
         output_schema=GeneratedContent,
         markdown=True,
         instructions=[
