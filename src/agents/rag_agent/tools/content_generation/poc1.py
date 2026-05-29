@@ -30,6 +30,18 @@ class ContentBatchOutput(BaseModel):
     items: List[GeneratedContent]
 
 
+def _validate_body_range(body_min_chars: int, body_max_chars: int) -> None:
+    if body_min_chars < 1:
+        raise ValueError("body_min_chars must be greater than or equal to 1")
+    if body_max_chars < body_min_chars:
+        raise ValueError("body_max_chars must be greater than or equal to body_min_chars")
+
+
+def _is_body_within_range(content: GeneratedContent, body_min_chars: int, body_max_chars: int) -> bool:
+    body_size = len(content.body)
+    return body_min_chars <= body_size <= body_max_chars
+
+
 def retrieve_context(
     query: str,
     filter_search: dict,
@@ -70,6 +82,8 @@ def generate_content_with_retrieval(
     objective: str,
     filter_search: dict,
     content_count: int = 1,
+    body_min_chars: int = 700,
+    body_max_chars: int = 1200,
     max_results: int = 5,
     model_id: str = DEFAULT_MODEL,
     extra_requirements: Optional[str] = None,
@@ -84,6 +98,8 @@ def generate_content_with_retrieval(
         if content_count < 1:
             raise ValueError("content_count must be greater than or equal to 1")
 
+        _validate_body_range(body_min_chars=body_min_chars, body_max_chars=body_max_chars)
+
         context = retrieve_context(
             query=query,
             filter_search=filter_search,
@@ -95,7 +111,7 @@ def generate_content_with_retrieval(
         generated_items: List[GeneratedContent] = []
 
         for index in range(content_count):
-            prompt = f"""
+            prompt_base = f"""
 Objective:
 {objective}
 
@@ -115,11 +131,41 @@ Instructions:
 - Build the final content grounded in the retrieved context.
 - Keep a clear structure and avoid unsupported facts.
 - Make this variant distinct in angle and wording from the others.
+- The body field must have between {body_min_chars} and {body_max_chars} characters.
 - Include 5 to 10 relevant hashtags in the hashtags field.
 """.strip()
 
-            response = creator_agent.run(prompt)
-            generated_items.append(response.content)
+            attempt = 0
+            max_attempts = 3
+            generated_content: Optional[GeneratedContent] = None
+
+            while attempt < max_attempts:
+                attempt += 1
+                prompt = prompt_base
+
+                if attempt > 1 and generated_content is not None:
+                    prompt = f"""
+{prompt_base}
+
+Correction:
+- Previous body length was {len(generated_content.body)} characters.
+- Regenerate and strictly keep body length between {body_min_chars} and {body_max_chars}.
+""".strip()
+
+                response = creator_agent.run(prompt)
+                generated_content = response.content
+
+                if _is_body_within_range(
+                    content=generated_content,
+                    body_min_chars=body_min_chars,
+                    body_max_chars=body_max_chars,
+                ):
+                    break
+
+            if generated_content is None:
+                raise RuntimeError("Failed to generate structured content")
+
+            generated_items.append(generated_content)
 
         return ContentBatchOutput(
             query=query,
@@ -132,16 +178,25 @@ Instructions:
 
 
 if __name__ == "__main__":
+    import time
+    start_time = time.time()
+
     generated_content = generate_content_with_retrieval(
         query="Malbec e posicionamento de marca",
         objective="Criar um artigo curto de marketing para blog sobre a linha Malbec.",
         filter_search={"collection_id": ["oboticario"]},
         content_count=2,
+        body_min_chars=700,
+        body_max_chars=1200,
         max_results=5,
         extra_requirements="Tom premium, linguagem persuasiva e CTA no final.",
     )
 
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+
     print(generated_content.model_dump_json(indent=2))
+    print(f"\nElapsed time: {elapsed_time:.2f} seconds")
 
 
-# python -m src.agents.rag_agent.tools.content_generation
+# python -m src.agents.rag_agent.tools.content_generation.poc1
