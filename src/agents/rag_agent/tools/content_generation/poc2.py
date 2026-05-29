@@ -192,6 +192,7 @@ def retrieve_context(
         context = manager.generate_context()
 
         print(manager.get_files())
+        print(context)
 
         #rag_tool = RetrievalAugmentedGeneration(filter_search=filter_search)
         #rag_tool.get_relevant_documents(query=query, max_results=max_results)
@@ -360,23 +361,42 @@ if __name__ == "__main__":
     import time
     from src.agents.rag_agent.tools.content_generation.example_requests import EXAMPLE_REQUESTS
 
-    start_time = time.time()
+    payload = EXAMPLE_REQUESTS["example_4"]
 
-    generated_content = generate_content_with_retrieval(**EXAMPLE_REQUESTS["example_4"])
+    def generate_content():
+        start_time = time.time()
 
-    end_time = time.time()
-    elapsed_time = end_time - start_time
+        generated_content = generate_content_with_retrieval(**payload)
 
-    #print(generated_content.model_dump_json(indent=2))
+        end_time = time.time()
+        elapsed_time = end_time - start_time
 
-    markdown_file = save_posts_markdown(
-        posts_payload=generated_content,
-        output_file="src/agents/rag_agent/tools/content_generation",
-        document_title="Marketing Posts",
-    )
+        #print(generated_content.model_dump_json(indent=2))
 
-    print(f"\nMarkdown file generated at: {markdown_file}")
-    print(f"\nElapsed time: {elapsed_time:.2f} seconds")
+        markdown_file = save_posts_markdown(
+            posts_payload=generated_content,
+            output_file="src/agents/rag_agent/tools/content_generation",
+            document_title="Marketing Posts",
+        )
+
+        print(f"\nMarkdown file generated at: {markdown_file}")
+        print(f"\nElapsed time: {elapsed_time:.2f} seconds")
+    
+    def test_retrieval():
+        query = "Mate Salicylic"
+        filter_search = payload.get("filter_search", {})
+        max_results = payload.get("max_results", 5)
+
+        context = retrieve_context(
+            query=query,
+            filter_search=filter_search,
+            max_results=max_results,
+        )
+
+        print(context)
+    
+    #generate_content()
+    test_retrieval()
 
 
 # python -m src.agents.rag_agent.tools.content_generation.poc2
