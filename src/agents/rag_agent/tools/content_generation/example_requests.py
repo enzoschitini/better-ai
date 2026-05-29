@@ -62,7 +62,7 @@ EXAMPLE_REQUESTS = {
         ),
         
         "filter_search": {"collection_id": ["oboticario"]},
-        "content_count": 5,
+        "content_count": 2,
         "body_min_chars": 700,
         "body_max_chars": 1200,
         "max_results": 5,

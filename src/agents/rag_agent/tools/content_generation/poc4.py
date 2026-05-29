@@ -1,8 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor, as_completed
-import json
-from pathlib import Path
-from typing import List, Optional, Tuple, Union
-import uuid
+from typing import List, Optional, Tuple
 
 from agno.agent import Agent
 from agno.models.openai import OpenAIChat
@@ -11,12 +8,13 @@ from pydantic import BaseModel, Field
 from src.vector_store.pinecone.client import PineconeClient
 from src.vector_store.pinecone.retriever import PineconeRetriever
 from src.vector_store.pinecone.utils.retrieval_manager import RetrievalManager
+from src.agents.rag_agent.tools.content_generation.markdown_utils import save_posts_markdown
 
 
 DEFAULT_MODEL = "gpt-4.1-mini"
 
 
-class GeneratedContent(BaseModel):
+class GeneratedContentParse(BaseModel):
     title: str = Field(..., description="Main title for the generated content")
     summary: str = Field(..., description="Short summary with 1-2 sentences")
     body: str = Field(..., description="Main content text")
@@ -33,185 +31,7 @@ class ContentBatchOutput(BaseModel):
     query: str
     objective: str
     content_count: int
-    items: List[GeneratedContent]
-
-
-def format_context_to_markdown(context: str, source_files: Optional[List[str]] = None) -> str:
-    """
-    Builds a markdown document with retrieval context and source files.
-    """
-    try:
-        lines: List[str] = [
-            "# Retrieval Context",
-            "",
-            "## Source Files",
-            "",
-        ]
-
-        if source_files:
-            lines.extend([f"- {source_file}" for source_file in source_files])
-        else:
-            lines.append("- No source files found")
-
-        lines.extend(
-            [
-                "",
-                "## Context",
-                "",
-                context if context else "No context retrieved.",
-                "",
-            ]
-        )
-
-        return "\n".join(lines)
-    except Exception as e:
-        raise RuntimeError(f"Failed to format context markdown: {str(e)}") from e
-
-
-def save_context_markdown(
-    context: str,
-    source_files: Optional[List[str]] = None,
-    output_dir: str = "src/agents/rag_agent/tools/content_generation",
-) -> str:
-    """
-    Saves retrieval context and source files into a markdown file.
-    """
-    try:
-        markdown_content = format_context_to_markdown(context=context, source_files=source_files)
-        output_path = Path(output_dir) / f"retrieval_context.md"
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(markdown_content, encoding="utf-8")
-        return str(output_path)
-    except Exception as e:
-        raise RuntimeError(f"Failed to save context markdown: {str(e)}") from e
-
-
-def format_posts_json_to_markdown(
-    posts_payload: Union[ContentBatchOutput, dict, str],
-    document_title: str = "Generated Content Batch",
-) -> str:
-    """
-    Converts generated posts payload into a Markdown document string.
-    """
-    try:
-        if isinstance(posts_payload, ContentBatchOutput):
-            payload = posts_payload.model_dump()
-        elif isinstance(posts_payload, str):
-            payload = json.loads(posts_payload)
-        elif isinstance(posts_payload, dict):
-            payload = posts_payload
-        else:
-            raise ValueError("posts_payload must be ContentBatchOutput, dict, or JSON string")
-
-        query = payload.get("query", "")
-        objective = payload.get("objective", "")
-        content_count = payload.get("content_count", 0)
-        items = payload.get("items", [])
-
-        lines: List[str] = [
-            f"# {document_title}",
-            "",
-            "## Batch Metadata",
-            "",
-            f"- Query: {query}",
-            f"- Objective: {objective}",
-            f"- Content count: {content_count}",
-            "",
-            "## Posts",
-            "",
-        ]
-
-        for index, item in enumerate(items, start=1):
-            title = item.get("title", "")
-            summary = item.get("summary", "")
-            body = item.get("body", "")
-            cta = item.get("cta", "")
-            hashtags = item.get("hashtags", [])
-            sources_used = item.get("sources_used", [])
-
-            lines.extend(
-                [
-                    f"## {index}: {title}",
-                    "",
-                    "#### Summary",
-                    "",
-                    f"### {summary}",
-                    "",
-                    "#### Body",
-                    "",
-                    body,
-                    "",
-                    "#### Call to Action",
-                    "",
-                    f"### {cta}",
-                    "",
-                    "#### Hashtags",
-                    "",
-                    " ".join(hashtags),
-                    "",
-                    "#### Sources Used",
-                    "",
-                ]
-            )
-
-            if sources_used:
-                lines.extend([f"- {source}" for source in sources_used])
-            else:
-                lines.append("- No sources provided")
-
-            lines.append("")
-
-        return "\n".join(lines).strip() + "\n"
-    except Exception as e:
-        raise RuntimeError(f"Failed to format posts JSON to markdown: {str(e)}") from e
-
-
-def save_posts_markdown(
-    posts_payload: Union[ContentBatchOutput, dict, str],
-    output_file: Optional[str] = None,
-    document_title: str = "Generated Content Batch",
-) -> str:
-    """
-    Formats generated posts and saves them into a .md file.
-    """
-    try:
-        markdown_content = format_posts_json_to_markdown(
-            posts_payload=posts_payload,
-            document_title=document_title,
-        )
-
-        unique_id = uuid.uuid4().hex[:8]
-
-        if not output_file:
-            output_path = Path(f"generated_posts_{unique_id}.md")
-        else:
-            candidate_path = Path(output_file)
-
-            if candidate_path.exists() and candidate_path.is_dir():
-                output_path = candidate_path / f"{unique_id}.md"
-            elif candidate_path.suffix.lower() != ".md":
-                output_path = candidate_path / f"{unique_id}.md"
-            else:
-                output_path = candidate_path
-
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(markdown_content, encoding="utf-8")
-
-        return str(output_path)
-    except Exception as e:
-        raise RuntimeError(f"Failed to save posts markdown: {str(e)}") from e
-
-
-def _validate_body_range(body_min_chars: int, body_max_chars: int) -> None:
-    if body_min_chars < 1:
-        raise ValueError("body_min_chars must be greater than or equal to 1")
-    if body_max_chars < body_min_chars:
-        raise ValueError("body_max_chars must be greater than or equal to body_min_chars")
-
-
-def _is_body_within_range(content: GeneratedContent, body_min_chars: int, body_max_chars: int) -> bool:
-    body_size = len(content.body)
-    return body_min_chars <= body_size <= body_max_chars
+    items: List[GeneratedContentParse]
 
 
 class GenerateContent:
@@ -220,10 +40,21 @@ class GenerateContent:
     def __init__(self, model_id: str = DEFAULT_MODEL) -> None:
         self.model_id = model_id
 
+    def _validate_body_range(self, body_min_chars: int, body_max_chars: int) -> None:
+        if body_min_chars < 1:
+            raise ValueError("body_min_chars must be greater than or equal to 1")
+        if body_max_chars < body_min_chars:
+            raise ValueError("body_max_chars must be greater than or equal to body_min_chars")
+
+
+    def _is_body_within_range(self, content: GeneratedContentParse, body_min_chars: int, body_max_chars: int) -> bool:
+        body_size = len(content.body)
+        return body_min_chars <= body_size <= body_max_chars
+
     def _build_content_creator_agent(self) -> Agent:
         return Agent(
             model=OpenAIChat(id=self.model_id),
-            output_schema=GeneratedContent,
+            output_schema=GeneratedContentParse,
             markdown=True,
             instructions=[
                 "You are a content creation specialist.",
@@ -246,7 +77,7 @@ class GenerateContent:
         body_min_chars: int,
         body_max_chars: int,
         extra_requirements: Optional[str],
-    ) -> Tuple[int, GeneratedContent]:
+    ) -> Tuple[int, GeneratedContentParse]:
         creator_agent = self._build_content_creator_agent()
 
         variation_angles = [
@@ -304,7 +135,7 @@ Instructions:
 
         attempt = 0
         max_attempts = 3
-        generated_content: Optional[GeneratedContent] = None
+        generated_content: Optional[GeneratedContentParse] = None
 
         while attempt < max_attempts:
             attempt += 1
@@ -322,7 +153,7 @@ Correction:
             response = creator_agent.run(prompt)
             generated_content = response.content
 
-            if _is_body_within_range(
+            if self._is_body_within_range(
                 content=generated_content,
                 body_min_chars=body_min_chars,
                 body_max_chars=body_max_chars,
@@ -380,7 +211,7 @@ Correction:
         if content_count < 1:
             raise ValueError("content_count must be greater than or equal to 1")
 
-        _validate_body_range(body_min_chars=body_min_chars, body_max_chars=body_max_chars)
+        self._validate_body_range(body_min_chars=body_min_chars, body_max_chars=body_max_chars)
 
         resolved_context = context
         if resolved_context is None:
@@ -390,7 +221,7 @@ Correction:
                 max_results=max_results,
             )
 
-        generated_map: dict[int, GeneratedContent] = {}
+        generated_map: dict[int, GeneratedContentParse] = {}
         max_workers = min(content_count, 5)
 
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
