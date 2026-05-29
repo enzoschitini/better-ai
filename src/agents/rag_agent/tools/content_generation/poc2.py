@@ -79,19 +79,19 @@ def format_posts_json_to_markdown(
 
             lines.extend(
                 [
-                    f"### Post {index}: {title}",
+                    f"## {index}: {title}",
                     "",
                     "#### Summary",
                     "",
-                    summary,
+                    f"### {summary}",
                     "",
                     "#### Body",
                     "",
-                    body,
+                    f"### {body}",
                     "",
                     "#### Call to Action",
                     "",
-                    cta,
+                    f"### {cta}",
                     "",
                     "#### Hashtags",
                     "",
