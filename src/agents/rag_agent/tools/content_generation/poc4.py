@@ -8,8 +8,6 @@ from pydantic import BaseModel, Field
 from src.vector_store.pinecone.client import PineconeClient
 from src.vector_store.pinecone.retriever import PineconeRetriever
 from src.vector_store.pinecone.utils.retrieval_manager import RetrievalManager
-from src.agents.rag_agent.tools.content_generation.markdown_utils import save_posts_markdown
-
 
 DEFAULT_MODEL = "gpt-4.1-mini"
 
@@ -37,8 +35,9 @@ class ContentBatchOutput(BaseModel):
 class GenerateContent:
     """Encapsulates only the logic required to generate structured content."""
 
-    def __init__(self, model_id: str = DEFAULT_MODEL) -> None:
+    def __init__(self, model_id: str = DEFAULT_MODEL, filter_search: Optional[dict] = None) -> None:
         self.model_id = model_id
+        self.filter_search = filter_search or {}
 
     def _validate_body_range(self, body_min_chars: int, body_max_chars: int) -> None:
         if body_min_chars < 1:
@@ -200,7 +199,6 @@ Correction:
         self,
         query: str,
         objective: str,
-        context: Optional[str] = None,
         filter_search: Optional[dict] = None,
         max_results: int = 5,
         content_count: int = 1,
@@ -213,11 +211,10 @@ Correction:
 
         self._validate_body_range(body_min_chars=body_min_chars, body_max_chars=body_max_chars)
 
-        resolved_context = context
-        if resolved_context is None:
-            resolved_context = self.retrieve_context(
-                query=query,
-                filter_search=filter_search or {},
+        effective_filter_search = filter_search if filter_search is not None else self.filter_search
+        resolved_context = self.retrieve_context(
+            query=query,
+            filter_search=effective_filter_search,
                 max_results=max_results,
             )
 
@@ -254,65 +251,61 @@ Correction:
         )
 
 
-def generate_content_with_retrieval(
-    query: str,
-    objective: str,
-    filter_search: dict,
-    content_count: int = 1,
-    body_min_chars: int = 700,
-    body_max_chars: int = 1200,
-    max_results: int = 5,
-    model_id: str = DEFAULT_MODEL,
-    extra_requirements: Optional[str] = None,
-) -> ContentBatchOutput:
-    """
-    Two-step pipeline:
-    1) Retrieve context using the retriever.
-    2) Use the retrieved context as direct input for the content creator agent.
-    3) Generate one or more structured content variants.
-    """
-    try:
-        generator = GenerateContent(model_id=model_id)
-        return generator.generate(
-            query=query,
-            objective=objective,
-            context=None,
-            filter_search=filter_search,
-            max_results=max_results,
-            content_count=content_count,
-            body_min_chars=body_min_chars,
-            body_max_chars=body_max_chars,
-            extra_requirements=extra_requirements,
-        )
-    except Exception as e:
-        raise RuntimeError(f"Failed to generate content using retrieval context: {str(e)}") from e
 
 
 if __name__ == "__main__":
     import time
     from src.agents.rag_agent.tools.content_generation.example_requests import EXAMPLE_REQUESTS
+    from src.agents.rag_agent.tools.content_generation.markdown_utils import save_posts_markdown
 
     payload = EXAMPLE_REQUESTS["example_6"]
 
-    def generate_content():
-        start_time = time.time()
+    def generate_content(
+        query: str,
+        objective: str,
+        filter_search: dict,
+        content_count: int = 1,
+        body_min_chars: int = 700,
+        body_max_chars: int = 1200,
+        max_results: int = 5,
+        model_id: str = DEFAULT_MODEL,
+        extra_requirements: Optional[str] = None,
+    ) -> ContentBatchOutput:
+        """
+        Two-step pipeline:
+        1) Retrieve context using the retriever.
+        2) Use the retrieved context as direct input for the content creator agent.
+        3) Generate one or more structured content variants.
+        """
+        try:
+            start_time = time.time()
+            generator = GenerateContent(model_id=model_id, filter_search=filter_search)
+            generated_content = generator.generate(
+                query=query,
+                objective=objective,
+                max_results=max_results,
+                content_count=content_count,
+                body_min_chars=body_min_chars,
+                body_max_chars=body_max_chars,
+                extra_requirements=extra_requirements,
+            )
 
-        generated_content = generate_content_with_retrieval(**payload)
+            end_time = time.time()
+            elapsed_time = end_time - start_time
 
-        end_time = time.time()
-        elapsed_time = end_time - start_time
+            markdown_file = save_posts_markdown(
+                posts_payload=generated_content,
+                output_file="src/agents/rag_agent/tools/content_generation",
+                document_title="Marketing Posts",
+            )
 
-        #print(generated_content.model_dump_json(indent=2))
+            print(f"\nMarkdown file generated at: {markdown_file}")
+            print(f"\nElapsed time: {elapsed_time:.2f} seconds")
 
-        markdown_file = save_posts_markdown(
-            posts_payload=generated_content,
-            output_file="src/agents/rag_agent/tools/content_generation",
-            document_title="Marketing Posts",
-        )
+        except Exception as e:
+            raise RuntimeError(f"Failed to generate content using retrieval context: {str(e)}") from e
 
-        print(f"\nMarkdown file generated at: {markdown_file}")
-        print(f"\nElapsed time: {elapsed_time:.2f} seconds")
-    
+
     def test_retrieval():
         query = "Mate Salicylic"
         filter_search = payload.get("filter_search", {})
@@ -325,7 +318,7 @@ if __name__ == "__main__":
             max_results=max_results,
         )
     
-    generate_content()
+    generate_content(**payload)
     #test_retrieval()
 
 
