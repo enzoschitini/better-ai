@@ -1,5 +1,8 @@
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import List, Optional, Tuple
+import json
+from pathlib import Path
+from typing import List, Optional, Tuple, Union
+import uuid
 
 from agno.agent import Agent
 from agno.models.openai import OpenAIChat
@@ -29,6 +32,122 @@ class ContentBatchOutput(BaseModel):
     objective: str
     content_count: int
     items: List[GeneratedContent]
+
+
+def format_posts_json_to_markdown(
+    posts_payload: Union[ContentBatchOutput, dict, str],
+    document_title: str = "Generated Content Batch",
+) -> str:
+    """
+    Converts generated posts payload into a Markdown document string.
+    """
+    try:
+        if isinstance(posts_payload, ContentBatchOutput):
+            payload = posts_payload.model_dump()
+        elif isinstance(posts_payload, str):
+            payload = json.loads(posts_payload)
+        elif isinstance(posts_payload, dict):
+            payload = posts_payload
+        else:
+            raise ValueError("posts_payload must be ContentBatchOutput, dict, or JSON string")
+
+        query = payload.get("query", "")
+        objective = payload.get("objective", "")
+        content_count = payload.get("content_count", 0)
+        items = payload.get("items", [])
+
+        lines: List[str] = [
+            f"# {document_title}",
+            "",
+            "## Batch Metadata",
+            "",
+            f"- Query: {query}",
+            f"- Objective: {objective}",
+            f"- Content count: {content_count}",
+            "",
+            "## Posts",
+            "",
+        ]
+
+        for index, item in enumerate(items, start=1):
+            title = item.get("title", "")
+            summary = item.get("summary", "")
+            body = item.get("body", "")
+            cta = item.get("cta", "")
+            hashtags = item.get("hashtags", [])
+            sources_used = item.get("sources_used", [])
+
+            lines.extend(
+                [
+                    f"### Post {index}: {title}",
+                    "",
+                    "#### Summary",
+                    "",
+                    summary,
+                    "",
+                    "#### Body",
+                    "",
+                    body,
+                    "",
+                    "#### Call to Action",
+                    "",
+                    cta,
+                    "",
+                    "#### Hashtags",
+                    "",
+                    " ".join(hashtags),
+                    "",
+                    "#### Sources Used",
+                    "",
+                ]
+            )
+
+            if sources_used:
+                lines.extend([f"- {source}" for source in sources_used])
+            else:
+                lines.append("- No sources provided")
+
+            lines.append("")
+
+        return "\n".join(lines).strip() + "\n"
+    except Exception as e:
+        raise RuntimeError(f"Failed to format posts JSON to markdown: {str(e)}") from e
+
+
+def save_posts_markdown(
+    posts_payload: Union[ContentBatchOutput, dict, str],
+    output_file: Optional[str] = None,
+    document_title: str = "Generated Content Batch",
+) -> str:
+    """
+    Formats generated posts and saves them into a .md file.
+    """
+    try:
+        markdown_content = format_posts_json_to_markdown(
+            posts_payload=posts_payload,
+            document_title=document_title,
+        )
+
+        unique_id = uuid.uuid4().hex[:8]
+
+        if not output_file:
+            output_path = Path(f"generated_posts_{unique_id}.md")
+        else:
+            candidate_path = Path(output_file)
+
+            if candidate_path.exists() and candidate_path.is_dir():
+                output_path = candidate_path / f"generated_posts_{unique_id}.md"
+            elif candidate_path.suffix.lower() != ".md":
+                output_path = candidate_path / f"generated_posts_{unique_id}.md"
+            else:
+                output_path = candidate_path
+
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(markdown_content, encoding="utf-8")
+
+        return str(output_path)
+    except Exception as e:
+        raise RuntimeError(f"Failed to save posts markdown: {str(e)}") from e
 
 
 def _validate_body_range(body_min_chars: int, body_max_chars: int) -> None:
@@ -218,10 +337,10 @@ if __name__ == "__main__":
     start_time = time.time()
 
     generated_content = generate_content_with_retrieval(
-        query="Malbec e posicionamento de marca",
-        objective="Criar um artigo curto de marketing para blog sobre a linha Malbec.",
+        query="CEREJA ROUGE e posicionamento de marca",
+        objective="Criar um artigo curto de marketing para blog sobre a linha CEREJA ROUGE. Coloque os preços também",
         filter_search={"collection_id": ["oboticario"]},
-        content_count=2,
+        content_count=5,
         body_min_chars=700,
         body_max_chars=1200,
         max_results=5,
@@ -232,7 +351,14 @@ if __name__ == "__main__":
     elapsed_time = end_time - start_time
 
     print(generated_content.model_dump_json(indent=2))
+    markdown_file = save_posts_markdown(
+        posts_payload=generated_content,
+        output_file="src/agents/rag_agent/tools/content_generation",
+        document_title="Malbec Marketing Posts",
+    )
+
+    print(f"\nMarkdown file generated at: {markdown_file}")
     print(f"\nElapsed time: {elapsed_time:.2f} seconds")
 
 
-# python -m src.agents.rag_agent.tools.content_generation.poc1
+# python -m src.agents.rag_agent.tools.content_generation.poc2
