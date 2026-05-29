@@ -38,6 +38,56 @@ class ContentBatchOutput(BaseModel):
     items: List[GeneratedContent]
 
 
+def format_context_to_markdown(context: str, source_files: Optional[List[str]] = None) -> str:
+    """
+    Builds a markdown document with retrieval context and source files.
+    """
+    try:
+        lines: List[str] = [
+            "# Retrieval Context",
+            "",
+            "## Source Files",
+            "",
+        ]
+
+        if source_files:
+            lines.extend([f"- {source_file}" for source_file in source_files])
+        else:
+            lines.append("- No source files found")
+
+        lines.extend(
+            [
+                "",
+                "## Context",
+                "",
+                context if context else "No context retrieved.",
+                "",
+            ]
+        )
+
+        return "\n".join(lines)
+    except Exception as e:
+        raise RuntimeError(f"Failed to format context markdown: {str(e)}") from e
+
+
+def save_context_markdown(
+    context: str,
+    source_files: Optional[List[str]] = None,
+    output_dir: str = "src/agents/rag_agent/tools/content_generation",
+) -> str:
+    """
+    Saves retrieval context and source files into a markdown file.
+    """
+    try:
+        markdown_content = format_context_to_markdown(context=context, source_files=source_files)
+        output_path = Path(output_dir) / f"retrieval_context.md"
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(markdown_content, encoding="utf-8")
+        return str(output_path)
+    except Exception as e:
+        raise RuntimeError(f"Failed to save context markdown: {str(e)}") from e
+
+
 def format_posts_json_to_markdown(
     posts_payload: Union[ContentBatchOutput, dict, str],
     document_title: str = "Generated Content Batch",
@@ -190,9 +240,13 @@ def retrieve_context(
 
         manager = RetrievalManager(docs=documents)
         context = manager.generate_context()
+        source_files = manager.get_files()
 
-        print(manager.get_files())
-        print(context)
+        context_markdown_path = save_context_markdown(
+            context=context,
+            source_files=source_files,
+        )
+        print(f"Context markdown saved at: {context_markdown_path}")
 
         #rag_tool = RetrievalAugmentedGeneration(filter_search=filter_search)
         #rag_tool.get_relevant_documents(query=query, max_results=max_results)
@@ -392,8 +446,6 @@ if __name__ == "__main__":
             filter_search=filter_search,
             max_results=max_results,
         )
-
-        print(context)
     
     #generate_content()
     test_retrieval()
