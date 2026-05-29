@@ -8,6 +8,9 @@ from agno.agent import Agent
 from agno.models.openai import OpenAIChat
 from pydantic import BaseModel, Field
 
+from src.vector_store.pinecone.client import PineconeClient
+from src.vector_store.pinecone.retriever import PineconeRetriever
+from src.vector_store.pinecone.utils.retrieval_manager import RetrievalManager
 from src.agents.rag_agent.tools.toolkit import RetrievalAugmentedGeneration
 
 
@@ -136,9 +139,9 @@ def save_posts_markdown(
             candidate_path = Path(output_file)
 
             if candidate_path.exists() and candidate_path.is_dir():
-                output_path = candidate_path / f"generated_posts_{unique_id}.md"
+                output_path = candidate_path / f"{unique_id}.md"
             elif candidate_path.suffix.lower() != ".md":
-                output_path = candidate_path / f"generated_posts_{unique_id}.md"
+                output_path = candidate_path / f"{unique_id}.md"
             else:
                 output_path = candidate_path
 
@@ -171,8 +174,27 @@ def retrieve_context(
     Retrieves context from the vector store to be used as input for content creation.
     """
     try:
-        rag_tool = RetrievalAugmentedGeneration(filter_search=filter_search)
-        return rag_tool.get_relevant_documents(query=query, max_results=max_results)
+
+        pine_client = PineconeClient(
+            index_name="backai-vectorstore",
+            main_namespace="knowledge_base_content_agent_oboticario"
+        )
+        retriver = PineconeRetriever(pine_client)
+
+        documents = retriver.similarity_search(
+            query=query,
+            k=max_results,
+            filter_search=filter_search
+        )
+
+        manager = RetrievalManager(docs=documents)
+        context = manager.generate_context()
+
+        print(manager.get_files())
+
+        #rag_tool = RetrievalAugmentedGeneration(filter_search=filter_search)
+        #rag_tool.get_relevant_documents(query=query, max_results=max_results)
+        return context
     except Exception as e:
         raise RuntimeError(f"Failed to retrieve context: {str(e)}") from e
 
@@ -334,27 +356,21 @@ def generate_content_with_retrieval(
 
 if __name__ == "__main__":
     import time
+    from src.agents.rag_agent.tools.content_generation.example_requests import EXAMPLE_REQUESTS
+
     start_time = time.time()
 
-    generated_content = generate_content_with_retrieval(
-        query="CEREJA ROUGE e posicionamento de marca",
-        objective="Criar um artigo curto de marketing para blog sobre a linha CEREJA ROUGE. Coloque os preços também",
-        filter_search={"collection_id": ["oboticario"]},
-        content_count=5,
-        body_min_chars=700,
-        body_max_chars=1200,
-        max_results=5,
-        extra_requirements="Tom premium, linguagem persuasiva e CTA no final.",
-    )
+    generated_content = generate_content_with_retrieval(**EXAMPLE_REQUESTS["example_4"])
 
     end_time = time.time()
     elapsed_time = end_time - start_time
 
-    print(generated_content.model_dump_json(indent=2))
+    #print(generated_content.model_dump_json(indent=2))
+
     markdown_file = save_posts_markdown(
         posts_payload=generated_content,
         output_file="src/agents/rag_agent/tools/content_generation",
-        document_title="Malbec Marketing Posts",
+        document_title="Marketing Posts",
     )
 
     print(f"\nMarkdown file generated at: {markdown_file}")
