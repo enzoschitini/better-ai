@@ -28,13 +28,35 @@ from src.agents.rag_agent.tools.content_generation.config import (
 )
 
 class GenerateContent:
-    """Encapsulates only the logic required to generate structured content."""
+    """
+    Generates structured content variants using retrieval context and controlled prompt strategies.
+    This class centralizes agent construction, context retrieval, and multi-variant generation with validation.
+
+    Args:
+    :param model_id (str): Model identifier used to initialize the chat model. Default is "gpt-4.1-mini"
+    :param filter_search (Optional[dict]): Default retrieval filter used when no runtime filter is provided. Default is None
+
+    Methods:
+            retrieve_context(): Retrieves textual context from Pinecone using the provided query and filters.
+            generate(): Generates one or more structured content variants from retrieved context.
+    """
 
     def __init__(self, model_id: str = DEFAULT_MODEL, filter_search: Optional[dict] = None) -> None:
         self.model_id = model_id
         self.filter_search = filter_search or {}
 
     def _validate_body_range(self, body_min_chars: int, body_max_chars: int) -> None:
+        """
+        Validates the allowed character range for the generated body text.
+        It ensures the minimum is positive and the maximum is not smaller than the minimum.
+
+        Args:
+        body_min_chars (int): Minimum number of characters allowed for the body.
+        body_max_chars (int): Maximum number of characters allowed for the body.
+
+        Raises:
+                ValueError: Raised when min or max limits are invalid.
+        """
         if body_min_chars < 1:
             raise ValueError("body_min_chars must be greater than or equal to 1")
         if body_max_chars < body_min_chars:
@@ -42,10 +64,29 @@ class GenerateContent:
 
 
     def _is_body_within_range(self, content: GeneratedContentParse, body_min_chars: int, body_max_chars: int) -> bool:
+        """
+        Checks whether the generated body length is within the configured limits.
+        This helper is used to decide if a generated attempt can be accepted.
+
+        Args:
+        content (GeneratedContentParse): Generated content object containing the body text.
+        body_min_chars (int): Minimum number of characters allowed for the body.
+        body_max_chars (int): Maximum number of characters allowed for the body.
+
+        Returns:
+                bool: True when body length is within range, otherwise False.
+        """
         body_size = len(content.body)
         return body_min_chars <= body_size <= body_max_chars
 
     def _build_content_creator_agent(self) -> Agent:
+        """
+        Builds and returns the content creator agent configured for structured output.
+        The returned agent is ready to generate content based on retrieval context.
+
+        Returns:
+                Agent: Configured agent instance for content generation.
+        """
         return Agent(
             model=OpenAIChat(id=self.model_id),
             output_schema=GeneratedContentParse,
@@ -65,56 +106,80 @@ class GenerateContent:
         body_max_chars: int,
         extra_requirements: Optional[str],
     ) -> Tuple[int, GeneratedContentParse]:
-        creator_agent = self._build_content_creator_agent()
+        """
+        Generates a single content variant using style guidance and retry logic.
+        It retries generation when body length is out of range and returns the indexed result.
 
-        variation_angle = VARIATION_ANGLES[index % len(VARIATION_ANGLES)]
-        variation_opening = VARIATION_OPENINGS[index % len(VARIATION_OPENINGS)]
-        variation_rhythm = VARIATION_RHYTHMS[index % len(VARIATION_RHYTHMS)]
+        Args:
+        index (int): Zero-based position of the variant in the batch.
+        content_count (int): Total number of variants requested in the batch.
+        query (str): Retrieval query that contextualizes generation.
+        objective (str): Business or communication objective for the generated content.
+        context (str): Retrieved context used as factual grounding.
+        body_min_chars (int): Minimum body size in characters.
+        body_max_chars (int): Maximum body size in characters.
+        extra_requirements (Optional[str]): Additional generation constraints.
 
-        prompt_base = PROMPT_BASE_TEMPLATE.format(
-            objective=objective,
-            query=query,
-            context=context,
-            extra_requirements=extra_requirements or "None",
-            variant_number=index + 1,
-            content_count=content_count,
-            variation_angle=variation_angle,
-            variation_opening=variation_opening,
-            variation_rhythm=variation_rhythm,
-            body_min_chars=body_min_chars,
-            body_max_chars=body_max_chars,
-        )
+        Returns:
+            Tuple[int, GeneratedContentParse]: Variant index and generated structured content.
 
-        attempt = 0
-        max_attempts = 3
-        generated_content: Optional[GeneratedContentParse] = None
+        Raises:
+            RuntimeError: Raised when structured content cannot be generated.
+        """
+        try:
+            creator_agent = self._build_content_creator_agent()
 
-        while attempt < max_attempts:
-            attempt += 1
-            prompt = prompt_base
+            variation_angle = VARIATION_ANGLES[index % len(VARIATION_ANGLES)]
+            variation_opening = VARIATION_OPENINGS[index % len(VARIATION_OPENINGS)]
+            variation_rhythm = VARIATION_RHYTHMS[index % len(VARIATION_RHYTHMS)]
 
-            if attempt > 1 and generated_content is not None:
-                prompt = PROMPT_CORRECTION_TEMPLATE.format(
-                    prompt_base=prompt_base,
-                    previous_body_length=len(generated_content.body),
-                    body_min_chars=body_min_chars,
-                    body_max_chars=body_max_chars,
-                )
-
-            response = creator_agent.run(prompt)
-            generated_content = response.content
-
-            if self._is_body_within_range(
-                content=generated_content,
+            prompt_base = PROMPT_BASE_TEMPLATE.format(
+                objective=objective,
+                query=query,
+                context=context,
+                extra_requirements=extra_requirements or "None",
+                variant_number=index + 1,
+                content_count=content_count,
+                variation_angle=variation_angle,
+                variation_opening=variation_opening,
+                variation_rhythm=variation_rhythm,
                 body_min_chars=body_min_chars,
                 body_max_chars=body_max_chars,
-            ):
-                break
+            )
 
-        if generated_content is None:
-            raise RuntimeError("Failed to generate structured content")
+            attempt = 0
+            max_attempts = 3
+            generated_content: Optional[GeneratedContentParse] = None
 
-        return index, generated_content
+            while attempt < max_attempts:
+                attempt += 1
+                prompt = prompt_base
+
+                if attempt > 1 and generated_content is not None:
+                    prompt = PROMPT_CORRECTION_TEMPLATE.format(
+                        prompt_base=prompt_base,
+                        previous_body_length=len(generated_content.body),
+                        body_min_chars=body_min_chars,
+                        body_max_chars=body_max_chars,
+                    )
+
+                response = creator_agent.run(prompt)
+                generated_content = response.content
+
+                if self._is_body_within_range(
+                    content=generated_content,
+                    body_min_chars=body_min_chars,
+                    body_max_chars=body_max_chars,
+                ):
+                    break
+
+            if generated_content is None:
+                raise RuntimeError("Failed to generate structured content")
+
+            return index, generated_content
+        
+        except Exception as e:
+            raise RuntimeError(f"Failed to generate variant {index + 1}: {str(e)}") from e
 
 
     def retrieve_context(
@@ -124,7 +189,19 @@ class GenerateContent:
         max_results: int = DEFAULT_MAX_RESULTS,
     ) -> str:
         """
-        Retrieves context from the vector store to be used as input for content creation.
+        Retrieves context from the vector store based on query and filtering constraints.
+        It performs similarity search and consolidates the result into a single context string.
+
+        Args:
+        query (str): Search query used in vector similarity retrieval.
+        filter_search (dict): Filter payload applied to constrain retrieval scope.
+        max_results (int): Maximum number of retrieved documents. Default is "5"
+
+        Returns:
+            str: Consolidated retrieval context used by generation.
+
+        Raises:
+            RuntimeError: Raised when context retrieval fails.
         """
         try:
 
@@ -158,49 +235,77 @@ class GenerateContent:
         body_max_chars: int = DEFAULT_BODY_MAX_CHARS,
         extra_requirements: Optional[str] = None,
     ) -> ContentBatchOutput:
-        if content_count < 1:
-            raise ValueError("content_count must be greater than or equal to 1")
+        """
+        Generates a full batch of structured content variants from retrieved context.
+        It validates body limits, retrieves context, runs variant generation concurrently, and returns ordered results.
 
-        self._validate_body_range(body_min_chars=body_min_chars, body_max_chars=body_max_chars)
+        Args:
+        query (str): Retrieval query that anchors generated content.
+        objective (str): Objective that guides tone and structure of generated text.
+        filter_search (Optional[dict]): Retrieval filter override for this execution. Default is None
+        max_results (int): Maximum number of documents to retrieve. Default is "5"
+        content_count (int): Number of content variants to generate. Default is "1"
+        body_min_chars (int): Minimum body length in characters. Default is "700"
+        body_max_chars (int): Maximum body length in characters. Default is "1200"
+        extra_requirements (Optional[str]): Extra requirements appended to the generation prompt. Default is None
 
-        effective_filter_search = filter_search if filter_search is not None else self.filter_search
-        resolved_context = self.retrieve_context(
-            query=query,
-            filter_search=effective_filter_search,
-                max_results=max_results,
-            )
+        Returns:
+            ContentBatchOutput: Structured batch output containing generated items.
 
-        generated_map: dict[int, GeneratedContentParse] = {}
-        max_workers = min(content_count, 5)
+        Raises:
+            ValueError: Raised when requested content count is invalid.
+        """
+        try:
+            if content_count < 1:
+                raise ValueError("content_count must be greater than or equal to 1")
 
-        with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            futures = [
-                executor.submit(
-                    self._generate_single_variant,
-                    index,
-                    content_count,
-                    query,
-                    objective,
-                    resolved_context,
-                    body_min_chars,
-                    body_max_chars,
-                    extra_requirements,
+            self._validate_body_range(body_min_chars=body_min_chars, body_max_chars=body_max_chars)
+
+            effective_filter_search = filter_search if filter_search is not None else self.filter_search
+            resolved_context = self.retrieve_context(
+                query=query,
+                filter_search=effective_filter_search,
+                    max_results=max_results,
                 )
-                for index in range(content_count)
-            ]
 
-            for future in as_completed(futures):
-                variant_index, generated_content = future.result()
-                generated_map[variant_index] = generated_content
+            generated_map: dict[int, GeneratedContentParse] = {}
+            max_workers = min(content_count, 5)
 
-        generated_items = [generated_map[index] for index in range(content_count)]
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                futures = [
+                    executor.submit(
+                        self._generate_single_variant,
+                        index,
+                        content_count,
+                        query,
+                        objective,
+                        resolved_context,
+                        body_min_chars,
+                        body_max_chars,
+                        extra_requirements,
+                    )
+                    for index in range(content_count)
+                ]
 
-        return ContentBatchOutput(
-            query=query,
-            objective=objective,
-            content_count=content_count,
-            items=generated_items,
-        )
+                for future in as_completed(futures):
+                    variant_index, generated_content = future.result()
+                    generated_map[variant_index] = generated_content
+
+            generated_items = [generated_map[index] for index in range(content_count)]
+
+            return ContentBatchOutput(
+                query=query,
+                objective=objective,
+                content_count=content_count,
+                items=generated_items,
+            )
+        
+        except Exception as e:
+            raise RuntimeError(f"Failed to generate content: {str(e)}") from e
+
+
+
+
 
 
 
