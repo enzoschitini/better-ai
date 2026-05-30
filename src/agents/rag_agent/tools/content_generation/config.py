@@ -22,14 +22,13 @@ class ContentBatchOutput(BaseModel):
 
 
 DEFAULT_MODEL = "gpt-4.1-mini"
-
-PINECONE_INDEX_NAME = "backai-vectorstore"
-PINECONE_MAIN_NAMESPACE = "knowledge_base_content_agent_oboticario"
-
 DEFAULT_MAX_RESULTS = 5
 DEFAULT_CONTENT_COUNT = 1
 DEFAULT_BODY_MIN_CHARS = 700
 DEFAULT_BODY_MAX_CHARS = 1200
+
+PINECONE_INDEX_NAME = "backai-vectorstore"
+PINECONE_MAIN_NAMESPACE = "knowledge_base_content_agent_oboticario"
 
 AGENT_INSTRUCTIONS = [
     "You are a content creation specialist.",

@@ -315,7 +315,7 @@ if __name__ == "__main__":
     from src.agents.rag_agent.tools.content_generation.example_requests import EXAMPLE_REQUESTS
     from src.agents.rag_agent.tools.content_generation.markdown_utils import save_posts_markdown
 
-    payload = EXAMPLE_REQUESTS["example_6"]
+    payload = EXAMPLE_REQUESTS["example_4"]
 
     def generate_content(
         query: str,
