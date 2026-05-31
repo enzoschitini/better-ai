@@ -19,6 +19,7 @@ class ContentBatchOutput(BaseModel):
     objective: str
     content_count: int
     items: List[GeneratedContentParse]
+    relevant_docs: List[dict]
 
 
 DEFAULT_MODEL = "gpt-4.1-mini"

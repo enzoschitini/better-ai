@@ -33,7 +33,7 @@ EXAMPLE_REQUESTS = {
         "query": "Lançamentos de maquiagem e dicas de aplicação",
         "objective": "Gerar um post para Instagram sobre os lançamentos de maquiagem da O Boticário, incluindo dicas de aplicação e sugestões de produtos para diferentes tipos de pele.",
         "filter_search": {"collection_id": ["oboticario"]},
-        "content_count": 5,
+        "content_count": 2,
         "body_min_chars": 700,
         "body_max_chars": 1200,
         "max_results": 5,

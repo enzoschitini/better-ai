@@ -198,7 +198,7 @@ class GenerateContent:
         max_results (int): Maximum number of retrieved documents. Default is "5"
 
         Returns:
-            str: Consolidated retrieval context used by generation.
+            dict: A dictionary containing the consolidated context string and the list of relevant documents.
 
         Raises:
             RuntimeError: Raised when context retrieval fails.
@@ -219,8 +219,12 @@ class GenerateContent:
 
             manager = RetrievalManager(docs=documents)
             context = manager.generate_context()
+            relevant_docs = manager.get_files()
 
-            return context
+            return {
+                "context": context,
+                "relevant_docs": relevant_docs,
+            }
         except Exception as e:
             raise RuntimeError(f"Failed to retrieve context: {str(e)}") from e
 
@@ -262,12 +266,14 @@ class GenerateContent:
             self._validate_body_range(body_min_chars=body_min_chars, body_max_chars=body_max_chars)
 
             effective_filter_search = filter_search if filter_search is not None else self.filter_search
-            resolved_context = self.retrieve_context(
+            result = self.retrieve_context(
                 query=query,
                 filter_search=effective_filter_search,
                     max_results=max_results,
                 )
-
+            
+            resolved_context = result["context"]
+            relevant_docs = result["relevant_docs"]
             generated_map: dict[int, GeneratedContentParse] = {}
             max_workers = min(content_count, 5)
 
@@ -298,6 +304,7 @@ class GenerateContent:
                 objective=objective,
                 content_count=content_count,
                 items=generated_items,
+                relevant_docs=relevant_docs,
             )
         
         except Exception as e:
@@ -369,11 +376,14 @@ if __name__ == "__main__":
         max_results = payload.get("max_results", 5)
 
         generator = GenerateContent()
-        context = generator.retrieve_context(
+        result = generator.retrieve_context(
             query=query,
             filter_search=filter_search,
             max_results=max_results,
         )
+
+        print(f"Retrieved Context:\n{result['context']}")
+        print(f"Relevant Documents:\n{result['relevant_docs']}")
     
     generate_content(**payload)
     #test_retrieval()
