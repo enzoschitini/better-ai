@@ -22,7 +22,7 @@ class BaseAgent(BaseAgent):
         if "user_id" not in metadata:
             raise ValueError("metadata must contain 'user_id'")
 
-    def create_agent(self, metadata: dict, tool_context: ToolContext):
+    def create_agent(self, metadata: dict, tool_context: ToolContext = ToolContext()):
         self._validate_metadata(metadata)
         db = Database(local=True, local_path=LOCAL_MEMORY_DB)
 
