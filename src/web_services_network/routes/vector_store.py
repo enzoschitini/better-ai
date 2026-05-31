@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse
 
 from src.web_services_network.utils.request_resource import RequestResorse, Authorization, LoadRequestFile 
 from src.embedding.applications import EmbeddingFile
+from src.utils.unique_id_factory import IDGenerator
 
 router = APIRouter(
     prefix="/vector-store",
@@ -16,17 +17,23 @@ router = APIRouter(
 
 @router.post(
     "/embedding-file",
-    
     summary="Process a file upload, generates embeddings, and stores vectors with metadata.",
+    description=(
+        "This endpoint accepts a file upload along with an optional JSON payload. It processes the file, generates embeddings, and stores the resulting vectors along with metadata in a vector store. The response includes details about the processing job and the stored vectors."
+    ),
     dependencies=[Depends(Authorization.validate_api_key)],
 )
-
 async def embedding_file(
-    payload: str = Form(...),
     file: UploadFile = File(...),
+    payload: Optional[str] = Form(None),
 ):
+    embedding_payload = {}
     try:
-        embedding_payload = json.loads(payload)
+        embedding_payload = json.loads(payload) if payload else {}
+
+        if "job_id" not in embedding_payload:
+            embedding_payload["job_id"] = IDGenerator.timestamp(prefix="job", separator="_", as_hex=True, suffix_len=6)
+
         allowed_extensions = [
             "txt", "md", "pdf", "doc", "docx", "odt", "rtf", 
             "csv", "xls", "xlsx", 
@@ -38,8 +45,6 @@ async def embedding_file(
             allowed_extensions=allowed_extensions,
             max_size_mb=50
         ).load()
-
-        #erro = 1 / 0
 
         file_info = {
             "name": loader.filename,
