@@ -11,7 +11,7 @@ if __name__ == "__main__":
     )
 
     from src.agents.rag_agent.tools.content_generation.test.example_requests import EXAMPLE_REQUESTS
-    from src.agents.rag_agent.tools.content_generation.markdown_utils import save_posts_markdown
+    from src.agents.rag_agent.tools.content_generation.markdown_utils import SaveMarkdownContent
 
     payload = EXAMPLE_REQUESTS["example_4"]
 
@@ -48,9 +48,9 @@ if __name__ == "__main__":
             end_time = time.time()
             elapsed_time = end_time - start_time
 
-            markdown_file = save_posts_markdown(
+            markdown_file = SaveMarkdownContent.save_posts_markdown(
                 posts_payload=generated_content,
-                output_file="src/agents/rag_agent/tools/content_generation",
+                output_file="src/agents/rag_agent/tools/content_generation/test/contents",
                 document_title="Marketing Posts",
             )
 
