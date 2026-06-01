@@ -18,4 +18,6 @@ if __name__ == "__main__":
         print_tool_response=True
     ).run()
 
+# Criar um post para Instagram focado em tendências de mercado para perfumes masculinos, destacando os produtos da linha Malbec. Inclua informações sobre notas olfativas e sugestões de uso.
+
 # python -m src.agents.rag_agent.run

@@ -107,6 +107,13 @@ class AgnoAgentExecutor:
         self._console.print(
             Panel(metadata, title="Tool Response Metadata", border_style="cyan")
         )
+    
+    def clean_tool_response(self) -> None:
+        """
+        Clears the stored tool response metadata from the tool context's responser.
+        """
+        if self._tool_context and self._tool_context.tool_responser:
+            self._tool_context.tool_responser.clear_metadata()
 
     # ------------------------------------------------------------------
     # Public API
@@ -132,6 +139,7 @@ class AgnoAgentExecutor:
             try:
                 self._runner.debug(ask=ask)
                 self._print_tools()
+                self.clean_tool_response()
 
             except Exception as e:  # noqa: BLE001
                 print(f"Error: {e}")

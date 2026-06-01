@@ -8,5 +8,8 @@ class ToolResponse:
     
     def get_metadata(self):
         return self.metadata
+    
+    def clear_metadata(self):
+        self.metadata = {}
 
 # python -m src.agents.utils.tool_response

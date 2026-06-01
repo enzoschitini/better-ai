@@ -144,7 +144,7 @@ class RetrievalAugmentedGeneration(Toolkit):
                 query=query,
                 objective="Generate content based on retrieved context",
                 max_results=max_results,
-                content_count=1,
+                content_count=2,
                 body_min_chars=700,
                 body_max_chars=1200,
             )
@@ -165,7 +165,6 @@ class RetrievalAugmentedGeneration(Toolkit):
                     "query": query,
                     "max_results": max_results,
                     "markdown_content": markdown_content,
-                    "final_payload": final_payload,
                     "generated_content": generated_content.model_dump() if hasattr(generated_content, "model_dump") else generated_content,
                 },
             )
