@@ -141,7 +141,7 @@ def format_posts_json_to_markdown(
                     "",
                     "#### Body",
                     "",
-                    body,
+                    f"### {body}",
                     "",
                     "#### Call to Action",
                     "",
@@ -260,8 +260,8 @@ def build_content_creator_agent(model_id: str = DEFAULT_MODEL) -> Agent:
     Agent specialized in generating content using an explicit external context.
     """
     return Agent(
-        model=OpenAIChat(id=model_id),
-        #model=Claude(id="claude-opus-4-1-20250805"),
+        #model=OpenAIChat(id=model_id),
+        model=Claude(id="claude-opus-4-1-20250805"),
         output_schema=GeneratedContent,
         markdown=True,
         instructions=[
@@ -289,32 +289,6 @@ def _generate_single_variant(
 ) -> Tuple[int, GeneratedContent]:
     creator_agent = build_content_creator_agent(model_id=model_id)
 
-    variation_angles = [
-        "benefit-driven narrative",
-        "practical educational approach",
-        "premium positioning perspective",
-        "problem-solution framing",
-        "light comparative framing",
-    ]
-    variation_openings = [
-        "Start with a concise insight statement.",
-        "Start with a short practical scenario.",
-        "Start with a premium brand-oriented hook.",
-        "Start with a common pain point.",
-        "Start with a contrast between options.",
-    ]
-    variation_rhythms = [
-        "Use medium paragraphs.",
-        "Use shorter paragraphs and faster pacing.",
-        "Use a more refined and descriptive pacing.",
-        "Use direct and objective pacing.",
-        "Use balanced pacing with one concise list if useful.",
-    ]
-
-    variation_angle = variation_angles[index % len(variation_angles)]
-    variation_opening = variation_openings[index % len(variation_openings)]
-    variation_rhythm = variation_rhythms[index % len(variation_rhythms)]
-
     prompt_base = f"""
 Objective:
 {objective}
@@ -335,9 +309,6 @@ Instructions:
 - Build the final content grounded in the retrieved context.
 - Keep a clear structure and avoid unsupported facts.
 - Make this variant distinct in angle and wording from the others.
-- Preferred angle for this variant: {variation_angle}.
-- Opening guidance: {variation_opening}
-- Writing rhythm guidance: {variation_rhythm}
 - The body field must have between {body_min_chars} and {body_max_chars} characters.
 - Include 5 to 10 relevant hashtags in the hashtags field.
 """.strip()
@@ -442,9 +413,9 @@ def generate_content_with_retrieval(
 
 if __name__ == "__main__":
     import time
-    from src.agents.rag_agent.tools.content_generation.example_requests import EXAMPLE_REQUESTS
+    from agents.rag_agent.tools.content_generation.test.example_requests import EXAMPLE_REQUESTS
 
-    payload = EXAMPLE_REQUESTS["example_6"]
+    payload = EXAMPLE_REQUESTS["example_4"]
 
     def generate_content():
         start_time = time.time()
@@ -476,8 +447,8 @@ if __name__ == "__main__":
             max_results=max_results,
         )
     
-    generate_content()
-    #test_retrieval()
+    #generate_content()
+    test_retrieval()
 
 
-# python -m src.agents.rag_agent.tools.content_generation.poc3
+# python -m src.agents.rag_agent.tools.content_generation.poc2

@@ -71,4 +71,4 @@ for i, file in enumerate(files):
 
 print("\nAll files processed.")
 
-# python -m src.agents.rag_agent.tools.embedding_content_agent
+# python -m src.agents.rag_agent.tools.content_generation.test.embedding_documents
