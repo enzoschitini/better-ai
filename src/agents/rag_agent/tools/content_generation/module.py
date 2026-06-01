@@ -4,6 +4,7 @@ from typing import Optional, Tuple
 from agno.agent import Agent
 from agno.models.openai import OpenAIChat
 
+from src.tracing.logging_config import LogManager
 from src.vector_store.pinecone.client import PineconeClient
 from src.vector_store.pinecone.retriever import PineconeRetriever
 from src.vector_store.pinecone.utils.retrieval_manager import RetrievalManager
@@ -42,8 +43,15 @@ class GenerateContent:
     """
 
     def __init__(self, model_id: str = DEFAULT_MODEL, filter_search: Optional[dict] = None) -> None:
+        LogManager.setup(fmt="%(asctime)s | %(levelname)-8s | %(message)s | %(name)s")
+        self.logger = LogManager.get_logger(f"{type(self).__module__}.{type(self).__name__}")
         self.model_id = model_id
         self.filter_search = filter_search or {}
+        self.logger.debug(
+            "GenerateContent initialized with model_id=%s and default_filter_keys=%s",
+            self.model_id,
+            sorted(list(self.filter_search.keys())),
+        )
 
     def _validate_body_range(self, body_min_chars: int, body_max_chars: int) -> None:
         """
@@ -57,6 +65,11 @@ class GenerateContent:
         Raises:
                 ValueError: Raised when min or max limits are invalid.
         """
+        self.logger.debug(
+            "Validating body range: min=%d, max=%d",
+            body_min_chars,
+            body_max_chars,
+        )
         if body_min_chars < 1:
             raise ValueError("body_min_chars must be greater than or equal to 1")
         if body_max_chars < body_min_chars:
@@ -87,6 +100,7 @@ class GenerateContent:
         Returns:
                 Agent: Configured agent instance for content generation.
         """
+        self.logger.debug("Building content creator agent with model_id=%s", self.model_id)
         return Agent(
             model=OpenAIChat(id=self.model_id),
             output_schema=GeneratedContentParse,
@@ -127,6 +141,13 @@ class GenerateContent:
             RuntimeError: Raised when structured content cannot be generated.
         """
         try:
+            self.logger.debug(
+                "Generating variant %d/%d with body range min=%d max=%d",
+                index + 1,
+                content_count,
+                body_min_chars,
+                body_max_chars,
+            )
             creator_agent = self._build_content_creator_agent()
 
             variation_angle = VARIATION_ANGLES[index % len(VARIATION_ANGLES)]
@@ -153,6 +174,12 @@ class GenerateContent:
 
             while attempt < max_attempts:
                 attempt += 1
+                self.logger.debug(
+                    "Variant %d attempt %d/%d",
+                    index + 1,
+                    attempt,
+                    max_attempts,
+                )
                 prompt = prompt_base
 
                 if attempt > 1 and generated_content is not None:
@@ -171,14 +198,29 @@ class GenerateContent:
                     body_min_chars=body_min_chars,
                     body_max_chars=body_max_chars,
                 ):
+                    self.logger.debug(
+                        "Variant %d accepted with body_length=%d",
+                        index + 1,
+                        len(generated_content.body),
+                    )
                     break
+
+                self.logger.warning(
+                    "Variant %d out of range with body_length=%d (expected %d-%d). Retrying.",
+                    index + 1,
+                    len(generated_content.body),
+                    body_min_chars,
+                    body_max_chars,
+                )
 
             if generated_content is None:
                 raise RuntimeError("Failed to generate structured content")
 
+            self.logger.info("Variant %d generated successfully", index + 1)
             return index, generated_content
         
         except Exception as e:
+            self.logger.exception("Variant %d generation failed", index + 1)
             raise RuntimeError(f"Failed to generate variant {index + 1}: {str(e)}") from e
 
 
@@ -204,6 +246,9 @@ class GenerateContent:
             RuntimeError: Raised when context retrieval fails.
         """
         try:
+            self.logger.info("Retrieving context with max_results=%d", max_results)
+            self.logger.debug("Context retrieval query=%s", query)
+            self.logger.debug("Context retrieval filter keys=%s", sorted(list(filter_search.keys())))
 
             pine_client = PineconeClient(
                 index_name=PINECONE_INDEX_NAME,
@@ -221,11 +266,14 @@ class GenerateContent:
             context = manager.generate_context()
             relevant_docs = manager.get_files()
 
+            self.logger.info("Context retrieval completed with %d documents", len(documents))
+
             return {
                 "context": context,
                 "relevant_docs": relevant_docs,
             }
         except Exception as e:
+            self.logger.exception("Context retrieval failed")
             raise RuntimeError(f"Failed to retrieve context: {str(e)}") from e
 
     def generate(
@@ -260,6 +308,11 @@ class GenerateContent:
             ValueError: Raised when requested content count is invalid.
         """
         try:
+            self.logger.info(
+                "Starting content generation for query=%s with content_count=%d",
+                query,
+                content_count,
+            )
             if content_count < 1:
                 raise ValueError("content_count must be greater than or equal to 1")
 
@@ -276,6 +329,7 @@ class GenerateContent:
             relevant_docs = result["relevant_docs"]
             generated_map: dict[int, GeneratedContentParse] = {}
             max_workers = min(content_count, 5)
+            self.logger.debug("Generating variants with max_workers=%d", max_workers)
 
             with ThreadPoolExecutor(max_workers=max_workers) as executor:
                 futures = [
@@ -298,6 +352,7 @@ class GenerateContent:
                     generated_map[variant_index] = generated_content
 
             generated_items = [generated_map[index] for index in range(content_count)]
+            self.logger.info("Content generation completed with %d items", len(generated_items))
 
             return ContentBatchOutput(
                 query=query,
@@ -308,4 +363,5 @@ class GenerateContent:
             )
         
         except Exception as e:
+            self.logger.exception("Content generation failed")
             raise RuntimeError(f"Failed to generate content: {str(e)}") from e
