@@ -57,7 +57,7 @@ class MarkdownContent:
     def format_posts_json_to_markdown(
         cls,
         posts_payload: Union[BaseModel, dict, str],
-        document_title: str = "Generated Content Batch",
+        document_title: str = "Generated Content",
     ) -> str:
         """
         Converts generated posts payload into a Markdown document string.
@@ -73,11 +73,11 @@ class MarkdownContent:
             lines: List[str] = [
                 f"# {document_title}",
                 "",
-                "## Batch Metadata",
-                "",
-                f"- Query: {query}",
-                f"- Objective: {objective}",
-                f"- Content count: {content_count}",
+                #"## Batch Metadata",
+                #"",
+                #f"- Query: {query}",
+                #f"- Objective: {objective}",
+                #f"- Content count: {content_count}",
                 "",
                 "## Posts",
                 "",
@@ -160,7 +160,7 @@ class SaveMarkdownContent:
         cls,
         posts_payload: Union[BaseModel, dict, str],
         output_file: Optional[str] = None,
-        document_title: str = "Generated Content Batch",
+        document_title: str = "Generated Content",
     ) -> str:
         """
         Formats generated posts and saves them into a .md file.

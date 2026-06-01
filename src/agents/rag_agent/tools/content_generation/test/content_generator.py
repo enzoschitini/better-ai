@@ -51,7 +51,7 @@ if __name__ == "__main__":
             markdown_file = SaveMarkdownContent.save_posts_markdown(
                 posts_payload=generated_content,
                 output_file="src/agents/rag_agent/tools/content_generation/test/contents",
-                document_title="Marketing Posts",
+                #document_title="Marketing Posts",
             )
 
             print(f"\nMarkdown file generated at: {markdown_file}")
