@@ -18,20 +18,24 @@ class RetrievalAugmentedGeneration(Toolkit):
     This toolkit can:
     - Retrieve relevant documents based on a user-provided query and filter criteria.
     - Generate a context of relevant documents for use in RAG applications.
+    - Generate markdown-formatted content using the retrieved context as input for a content generation pipeline.
 
     Use this toolkit for:
     - Responding to user queries with relevant information from a document collection.
     - Analyzing and summarizing retrieved documents to provide concise answers.
     - Generate insights and recommendations based on the retrieved context.
+    - Create markdown-formatted content for documentation or reporting purposes.
     
     Args:
         enable_get_relevant_documents (bool): Enable the tool for retrieving relevant documents. Default is True.
+        enable_generate_content (bool): Enable the tool for generating content using retrieval context. Default is False.
         all (bool): Enable all tools. Overrides individual flags when True. Default is False.
     """
     def __init__(
         self,
         filter_search: dict,
         enable_get_relevant_documents: bool = True,
+        enable_generate_content: bool = True,
         all: bool = False,
         TOOL_RESPONSER: ToolResponse = None,
         **kwargs,
@@ -42,6 +46,8 @@ class RetrievalAugmentedGeneration(Toolkit):
 
         if all or enable_get_relevant_documents:
             tools.append(self.get_relevant_documents)
+        if all or enable_generate_content:
+            tools.append(self.generate_content)
 
         super().__init__(name="get_relevant_documents_tools", tools=tools, **kwargs)
     
@@ -147,7 +153,24 @@ class RetrievalAugmentedGeneration(Toolkit):
                 posts_payload=generated_content,
             )
 
-            return markdown_content
+            final_payload = (
+                "<<<FINAL_ANSWER_START>>>\n"
+                f"{markdown_content}\n"
+                "<<<FINAL_ANSWER_END>>>"
+            )
+
+            self._update_response(
+                "generate_content",
+                {
+                    "query": query,
+                    "max_results": max_results,
+                    "markdown_content": markdown_content,
+                    "final_payload": final_payload,
+                    "generated_content": generated_content.model_dump() if hasattr(generated_content, "model_dump") else generated_content,
+                },
+            )
+
+            return final_payload
         except Exception as e:
             return f"Failed to generate content using retrieval context: {str(e)}"
 
