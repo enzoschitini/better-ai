@@ -108,6 +108,48 @@ class RetrievalAugmentedGeneration(Toolkit):
             return f"Failed to generate context of relevant documents: {str(e)}"
 
         return context
+    
+    def generate_content(self, query: str, max_results: int = 1) -> str:
+        """
+        Generate markdown-ready content using retrieval-augmented generation.
+
+        This method calls the content generation pipeline to retrieve relevant context,
+        generate one structured post, and convert the result into a markdown string.
+
+        Args:
+            query (str):
+                The user prompt that guides retrieval and content generation.
+
+            max_results (int):
+                Maximum number of documents to retrieve as context before generation.
+                Default is 1.
+
+        Returns:
+            str:
+                A markdown-formatted content output when generation succeeds,
+                or an error message string when generation fails.
+        """
+        try:
+            from src.agents.rag_agent.tools.content_generation.module import GenerateContent
+            from src.agents.rag_agent.tools.content_generation.markdown_utils import MarkdownContent
+
+            generator = GenerateContent(filter_search=self.filter_search)
+            generated_content = generator.generate(
+                query=query,
+                objective="Generate content based on retrieved context",
+                max_results=max_results,
+                content_count=1,
+                body_min_chars=700,
+                body_max_chars=1200,
+            )
+
+            markdown_content = MarkdownContent.format_posts_json_to_markdown(
+                posts_payload=generated_content,
+            )
+
+            return markdown_content
+        except Exception as e:
+            return f"Failed to generate content using retrieval context: {str(e)}"
 
 if __name__ == "__main__":
     import json
@@ -117,7 +159,11 @@ if __name__ == "__main__":
             "collection_id": ["slides_b2"]
         }
     )
-    result = tool.get_relevant_documents("Raccontare", 5)
+    #result = tool.get_relevant_documents("Raccontare", 5)
+    result = tool.generate_content(
+        "Criar um post para Instagram focado em tendências de mercado para perfumes masculinos, destacando os produtos da linha Malbec. Inclua informações sobre notas olfativas e sugestões de uso.", 
+        max_results=1
+    )
 
     print(f"\n\n{result}\n")
 
