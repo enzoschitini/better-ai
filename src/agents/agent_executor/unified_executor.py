@@ -86,7 +86,7 @@ class AgentExecutor:
         try:
             response = self.agent.run(input=ask, stream=False)
         except Exception as e:
-            raise RuntimeError(f"Failed to execute agent in JSON mode: {str(e)}") from e
+            raise RuntimeError(f"Failed to execute agent in JSON mode: {str(e)}")
 
         formatted = ResponseFormatter(response).format()
 
@@ -125,7 +125,7 @@ class AgentExecutor:
             app = agent_os.get_app()
             agent_os.serve(app=app, host=host, port=port)
         except Exception as e:
-            raise RuntimeError(f"Failed to start AgentOS mode: {str(e)}") from e
+            raise RuntimeError(f"Failed to start AgentOS mode: {str(e)}")
 
     # ------------------------------------------------------------------
     # 3) CLI / print_response mode + tool collector
@@ -151,7 +151,7 @@ class AgentExecutor:
                 tags_to_include_in_markdown=tags_to_include_in_markdown,
             )
         except Exception as e:
-            raise RuntimeError(f"Failed to execute print_response mode: {str(e)}") from e
+            raise RuntimeError(f"Failed to execute print_response mode: {str(e)}")
 
         tool_metadata = self.tool_collector.collect()
         if print_tool_response and tool_metadata:

@@ -39,7 +39,7 @@ class AgentApiClient:
             response.raise_for_status()
             return response.json()
         except Exception as e:
-            raise RuntimeError(f"Failed to run direct API request: {str(e)}") from e
+            raise RuntimeError(f"Failed to run direct API request: {str(e)}")
 
     def run_stream(
         self,
@@ -65,7 +65,7 @@ class AgentApiClient:
             response = requests.post(self.runs_url, data=payload, stream=True, timeout=timeout)
             response.raise_for_status()
         except Exception as e:
-            raise RuntimeError(f"Failed to start stream API request: {str(e)}") from e
+            raise RuntimeError(f"Failed to start stream API request: {str(e)}")
 
         for line in response.iter_lines():
             if not line:

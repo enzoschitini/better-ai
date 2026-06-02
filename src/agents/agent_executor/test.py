@@ -160,6 +160,6 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        raise RuntimeError(f"Failed to execute test flow: {str(e)}") from e
+        raise RuntimeError(f"Failed to execute test flow: {str(e)}")
 
 # python -m src.agents.agent_executor.test
