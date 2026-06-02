@@ -1,12 +1,6 @@
 # src/agents/utils/agno_agent_executor.py
 
-import json
-from rich.console import Console
-from rich.panel import Panel
-
-from src.agents.utils.agno_ai_agents import AgnoAiAgents
-from src.agents.utils.test_agents.run_agent import RunAgent
-from src.utils.unique_id_factory import IDGenerator
+from src.agents.agent_executor import UnifiedAgentExecutor
 
 from src.agents.utils.test_agents.config import AGENT_AI_BANNER
 
@@ -40,18 +34,13 @@ class AgnoAgentExecutor:
         banner: str | None = None,
     ) -> None:
         self._agent_class = agent_class
-        self._agent_name = agent_class.__name__
         self._extra_params = params or {}
         self._print_tool_response = print_tool_response
         self._banner = banner or getattr(agent_class, "BANNER", None) or AGENT_AI_BANNER
 
-        self._session_id = session_id or IDGenerator().uuid()
+        self._session_id = session_id
         self._user_id = user_id or self.DEFAULT_USER_ID
-
-        self._console = Console()
-        self._agent = None
-        self._tool_context = None
-        self._runner = None
+        self._executor = None
 
         self._setup()
 
@@ -59,33 +48,16 @@ class AgnoAgentExecutor:
     # Setup
     # ------------------------------------------------------------------
 
-    def _build_params(self) -> dict:
-        """
-        Assembles the parameter dictionary used to instantiate the agent, merging session
-        context with any extra parameters provided at construction time.
-
-        Returns:
-            dict: A dictionary containing session_id, user_id, and any additional extra parameters.
-        """
-        return {
-            "session_id": self._session_id,
-            "user_id": self._user_id,
-            **self._extra_params,
-        }
-
     def _setup(self) -> None:
         """
-        Initializes and wires up all internal components by registering the agent class,
-        creating the agent instance with its tool context, and preparing the runner.
+        Initializes the unified executor using the agent class factory.
         """
-        agno = AgnoAiAgents()
-        agno.register(self._agent_name, self._agent_class)
-
-        self._agent, self._tool_context = agno.create_agent(
-            self._agent_name,
-            self._build_params(),
+        self._executor = UnifiedAgentExecutor.from_agent_class(
+            agent_class=self._agent_class,
+            params=self._extra_params,
+            session_id=self._session_id,
+            user_id=self._user_id,
         )
-        self._runner = RunAgent(agent=self._agent)
 
     # ------------------------------------------------------------------
     # Tool response
@@ -93,27 +65,16 @@ class AgnoAgentExecutor:
 
     def _print_tools(self) -> None:
         """
-        Conditionally fetches and renders the tool response metadata as a formatted Rich panel
-        in the console, only when print_tool_response is enabled.
+        Backward-compatible method kept for legacy calls.
         """
-        if not self._print_tool_response:
-            return
-
-        metadata = json.dumps(
-            self._tool_context.tool_responser.get_metadata(),
-            indent=4,
-            ensure_ascii=False,
-        )
-        self._console.print(
-            Panel(metadata, title="Tool Response Metadata", border_style="cyan")
-        )
+        return
     
     def clean_tool_response(self) -> None:
         """
         Clears the stored tool response metadata from the tool context's responser.
         """
-        if self._tool_context and self._tool_context.tool_responser:
-            self._tool_context.tool_responser.clear_metadata()
+        if self._executor is not None:
+            self._executor.tool_collector.clear()
 
     # ------------------------------------------------------------------
     # Public API
@@ -121,28 +82,16 @@ class AgnoAgentExecutor:
 
     def run(self) -> None:
         """
-        Starts the interactive CLI loop that continuously reads user input, dispatches it to
-        the agent via the runner, and optionally prints tool response metadata after each turn.
+        Starts the interactive CLI loop with tool collector integration.
         """
-        print(self._banner)
+        if self._executor is None:
+            raise RuntimeError("Executor is not initialized")
 
-        while True:
-            ask = input("\n>>> ").strip()
-
-            if not ask:
-                continue
-
-            if ask.lower() in {"exit", "quit", "cls", "sair"}:
-                print("Shutdown...")
-                break
-
-            try:
-                self._runner.debug(ask=ask)
-                self._print_tools()
-                self.clean_tool_response()
-
-            except Exception as e:  # noqa: BLE001
-                print(f"Error: {e}")
+        self._executor.run_cli_loop(
+            banner=self._banner,
+            print_tool_response=self._print_tool_response,
+            clear_tool_metadata_each_turn=True,
+        )
 
 
 # python -m rc.agents.utils.test_agents.agno_agent_executor

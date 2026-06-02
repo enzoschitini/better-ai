@@ -1,13 +1,10 @@
-import json
-from pydantic import BaseModel
 from dotenv import load_dotenv
 
 from agno.agent import Agent
-from agno.os import AgentOS
 from agno.models.groq import Groq
 
 from src.agents.utils.tool_response import ToolResponse
-from src.agents.utils.test_agents.format_response import FormatAgentResponse
+from src.agents.agent_executor import UnifiedAgentExecutor
 
 load_dotenv()
 
@@ -27,9 +24,10 @@ class RunAgent:
     """
     def __init__(self, agent: Agent):
         self.agent = agent
+        self.executor = UnifiedAgentExecutor(agent=agent)
 
     def debug(self, ask: str = "Hello!"):
-        self.agent.print_response(ask)
+        self.executor.run_print_response(ask=ask)
 
     def js_response(self, ask: str = "Hello!", path: str = None, tool_response: ToolResponse = None):
         """
@@ -44,19 +42,12 @@ class RunAgent:
         Returns:
             dict: The agent's response formatted as a dictionary ready for JSON serialization.
         """
-        class AgentInput(BaseModel):
-            text: str
-
-        response = self.agent.run(
-            input=AgentInput(text=ask),
-            stream=False,
+        output_path = f"{(path or 'src/agents')}/agent_response.json"
+        formated_response = self.executor.run_json(
+            ask=ask,
+            output_path=output_path,
+            include_tool_metadata=bool(tool_response),
         )
-
-        formatter = FormatAgentResponse(response)
-        formated_response = formatter.format()
-
-        path = path or "src/agents"
-        formatter.save_json(formated_response, f"{path}/agent_response.json")
 
         #print(json.dumps(formated_response, indent=2))
 
@@ -85,20 +76,18 @@ class RunAgent:
             host (str): Host address for serving the agent app. Default is "localhost".
             port (int): Port number for the agent app server. Default is 7777.
         """
-        agent_os = AgentOS(
+        self.executor.run_agent_os(
             id=id,
             name=name,
             description=description,
-            agents=[self.agent],
+            host=host,
+            port=port,
         )
-
-        app = agent_os.get_app()
-        agent_os.serve(app=app, host=host, port=port)
 
 if __name__ == "__main__":
     agent = Agent(
         model=Groq(id="llama-3.3-70b-versatile"),
-        debug_level=True,
+        debug_mode=True,
     )
 
     runner = RunAgent(agent=agent)

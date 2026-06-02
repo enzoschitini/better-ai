@@ -4,7 +4,7 @@ import pandas as pd
 from src.utils.unique_id_factory import IDGenerator
 
 from src.agents.datafram_agent.agent import DataframeAgent
-from src.agents.utils.test_agents.agno_agent_executor import AgnoAgentExecutor
+from src.agents.agent_executor import UnifiedAgentExecutor
 
 dataframes = [
     {
@@ -66,7 +66,7 @@ def get_df(id: str) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    AgnoAgentExecutor(
+    executor = UnifiedAgentExecutor.from_agent_class(
         agent_class=DataframeAgent,
         params={
             "dataframe": get_df("01")
@@ -74,8 +74,8 @@ if __name__ == "__main__":
         # session_id e user_id são opcionais — omita para usar os defaults
         # session_id=IDGenerator().uuid(),
         # user_id="user_01",
-        print_tool_response=True
-    ).run()
+    )
+    executor.run_cli_loop(print_tool_response=True)
 
     # Qual o numero de sobreviventes?
     # Gere um grafico de barra do numero de mortos e sobrevicentes 

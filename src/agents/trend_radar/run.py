@@ -1,13 +1,12 @@
 from src.utils.unique_id_factory import IDGenerator
 
 from src.agents.trend_radar.agent import BaseAgent
-from src.agents.utils.test_agents.agno_agent_executor import AgnoAgentExecutor
-from src.agents.utils.test_agents.run_agent import RunAgent
+from src.agents.agent_executor import UnifiedAgentExecutor
 
 if __name__ == "__main__":
     
     # CLI
-    cli_runner = AgnoAgentExecutor(
+    cli_runner = UnifiedAgentExecutor.from_agent_class(
         agent_class=BaseAgent,
         params={
             "citys": ["Salvador", "São Paulo", "Rio de Janeiro"]
@@ -15,13 +14,11 @@ if __name__ == "__main__":
         # session_id e user_id são opcionais — omita para usar os defaults
         # session_id=IDGenerator().uuid(),
         # user_id="user_01",
-        print_tool_response=True
     )
 
-    #cli_runner.run()
+    cli_runner.run_cli_loop()
 
     # AgentOS
-    agent_os_runner = RunAgent(agent=BaseAgent().create_agent(metadata={"session_id": "122", "user_id": "user_01" }))
-    agent_os_runner.agent_os()
+    #cli_runner.run_agent_os(id="trend_radar", name="Trend Radar")
 
 # python -m src.agents.trend_radar.run
