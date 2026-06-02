@@ -1,6 +1,6 @@
 # src/agents/utils/agno_agent_executor.py
 
-from src.agents.agent_executor import UnifiedAgentExecutor
+from src.agents.agent_executor import AgentExecutor
 
 from src.agents.utils.test_agents.config import AGENT_AI_BANNER
 
@@ -52,7 +52,7 @@ class AgnoAgentExecutor:
         """
         Initializes the unified executor using the agent class factory.
         """
-        self._executor = UnifiedAgentExecutor.from_agent_class(
+        self._executor = AgentExecutor.from_agent_class(
             agent_class=self._agent_class,
             params=self._extra_params,
             session_id=self._session_id,

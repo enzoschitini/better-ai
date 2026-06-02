@@ -1,12 +1,11 @@
 from src.utils.unique_id_factory import IDGenerator
 
 from src.agents.trend_radar.agent import BaseAgent
-from src.agents.agent_executor import UnifiedAgentExecutor
+from src.agents.agent_executor import AgentExecutor
 
 if __name__ == "__main__":
-    
     # CLI
-    cli_runner = UnifiedAgentExecutor.from_agent_class(
+    runner = AgentExecutor.from_agent_class(
         agent_class=BaseAgent,
         params={
             "citys": ["Salvador", "São Paulo", "Rio de Janeiro"]
@@ -16,9 +15,9 @@ if __name__ == "__main__":
         # user_id="user_01",
     )
 
-    cli_runner.run_cli_loop()
+    runner.run_cli_loop()
 
     # AgentOS
-    #cli_runner.run_agent_os(id="trend_radar", name="Trend Radar")
+    #runner.run_agent_os(id="trend_radar", name="Trend Radar")
 
 # python -m src.agents.trend_radar.run

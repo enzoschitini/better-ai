@@ -12,7 +12,7 @@ from src.agents.agent_executor.tool_collector import ToolCollector
 from src.utils.unique_id_factory import IDGenerator
 
 
-class UnifiedAgentExecutor:
+class AgentExecutor:
     """
     Single execution interface for Agno agents.
 
@@ -48,7 +48,7 @@ class UnifiedAgentExecutor:
         *,
         session_id: Optional[str] = None,
         user_id: Optional[str] = None,
-    ) -> "UnifiedAgentExecutor":
+    ) -> "AgentExecutor":
         current_session_id = session_id or IDGenerator().uuid()
         current_user_id = user_id or cls.DEFAULT_USER_ID
 

@@ -4,7 +4,7 @@ from agno.agent import Agent
 from agno.models.groq import Groq
 
 from src.agents.utils.tool_response import ToolResponse
-from src.agents.agent_executor import UnifiedAgentExecutor
+from src.agents.agent_executor import AgentExecutor
 
 load_dotenv()
 
@@ -24,7 +24,7 @@ class RunAgent:
     """
     def __init__(self, agent: Agent):
         self.agent = agent
-        self.executor = UnifiedAgentExecutor(agent=agent)
+        self.executor = AgentExecutor(agent=agent)
 
     def debug(self, ask: str = "Hello!"):
         self.executor.run_print_response(ask=ask)

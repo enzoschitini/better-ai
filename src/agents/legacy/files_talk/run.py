@@ -1,9 +1,9 @@
 from agents.legacy.files_talk.agent import FileTalkAgent
-from src.agents.agent_executor import UnifiedAgentExecutor
+from src.agents.agent_executor import AgentExecutor
 from src.utils.unique_id_factory import IDGenerator
 
 if __name__ == "__main__":
-    executor = UnifiedAgentExecutor.from_agent_class(
+    executor = AgentExecutor.from_agent_class(
         agent_class=FileTalkAgent,
         params={
             "filter_search": {

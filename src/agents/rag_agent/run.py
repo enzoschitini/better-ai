@@ -1,11 +1,11 @@
 from src.utils.unique_id_factory import IDGenerator
 
 from src.agents.rag_agent.agent import ContentAgent
-from src.agents.agent_executor import UnifiedAgentExecutor
+from src.agents.agent_executor import AgentExecutor
 
 
 if __name__ == "__main__":
-    executor = UnifiedAgentExecutor.from_agent_class(
+    executor = AgentExecutor.from_agent_class(
         agent_class=ContentAgent,
         params={
             "filter_search": {

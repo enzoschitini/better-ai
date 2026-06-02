@@ -1,10 +1,10 @@
 from src.agents.agent_executor.agent_factory import LocalAgentFactory, LocalToolContext, LocalToolResponse
 from src.agents.agent_executor.api_client import AgentApiClient
 from src.agents.agent_executor.tool_collector import ToolCollector
-from src.agents.agent_executor.unified_executor import UnifiedAgentExecutor
+from src.agents.agent_executor.unified_executor import AgentExecutor
 
 __all__ = [
-	"UnifiedAgentExecutor",
+	"AgentExecutor",
 	"AgentApiClient",
 	"ToolCollector",
 	"LocalAgentFactory",

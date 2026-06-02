@@ -4,7 +4,7 @@ import pandas as pd
 from src.utils.unique_id_factory import IDGenerator
 
 from src.agents.datafram_agent.agent import DataframeAgent
-from src.agents.agent_executor import UnifiedAgentExecutor
+from src.agents.agent_executor import AgentExecutor
 
 dataframes = [
     {
@@ -66,7 +66,7 @@ def get_df(id: str) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    executor = UnifiedAgentExecutor.from_agent_class(
+    executor = AgentExecutor.from_agent_class(
         agent_class=DataframeAgent,
         params={
             "dataframe": get_df("01")

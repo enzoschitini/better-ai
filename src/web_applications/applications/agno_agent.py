@@ -8,7 +8,7 @@ from agents.legacy.files_talk.agent import FileTalkAgent
 from agents.legacy.files_talk.config import AGENT_AI_BANNER
 
 from src.agents.utils.agno_ai_agents import AgnoAiAgents
-from src.agents.agent_executor import UnifiedAgentExecutor
+from src.agents.agent_executor import AgentExecutor
 from src.utils.unique_id_factory import IDGenerator
 
 class AgnoAgent:
@@ -45,7 +45,7 @@ class AgnoAgent:
         if "messages" not in st.session_state:
             st.session_state.messages = []
 
-        executor = UnifiedAgentExecutor(
+        executor = AgentExecutor(
             agent=agent,
             tool_collector=None,
         )

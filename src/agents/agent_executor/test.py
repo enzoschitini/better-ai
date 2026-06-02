@@ -9,7 +9,7 @@ from agno.agent import Agent
 from agno.models.openai import OpenAIChat
 from agno.tools import Toolkit
 
-from src.agents.agent_executor import UnifiedAgentExecutor
+from src.agents.agent_executor import AgentExecutor
 
 load_dotenv()
 
@@ -41,7 +41,7 @@ class SimpleToolkit(Toolkit):
 
 
 class SimpleTestAgent:
-    """Simple agent contract compatible with UnifiedAgentExecutor.from_agent_class."""
+    """Simple agent contract compatible with AgentExecutor.from_agent_class."""
 
     def create_agent(self, metadata: dict, tool_context: Any) -> Agent:
         if "session_id" not in metadata:
@@ -65,8 +65,8 @@ class SimpleTestAgent:
         )
 
 
-def build_executor(session_id: str | None = None, user_id: str | None = None) -> UnifiedAgentExecutor:
-    return UnifiedAgentExecutor.from_agent_class(
+def build_executor(session_id: str | None = None, user_id: str | None = None) -> AgentExecutor:
+    return AgentExecutor.from_agent_class(
         agent_class=SimpleTestAgent,
         params={},
         session_id=session_id,
@@ -75,7 +75,7 @@ def build_executor(session_id: str | None = None, user_id: str | None = None) ->
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Simple test for UnifiedAgentExecutor")
+    parser = argparse.ArgumentParser(description="Simple test for AgentExecutor")
     parser.add_argument(
         "--mode",
         choices=["json", "cli", "agentos", "api-direct", "api-stream"],
@@ -128,7 +128,7 @@ def main() -> None:
         )
         return
 
-    client = UnifiedAgentExecutor.create_api_client(
+    client = AgentExecutor.create_api_client(
         agent_id=args.agent_id,
         host=args.host,
         port=args.port,
