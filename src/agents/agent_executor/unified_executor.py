@@ -1,3 +1,4 @@
+import re
 from typing import Any, Dict, Iterator, Optional, Sequence, Set, Type
 
 from agno.agent import Agent
@@ -112,6 +113,8 @@ class AgentExecutor:
 
         This method does not format or persist JSON output.
         """
+        seen_tool_names: Set[str] = set()
+
         try:
             stream_response = self.agent.run(input=ask, stream=True)
         except Exception as e:
@@ -119,7 +122,29 @@ class AgentExecutor:
 
         try:
             for chunk in stream_response:
-                yield chunk
+                if isinstance(chunk, str) and "Event(" in chunk:
+                    split_chunks = [part for part in re.split(r"(?=[A-Za-z]+Event\()", chunk) if part]
+                    for split_chunk in split_chunks:
+                        yield split_chunk
+                else:
+                    yield chunk
+
+                # Some providers do not emit ToolCallStarted/ToolCallCompleted in local stream.
+                # When tool metadata appears, we emit a synthetic ToolCallCompleted event.
+                metadata = self.tool_collector.collect()
+                for tool_name, payload in metadata.items():
+                    if tool_name in seen_tool_names:
+                        continue
+
+                    seen_tool_names.add(tool_name)
+                    yield {
+                        "event": "ToolCallCompleted",
+                        "tool": {
+                            "tool_name": tool_name,
+                        },
+                        "content": "",
+                        "payload": payload,
+                    }
         finally:
             if clear_tool_metadata:
                 self.tool_collector.clear()
@@ -138,6 +163,7 @@ class AgentExecutor:
             "reasoning_content": "",
             "run_id": None,
             "session_id": None,
+            "tool_name": None,
             "raw": chunk,
         }
 
@@ -145,13 +171,54 @@ class AgentExecutor:
             return parsed
 
         if isinstance(chunk, str):
-            parsed["content"] = chunk
+            event_match = re.search(r"event='([^']+)'", chunk)
+            event_name_match = re.search(r"([A-Za-z]+)Event\(", chunk)
+            content_match = re.search(r"content='(.*?)'", chunk)
+            reasoning_match = re.search(r"reasoning_content='(.*?)'", chunk)
+            run_id_match = re.search(r"run_id='([^']+)'", chunk)
+            session_id_match = re.search(r"session_id='([^']+)'", chunk)
+            tool_name_match = re.search(r"tool_name='([^']+)'", chunk)
+
+            if event_match:
+                parsed["event"] = event_match.group(1)
+            elif event_name_match:
+                parsed["event"] = event_name_match.group(1)
+
+            if content_match:
+                parsed["content"] = content_match.group(1)
+            elif "Event(" not in chunk:
+                parsed["content"] = chunk
+
+            if reasoning_match:
+                parsed["reasoning_content"] = reasoning_match.group(1)
+
+            if run_id_match:
+                parsed["run_id"] = run_id_match.group(1)
+
+            if session_id_match:
+                parsed["session_id"] = session_id_match.group(1)
+
+            if tool_name_match:
+                parsed["tool_name"] = tool_name_match.group(1)
+
             return parsed
 
         if isinstance(chunk, dict):
-            parsed["event"] = chunk.get("event")
+            parsed["event"] = AgentExecutor._normalize_event(chunk.get("event"))
             parsed["run_id"] = chunk.get("run_id")
             parsed["session_id"] = chunk.get("session_id")
+
+            tool = chunk.get("tool") or {}
+            if isinstance(tool, dict):
+                parsed["tool_name"] = tool.get("tool_name") or tool.get("name")
+
+            tools = chunk.get("tools")
+            if not parsed["tool_name"] and isinstance(tools, list) and tools:
+                first_tool = tools[0]
+                if isinstance(first_tool, dict):
+                    parsed["tool_name"] = first_tool.get("tool_name") or first_tool.get("name")
+                else:
+                    parsed["tool_name"] = getattr(first_tool, "tool_name", None) or getattr(first_tool, "name", None)
 
             for key in ("content", "text", "delta"):
                 value = chunk.get(key)
@@ -165,9 +232,18 @@ class AgentExecutor:
 
             return parsed
 
-        parsed["event"] = getattr(chunk, "event", None)
+        parsed["event"] = AgentExecutor._normalize_event(getattr(chunk, "event", None))
         parsed["run_id"] = getattr(chunk, "run_id", None)
         parsed["session_id"] = getattr(chunk, "session_id", None)
+
+        tool_attr = getattr(chunk, "tool", None)
+        if tool_attr is not None:
+            parsed["tool_name"] = getattr(tool_attr, "tool_name", None) or getattr(tool_attr, "name", None)
+
+        tools_attr = getattr(chunk, "tools", None)
+        if not parsed["tool_name"] and isinstance(tools_attr, list) and tools_attr:
+            first_tool_attr = tools_attr[0]
+            parsed["tool_name"] = getattr(first_tool_attr, "tool_name", None) or getattr(first_tool_attr, "name", None)
 
         for attr in ("content", "text", "delta"):
             value = getattr(chunk, attr, None)
@@ -180,6 +256,28 @@ class AgentExecutor:
             parsed["reasoning_content"] = reasoning_attr
 
         return parsed
+
+    def parse(self, chunk: Any) -> Dict[str, Any]:
+        """Alias for parse_stream_chunk to keep stream test code concise."""
+        return self.parse_stream_chunk(chunk)
+
+    @staticmethod
+    def _normalize_event(event_value: Any) -> Optional[str]:
+        if event_value is None:
+            return None
+
+        if isinstance(event_value, str):
+            return event_value
+
+        value_attr = getattr(event_value, "value", None)
+        if isinstance(value_attr, str) and value_attr:
+            return value_attr
+
+        name_attr = getattr(event_value, "name", None)
+        if isinstance(name_attr, str) and name_attr:
+            return name_attr
+
+        return str(event_value)
 
     def run_stream_print(
         self,

@@ -16,7 +16,7 @@ if __name__ == "__main__":
     )
 
     for chunk in runner.run_stream(ask="Traga 2 trends"):
-        parsed = runner.parse_stream_chunk(chunk)
+        parsed = runner.parse(chunk)
         event_name = parsed.get("event")
         content = parsed.get("content", "")
         tool_name = parsed.get("tool_name")
