@@ -26,6 +26,8 @@ USO BASE:
     # ... altri paragrafi di parafrasi ...
     canto.salva("Canto_V_Paolo_e_Francesca.pdf")
 """
+import json
+import re
 
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -282,6 +284,54 @@ class CantoPDF:
         canv.drawRightString(width - 2.2 * cm, 1.3 * cm, f"— {doc.page} —")
         canv.restoreState()
 
+    def _txt_to_json(self, filepath: str) -> dict:
+        with open(filepath, "r", encoding="utf-8") as f:
+            righe = [r.strip() for r in f.readlines()]
+
+        risultato = {
+            "original": [],
+            "parafrasi": []
+        }
+
+        sezione = None
+        buffer = []
+
+        for riga in righe:
+
+            if not riga:
+                continue
+
+            lower = riga.lower()
+
+            if lower == "testo":
+                sezione = "testo"
+                continue
+
+            if lower == "parafrasi":
+                sezione = "parafrasi"
+                continue
+
+            if sezione == "testo":
+                # Cerca un numero finale
+                match = re.match(r"^(.*?)(?:\s+(\d+))?$", riga)
+
+                frase = match.group(1).strip()
+                numero = match.group(2)
+
+                buffer.append(frase)
+
+                # Quando troviamo il numero finale, uniamo i versi
+                if numero:
+                    risultato["original"].append({
+                        "frase": "\n".join(buffer),
+                        "numero": int(numero)
+                    })
+                    buffer = []
+
+            elif sezione == "parafrasi":
+                risultato["parafrasi"].append(riga)
+
+        return risultato
 
 # =====================================================================
 # ESEMPIO D'USO — viene eseguito solo lanciando direttamente questo file.
@@ -298,36 +348,57 @@ if __name__ == "__main__":
         intro_parafrasi="Una resa in italiano moderno del canto, per facilitarne la lettura.",
     )
 
-    canto.set_epigrafe(
-        "«Amor, ch'a nullo amato amar perdona,<br/>"
-        "mi prese del costui piacer sì forte,<br/>"
-        "che, come vedi, ancor non m'abbandona.»"
-    )
+    def carica_testo():
+        data = canto._txt_to_json("src/agents/agent_executor/canto5.txt")
+        print(json.dumps(data, ensure_ascii=False, indent=4))
 
-    # Puoi aggiungere le terzine una a una...
-    canto.aggiungi_terzina(
-        ["Così discesi del cerchio primaio",
-         "giù nel secondo, che men loco cinghia,",
-         "e tanto più dolor, che punge a guaio."],
-        numero=3,
-    )
-    canto.aggiungi_terzina(
-        ["Stavvi Minòs orribilmente, e ringhia:",
-         "essamina le colpe ne l'intrata;",
-         "giudica e manda secondo ch'avvinghia."],
-        numero=6,
-    )
-    # ... oppure in blocco con aggiungi_terzine([...])
+    def genera_pdf():
+        canto.set_epigrafe(
+            "«Amor, ch'a nullo amato amar perdona,<br/>"
+            "mi prese del costui piacer sì forte,<br/>"
+            "che, come vedi, ancor non m'abbandona.»"
+        )
 
-    canto.aggiungi_parafrasi(
-        "Così discesi dal I Cerchio al II, che cinge uno spazio minore, "
-        "ma contiene tanto maggior dolore che spinge a lamentarsi."
-    )
-    canto.aggiungi_parafrasi(
-        "Minosse sta orribilmente sulla soglia e ringhia: esamina le colpe "
-        "dei dannati che si presentano; li giudica e li destina a seconda di "
-        "come attorcigli la coda."
-    )
+        """
+        # Puoi aggiungere le terzine una a una...
+        canto.aggiungi_terzina(
+            ["Così discesi del cerchio primaio",
+            "giù nel secondo, che men loco cinghia,",
+            "e tanto più dolor, che punge a guaio."],
+            numero=3,
+        )
+        canto.aggiungi_terzina(
+            ["Stavvi Minòs orribilmente, e ringhia:",
+            "essamina le colpe ne l'intrata;",
+            "giudica e manda secondo ch'avvinghia."],
+            numero=6,
+        )
+        # ... oppure in blocco con aggiungi_terzine([...])
+        canto.aggiungi_parafrasi(
+            "Così discesi dal I Cerchio al II, che cinge uno spazio minore, "
+            "ma contiene tanto maggior dolore che spinge a lamentarsi."
+        )
+        canto.aggiungi_parafrasi(
+            "Minosse sta orribilmente sulla soglia e ringhia: esamina le colpe "
+            "dei dannati che si presentano; li giudica e li destina a seconda di "
+            "come attorcigli la coda."
+        )
+        """
 
-    percorso = canto.salva("Canto_V_Paolo_e_Francesca.pdf")
-    print(f"PDF creato: {percorso}")
+        data = canto._txt_to_json("src/agents/agent_executor/canto5.txt")
+
+        for item in data["original"]:
+            canto.aggiungi_terzina(
+                item["frase"].split("\n"),
+                numero=item["numero"]
+            )
+
+        for parafrasi in data["parafrasi"]:
+            canto.aggiungi_parafrasi(parafrasi)
+
+        percorso = canto.salva("Canto_V_Paolo_e_Francesca.pdf")
+        print(f"PDF creato: {percorso}")
+    
+
+    #carica_testo()
+    genera_pdf()
