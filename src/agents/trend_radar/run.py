@@ -15,7 +15,13 @@ if __name__ == "__main__":
         # user_id="user_01",
     )
 
-    runner.run_cli_loop()
+    for chunk in runner.run_stream(ask="Hello!"):
+        print(chunk, end="", flush=True)
+
+    print()
+
+    # JSON (alternativo)
+    # runner.run_json()
 
     # AgentOS
     #runner.run_agent_os(id="trend_radar", name="Trend Radar")

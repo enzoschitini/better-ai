@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Sequence, Set, Type
+from typing import Any, Dict, Iterator, Optional, Sequence, Set, Type
 
 from agno.agent import Agent
 from agno.os import AgentOS
@@ -100,6 +100,29 @@ class AgentExecutor:
             self.tool_collector.clear()
 
         return formatted
+
+    def run_stream(
+        self,
+        ask: str = "Hello!",
+        *,
+        clear_tool_metadata: bool = False,
+    ) -> Iterator[Any]:
+        """
+        Run the agent in stream mode and yield partial outputs incrementally.
+
+        This method does not format or persist JSON output.
+        """
+        try:
+            stream_response = self.agent.run(input=ask, stream=True)
+        except Exception as e:
+            raise RuntimeError(f"Failed to execute agent in stream mode: {str(e)}") from e
+
+        try:
+            for chunk in stream_response:
+                yield chunk
+        finally:
+            if clear_tool_metadata:
+                self.tool_collector.clear()
 
     # ------------------------------------------------------------------
     # 2) AgentOS mode
