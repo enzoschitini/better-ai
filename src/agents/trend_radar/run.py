@@ -15,8 +15,18 @@ if __name__ == "__main__":
         # user_id="user_01",
     )
 
-    for chunk in runner.run_stream(ask="Hello!"):
-        print(chunk, end="", flush=True)
+    for chunk in runner.run_stream(ask="Traga 2 trends"):
+        parsed = runner.parse_stream_chunk(chunk)
+        event_name = parsed.get("event")
+        content = parsed.get("content", "")
+        tool_name = parsed.get("tool_name")
+
+        if event_name and event_name != "RunContent":
+            suffix = f" [{tool_name}]" if tool_name else ""
+            print(f"\n[{event_name}]{suffix}")
+
+        if content:
+            print(content, end="", flush=True)
 
     print()
 

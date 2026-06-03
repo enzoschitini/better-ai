@@ -124,6 +124,88 @@ class AgentExecutor:
             if clear_tool_metadata:
                 self.tool_collector.clear()
 
+    @staticmethod
+    def parse_stream_chunk(chunk: Any) -> Dict[str, Any]:
+        """
+        Normalize stream chunks/events into a consistent structure.
+
+        This avoids dealing with raw objects such as RunContentEvent(...)
+        directly in CLI tests.
+        """
+        parsed: Dict[str, Any] = {
+            "event": None,
+            "content": "",
+            "reasoning_content": "",
+            "run_id": None,
+            "session_id": None,
+            "raw": chunk,
+        }
+
+        if chunk is None:
+            return parsed
+
+        if isinstance(chunk, str):
+            parsed["content"] = chunk
+            return parsed
+
+        if isinstance(chunk, dict):
+            parsed["event"] = chunk.get("event")
+            parsed["run_id"] = chunk.get("run_id")
+            parsed["session_id"] = chunk.get("session_id")
+
+            for key in ("content", "text", "delta"):
+                value = chunk.get(key)
+                if isinstance(value, str) and value:
+                    parsed["content"] = value
+                    break
+
+            reasoning = chunk.get("reasoning_content")
+            if isinstance(reasoning, str) and reasoning:
+                parsed["reasoning_content"] = reasoning
+
+            return parsed
+
+        parsed["event"] = getattr(chunk, "event", None)
+        parsed["run_id"] = getattr(chunk, "run_id", None)
+        parsed["session_id"] = getattr(chunk, "session_id", None)
+
+        for attr in ("content", "text", "delta"):
+            value = getattr(chunk, attr, None)
+            if isinstance(value, str) and value:
+                parsed["content"] = value
+                break
+
+        reasoning_attr = getattr(chunk, "reasoning_content", None)
+        if isinstance(reasoning_attr, str) and reasoning_attr:
+            parsed["reasoning_content"] = reasoning_attr
+
+        return parsed
+
+    def run_stream_print(
+        self,
+        ask: str = "Hello!",
+        *,
+        clear_tool_metadata: bool = False,
+        print_newline: bool = True,
+    ) -> None:
+        """
+        Run stream mode and print parsed chunks incrementally.
+        """
+        try:
+            for chunk in self.run_stream(
+                ask=ask,
+                clear_tool_metadata=clear_tool_metadata,
+            ):
+                parsed_chunk = self.parse_stream_chunk(chunk)
+                content = parsed_chunk.get("content", "")
+                if content:
+                    print(content, end="", flush=True)
+        except Exception as e:
+            raise RuntimeError(f"Failed to print stream mode response: {str(e)}") from e
+
+        if print_newline:
+            print()
+
     # ------------------------------------------------------------------
     # 2) AgentOS mode
     # ------------------------------------------------------------------
