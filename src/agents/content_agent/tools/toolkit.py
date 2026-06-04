@@ -182,8 +182,6 @@ class RetrievalAugmentedGeneration(Toolkit):
                 },
             )
 
-            print(f"\nGenerated Markdown Content:\n{len(markdown_content)}\n")
-
             return final_payload
         except Exception as e:
             return f"Failed to generate content using retrieval context: {str(e)}"

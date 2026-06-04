@@ -332,6 +332,9 @@ class GenerateContent:
             
             resolved_context = result["context"]
             relevant_docs = result["relevant_docs"]
+
+            self.logger.info(f"Retrieved context of length {len(resolved_context)} with {len(relevant_docs)} relevant documents")
+
             generated_map: dict[int, GeneratedContentParse] = {}
             max_workers = min(content_count, 5)
             self.logger.debug("Generating variants with max_workers=%d", max_workers)
