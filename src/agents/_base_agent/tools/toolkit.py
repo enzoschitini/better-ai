@@ -1,7 +1,7 @@
 from typing import List, Any
 
 from agno.tools import Toolkit
-from src.agents.utils.tool_response import ToolResponse
+from src.agents.utils.tool_response import ToolContext
 
 class BaseToolkit(Toolkit):
     """
@@ -16,14 +16,14 @@ class BaseToolkit(Toolkit):
         enable_get_current_datetime (bool): Enable the current datetime tool. Default is True.
         enable_get_temperature (bool): Enable the temperature tool. Default is True.
         all (bool): Enable all tools. Overrides individual flags when True. Default is False.
-        TOOL_RESPONSER (ToolResponse): Optional metadata collector. Default is None.
+        TOOL_RESPONSER (ToolContext): Optional metadata collector. Default is None.
     """
     def __init__(
         self,
         enable_get_current_datetime: bool = True,
         enable_get_temperature: bool = True,
         all: bool = False,
-        TOOL_RESPONSER: ToolResponse = None,
+        TOOL_RESPONSER: ToolContext = None,
         **kwargs,
     ):
         self.TOOL_RESPONSER = TOOL_RESPONSER

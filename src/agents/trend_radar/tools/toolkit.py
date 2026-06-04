@@ -6,7 +6,7 @@ from datetime import datetime
 from urllib.parse import urlparse
 
 from agno.tools import Toolkit
-from src.agents.utils.tool_response import ToolResponse
+from src.agents.utils.tool_response import ToolContext
 
 from src.agents.trend_radar.config import ContextBuilderRequest
 

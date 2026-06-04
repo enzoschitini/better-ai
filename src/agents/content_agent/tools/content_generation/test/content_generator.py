@@ -5,13 +5,13 @@ if __name__ == "__main__":
     import time
     from typing import Optional
 
-    from src.agents.rag_agent.tools.content_generation.module import GenerateContent, ContentBatchOutput
-    from src.agents.rag_agent.tools.content_generation.config import (
+    from src.agents.content_agent.tools.content_generation.module import GenerateContent, ContentBatchOutput
+    from src.agents.content_agent.tools.content_generation.config import (
         DEFAULT_CONTENT_COUNT, DEFAULT_BODY_MIN_CHARS, DEFAULT_BODY_MAX_CHARS, DEFAULT_MAX_RESULTS, DEFAULT_MODEL
     )
 
-    from src.agents.rag_agent.tools.content_generation.test.example_requests import EXAMPLE_REQUESTS
-    from src.agents.rag_agent.tools.content_generation.markdown_utils import SaveMarkdownContent
+    from src.agents.content_agent.tools.content_generation.test.example_requests import EXAMPLE_REQUESTS
+    from src.agents.content_agent.tools.content_generation.markdown_utils import SaveMarkdownContent
 
     payload = EXAMPLE_REQUESTS["example_4"]
 
@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
             markdown_file = SaveMarkdownContent.save_posts_markdown(
                 posts_payload=generated_content,
-                output_file="src/agents/rag_agent/tools/content_generation/test/contents",
+                output_file="src/agents/content_agent/tools/content_generation/test/contents",
                 #document_title="Marketing Posts",
             )
 
@@ -79,4 +79,4 @@ if __name__ == "__main__":
     generate_content(**payload)
     #test_retrieval()
 
-# python -m src.agents.rag_agent.tools.content_generation.test.content_generator
+# python -m src.agents.content_agent.tools.content_generation.test.content_generator

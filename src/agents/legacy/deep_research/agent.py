@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-from src.agents.utils.tool_response import ToolResponse
+from src.agents.utils.tool_response import ToolContext
 from agents.legacy.deep_research.toolkit import DeepResearch
 from src.utils.unique_id_factory import IDGenerator
 from agents.legacy.deep_research.config import DEFAULT_MODEL, PROMPT, LOCAL_MEMORY_DB

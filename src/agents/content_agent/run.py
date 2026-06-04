@@ -1,6 +1,6 @@
 from src.utils.unique_id_factory import IDGenerator
 
-from src.agents.rag_agent.agent import ContentAgent
+from src.agents.content_agent.agent import ContentAgent
 from src.agents.agent_executor import AgentExecutor
 
 
@@ -20,4 +20,4 @@ if __name__ == "__main__":
 
 # Criar um post para Instagram focado em tendências de mercado para perfumes masculinos, destacando os produtos da linha Malbec. Inclua informações sobre notas olfativas e sugestões de uso.
 
-# python -m src.agents.rag_agent.run
+# python -m src.agents.content_agent.run

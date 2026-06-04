@@ -1,20 +1,20 @@
 from agno.agent import Agent
 from agno.models.openai import OpenAIChat
 
-from src.agents.rag_agent.config import (
+from src.agents.content_agent.config import (
     PROMPT, DEFAULT_MODEL, LOCAL_MEMORY_DB
 )
 
-from src.agents.rag_agent.tools.toolkit import RetrievalAugmentedGeneration
+from src.agents.content_agent.tools.toolkit import RetrievalAugmentedGeneration
 
 from src.agents.utils.database import Database
-from src.agents.utils.agno_ai_agents import BaseAgent, ToolContext
+from src.agents.utils.tool_response import ToolContext
 
 from dotenv import load_dotenv
 
 load_dotenv()
 
-class ContentAgent(BaseAgent):
+class ContentAgent:
     def _validate_metadata(self, metadata: dict):
         if "session_id" not in metadata:
             raise ValueError("metadata must contain 'session_id'")
@@ -53,4 +53,4 @@ class ContentAgent(BaseAgent):
             ]
         )
 
-# python -m src.agents.rag_agent.agent
+# python -m src.agents.content_agent.agent

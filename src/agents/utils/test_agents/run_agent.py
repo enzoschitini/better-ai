@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from agno.agent import Agent
 from agno.models.groq import Groq
 
-from src.agents.utils.tool_response import ToolResponse
+from src.agents.utils.tool_response import ToolContext
 from src.agents.agent_executor import AgentExecutor
 
 load_dotenv()
@@ -29,7 +29,7 @@ class RunAgent:
     def debug(self, ask: str = "Hello!"):
         self.executor.run_print_response(ask=ask)
 
-    def js_response(self, ask: str = "Hello!", path: str = None, tool_response: ToolResponse = None):
+    def js_response(self, ask: str = "Hello!", path: str = None, tool_context: ToolContext = None):
         """
         Runs the agent with the specified input string and returns a formatted JSON response.
         Optionally saves the response to a JSON file and prints additional tool metadata if provided.
@@ -37,7 +37,7 @@ class RunAgent:
         Args: 
             ask (str): The input text to send to the agent. Default is "Hello!".
             path (str): The directory path where the JSON response file will be saved. Default is None, which uses "src/agents".
-            tool_response (ToolResponse): Optional tool response to print metadata from. Default is None.
+            tool_context (ToolContext): Optional tool context to print metadata from. Default is None.
 
         Returns:
             dict: The agent's response formatted as a dictionary ready for JSON serialization.
@@ -46,13 +46,13 @@ class RunAgent:
         formated_response = self.executor.run_json(
             ask=ask,
             output_path=output_path,
-            include_tool_metadata=bool(tool_response),
+            include_tool_metadata=bool(tool_context),
         )
 
         #print(json.dumps(formated_response, indent=2))
 
-        #if tool_response:
-            #print(f"\nTool Responses:\n{tool_response.get_metadata()}")
+        #if tool_context    :
+            #print(f"\nTool Responses:\n{tool_context.get_metadata()}")
         
         #print(f"\nResponse: {formated_response["content"]}")
         return formated_response

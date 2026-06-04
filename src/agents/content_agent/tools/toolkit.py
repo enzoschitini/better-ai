@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 from typing import List, Any
 
 from agno.tools import Toolkit
-from src.agents.utils.tool_response import ToolResponse
+from src.agents.utils.tool_response import ToolContext
 
 # Retriver Packages
 from src.vector_store.pinecone.client import PineconeClient
@@ -37,7 +37,7 @@ class RetrievalAugmentedGeneration(Toolkit):
         enable_get_relevant_documents: bool = True,
         enable_generate_content: bool = True,
         all: bool = False,
-        TOOL_RESPONSER: ToolResponse = None,
+        TOOL_RESPONSER: ToolContext = None,
         **kwargs,
     ):
         self.filter_search = filter_search
@@ -136,8 +136,8 @@ class RetrievalAugmentedGeneration(Toolkit):
                 or an error message string when generation fails.
         """
         try:
-            from src.agents.rag_agent.tools.content_generation.module import GenerateContent
-            from src.agents.rag_agent.tools.content_generation.markdown_utils import MarkdownContent
+            from src.agents.content_agent.tools.content_generation.module import GenerateContent
+            from src.agents.content_agent.tools.content_generation.markdown_utils import MarkdownContent
 
             generator = GenerateContent(filter_search=self.filter_search)
             generated_content = generator.generate(
@@ -189,4 +189,4 @@ if __name__ == "__main__":
 
     print(f"\n\n{result}\n")
 
-# python -m src.agents.rag_agent.tools.toolkit
+# python -m src.agents.content_agent.tools.toolkit

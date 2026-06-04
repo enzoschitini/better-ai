@@ -4,7 +4,7 @@ from agno.agent import Agent
 from agno.models.openai import OpenAIChat
 from pydantic import BaseModel, Field
 
-from src.agents.rag_agent.tools.toolkit import RetrievalAugmentedGeneration
+from src.agents.content_agent.tools.toolkit import RetrievalAugmentedGeneration
 
 
 DEFAULT_MODEL = "gpt-4.1-mini"
@@ -199,4 +199,4 @@ if __name__ == "__main__":
     print(f"\nElapsed time: {elapsed_time:.2f} seconds")
 
 
-# python -m src.agents.rag_agent.tools.content_generation.poc1
+# python -m src.agents.content_agent.tools.content_generation.poc1

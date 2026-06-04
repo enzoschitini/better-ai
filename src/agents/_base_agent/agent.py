@@ -8,13 +8,13 @@ from src.agents._base_agent.config import (
 from src.agents._base_agent.tools.toolkit import BaseToolkit
 
 from src.agents.utils.database import Database
-from src.agents.utils.agno_ai_agents import BaseAgent, ToolContext
+from src.agents.utils.tool_response import ToolContext
 
 from dotenv import load_dotenv
 
 load_dotenv()
 
-class BaseAgent(BaseAgent):
+class BaseAgent:
     def _validate_metadata(self, metadata: dict):
         if "session_id" not in metadata:
             raise ValueError("metadata must contain 'session_id'")

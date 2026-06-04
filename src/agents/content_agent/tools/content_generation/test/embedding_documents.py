@@ -44,7 +44,7 @@ def generate_payload(file_path: Path):
     return payload
 
 
-folder = Path("src/agents/rag_agent/pdfs/oboticario")
+folder = Path("src/agents/content_agent/pdfs/oboticario")
 files = list(folder.glob("*.pdf"))
 #files = files[:2]  # Process only the first 2 files for testing
 
@@ -71,4 +71,4 @@ for i, file in enumerate(files):
 
 print("\nAll files processed.")
 
-# python -m src.agents.rag_agent.tools.content_generation.test.embedding_documents
+# python -m src.agents.content_agent.tools.content_generation.test.embedding_documents

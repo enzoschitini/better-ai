@@ -9,7 +9,7 @@ from src.vector_store.pinecone.client import PineconeClient
 from src.vector_store.pinecone.retriever import PineconeRetriever
 from src.vector_store.pinecone.utils.retrieval_manager import RetrievalManager
 
-from src.agents.rag_agent.tools.content_generation.config import (
+from src.agents.content_agent.tools.content_generation.config import (
     GeneratedContentParse,
     ContentBatchOutput,
     AGENT_DESCRIPTION,

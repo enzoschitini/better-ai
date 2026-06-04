@@ -1,8 +1,8 @@
-from src.agents.utils.tool_response import ToolResponse
+from src.agents.utils.tool_response import ToolContext
 
 class ToolContext:
     def __init__(self):
-        self.tool_responser = ToolResponse()
+        self.tool_responser = ToolContext()
 
 
 class BaseAgent:

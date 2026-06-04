@@ -138,7 +138,7 @@ class SaveMarkdownContent:
         cls,
         context: str,
         source_files: Optional[List[str]] = None,
-        output_dir: str = "src/agents/rag_agent/tools/content_generation",
+        output_dir: str = "src/agents/content_agent/tools/content_generation",
     ) -> str:
         """
         Saves retrieval context and source files into a markdown file.

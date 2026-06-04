@@ -1,5 +1,5 @@
 
-class ToolResponse:
+class ToolContext:
     def __init__(self, metadata=None):
         self.metadata = metadata or {}
 
