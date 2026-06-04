@@ -48,7 +48,8 @@ class ContentAgent:
             tools = [
                 RetrievalAugmentedGeneration(
                     tool_context=tool_context.tool_context,
-                    filter_search=metadata["filter_search"]
+                    filter_search=metadata["filter_search"],
+                    generate_content_metadata=metadata.get("generate_content_metadata", {})
                 )
             ]
         )

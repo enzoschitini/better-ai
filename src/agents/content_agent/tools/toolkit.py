@@ -194,7 +194,7 @@ if __name__ == "__main__":
 
     tool = RetrievalAugmentedGeneration(
         filter_search={
-            "collection_id": ["slides_b2"]
+            "collection_id": ["oboticario"]
         },
         generate_content_metadata={
             "model_id": "gpt-4.1-mini",
@@ -203,13 +203,13 @@ if __name__ == "__main__":
             "content_count": 1,
             "body_min_chars": 300,
             "body_max_chars": 500,
-            "extra_requirements": "- Focus on market trends for men's perfumes, highlighting products from the Malbec line.\n- Include information about olfactory notes and usage suggestions."
+            #"extra_requirements": "- Focus on market trends for men's perfumes, highlighting products from the Malbec line.\n- Include information about olfactory notes and usage suggestions."
         }
     )
 
     #result = tool.get_relevant_documents("Raccontare", 5)
     result = tool.generate_content(
-        "Criar um post para Instagram focado em tendências de mercado para perfumes masculinos, destacando os produtos da linha Malbec. Inclua informações sobre notas olfativas e sugestões de uso.", 
+        "Crie um posts com os arquivos da base", 
     )
 
     print(f"\n\n{result}\n")
