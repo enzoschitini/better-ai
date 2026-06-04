@@ -137,8 +137,10 @@ class RetrievalAugmentedGeneration(Toolkit):
             from src.agents.content_agent.tools.content_generation.module import GenerateContent
             from src.agents.content_agent.tools.content_generation.markdown_utils import MarkdownContent
 
-            metadata = self.generate_content_metadata
+            print(f"Generating content for query: {query}")
+
             filter_search = self.filter_search
+            metadata = self.generate_content_metadata or {}
 
             generator = GenerateContent(
                 **{"model_id": metadata["model_id"]} if "model_id" in metadata else {},
@@ -175,6 +177,8 @@ class RetrievalAugmentedGeneration(Toolkit):
                     "generated_content": generated_content.model_dump() if hasattr(generated_content, "model_dump") else generated_content,
                 },
             )
+
+            print(f"\nGenerated Markdown Content:\n{len(markdown_content)}\n")
 
             return final_payload
         except Exception as e:
