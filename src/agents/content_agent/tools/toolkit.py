@@ -34,6 +34,7 @@ class RetrievalAugmentedGeneration(Toolkit):
     def __init__(
         self,
         filter_search: dict,
+        generate_content_metadata: dict = None,
         enable_get_relevant_documents: bool = True,
         enable_generate_content: bool = True,
         all: bool = False,
@@ -41,6 +42,7 @@ class RetrievalAugmentedGeneration(Toolkit):
         **kwargs,
     ):
         self.filter_search = filter_search
+        self.generate_content_metadata = generate_content_metadata
         self.tool_context = tool_context
         tools: List[Any] = []
 
@@ -114,8 +116,8 @@ class RetrievalAugmentedGeneration(Toolkit):
             return f"Failed to generate context of relevant documents: {str(e)}"
 
         return context
-    
-    def generate_content(self, query: str, max_results: int = 1) -> str:
+        
+    def generate_content(self, query: str) -> str:
         """
         Generate markdown-ready content using retrieval-augmented generation.
 
@@ -126,10 +128,6 @@ class RetrievalAugmentedGeneration(Toolkit):
             query (str):
                 The user prompt that guides retrieval and content generation.
 
-            max_results (int):
-                Maximum number of documents to retrieve as context before generation.
-                Default is 1.
-
         Returns:
             str:
                 A markdown-formatted content output when generation succeeds,
@@ -139,14 +137,23 @@ class RetrievalAugmentedGeneration(Toolkit):
             from src.agents.content_agent.tools.content_generation.module import GenerateContent
             from src.agents.content_agent.tools.content_generation.markdown_utils import MarkdownContent
 
-            generator = GenerateContent(filter_search=self.filter_search)
+            metadata = self.generate_content_metadata
+            filter_search = self.filter_search
+
+            generator = GenerateContent(
+                **{"model_id": metadata["model_id"]} if "model_id" in metadata else {},
+                filter_search=filter_search,
+            )
+
+            optional_params = {}
+            for key in ["max_results", "content_count", "body_min_chars", "body_max_chars", "extra_requirements"]:
+                if key in metadata:
+                    optional_params[key] = metadata[key]
+
             generated_content = generator.generate(
                 query=query,
-                objective="Generate content based on retrieved context",
-                max_results=max_results,
-                content_count=2,
-                body_min_chars=700,
-                body_max_chars=1200,
+                objective=metadata.get("objective", "Generate a structured post based on the retrieved context."),
+                **optional_params
             )
 
             markdown_content = MarkdownContent.format_posts_json_to_markdown(
@@ -163,7 +170,7 @@ class RetrievalAugmentedGeneration(Toolkit):
                 "generate_content",
                 {
                     "query": query,
-                    "max_results": max_results,
+                    "max_results": metadata.get("max_results"),
                     "markdown_content": markdown_content,
                     "generated_content": generated_content.model_dump() if hasattr(generated_content, "model_dump") else generated_content,
                 },
@@ -173,18 +180,28 @@ class RetrievalAugmentedGeneration(Toolkit):
         except Exception as e:
             return f"Failed to generate content using retrieval context: {str(e)}"
 
+
 if __name__ == "__main__":
     import json
 
     tool = RetrievalAugmentedGeneration(
         filter_search={
             "collection_id": ["slides_b2"]
+        },
+        generate_content_metadata={
+            "model_id": "gpt-4.1-mini",
+            "objective": "Generate a structured post based on the retrieved context.",
+            "max_results": 5,
+            "content_count": 1,
+            "body_min_chars": 300,
+            "body_max_chars": 500,
+            "extra_requirements": "- Focus on market trends for men's perfumes, highlighting products from the Malbec line.\n- Include information about olfactory notes and usage suggestions."
         }
     )
+
     #result = tool.get_relevant_documents("Raccontare", 5)
     result = tool.generate_content(
         "Criar um post para Instagram focado em tendências de mercado para perfumes masculinos, destacando os produtos da linha Malbec. Inclua informações sobre notas olfativas e sugestões de uso.", 
-        max_results=1
     )
 
     print(f"\n\n{result}\n")

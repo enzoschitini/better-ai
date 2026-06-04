@@ -42,9 +42,14 @@ class GenerateContent:
             generate(): Generates one or more structured content variants from retrieved context.
     """
 
-    def __init__(self, model_id: str = DEFAULT_MODEL, filter_search: Optional[dict] = None) -> None:
-        LogManager.setup(fmt="%(asctime)s | %(levelname)-8s | %(message)s | %(name)s")
+    def __init__(self, model_id: str = DEFAULT_MODEL, filter_search: Optional[dict] = None, logging_level: str = "ERROR") -> None:
+        LogManager.setup(
+            fmt="%(asctime)s | %(levelname)-8s | %(message)s | %(name)s",
+            level=logging_level
+        )
+
         self.logger = LogManager.get_logger(f"{type(self).__module__}.{type(self).__name__}")
+        
         self.model_id = model_id
         self.filter_search = filter_search or {}
         self.logger.debug(
