@@ -57,5 +57,4 @@ dependencies = [
     "pandasai>=2.0.24",
     "streamlit>=1.56.0",
     "anthropic>=0.105.2",
-    "reportlab>=4.5.1",
 ]
