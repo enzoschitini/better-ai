@@ -8,7 +8,7 @@ from src.agents.content_agent.config import (
 from src.agents.content_agent.tools.toolkit import RetrievalAugmentedGeneration
 
 from src.agents.utils.database import Database
-from src.agents.utils.tool_response import ToolContext
+from src.agents.utils.tool_context import ToolContext
 
 from dotenv import load_dotenv
 

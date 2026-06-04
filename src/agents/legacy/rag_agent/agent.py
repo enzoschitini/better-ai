@@ -7,7 +7,7 @@ from agno.models.openai import OpenAIChat
 from agno.memory.manager import MemoryManager
 
 from src.agents.utils.database import Database
-from src.agents.utils.tool_response import ToolContext
+from src.agents.utils.tool_context import ToolContext
 from agents.legacy.rag_agent.toolkit import RetrievalAugmentedGeneration
 from agents.legacy.rag_agent.config import DEFAULT_MODEL, PROMPT
 
