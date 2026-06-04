@@ -9,6 +9,10 @@ from src.vector_store.pinecone.client import PineconeClient
 from src.vector_store.pinecone.retriever import PineconeRetriever
 from src.vector_store.pinecone.utils.retrieval_manager import RetrievalManager
 
+from src.agents.content_agent.tools.content_generation.config import (
+    PINECONE_INDEX_NAME, PINECONE_MAIN_NAMESPACE
+)
+
 load_dotenv()
 
 class RetrievalAugmentedGeneration(Toolkit):
@@ -92,8 +96,8 @@ class RetrievalAugmentedGeneration(Toolkit):
         """
         try:
             pine_client = PineconeClient(
-                index_name="backai-vectorstore",
-                main_namespace="knowledge_base_content_agent_oboticario"
+                index_name=PINECONE_INDEX_NAME,
+                main_namespace=PINECONE_MAIN_NAMESPACE
             )
             retriver = PineconeRetriever(pine_client)
 
