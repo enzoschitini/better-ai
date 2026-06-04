@@ -10,6 +10,8 @@ from src.agents.agent_executor.agent_factory import LocalAgentFactory
 from src.agents.agent_executor.api_client import AgentApiClient
 from src.agents.agent_executor.response_formatter import ResponseFormatter
 from src.agents.agent_executor.tool_collector import ToolCollector
+from src.agents.agent_executor.config import DEFAULT_BANNER
+
 from src.utils.unique_id_factory import IDGenerator
 
 
@@ -374,7 +376,7 @@ class AgentExecutor:
     def run_cli_loop(
         self,
         *,
-        banner: Optional[str] = None,
+        banner: Optional[str] = DEFAULT_BANNER,
         print_tool_response: bool = True,
         clear_tool_metadata_each_turn: bool = True,
         exit_commands: Optional[Sequence[str]] = None,
