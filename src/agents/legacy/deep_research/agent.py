@@ -40,7 +40,7 @@ class Database:
         return SqliteDb(db_file=LOCAL_MEMORY_DB)
 
 db = Database(local=True)
-TOOL_RESPONSER = ToolResponse()
+tool_context = ToolResponse()
 
 agent = Agent(
     # Unique ID's
@@ -83,7 +83,7 @@ agent = Agent(
 
     # Toolkit
     tools=[
-        DeepResearch(TOOL_RESPONSER=TOOL_RESPONSER)
+        DeepResearch(tool_context=tool_context)
     ],
 
     # Save Traces

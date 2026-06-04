@@ -47,7 +47,7 @@ class FileTalkAgent(BaseAgent):
             debug_level=True,
             tools=[
                 RetrievalAugmentedGeneration(
-                    TOOL_RESPONSER=tool_context.tool_responser,
+                    tool_context=tool_context.tool_context,
                     filter_search=metadata["filter_search"]
                 )
             ],

@@ -47,7 +47,7 @@ class BaseAgent(BaseAgent):
             debug_level=True,
             tools = [
                 TrendRadarToolkit(
-                    TOOL_RESPONSER=tool_context.tool_responser
+                    tool_context=tool_context.tool_context
                 )
             ]
         )

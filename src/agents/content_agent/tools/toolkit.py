@@ -37,11 +37,11 @@ class RetrievalAugmentedGeneration(Toolkit):
         enable_get_relevant_documents: bool = True,
         enable_generate_content: bool = True,
         all: bool = False,
-        TOOL_RESPONSER: ToolContext = None,
+        tool_context: ToolContext = None,
         **kwargs,
     ):
         self.filter_search = filter_search
-        self.TOOL_RESPONSER = TOOL_RESPONSER
+        self.tool_context = tool_context
         tools: List[Any] = []
 
         if all or enable_get_relevant_documents:
@@ -55,8 +55,8 @@ class RetrievalAugmentedGeneration(Toolkit):
         """
         Internal helper method used to collect metadata about tool execution.
         """
-        if self.TOOL_RESPONSER:
-            self.TOOL_RESPONSER.add_metadata(
+        if self.tool_context:
+            self.tool_context.add_metadata(
                 tool_name=tool_name,
                 payload=payload
             )

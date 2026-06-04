@@ -71,7 +71,7 @@ class AgnoAgent:
             response = executor.run_json(ask=prompt)
             content = response["content"]
             
-            #print(f"{json.dumps(tool_context.tool_responser.get_metadata(), indent=4, ensure_ascii=False)}")
+            #print(f"{json.dumps(tool_context.tool_context.get_metadata(), indent=4, ensure_ascii=False)}")
 
             # Salva resposta
             st.session_state.messages.append({

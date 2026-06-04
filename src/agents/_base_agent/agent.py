@@ -47,7 +47,7 @@ class BaseAgent:
             debug_level=True,
             tools = [
                 BaseToolkit(
-                    TOOL_RESPONSER=tool_context.tool_responser
+                    tool_context=tool_context.tool_context
                 )
             ]
         )

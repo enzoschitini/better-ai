@@ -46,7 +46,7 @@ class DataframeAgent(BaseAgent):
             debug_level=True,
             tools=[
                 DataframeAnalyzer(
-                    TOOL_RESPONSER=tool_context.tool_responser,
+                    tool_context=tool_context.tool_context,
                     dataframe=metadata["dataframe"]
                 )
             ],

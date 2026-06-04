@@ -66,7 +66,7 @@ class AgentExecutor:
         factory.register(agent_name, agent_class)
         agent, tool_context = factory.create_agent(agent_name, metadata)
 
-        collector = ToolCollector(tool_context.tool_responser)
+        collector = ToolCollector(tool_context.tool_context)
         return cls(
             agent=agent,
             tool_collector=collector,

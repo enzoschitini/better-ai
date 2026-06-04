@@ -2,7 +2,7 @@ from src.agents.utils.tool_response import ToolContext
 
 class ToolContext:
     def __init__(self):
-        self.tool_responser = ToolContext()
+        self.tool_context = ToolContext()
 
 
 class BaseAgent:

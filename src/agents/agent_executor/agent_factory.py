@@ -19,7 +19,7 @@ class LocalToolResponse:
 
 class LocalToolContext:
     def __init__(self):
-        self.tool_responser = LocalToolResponse()
+        self.tool_context = LocalToolResponse()
 
 
 class LocalAgentFactory:

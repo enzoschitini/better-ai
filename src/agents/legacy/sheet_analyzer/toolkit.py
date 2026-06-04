@@ -25,18 +25,18 @@ class DataframeAnalyzer(Toolkit):
     Args:
         enable_dataframe_analyzer (bool): Enables the dataframe analysis tool. Defaults to True.
         all (bool): Enables all available tools. Overrides individual flags when True. Defaults to False.
-        TOOL_RESPONSER (Any): Optional object responsible for collecting tool execution metadata.
+        tool_context (Any): Optional object responsible for collecting tool execution metadata.
     """
     def __init__(
         self,
         dataframe: pd.DataFrame,
         enable_dataframe_analyzer: bool = True,
         all: bool = False,
-        TOOL_RESPONSER: Any = None,
+        tool_context: Any = None,
         **kwargs,
     ):
         self.dataframe = dataframe
-        self.TOOL_RESPONSER = TOOL_RESPONSER
+        self.tool_context = tool_context
         tools: List[Any] = []
 
         if all or enable_dataframe_analyzer:
@@ -48,8 +48,8 @@ class DataframeAnalyzer(Toolkit):
         """
         Internal helper method used to collect metadata about tool execution.
         """
-        if self.TOOL_RESPONSER:
-            self.TOOL_RESPONSER.add_metadata(
+        if self.tool_context:
+            self.tool_context.add_metadata(
                 tool_name=tool_name,
                 payload=payload
             )

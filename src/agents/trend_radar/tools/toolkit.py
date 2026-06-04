@@ -26,16 +26,16 @@ class TrendRadarToolkit(Toolkit):
     Args:
         enable_get_trends (bool): Enable the web trend search tool. Default is True.
         all (bool): Enable all tools. Overrides individual flags when True. Default is False.
-        TOOL_RESPONSER (ToolResponse): Optional metadata collector for tracking tool calls. Default is None.
+        tool_context (ToolResponse): Optional metadata collector for tracking tool calls. Default is None.
     """
     def __init__(
         self,
         enable_get_trends: bool = True,
         all: bool = False,
-        TOOL_RESPONSER: ToolResponse = None,
+        tool_context: ToolResponse = None,
         **kwargs,
     ):
-        self.TOOL_RESPONSER = TOOL_RESPONSER
+        self.tool_context = tool_context
         tools: List[Any] = []
 
         if all or enable_get_trends:
@@ -47,8 +47,8 @@ class TrendRadarToolkit(Toolkit):
         """
         Internal helper to collect metadata about tool execution.
         """
-        if self.TOOL_RESPONSER:
-            self.TOOL_RESPONSER.add_metadata(
+        if self.tool_context:
+            self.tool_context.add_metadata(
                 tool_name=tool_name,
                 payload=payload
             )
@@ -88,7 +88,7 @@ class TrendRadarToolkit(Toolkit):
             - Search is performed with advanced depth and up to 15 results by default.
             - Only sources with a relevance score above 0.5 are included in the output.
             - Collected source URLs and the original query are forwarded to the
-              TOOL_RESPONSER metadata collector, if one was provided at initialization.
+              tool_context metadata collector, if one was provided at initialization.
         """
         try:
             if not query or not query.strip():

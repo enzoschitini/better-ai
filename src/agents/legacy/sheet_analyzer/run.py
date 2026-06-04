@@ -43,6 +43,6 @@ if __name__ == "__main__":
     # TOOL METADATA
     # =========================
     print("\nTool Response Metadata:")
-    print(json.dumps(tool_context.tool_responser.get_metadata(), indent=4))
+    print(json.dumps(tool_context.tool_context.get_metadata(), indent=4))
 
 # python -m src.agents.sheet_analyzer.run

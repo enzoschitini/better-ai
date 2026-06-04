@@ -14,7 +14,7 @@ from agents.legacy.rag_agent.config import DEFAULT_MODEL, PROMPT
 load_dotenv()
 
 DATABASE = Database(local=True)
-TOOL_RESPONSER = ToolResponse()
+tool_context = ToolResponse()
 USE_REASONING = False
 
 reasoning_config = (
@@ -78,7 +78,7 @@ agent = Agent(
             filter_search={
                 "file_id": ["candidatura", "tenerezza", "cucinare"]
             },
-            TOOL_RESPONSER=TOOL_RESPONSER
+            tool_context=tool_context
         )
     ],
 )
@@ -94,7 +94,7 @@ if __name__ == "__main__":
     ASK = """
 Quais arquivos estão na base?
 """
-    #runner.js_reponse(ask=ASK, tool_response=TOOL_RESPONSER)
+    #runner.js_reponse(ask=ASK, tool_response=tool_context)
     #runner.debug(ask=ASK)
     runner.agent_os()
 

@@ -17,14 +17,14 @@ load_dotenv()
 class SimpleToolkit(Toolkit):
     """Small toolkit used to validate tool collection in executor flows."""
 
-    def __init__(self, tool_responser: Any = None, **kwargs):
-        self.tool_responser = tool_responser
+    def __init__(self, tool_context: Any = None, **kwargs):
+        self.tool_context = tool_context
         tools: List[Any] = [self.get_current_datetime, self.shout_text]
         super().__init__(name="simple_test_toolkit", tools=tools, **kwargs)
 
     def _collect(self, tool_name: str, payload: Dict[str, Any]) -> None:
-        if self.tool_responser:
-            self.tool_responser.add_metadata(tool_name=tool_name, payload=payload)
+        if self.tool_context:
+            self.tool_context.add_metadata(tool_name=tool_name, payload=payload)
 
     def get_current_datetime(self, _: str = "") -> str:
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -61,7 +61,7 @@ class SimpleTestAgent:
             ],
             markdown=True,
             stream=True,
-            tools=[SimpleToolkit(tool_responser=tool_context.tool_responser)],
+            tools=[SimpleToolkit(tool_context=tool_context.tool_context)],
         )
 
 
