@@ -34,12 +34,12 @@ class GenerateContent:
     This class centralizes agent construction, context retrieval, and multi-variant generation with validation.
 
     Args:
-    :param model_id (str): Model identifier used to initialize the chat model. Default is "gpt-4.1-mini"
-    :param filter_search (Optional[dict]): Default retrieval filter used when no runtime filter is provided. Default is None
+        :param model_id (str): Model identifier used to initialize the chat model. Default is "gpt-4.1-mini"
+        :param filter_search (Optional[dict]): Default retrieval filter used when no runtime filter is provided. Default is None
 
     Methods:
-            retrieve_context(): Retrieves textual context from Pinecone using the provided query and filters.
-            generate(): Generates one or more structured content variants from retrieved context.
+        :method retrieve_context(): Retrieves textual context from Pinecone using the provided query and filters.
+        :method generate(): Generates one or more structured content variants from retrieved context.
     """
 
     def __init__(self, model_id: str = DEFAULT_MODEL, filter_search: Optional[dict] = None, logging_level: str = "INFO") -> None:
@@ -64,11 +64,11 @@ class GenerateContent:
         It ensures the minimum is positive and the maximum is not smaller than the minimum.
 
         Args:
-        body_min_chars (int): Minimum number of characters allowed for the body.
-        body_max_chars (int): Maximum number of characters allowed for the body.
+            body_min_chars (int): Minimum number of characters allowed for the body.
+            body_max_chars (int): Maximum number of characters allowed for the body.
 
         Raises:
-                ValueError: Raised when min or max limits are invalid.
+            ValueError: Raised when min or max limits are invalid.
         """
         self.logger.debug(
             "Validating body range: min=%d, max=%d",
@@ -87,12 +87,12 @@ class GenerateContent:
         This helper is used to decide if a generated attempt can be accepted.
 
         Args:
-        content (GeneratedContentParse): Generated content object containing the body text.
-        body_min_chars (int): Minimum number of characters allowed for the body.
-        body_max_chars (int): Maximum number of characters allowed for the body.
+            content (GeneratedContentParse): Generated content object containing the body text.
+            body_min_chars (int): Minimum number of characters allowed for the body.
+            body_max_chars (int): Maximum number of characters allowed for the body.
 
         Returns:
-                bool: True when body length is within range, otherwise False.
+            bool: True when body length is within range, otherwise False.
         """
         body_size = len(content.body)
         return body_min_chars <= body_size <= body_max_chars
@@ -103,13 +103,13 @@ class GenerateContent:
         It supports multiple providers and abstracts the model initialization logic.
 
         Args:
-        model_id (str): Identifier of the model to initialize. Must be one of the supported models defined in MODEL_PROVIDER_MAP.
+            model_id (str): Identifier of the model to initialize. Must be one of the supported models defined in MODEL_PROVIDER_MAP.
 
         Returns:
-        BaseLLM: Initialized language model instance.
+            BaseLLM: Initialized language model instance.
 
         Raises:
-        ValueError: Raised when the model_id is not supported.
+            ValueError: Raised when the model_id is not supported.
         """
         provider = self.MODEL_PROVIDER_MAP.get(model_id)
 
@@ -174,14 +174,14 @@ class GenerateContent:
         It retries generation when body length is out of range and returns the indexed result.
 
         Args:
-        index (int): Zero-based position of the variant in the batch.
-        content_count (int): Total number of variants requested in the batch.
-        query (str): Retrieval query that contextualizes generation.
-        objective (str): Business or communication objective for the generated content.
-        context (str): Retrieved context used as factual grounding.
-        body_min_chars (int): Minimum body size in characters.
-        body_max_chars (int): Maximum body size in characters.
-        extra_requirements (Optional[str]): Additional generation constraints.
+            index (int): Zero-based position of the variant in the batch.
+            content_count (int): Total number of variants requested in the batch.
+            query (str): Retrieval query that contextualizes generation.
+            objective (str): Business or communication objective for the generated content.
+            context (str): Retrieved context used as factual grounding.
+            body_min_chars (int): Minimum body size in characters.
+            body_max_chars (int): Maximum body size in characters.
+            extra_requirements (Optional[str]): Additional generation constraints.
 
         Returns:
             Tuple[int, GeneratedContentParse]: Variant index and generated structured content.
@@ -284,9 +284,9 @@ class GenerateContent:
         It performs similarity search and consolidates the result into a single context string.
 
         Args:
-        query (str): Search query used in vector similarity retrieval.
-        filter_search (dict): Filter payload applied to constrain retrieval scope.
-        max_results (int): Maximum number of retrieved documents. Default is "5"
+            query (str): Search query used in vector similarity retrieval.
+            filter_search (dict): Filter payload applied to constrain retrieval scope.
+            max_results (int): Maximum number of retrieved documents. Default is DEFAULT_MAX_RESULTS
 
         Returns:
             dict: A dictionary containing the consolidated context string and the list of relevant documents.
@@ -341,14 +341,14 @@ class GenerateContent:
         It validates body limits, retrieves context, runs variant generation concurrently, and returns ordered results.
 
         Args:
-        query (str): Retrieval query that anchors generated content.
-        objective (str): Objective that guides tone and structure of generated text.
-        filter_search (Optional[dict]): Retrieval filter override for this execution. Default is None
-        max_results (int): Maximum number of documents to retrieve. Default is "5"
-        content_count (int): Number of content variants to generate. Default is "1"
-        body_min_chars (int): Minimum body length in characters. Default is "700"
-        body_max_chars (int): Maximum body length in characters. Default is "1200"
-        extra_requirements (Optional[str]): Extra requirements appended to the generation prompt. Default is None
+            query (str): Retrieval query that anchors generated content.
+            objective (str): Objective that guides tone and structure of generated text.
+            filter_search (Optional[dict]): Retrieval filter override for this execution. Default is None
+            max_results (int): Maximum number of documents to retrieve. Default is DEFAULT_MAX_RESULTS
+            content_count (int): Number of content variants to generate. Default is DEFAULT_CONTENT_COUNT
+            body_min_chars (int): Minimum body length in characters. Default is DEFAULT_BODY_MIN_CHARS
+            body_max_chars (int): Maximum body length in characters. Default is DEFAULT_BODY_MAX_CHARS
+            extra_requirements (Optional[str]): Extra requirements appended to the generation prompt. Default is None
 
         Returns:
             ContentBatchOutput: Structured batch output containing generated items.
