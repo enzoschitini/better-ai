@@ -49,7 +49,8 @@ class GenerateContent:
         )
 
         self.logger = LogManager.get_logger(f"{type(self).__module__}.{type(self).__name__}")
-        
+
+        self.model_provider_map = MODEL_PROVIDER_MAP
         self.model_id = model_id
         self.filter_search = filter_search or {}
         self.logger.debug(
@@ -111,11 +112,11 @@ class GenerateContent:
         Raises:
             ValueError: Raised when the model_id is not supported.
         """
-        provider = self.MODEL_PROVIDER_MAP.get(model_id)
+        provider = self.model_provider_map.get(model_id)
 
         if not provider:
             self.logger.error("Unsupported model_id=%s. No provider mapping found.", model_id)
-            raise ValueError(f"Unsupported model_id: {model_id}. No provider mapping found. Use one of: {list(self.MODEL_PROVIDER_MAP.keys())}")
+            raise ValueError(f"Unsupported model_id: {model_id}. No provider mapping found. Use one of: {list(self.model_provider_map.keys())}")
         
         if provider == "openai":
             from agno.models.openai import OpenAIChat
