@@ -21,6 +21,16 @@ class ContentBatchOutput(BaseModel):
     items: List[GeneratedContentParse]
     relevant_docs: List[dict]
 
+MODEL_PROVIDER_MAP = {
+    "gpt-4.1-mini": "openai",
+
+    "claude-opus-4-5": "anthropic",
+    "claude-sonnet-4-6": "anthropic",
+
+    "gemini-2.5-pro": "google",
+
+    "llama-3.3-70b-versatile": "groq",
+}
 
 DEFAULT_MODEL = "gpt-4.1-mini"
 DEFAULT_MAX_RESULTS = 5

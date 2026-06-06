@@ -2,7 +2,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Optional, Tuple
 
 from agno.agent import Agent
-from agno.models.openai import OpenAIChat
 
 from src.tracing.logging_config import LogManager
 from src.vector_store.pinecone.client import PineconeClient
@@ -18,6 +17,7 @@ from src.agents.content_agent.tools.content_generation.config import (
     DEFAULT_BODY_MIN_CHARS,
     DEFAULT_CONTENT_COUNT,
     DEFAULT_MAX_RESULTS,
+    MODEL_PROVIDER_MAP,
     DEFAULT_MODEL,
     PINECONE_INDEX_NAME,
     PINECONE_MAIN_NAMESPACE,
@@ -96,6 +96,50 @@ class GenerateContent:
         """
         body_size = len(content.body)
         return body_min_chars <= body_size <= body_max_chars
+    
+    def _get_llm(self, model_id: str):
+        """
+        Factory method to initialize and return a language model instance based on the provided model_id.
+        It supports multiple providers and abstracts the model initialization logic.
+
+        Args:
+        model_id (str): Identifier of the model to initialize. Must be one of the supported models defined in MODEL_PROVIDER_MAP.
+
+        Returns:
+        BaseLLM: Initialized language model instance.
+
+        Raises:
+        ValueError: Raised when the model_id is not supported.
+        """
+        provider = self.MODEL_PROVIDER_MAP.get(model_id)
+
+        if not provider:
+            self.logger.error("Unsupported model_id=%s. No provider mapping found.", model_id)
+            raise ValueError(f"Unsupported model_id: {model_id}. No provider mapping found. Use one of: {list(self.MODEL_PROVIDER_MAP.keys())}")
+        
+        if provider == "openai":
+            from agno.models.openai import OpenAIChat
+            
+            self.logger.debug("Initializing OpenAIChat model with id=%s", model_id)
+            return OpenAIChat(id=model_id)
+        
+        if provider == "anthropic":
+            from agno.models.anthropic import Claude
+
+            self.logger.debug("Initializing Claude model with id=%s", model_id)
+            return Claude(id=model_id)
+
+        if provider == "google":
+            from agno.models.google import Gemini
+
+            self.logger.debug("Initializing Gemini model with id=%s", model_id)
+            return Gemini(id=model_id)
+        
+        if provider == "groq":
+            from agno.models.groq import Groq
+
+            self.logger.debug("Initializing Groq model with id=%s", model_id)
+            return Groq(id=model_id)
 
     def _build_content_creator_agent(self) -> Agent:
         """
@@ -107,7 +151,7 @@ class GenerateContent:
         """
         self.logger.debug("Building content creator agent with model_id=%s", self.model_id)
         return Agent(
-            model=OpenAIChat(id=self.model_id),
+            model=self._get_llm(self.model_id),
             output_schema=GeneratedContentParse,
             markdown=True,
             instructions=AGENT_INSTRUCTIONS,
