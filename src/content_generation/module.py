@@ -36,7 +36,7 @@ class GenerateContent:
 
     Args:
         :param model_id (str): Model identifier used to initialize the chat model. Default is "gpt-4.1-mini"
-        :param filter_search (Optional[dict]): Default retrieval filter used when no runtime filter is provided. Default is None
+        :param filter_search (Optional[dict]): Default retrieval filter used when no runtime filter is provided. Default is {"type": "content_generation"}
         :param vector_db_index_name (str): Name of the vector database index. Default is PINECONE_INDEX_NAME
         :param vector_db_namespace (str): Namespace for the vector database. Default is PINECONE_MAIN_NAMESPACE
 
