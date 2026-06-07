@@ -1,3 +1,4 @@
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Optional, Tuple
 
@@ -411,6 +412,8 @@ class GenerateContent:
             ValueError: Raised when requested content count is invalid.
         """
         try:
+            start_time = time.time()
+
             self.logger.info(
                 "Starting content generation for query=%s with content_count=%d",
                 query,
@@ -466,11 +469,15 @@ class GenerateContent:
             aggregated_usage_metadata = self._merge_usage_metadata(usage_metadata_list)
             if aggregated_usage_metadata is not None:
                 self.logger.info("Consolidated usage metadata: %s", aggregated_usage_metadata)
-                
+
                 usage_metadata = {
                     "by_variant": usage_metadata_list,
                     "aggregated": aggregated_usage_metadata,
                 }
+            
+            end_time = time.time()
+            latency = round(end_time - start_time, 3)
+            self.logger.info("Total content generation latency: %.2f seconds", latency)
 
             return ContentBatchOutput(
                 query=query,
@@ -479,6 +486,7 @@ class GenerateContent:
                 items=generated_items,
                 relevant_docs=relevant_docs,
                 usage_metadata=usage_metadata if aggregated_usage_metadata is not None else None,
+                latency=latency if latency is not None else None,
             )
         
         except Exception as e:

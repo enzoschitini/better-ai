@@ -21,6 +21,7 @@ class ContentBatchOutput(BaseModel):
     items: List[GeneratedContentParse]
     relevant_docs: List[dict]
     usage_metadata: Optional[dict] = None
+    latency: Optional[float] = None
 
 MODEL_PROVIDER_MAP = {
     "gpt-4.1-mini": "openai",

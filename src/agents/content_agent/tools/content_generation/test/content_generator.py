@@ -3,6 +3,7 @@
 
 if __name__ == "__main__":
     import time
+    import json
     from typing import Optional
 
     from src.agents.content_agent.tools.content_generation.module import GenerateContent, ContentBatchOutput
@@ -55,8 +56,10 @@ if __name__ == "__main__":
                 #document_title="Marketing Posts",
             )
 
-            print(f"\nMarkdown file generated at: {markdown_file}")
-            print(f"\nElapsed time: {elapsed_time:.2f} seconds")
+            print(f"\nGenerated content:\n{json.dumps(generated_content.model_dump(), indent=2)}")
+
+            #print(f"\nMarkdown file generated at: {markdown_file}")
+            #print(f"\nElapsed time: {elapsed_time:.2f} seconds")
 
         except Exception as e:
             raise RuntimeError(f"Failed to generate content using retrieval context: {str(e)}") from e
