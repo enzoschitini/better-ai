@@ -48,7 +48,7 @@ class GenerateContent:
     def __init__(
         self, 
         model_id: str = DEFAULT_MODEL, 
-        filter_search: Optional[dict] = None,
+        filter_search: Optional[dict] = {"type": "content_generation"},
         vector_db_index_name: str = PINECONE_INDEX_NAME,
         vector_db_namespace: str = PINECONE_MAIN_NAMESPACE,
         logging_level: str = "INFO"
