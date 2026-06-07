@@ -161,15 +161,13 @@ class GenerateContent:
     def _update_usage_metadata(self, response_metrics) -> dict:
         """
         Constructs a structured usage metadata dictionary from the response metrics of a model generation call.
-        This metadata includes provider, model id, and token usage details.
+        This metadata includes token usage details.
 
         Args:
             response_metrics: The metrics object returned by the model response, containing token usage and model details.
         Returns:
             dict: A dictionary containing structured usage metadata.
         """
-        import json
-
         metrics_dict = response_metrics.__dict__
         model_metrics = metrics_dict["details"]["model"][0]
 
@@ -182,11 +180,35 @@ class GenerateContent:
         }
 
         self.logger.debug("Constructed usage metadata: %s", usage_metadata)
-        self.usage_metadata = usage_metadata
-
-        print(f"\nUsage metadata: {json.dumps(usage_metadata, indent=2)}")
-
         return usage_metadata
+
+    def _merge_usage_metadata(self, usage_metadatas: list[dict]) -> Optional[dict]:
+        """
+        Aggregates a list of usage metadata dictionaries into a single summary.
+
+        Args:
+            usage_metadatas: List of usage metadata dictionaries from each model response.
+        Returns:
+            Optional[dict]: Consolidated usage metadata, or None when no metadata is available.
+        """
+        if not usage_metadatas:
+            return None
+
+        merged_tokens = {
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "total_tokens": 0,
+        }
+
+        for metadata in usage_metadatas:
+            tokens = metadata.get("tokens", {})
+            merged_tokens["input_tokens"] += tokens.get("input_tokens", 0)
+            merged_tokens["output_tokens"] += tokens.get("output_tokens", 0)
+            merged_tokens["total_tokens"] += tokens.get("total_tokens", 0)
+
+        merged_metadata = {"tokens": merged_tokens}
+        self.logger.debug("Merged usage metadata across %d responses: %s", len(usage_metadatas), merged_metadata)
+        return merged_metadata
 
     def _generate_single_variant(
         self,
@@ -198,7 +220,7 @@ class GenerateContent:
         body_min_chars: int,
         body_max_chars: int,
         extra_requirements: Optional[str],
-    ) -> Tuple[int, GeneratedContentParse]:
+    ) -> Tuple[int, GeneratedContentParse, dict]:
         """
         Generates a single content variant using style guidance and retry logic.
         It retries generation when body length is out of range and returns the indexed result.
@@ -272,7 +294,7 @@ class GenerateContent:
                 response = creator_agent.run(prompt)
                 generated_content = response.content
 
-                self._update_usage_metadata(response.metrics)
+                variant_usage_metadata = self._update_usage_metadata(response.metrics)
 
                 if self._is_body_within_range(
                     content=generated_content,
@@ -298,7 +320,7 @@ class GenerateContent:
                 raise RuntimeError("Failed to generate structured content")
 
             self.logger.info("Variant %d generated successfully", index + 1)
-            return index, generated_content
+            return index, generated_content, variant_usage_metadata
         
         except Exception as e:
             self.logger.exception("Variant %d generation failed", index + 1)
@@ -415,6 +437,7 @@ class GenerateContent:
             max_workers = min(content_count, 5)
             self.logger.debug("Generating variants with max_workers=%d", max_workers)
 
+            usage_metadata_list: list[dict] = []
             with ThreadPoolExecutor(max_workers=max_workers) as executor:
                 futures = [
                     executor.submit(
@@ -432,11 +455,19 @@ class GenerateContent:
                 ]
 
                 for future in as_completed(futures):
-                    variant_index, generated_content = future.result()
+                    variant_index, generated_content, variant_usage_metadata = future.result()
                     generated_map[variant_index] = generated_content
+                    if variant_usage_metadata is not None:
+                        usage_metadata_list.append(variant_usage_metadata)
 
             generated_items = [generated_map[index] for index in range(content_count)]
             self.logger.info("Content generation completed with %d items", len(generated_items))
+
+            aggregated_usage_metadata = self._merge_usage_metadata(usage_metadata_list)
+            if aggregated_usage_metadata is not None:
+                self.logger.info("Consolidated usage metadata: %s", aggregated_usage_metadata)
+                import json
+                print(f"\nUsage metadata: {json.dumps(aggregated_usage_metadata, indent=2)}")
 
             return ContentBatchOutput(
                 query=query,
@@ -444,6 +475,7 @@ class GenerateContent:
                 content_count=content_count,
                 items=generated_items,
                 relevant_docs=relevant_docs,
+                usage_metadata=aggregated_usage_metadata,
             )
         
         except Exception as e:

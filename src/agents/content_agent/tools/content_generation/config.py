@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel, Field
 
 class GeneratedContentParse(BaseModel):
@@ -20,6 +20,7 @@ class ContentBatchOutput(BaseModel):
     content_count: int
     items: List[GeneratedContentParse]
     relevant_docs: List[dict]
+    usage_metadata: Optional[dict] = None
 
 MODEL_PROVIDER_MAP = {
     "gpt-4.1-mini": "openai",
