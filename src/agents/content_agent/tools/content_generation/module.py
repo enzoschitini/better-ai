@@ -50,7 +50,6 @@ class GenerateContent:
 
         self.logger = LogManager.get_logger(f"{type(self).__module__}.{type(self).__name__}")
 
-        self.model_provider_map = MODEL_PROVIDER_MAP
         self.model_id = model_id
         self.filter_search = filter_search or {}
         self.logger.debug(
@@ -112,11 +111,11 @@ class GenerateContent:
         Raises:
             ValueError: Raised when the model_id is not supported.
         """
-        provider = self.model_provider_map.get(model_id)
+        provider = MODEL_PROVIDER_MAP.get(model_id)
 
         if not provider:
             self.logger.error("Unsupported model_id=%s. No provider mapping found.", model_id)
-            raise ValueError(f"Unsupported model_id: {model_id}. No provider mapping found. Use one of: {list(self.model_provider_map.keys())}")
+            raise ValueError(f"Unsupported model_id: {model_id}. No provider mapping found. Use one of: {list(MODEL_PROVIDER_MAP.keys())}")
         
         if provider == "openai":
             from agno.models.openai import OpenAIChat
@@ -158,6 +157,36 @@ class GenerateContent:
             instructions=AGENT_INSTRUCTIONS,
             description=AGENT_DESCRIPTION,
         )
+    
+    def _update_usage_metadata(self, response_metrics) -> dict:
+        """
+        Constructs a structured usage metadata dictionary from the response metrics of a model generation call.
+        This metadata includes provider, model id, and token usage details.
+
+        Args:
+            response_metrics: The metrics object returned by the model response, containing token usage and model details.
+        Returns:
+            dict: A dictionary containing structured usage metadata.
+        """
+        import json
+
+        metrics_dict = response_metrics.__dict__
+        model_metrics = metrics_dict["details"]["model"][0]
+
+        usage_metadata = {
+            "tokens": {
+                "input_tokens": model_metrics.input_tokens,
+                "output_tokens": model_metrics.output_tokens,
+                "total_tokens": model_metrics.total_tokens,
+            },
+        }
+
+        self.logger.debug("Constructed usage metadata: %s", usage_metadata)
+        self.usage_metadata = usage_metadata
+
+        print(f"\nUsage metadata: {json.dumps(usage_metadata, indent=2)}")
+
+        return usage_metadata
 
     def _generate_single_variant(
         self,
@@ -242,6 +271,8 @@ class GenerateContent:
 
                 response = creator_agent.run(prompt)
                 generated_content = response.content
+
+                self._update_usage_metadata(response.metrics)
 
                 if self._is_body_within_range(
                     content=generated_content,

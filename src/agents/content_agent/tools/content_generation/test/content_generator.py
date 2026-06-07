@@ -14,7 +14,7 @@ if __name__ == "__main__":
     from src.agents.content_agent.tools.content_generation.markdown_utils import SaveMarkdownContent
 
     payload = EXAMPLE_REQUESTS["example_4"]
-    DEFAULT_MODEL = "llama-3.3-70b-versatile"
+    #DEFAULT_MODEL = "llama-3.3-70b-versatile"
 
     def generate_content(
         query: str,
