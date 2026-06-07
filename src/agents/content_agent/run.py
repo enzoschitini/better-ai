@@ -17,7 +17,7 @@ if __name__ == "__main__":
             "generate_content_metadata": {
                 "model_id": "gpt-4.1-mini",
                 "max_results": 25,
-                "content_count": 2,
+                "content_count": 1,
                 "body_min_chars": 700,
                 "body_max_chars": 1200,
                 "objective": "Generate structured content variants based on the retrieved context, following the specified requirements.",
@@ -29,10 +29,10 @@ if __name__ == "__main__":
         },
     )
 
-    #executor.run_cli_loop()
-    executor.run_agent_os()
+    executor.run_cli_loop()
+    #executor.run_agent_os()
 
 # Criar um post para Instagram focado em tendências de mercado para perfumes masculinos, destacando os produtos da linha Malbec. Inclua informações sobre notas olfativas e sugestões de uso.
-# Quero um post sobre o Malbec
+# Quero um post sobre o Malbec Magnetic
 
 # python -m src.agents.content_agent.run
