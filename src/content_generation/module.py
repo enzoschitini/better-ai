@@ -37,13 +37,23 @@ class GenerateContent:
     Args:
         :param model_id (str): Model identifier used to initialize the chat model. Default is "gpt-4.1-mini"
         :param filter_search (Optional[dict]): Default retrieval filter used when no runtime filter is provided. Default is None
+        :param vector_db_index_name (str): Name of the vector database index. Default is PINECONE_INDEX_NAME
+        :param vector_db_namespace (str): Namespace for the vector database. Default is PINECONE_MAIN_NAMESPACE
 
     Methods:
         :method retrieve_context(): Retrieves textual context from Pinecone using the provided query and filters.
         :method generate(): Generates one or more structured content variants from retrieved context.
     """
 
-    def __init__(self, model_id: str = DEFAULT_MODEL, filter_search: Optional[dict] = None, logging_level: str = "INFO") -> None:
+    def __init__(
+        self, 
+        model_id: str = DEFAULT_MODEL, 
+        filter_search: Optional[dict] = None,
+        vector_db_index_name: str = PINECONE_INDEX_NAME,
+        vector_db_namespace: str = PINECONE_MAIN_NAMESPACE,
+        logging_level: str = "INFO"
+    ) -> None:
+
         LogManager.setup(
             fmt="%(asctime)s | %(levelname)-8s | %(message)s | %(name)s",
             level=logging_level
@@ -53,6 +63,8 @@ class GenerateContent:
 
         self.model_id = model_id
         self.filter_search = filter_search or {}
+        self.vector_db_index_name = vector_db_index_name
+        self.vector_db_namespace = vector_db_namespace
         self.logger.debug(
             "GenerateContent initialized with model_id=%s and default_filter_keys=%s",
             self.model_id,
@@ -355,8 +367,8 @@ class GenerateContent:
             self.logger.debug("Context retrieval filter keys=%s", sorted(list(filter_search.keys())))
 
             pine_client = PineconeClient(
-                index_name=PINECONE_INDEX_NAME,
-                main_namespace=PINECONE_MAIN_NAMESPACE,
+                index_name=self.vector_db_index_name,
+                main_namespace=self.vector_db_namespace,
             )
             retriver = PineconeRetriever(pine_client)
 

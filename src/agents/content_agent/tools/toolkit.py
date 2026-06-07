@@ -149,6 +149,8 @@ class RetrievalAugmentedGeneration(Toolkit):
             generator = GenerateContent(
                 **{"model_id": metadata["model_id"]} if "model_id" in metadata else {},
                 filter_search=filter_search,
+                vector_db_index_name=PINECONE_INDEX_NAME,
+                vector_db_namespace=PINECONE_MAIN_NAMESPACE,
             )
 
             optional_params = {}
