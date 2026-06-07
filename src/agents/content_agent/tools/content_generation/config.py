@@ -12,6 +12,12 @@ class GeneratedContentParse(BaseModel):
     sources_used: List[str] = Field(
         ..., description="List of key source snippets or documents used"
     )
+    product_mentions: List[str] = Field(
+        ..., description="List of any specific products mentioned in the content"
+    )
+    pricing_info: Optional[str] = Field(
+        None, description="Any pricing information included in the content, if applicable"
+    )
 
 
 class ContentBatchOutput(BaseModel):

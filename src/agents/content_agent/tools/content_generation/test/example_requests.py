@@ -20,8 +20,8 @@ EXAMPLE_REQUESTS = {
         "extra_requirements": "Tom amigável e informativo, use emojis relacionados ao inverno e cuidados com a pele. Mencione os produtos da O Boticário",
     },
     "example_3": {
-        "query": "Perfumes masculinos e tendências de mercado",
-        "objective": "Criar um post para Instagram focado em tendências de mercado para perfumes masculinos, destacando os produtos da linha Malbec. Inclua informações sobre notas olfativas e sugestões de uso.",
+        "query": "Perfume Malbec Magnetic",
+        "objective": "Criar um post para Instagram focado no Malbec Magnetic da O Boticário, destacando suas notas olfativas, ocasiões de uso e o posicionamento da fragrância como uma opção sofisticada para homens que buscam uma experiência olfativa marcante.",
         "filter_search": {"collection_id": ["oboticario"]},
         "content_count": 5,
         "body_min_chars": 700,
