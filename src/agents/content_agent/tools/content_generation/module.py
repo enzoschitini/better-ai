@@ -466,14 +466,11 @@ class GenerateContent:
             aggregated_usage_metadata = self._merge_usage_metadata(usage_metadata_list)
             if aggregated_usage_metadata is not None:
                 self.logger.info("Consolidated usage metadata: %s", aggregated_usage_metadata)
-                import json
-
+                
                 usage_metadata = {
                     "by_variant": usage_metadata_list,
                     "aggregated": aggregated_usage_metadata,
                 }
-
-                print(f"Usage Metadata:\n{json.dumps(usage_metadata, indent=2)}")
 
             return ContentBatchOutput(
                 query=query,
