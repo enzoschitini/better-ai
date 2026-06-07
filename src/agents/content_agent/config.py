@@ -1,6 +1,9 @@
 LOCAL_MEMORY_DB = "src/agents/content_agent/data/"
 DEFAULT_MODEL = "gpt-4.1-mini"
 
+PINECONE_INDEX_NAME = "backai-vectorstore"
+PINECONE_MAIN_NAMESPACE = "knowledge_base_content_agent_oboticario"
+
 PROMPT = {
     "description": """
 Você é um agente especializado em trabalhar analizando uma base de conhecimento (RAG).
