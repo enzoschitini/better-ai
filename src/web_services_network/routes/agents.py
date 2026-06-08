@@ -1,4 +1,7 @@
 import json
+import time
+import uuid
+from datetime import datetime, timezone
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from typing import Any, List, Optional
@@ -15,7 +18,7 @@ router = APIRouter(
 
 class AgentStreamRequest(BaseModel):
     ask: str
-    citys: List[str]
+    cities: List[str]
     session_id: Optional[str] = None
     user_id: Optional[str] = None
     clear_tool_metadata: bool = False
@@ -24,26 +27,32 @@ class AgentStreamRequest(BaseModel):
 def _default_serializer(obj: Any) -> Any:
     """Fallback serializer for objects that json.dumps does not natively support
     (e.g. RunContentEvent and other Pydantic/Agno models)."""
-    # Pydantic v2
-    if hasattr(obj, "model_dump"):
-        try:
-            return obj.model_dump()
-        except Exception:
-            pass
-    # Pydantic v1
-    if hasattr(obj, "dict") and callable(getattr(obj, "dict")):
-        try:
-            return obj.dict()
-        except Exception:
-            pass
-    # Enums
-    if hasattr(obj, "value") and hasattr(obj, "name"):
-        return obj.value
-    # Dataclasses / generic objects
-    if hasattr(obj, "__dict__"):
-        return {k: v for k, v in vars(obj).items() if not k.startswith("_")}
-    # Last resort
-    return str(obj)
+    try:
+        # Pydantic v2
+        if hasattr(obj, "model_dump"):
+            try:
+                return obj.model_dump()
+            except Exception:
+                pass
+        # Pydantic v1
+        if hasattr(obj, "dict") and callable(getattr(obj, "dict")):
+            try:
+                return obj.dict()
+            except Exception:
+                pass
+        # Enums
+        if hasattr(obj, "value") and hasattr(obj, "name"):
+            return obj.value
+        # Dataclasses / generic objects
+        if hasattr(obj, "__dict__"):
+            return {k: v for k, v in vars(obj).items() if not k.startswith("_")}
+        # Last resort
+        return str(obj)
+
+    except Exception as e:
+        raise TypeError(
+            f"Object of type {type(obj).__name__} is not JSON serializable: {str(e)}"
+        )
 
 
 @router.post(
@@ -58,7 +67,7 @@ async def run_agent_stream(request: AgentStreamRequest):
     try:
         runner = AgentExecutor.from_agent_class(
             agent_class=BaseAgent,
-            params={"citys": request.citys},
+            params={"cities": request.cities},
             session_id=request.session_id,
             user_id=request.user_id,
         )
@@ -69,6 +78,14 @@ async def run_agent_stream(request: AgentStreamRequest):
         ) from exc
 
     def stream_generator():
+        # Métricas para o MetadataResponse final
+        request_id = str(uuid.uuid4())
+        started_at = datetime.now(timezone.utc)
+        start_perf = time.perf_counter()
+        chunk_count = 0
+        status = "success"
+        error_message: Optional[str] = None
+
         try:
             for chunk in runner.run_stream(
                 ask=request.ask,
@@ -80,15 +97,45 @@ async def run_agent_stream(request: AgentStreamRequest):
                     ensure_ascii=False,
                     default=_default_serializer,
                 )
+                chunk_count += 1
                 yield f"data: {payload}\n\n"
-            # Sinaliza fim do stream (padrão SSE)
-            yield "data: [DONE]\n\n"
+
         except Exception as exc:
+            status = "error"
+            error_message = str(exc)
             error_payload = json.dumps(
-                {"event": "error", "message": str(exc)},
+                {"event": "error", "message": error_message},
                 ensure_ascii=False,
             )
             yield f"data: {error_payload}\n\n"
+
+        finally:
+            finished_at = datetime.now(timezone.utc)
+            duration_ms = int((time.perf_counter() - start_perf) * 1000)
+
+            metadata = {
+                "event": "MetadataResponse",
+                "data": {
+                    "request_id": request_id,
+                    "session_id": request.session_id,
+                    "user_id": request.user_id,
+                    "status": status,
+                    "error": error_message,
+                    "chunk_count": chunk_count,
+                    "started_at": started_at.isoformat(),
+                    "finished_at": finished_at.isoformat(),
+                    "duration_ms": duration_ms,
+                    "input": {
+                        "ask": request.ask,
+                        "cities": request.cities,
+                        "clear_tool_metadata": request.clear_tool_metadata,
+                    },
+                },
+            }
+            yield f"data: {json.dumps(metadata, ensure_ascii=False, default=_default_serializer)}\n\n"
+
+            # Sinaliza fim do stream (padrão SSE)
+            yield "data: [DONE]\n\n"
 
     return StreamingResponse(
         stream_generator(),
@@ -106,7 +153,7 @@ curl --location 'http://localhost:8000/agents/stream' \
 --header 'Accept: text/event-stream' \
 --data '{
     "ask": "Quais são as principais tendências de mobilidade urbana?",
-    "citys": ["São Paulo", "Rio de Janeiro"],
+    "cities": ["São Paulo", "Rio de Janeiro"],
     "session_id": "session-123",
     "user_id": "user-456",
     "clear_tool_metadata": false
