@@ -1,3 +1,5 @@
+import json
+
 from src.utils.unique_id_factory import IDGenerator
 
 from src.agents.trend_radar.agent import BaseAgent
@@ -20,6 +22,15 @@ if __name__ == "__main__":
         event_name = parsed.get("event")
         content = parsed.get("content", "")
         tool_name = parsed.get("tool_name")
+        tool_payload = None
+
+        if isinstance(chunk, dict):
+            tool_payload = chunk.get("payload")
+
+        if tool_payload is None:
+            raw_chunk = parsed.get("raw")
+            if isinstance(raw_chunk, dict):
+                tool_payload = raw_chunk.get("payload")
 
         if event_name and event_name != "RunContent":
             suffix = f" [{tool_name}]" if tool_name else ""
@@ -27,6 +38,10 @@ if __name__ == "__main__":
 
         if content:
             print(content, end="", flush=True)
+        
+        if event_name and event_name == "ToolCallCompleted":
+            print("\n[ToolPayload]")
+            print(json.dumps(tool_payload or {}, ensure_ascii=False, indent=2))
 
     print()
 

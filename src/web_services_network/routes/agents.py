@@ -82,28 +82,18 @@ class RunAgent:
             finished_at = datetime.now(timezone.utc)
             duration_ms = int((time.perf_counter() - start_perf) * 1000)
 
-            response_metadata = {
-                "event": "MetadataResponse",
-                "data": {
-                    "request_id": request_id,
-                    "session_id": self.session_id,
-                    "user_id": self.user_id,
-                    "status": status,
-                    "error": error_message,
-                    "chunk_count": chunk_count,
-                    "started_at": started_at.isoformat(),
-                    "finished_at": finished_at.isoformat(),
-                    "duration_ms": duration_ms,
-                    "input": {
-                        "ask": self.ask,
-                        "metadata": request_metadata,
-                    },
-                },
-            }
+            response_metadata = self._format_metadata_response(
+                request_id=request_id,
+                status=status,
+                error=error_message,
+                chunk_count=chunk_count,
+                started_at=started_at,
+                finished_at=finished_at,
+                duration_ms=duration_ms,
+            )
+            
             yield self._add_event(response_metadata)
 
-            # Sinaliza fim do stream (padrão SSE)
-            #yield "data: [DONE]\n\n"
             end = {
                 "event": "StreamEnd",
                 "message": "Stream finished"
@@ -117,6 +107,24 @@ class RunAgent:
 
     def _add_event(self, data: Dict[str, Any]) -> str:
         return f"data: {json.dumps(data, ensure_ascii=False, default=self._default_serializer)}\n\n"
+    
+    def _format_metadata_response(self, **kwargs) -> Dict[str, Any]:
+        return {
+            "request_id": str(uuid.uuid4()),
+            "session_id": self.session_id,
+            "user_id": self.user_id,
+            "status": kwargs.get("status", "success"),
+            "error": kwargs.get("error"),
+            "chunk_count": kwargs.get("chunk_count", 0),
+            "started_at": kwargs.get("started_at", datetime.now(timezone.utc)).isoformat(),
+            "finished_at": kwargs.get("finished_at", datetime.now(timezone.utc)).isoformat(),
+            "duration_ms": kwargs.get("duration_ms", 0),
+            "input": {
+                "ask": self.ask,
+                "metadata": self.metadata,
+            },
+        }
+    
 
     def _default_serializer(self, obj: Any) -> Any:
         """Fallback serializer for objects that json.dumps does not natively support
