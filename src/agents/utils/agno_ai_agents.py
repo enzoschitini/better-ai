@@ -1,10 +1,5 @@
 from src.agents.utils.tool_context import ToolContext
 
-class ToolContext:
-    def __init__(self):
-        self.tool_context = ToolContext()
-
-
 class BaseAgent:
     def create_agent(self, metadata: dict, tool_context: ToolContext):
         raise NotImplementedError
