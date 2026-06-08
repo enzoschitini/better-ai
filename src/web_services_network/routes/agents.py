@@ -17,11 +17,10 @@ router = APIRouter(
 
 
 class AgentStreamRequest(BaseModel):
-    ask: str
-    cities: List[str]
     session_id: Optional[str] = None
     user_id: Optional[str] = None
-    clear_tool_metadata: bool = False
+    ask: str
+    cities: List[str]
 
 
 def _default_serializer(obj: Any) -> Any:
@@ -87,9 +86,15 @@ async def run_agent_stream(request: AgentStreamRequest):
         error_message: Optional[str] = None
 
         try:
+            init = {
+                "event": "StreamStart",
+                "message": "Stream started"
+            }
+            
+            yield f"data: {json.dumps(init, ensure_ascii=False, default=_default_serializer)}\n\n"
+
             for chunk in runner.run_stream(
-                ask=request.ask,
-                clear_tool_metadata=request.clear_tool_metadata,
+                ask=request.ask
             ):
                 parsed = runner.parse(chunk)
                 payload = json.dumps(
@@ -128,14 +133,19 @@ async def run_agent_stream(request: AgentStreamRequest):
                     "input": {
                         "ask": request.ask,
                         "cities": request.cities,
-                        "clear_tool_metadata": request.clear_tool_metadata,
                     },
                 },
             }
             yield f"data: {json.dumps(metadata, ensure_ascii=False, default=_default_serializer)}\n\n"
 
             # Sinaliza fim do stream (padrão SSE)
-            yield "data: [DONE]\n\n"
+            #yield "data: [DONE]\n\n"
+            end = {
+                "event": "StreamEnd",
+                "message": "Stream finished"
+            }
+
+            yield f"data: {json.dumps(end, ensure_ascii=False, default=_default_serializer)}\n\n"
 
     return StreamingResponse(
         stream_generator(),
@@ -155,7 +165,6 @@ curl --location 'http://localhost:8000/agents/stream' \
     "ask": "Quais são as principais tendências de mobilidade urbana?",
     "cities": ["São Paulo", "Rio de Janeiro"],
     "session_id": "session-123",
-    "user_id": "user-456",
-    "clear_tool_metadata": false
+    "user_id": "user-456"
   }'
 """
