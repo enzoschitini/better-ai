@@ -21,7 +21,6 @@ class AgentStreamRequest(BaseModel):
     user_id: Optional[str] = None
     ask: str
     metadata: Optional[Dict[str, Any]] = None
-    metadada: Optional[Dict[str, Any]] = None
 
 
 def _default_serializer(obj: Any) -> Any:
@@ -64,25 +63,19 @@ def _default_serializer(obj: Any) -> Any:
     ),
 )
 async def run_agent_stream(request: AgentStreamRequest):
-    request_metadata = request.metadata or request.metadada
+    request_metadata = request.metadata
     if not request_metadata:
         raise HTTPException(
             status_code=400,
-            detail="Field 'metadata' (or 'metadada') is required and must be a JSON object.",
-        )
-
-    if "cities" not in request_metadata:
-        raise HTTPException(
-            status_code=400,
-            detail="metadata must contain 'cities'.",
+            detail="Field 'metadata' is required and must be a JSON object.",
         )
 
     try:
         runner = AgentExecutor.from_agent_class(
             agent_class=BaseAgent,
-            params={"metadata": request_metadata},
             session_id=request.session_id,
             user_id=request.user_id,
+            params=request_metadata,
         )
     except Exception as exc:
         raise HTTPException(
