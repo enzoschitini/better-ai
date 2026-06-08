@@ -58,28 +58,25 @@ class RunAgent:
                 "message": "Stream started"
             }
             
-            yield f"data: {json.dumps(init, ensure_ascii=False, default=self._default_serializer)}\n\n"
+            yield self._add_event(init)
 
             for chunk in agent.run_stream(
                 ask=self.ask
             ):
                 parsed = agent.parse(chunk)
-                payload = json.dumps(
-                    parsed,
-                    ensure_ascii=False,
-                    default=self._default_serializer,
-                )
                 chunk_count += 1
-                yield f"data: {payload}\n\n"
+                yield self._add_event({
+                    "event": "AgentChunk",
+                    "data": parsed
+                })
 
         except Exception as exc:
             status = "error"
             error_message = str(exc)
-            error_payload = json.dumps(
-                {"event": "error", "message": error_message},
-                ensure_ascii=False,
-            )
-            yield f"data: {error_payload}\n\n"
+            yield self._add_event({
+                "event": "error",
+                "message": error_message
+            })
 
         finally:
             finished_at = datetime.now(timezone.utc)
@@ -103,7 +100,7 @@ class RunAgent:
                     },
                 },
             }
-            yield f"data: {json.dumps(response_metadata, ensure_ascii=False, default=self._default_serializer)}\n\n"
+            yield self._add_event(response_metadata)
 
             # Sinaliza fim do stream (padrão SSE)
             #yield "data: [DONE]\n\n"
@@ -112,12 +109,15 @@ class RunAgent:
                 "message": "Stream finished"
             }
 
-            yield f"data: {json.dumps(end, ensure_ascii=False, default=self._default_serializer)}\n\n"
+            yield self._add_event(end)
 
     # -----------------------------------------
     # STREAM HELPERS
     # -----------------------------------------
-    
+
+    def _add_event(self, data: Dict[str, Any]) -> str:
+        return f"data: {json.dumps(data, ensure_ascii=False, default=self._default_serializer)}\n\n"
+
     def _default_serializer(self, obj: Any) -> Any:
         """Fallback serializer for objects that json.dumps does not natively support
         (e.g. RunContentEvent and other Pydantic/Agno models)."""
