@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime, timezone
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
-from typing import Any, List, Optional
+from typing import Any, Dict, Optional
 from pydantic import BaseModel
 
 from src.agents.trend_radar.agent import BaseAgent
@@ -20,7 +20,8 @@ class AgentStreamRequest(BaseModel):
     session_id: Optional[str] = None
     user_id: Optional[str] = None
     ask: str
-    cities: List[str]
+    metadata: Optional[Dict[str, Any]] = None
+    metadada: Optional[Dict[str, Any]] = None
 
 
 def _default_serializer(obj: Any) -> Any:
@@ -63,10 +64,23 @@ def _default_serializer(obj: Any) -> Any:
     ),
 )
 async def run_agent_stream(request: AgentStreamRequest):
+    request_metadata = request.metadata or request.metadada
+    if not request_metadata:
+        raise HTTPException(
+            status_code=400,
+            detail="Field 'metadata' (or 'metadada') is required and must be a JSON object.",
+        )
+
+    if "cities" not in request_metadata:
+        raise HTTPException(
+            status_code=400,
+            detail="metadata must contain 'cities'.",
+        )
+
     try:
         runner = AgentExecutor.from_agent_class(
             agent_class=BaseAgent,
-            params={"cities": request.cities},
+            params={"metadata": request_metadata},
             session_id=request.session_id,
             user_id=request.user_id,
         )
@@ -118,7 +132,7 @@ async def run_agent_stream(request: AgentStreamRequest):
             finished_at = datetime.now(timezone.utc)
             duration_ms = int((time.perf_counter() - start_perf) * 1000)
 
-            metadata = {
+            response_metadata = {
                 "event": "MetadataResponse",
                 "data": {
                     "request_id": request_id,
@@ -132,11 +146,11 @@ async def run_agent_stream(request: AgentStreamRequest):
                     "duration_ms": duration_ms,
                     "input": {
                         "ask": request.ask,
-                        "cities": request.cities,
+                        "metadata": request_metadata,
                     },
                 },
             }
-            yield f"data: {json.dumps(metadata, ensure_ascii=False, default=_default_serializer)}\n\n"
+            yield f"data: {json.dumps(response_metadata, ensure_ascii=False, default=_default_serializer)}\n\n"
 
             # Sinaliza fim do stream (padrão SSE)
             #yield "data: [DONE]\n\n"
@@ -163,7 +177,9 @@ curl --location 'http://localhost:8000/agents/stream' \
 --header 'Accept: text/event-stream' \
 --data '{
     "ask": "Quais são as principais tendências de mobilidade urbana?",
-    "cities": ["São Paulo", "Rio de Janeiro"],
+        "metadata": {
+            "cities": ["São Paulo", "Rio de Janeiro"]
+        },
     "session_id": "session-123",
     "user_id": "user-456"
   }'
