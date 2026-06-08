@@ -9,7 +9,7 @@ from rich.panel import Panel
 from src.agents.agent_executor.agent_factory import LocalAgentFactory
 from src.agents.agent_executor.api_client import AgentApiClient
 from src.agents.agent_executor.response_formatter import ResponseFormatter
-from src.agents.agent_executor.tool_collector import ToolCollector
+from src.agents.agent_executor.tool_context import ToolContext
 from src.agents.agent_executor.config import DEFAULT_BANNER
 
 from src.utils.unique_id_factory import IDGenerator
@@ -32,7 +32,7 @@ class AgentExecutor:
         self,
         agent: Agent,
         *,
-        tool_collector: Optional[ToolCollector] = None,
+        tool_collector: Optional[ToolContext] = None,
         session_id: Optional[str] = None,
         user_id: Optional[str] = None,
         console: Optional[Console] = None,
@@ -40,7 +40,7 @@ class AgentExecutor:
         self.agent = agent
         self.session_id = session_id
         self.user_id = user_id
-        self.tool_collector = tool_collector or ToolCollector()
+        self.tool_collector = tool_collector or ToolContext()
         self.console = console or Console()
 
     @classmethod
@@ -66,7 +66,7 @@ class AgentExecutor:
         factory.register(agent_name, agent_class)
         agent, tool_context = factory.create_agent(agent_name, metadata)
 
-        collector = ToolCollector(tool_context.tool_context)
+        collector = ToolContext(tool_context.tool_context)
         return cls(
             agent=agent,
             tool_collector=collector,

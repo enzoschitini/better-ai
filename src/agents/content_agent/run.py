@@ -34,5 +34,6 @@ if __name__ == "__main__":
 
 # Criar um post para Instagram focado em tendências de mercado para perfumes masculinos, destacando os produtos da linha Malbec. Inclua informações sobre notas olfativas e sugestões de uso.
 # Quero um post sobre o Malbec Magnetic
+# Liste os perfumes da base
 
 # python -m src.agents.content_agent.run

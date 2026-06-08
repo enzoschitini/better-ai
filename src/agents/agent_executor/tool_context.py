@@ -2,7 +2,7 @@ import json
 from typing import Any, Dict, Optional
 
 
-class ToolCollector:
+class ToolContext:
     """Collects tool metadata from the shared ToolResponse context."""
 
     def __init__(self, tool_context: Optional[Any] = None):
