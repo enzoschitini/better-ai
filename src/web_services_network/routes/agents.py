@@ -193,9 +193,10 @@ async def run_agent_stream(request: AgentStreamRequest):
     )
 
     agent = runner.create_agent(agent_class=BaseAgent)
+    content_stream = runner.stream_generator(agent, request_metadata)
 
     return StreamingResponse(
-        runner.stream_generator(agent, request_metadata),
+        content=content_stream,
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
