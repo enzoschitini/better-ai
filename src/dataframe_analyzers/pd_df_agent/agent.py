@@ -316,3 +316,62 @@ class DataframeAgent:
         self._get_tools()
         self.create_agent()
         return self.invoke(user_query)
+
+if __name__ == "__main__":
+    import seaborn as sns
+    import pandas as pd
+
+    df = sns.load_dataset("titanic")       # Titanic
+
+    agent = DataframeAgent(
+        dataframe=df,
+    )
+
+    result = agent.run_agent(
+        #"How many passengers are in each class?"
+        "Generate a bar chart showing the number of passengers in each class."
+    )
+
+    with open("agent_response.json", "w", encoding="utf-8") as f:
+        import json
+        json.dump(result, f, ensure_ascii=False, indent=2)
+
+    print(result["output"])
+
+
+
+"""
+{
+  "input": "How many passengers are in each class?",
+  "output": "The number of passengers in each class is as follows:\n\n- First Class: 216 passengers\n- Second Class: 184 passengers\n- Third Class: 491 passengers\n\nThis shows that the majority of passengers were in Third Class.",
+  "graphs": [],
+  "tool_result": null,
+  "usage": {
+    "input_tokens": 816,
+    "output_tokens": 114,
+    "total_tokens": 930,
+    "cost_usd": 0.00019079999999999998
+  }
+}
+
+{
+  "input": "Gere um grafico de barra do numero de mortos e sobrevicentes",
+  "output": "O gráfico de barras foi gerado com sucesso, mostrando o número de mortos e sobreviventes. \n\n### Insights do Gráfico:\n- **Mortos**: O número total de mortos é de 549.\n- **Sobreviventes**: O número total de sobreviventes é de 342.\n\nA visualização destaca a diferença significativa entre o número de mortos e sobreviventes, com mais mortos do que sobreviventes. Isso pode indicar a gravidade da situação representada pelos dados.",
+  "graphs": [
+    {
+      "file_name": "plot_94651e4de2764781bb50037b3013929c.png",
+      "image_base64": "..."
+    }
+  ],
+  "tool_result": null,
+  "usage": {
+    "input_tokens": 21187,
+    "output_tokens": 743,
+    "total_tokens": 21930,
+    "cost_usd": 0.0036238499999999996
+  }
+}
+
+"""
+
+# python -m src.dataframe_analyzers.pd_df_agent.agent

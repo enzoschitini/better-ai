@@ -78,6 +78,17 @@ class DataframeAnalyzer(Toolkit):
             report = agent.run_agent(query)
             response = report["output"]
 
+            for graph in report.get("graphs", []):
+                file_name = graph.get("file_name")
+                image_base64 = graph.get("image_base64")
+
+                # Salva imagem no disco
+                if file_name and image_base64:
+                    import base64
+                    with open(file_name, "wb") as img_file:
+                        img_file.write(base64.b64decode(image_base64))
+                    response += f"\n\n![{file_name}]({file_name})"
+
             self._update_response("dataframe_analyzer", {"response": response})
 
         except Exception as e:
@@ -117,7 +128,7 @@ if __name__ == "__main__":
     # df = pd.read_csv("https://raw.githubusercontent.com/mwaskom/seaborn-data/master/iris.csv")
 
     tool = DataframeAnalyzer(dataframe=df)
-    response = tool.dataframe_analyzer("Qual o numero de sobreviventes?")
+    response = tool.dataframe_analyzer("Generate a bar chart showing the number of passengers in each class.")
     print(response)
 
 # python -m src.agents.datafram_agent.tools.toolkit

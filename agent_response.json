@@ -1,0 +1,12 @@
+{
+  "input": "How many passengers are in each class?",
+  "output": "The number of passengers in each class is as follows:\n\n- First Class: 216 passengers\n- Second Class: 184 passengers\n- Third Class: 491 passengers\n\nThis shows that the majority of passengers were in Third Class.",
+  "graphs": [],
+  "tool_result": null,
+  "usage": {
+    "input_tokens": 816,
+    "output_tokens": 114,
+    "total_tokens": 930,
+    "cost_usd": 0.00019079999999999998
+  }
+}
