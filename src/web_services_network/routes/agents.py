@@ -83,6 +83,7 @@ class RunAgent:
             duration_ms = int((time.perf_counter() - start_perf) * 1000)
 
             response_metadata = self._format_metadata_response(
+                event="MetadataResponse",
                 request_id=request_id,
                 status=status,
                 error=error_message,
@@ -110,6 +111,7 @@ class RunAgent:
     
     def _format_metadata_response(self, **kwargs) -> Dict[str, Any]:
         return {
+            "event": kwargs.get("event", "MetadataResponse"),
             "request_id": str(uuid.uuid4()),
             "session_id": self.session_id,
             "user_id": self.user_id,
