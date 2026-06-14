@@ -76,25 +76,20 @@ class DataframeAnalyzer(Toolkit):
             )
 
             report = agent.run_agent(query)
-            response = report["output"]
+            text = report["output"]
+            graphs = report.get("graphs", [])
 
-            for graph in report.get("graphs", []):
-                file_name = graph.get("file_name")
-                image_base64 = graph.get("image_base64")
-
-                # Salva imagem no disco
-                if file_name and image_base64:
-                    import base64
-                    with open(file_name, "wb") as img_file:
-                        img_file.write(base64.b64decode(image_base64))
-                    response += f"\n\n![{file_name}]({file_name})"
-
-            self._update_response("dataframe_analyzer", {"response": response})
+            self._update_response(
+                "dataframe_analyzer", {
+                    "text": text,
+                    "graphs": graphs 
+                }
+            )
 
         except Exception as e:
             return f"Failed to generate context of research: {str(e)}"
 
-        return response
+        return text
 
 if __name__ == "__main__":
     import seaborn as sns

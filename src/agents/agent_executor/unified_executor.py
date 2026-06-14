@@ -396,11 +396,16 @@ class AgentExecutor:
                 break
 
             try:
-                self.run_print_response(
+                tool_metadata = self.run_print_response(
                     ask,
                     print_tool_response=print_tool_response,
                     clear_tool_metadata=clear_tool_metadata_each_turn,
                 )
+
+                return {
+                    "ask": ask,
+                    "tool_metadata": tool_metadata,
+                }
             except Exception as e:
                 print(f"Error: {e}")
 
