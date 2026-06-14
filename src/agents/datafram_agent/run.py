@@ -77,21 +77,7 @@ if __name__ == "__main__":
         # session_id=IDGenerator().uuid(),
         # user_id="user_01",
     )
-    response = executor.run_cli_loop(print_tool_response=True)
-
-    graphs = response.get("tool_metadata", {}).get("dataframe_analyzer", {}).get("graphs", [])
-    for file_name, image_base64 in graphs:
-        image_base64 = image_base64.strip()
-
-        if "," in image_base64:
-            image_base64 = image_base64.split(",")[1]
-
-        missing_padding = len(image_base64) % 4
-        if missing_padding:
-            image_base64 += "=" * (4 - missing_padding)
-
-        with open(file_name, "wb") as f:
-            f.write(base64.b64decode(image_base64))
+    executor.run_cli_loop(print_tool_response=True)
 
     # Qual o numero de sobreviventes?
     # Gere um grafico de barra do numero de mortos e sobrevicentes 

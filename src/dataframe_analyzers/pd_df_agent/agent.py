@@ -318,10 +318,12 @@ class DataframeAgent:
         return self.invoke(user_query)
 
 if __name__ == "__main__":
+    import json
+    import base64
     import seaborn as sns
     import pandas as pd
 
-    df = sns.load_dataset("titanic")       # Titanic
+    df = sns.load_dataset("titanic")
 
     agent = DataframeAgent(
         dataframe=df,
@@ -332,9 +334,24 @@ if __name__ == "__main__":
         "Generate a bar chart showing the number of passengers in each class."
     )
 
+    # Save the full response to a JSON file for inspection
     with open("agent_response.json", "w", encoding="utf-8") as f:
-        import json
         json.dump(result, f, ensure_ascii=False, indent=2)
+    
+    # Save graphs to files
+    for graph in result.get("graphs", []):
+        file_name = graph["file_name"]
+        image_base64 = graph["image_base64"].strip()
+
+        if "," in image_base64:
+            image_base64 = image_base64.split(",")[1]
+
+        missing_padding = len(image_base64) % 4
+        if missing_padding:
+            image_base64 += "=" * (4 - missing_padding)
+
+        with open(file_name, "wb") as f:
+            f.write(base64.b64decode(image_base64))
 
     print(result["output"])
 
