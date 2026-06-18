@@ -331,7 +331,8 @@ if __name__ == "__main__":
 
     result = agent.run_agent(
         #"How many passengers are in each class?"
-        "Generate a bar chart showing the number of passengers in each class."
+        #"Generate a bar chart showing the number of passengers in each class."
+        "Gere dois: 1 grafico da media de idade por genero 2 media de idade por classe"
     )
 
     # Save the full response to a JSON file for inspection

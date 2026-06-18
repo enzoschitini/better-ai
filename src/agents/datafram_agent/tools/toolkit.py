@@ -74,11 +74,6 @@ class DataframeAnalyzer(Toolkit):
             import os
             import base64
 
-            yield {
-                "type": "tool_response",
-                "tool_name": "dataframe_analyzer",
-            }
-
             agent = DataframeAgent(
                 dataframe=self.dataframe,
             )
@@ -87,7 +82,7 @@ class DataframeAnalyzer(Toolkit):
             text = report["output"]
 
             # Save graphs to files
-            base_path = "dataframe_analyzer/graphs"
+            base_path = "src/agents/datafram_agent/graphs"
             os.makedirs(base_path, exist_ok=True)
 
             graphs = report.get("graphs", [])
