@@ -71,18 +71,51 @@ class DataframeAnalyzer(Toolkit):
             str: A report containing analysis results, insights, and possible visualizations. IN MARKDOWN
         """
         try:
+            import os
+            import base64
+
+            yield {
+                "type": "tool_response",
+                "tool_name": "dataframe_analyzer",
+            }
+
             agent = DataframeAgent(
                 dataframe=self.dataframe,
             )
 
             report = agent.run_agent(query)
             text = report["output"]
+
+            # Save graphs to files
+            base_path = "dataframe_analyzer/graphs"
+            os.makedirs(base_path, exist_ok=True)
+
             graphs = report.get("graphs", [])
+            saved_graphs = []
+
+            for graph in graphs:
+                file_name = graph["file_name"]
+                image_base64 = graph["image_base64"].strip()
+
+                if "," in image_base64:
+                    image_base64 = image_base64.split(",")[1]
+
+                missing_padding = len(image_base64) % 4
+                if missing_padding:
+                    image_base64 += "=" * (4 - missing_padding)
+
+                with open(f"{base_path}/{file_name}", "wb") as f:
+                    f.write(base64.b64decode(image_base64))
+                
+                saved_graphs.append({
+                    "name": file_name,
+                    "graph": f"{base_path}/{file_name}"
+                })
 
             self._update_response(
                 "dataframe_analyzer", {
                     "text": text,
-                    "graphs": graphs 
+                    "graphs": saved_graphs 
                 }
             )
 
