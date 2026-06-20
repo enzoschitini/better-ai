@@ -1,16 +1,15 @@
+from dotenv import load_dotenv
+
 from agno.agent import Agent
 from agno.models.openai import OpenAIChat
-
-from src.agents._base_agent.config import (
-    PROMPT, DEFAULT_MODEL, LOCAL_MEMORY_DB
-)
 
 from src.agents._base_agent.tools.toolkit import BaseToolkit
 
 from src.agents.utils.database import Database
-from src.agents.utils.tool_context import ToolContext
-
-from dotenv import load_dotenv
+from src.agents.agent_executor.tool_context import ToolContext
+from src.agents._base_agent.config import (
+    PROMPT, DEFAULT_MODEL, LOCAL_MEMORY_DB
+)
 
 load_dotenv()
 
