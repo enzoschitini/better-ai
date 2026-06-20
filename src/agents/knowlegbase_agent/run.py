@@ -8,7 +8,7 @@ if __name__ == "__main__":
     executor = AgentExecutor.from_agent_class(
         agent_class=KnowledgeBaseAgent,
         params={
-            "filter_search": {}
+            "filter_search": {"collection_id": "oboticario"}
         },
         # session_id e user_id são opcionais — omita para usar os defaults
         # session_id=IDGenerator().uuid(),
