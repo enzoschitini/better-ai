@@ -13,7 +13,7 @@ from src.agents.knowlegbase_agent.config import (
 
 load_dotenv()
 
-class BaseAgent:
+class KnowledgeBaseAgent:
     def _validate_metadata(self, metadata: dict):
         if "session_id" not in metadata:
             raise ValueError("metadata must contain 'session_id'")
@@ -51,7 +51,5 @@ class BaseAgent:
                 )
             ]
         )
-
-# Qual a temperatura em Salvador?
 
 # python -m src.agents.knowlegbase_agent.agent

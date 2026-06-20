@@ -1,12 +1,12 @@
 from src.utils.unique_id_factory import IDGenerator
 
-from src.agents.knowlegbase_agent.agent import BaseAgent
+from src.agents.knowlegbase_agent.agent import KnowledgeBaseAgent
 from src.agents.agent_executor import AgentExecutor
 
 
 if __name__ == "__main__":
     executor = AgentExecutor.from_agent_class(
-        agent_class=BaseAgent,
+        agent_class=KnowledgeBaseAgent,
         params={
             "filter_search": {}
         },
