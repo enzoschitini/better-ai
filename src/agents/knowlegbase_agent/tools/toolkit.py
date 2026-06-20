@@ -20,29 +20,26 @@ class Toolkit(Toolkit):
     - Registering them in the `tools` list inside `__init__`
 
     Args:
-        enable_get_current_datetime (bool): Enable the current datetime tool. Default is True.
-        enable_get_temperature (bool): Enable the temperature tool. Default is True.
+        enable_get_context (bool): Enable the get context tool. Default is True.
         all (bool): Enable all tools. Overrides individual flags when True. Default is False.
         tool_context (ToolContext): Optional metadata collector. Default is None.
     """
     def __init__(
         self,
-        enable_get_current_datetime: bool = True,
-        enable_get_temperature: bool = True,
+        filter_search: dict,
+        enable_get_context: bool = True,
         all: bool = False,
         tool_context: ToolContext = None,
         **kwargs,
     ):
+        self.filter_search = filter_search
         self.tool_context = tool_context
         tools: List[Any] = []
 
-        if all or enable_get_current_datetime:
-            tools.append(self.get_current_datetime)
+        if all or enable_get_context:
+            tools.append(self.get_context)
 
-        if all or enable_get_temperature:
-            tools.append(self.get_temperature)
-
-        super().__init__(name="base_toolkit", tools=tools, **kwargs)
+        super().__init__(name="toolkit", tools=tools, **kwargs)
 
     def _update_response(self, tool_name: str, payload: dict):
         """
@@ -86,7 +83,7 @@ class Toolkit(Toolkit):
 
             documents = retriver.similarity_search(
                 query=query,
-                k=25,
+                k=5,
                 filter_search=self.filter_search
             )
 
@@ -99,13 +96,17 @@ class Toolkit(Toolkit):
                 {"files": manager.get_files()}
             )
 
+            print(f"Retrieved {len(documents)}")
+
         except Exception as e:
             return f"Failed to generate context of relevant documents: {str(e)}"
 
         return context
 
 if __name__ == "__main__":
-    toolkit = Toolkit()
+    toolkit = Toolkit(filter_search={})
+    result = toolkit.get_context("Resuma a base")
+    print(result)
 
 
 # python -m src.agents.knowlegbase_agent.tools.toolkit
