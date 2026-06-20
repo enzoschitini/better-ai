@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from agno.agent import Agent
 from agno.models.openai import OpenAIChat
 
-from src.agents.knowlegbase_agent.tools.toolkit import BaseToolkit
+from src.agents.knowlegbase_agent.tools.toolkit import Toolkit
 
 from src.agents.utils.database import Database
 from src.agents.agent_executor.tool_context import ToolContext
@@ -45,8 +45,9 @@ class BaseAgent:
             stream=True,
             debug_level=True,
             tools = [
-                BaseToolkit(
-                    tool_context=tool_context.tool_context
+                Toolkit(
+                    tool_context=tool_context.tool_context,
+                    filter_search={}
                 )
             ]
         )
