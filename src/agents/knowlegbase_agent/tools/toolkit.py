@@ -83,20 +83,28 @@ class Toolkit(Toolkit):
 
             documents = retriver.similarity_search(
                 query=query,
-                k=5,
+                k=30,
                 filter_search=self.filter_search
             )
 
             manager = RetrievalManager(docs=documents)
-            context = manager.generate_context()
+
+            filtred_documents = manager.filter_by_mean_score(documents)
+            context = manager.generate_context(filtred_documents)
+            files = manager.get_files(filtred_documents)
 
             # Collect metadata
             self._update_response(
                 "get_relevant_documents", 
-                {"files": manager.get_files()}
+                {"files": files}
             )
 
+            """
+            print(f"Generated context:\n{context}")
             print(f"Retrieved {len(documents)}")
+            print(f"Filtered down to {len(filtred_documents)} based on mean score")
+            print(f"Files metadata:\n{files}")
+            #"""
 
         except Exception as e:
             return f"Failed to generate context of relevant documents: {str(e)}"
@@ -106,7 +114,6 @@ class Toolkit(Toolkit):
 if __name__ == "__main__":
     toolkit = Toolkit(filter_search={})
     result = toolkit.get_context("Resuma a base")
-    print(result)
 
 
 # python -m src.agents.knowlegbase_agent.tools.toolkit
