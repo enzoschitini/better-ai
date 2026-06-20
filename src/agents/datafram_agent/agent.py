@@ -8,13 +8,13 @@ from src.agents.datafram_agent.config import (
 from src.agents.datafram_agent.tools.toolkit import DataframeAnalyzer
 
 from src.agents.utils.database import Database
-from src.agents.utils.agno_ai_agents import BaseAgent, ToolContext
+from src.agents.utils.tool_context import ToolContext
 
 from dotenv import load_dotenv
 
 load_dotenv()
 
-class DataframeAgent(BaseAgent):
+class DataframeAgent:
     def _validate_metadata(self, metadata: dict):
         if "session_id" not in metadata:
             raise ValueError("metadata must contain 'session_id'")
