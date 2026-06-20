@@ -8,7 +8,7 @@ if __name__ == "__main__":
     executor = AgentExecutor.from_agent_class(
         agent_class=BaseAgent,
         params={
-            "citys": ["Salvador", "São Paulo", "Rio de Janeiro"]
+            "filter_search": {}
         },
         # session_id e user_id são opcionais — omita para usar os defaults
         # session_id=IDGenerator().uuid(),

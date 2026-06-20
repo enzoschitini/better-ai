@@ -47,7 +47,7 @@ class BaseAgent:
             tools = [
                 Toolkit(
                     tool_context=tool_context.tool_context,
-                    filter_search={}
+                    filter_search=metadata.get("filter_search", None)
                 )
             ]
         )
