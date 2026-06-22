@@ -56,4 +56,5 @@ dependencies = [
     "groq~=0.37.1",
     "pandasai>=2.0.24",
     "streamlit>=1.56.0",
+    "anthropic>=0.105.2",
 ]

@@ -7,6 +7,7 @@ from src.tracing.tracing_core import ApplicationTracing
 tracer = ApplicationTracing(
     flag="Deep Research",
     file_name="context_builder.py",
+    show_info_logs=False
 )
 
 class TavilyContextBuilder:
@@ -30,11 +31,13 @@ class TavilyContextBuilder:
         try:
             research_results = self.researcher.start_search(search_config)
 
-            tracer.DEBUG(
+            """
+            tracer.INFO(
                 func_name="search",
                 message="Web search results",
                 metadata=research_results
             )
+            """
 
             return research_results
 
@@ -70,12 +73,14 @@ class TavilyContextBuilder:
             for item in filtered.get("results", []):
                 if isinstance(item, dict):
                     item.pop("raw_content", None)
-
-            tracer.DEBUG(
+            
+            """
+            tracer.INFO(
                 func_name="filter_results",
                 message="Web search results filtered",
                 metadata=filtered
             )
+            """
 
             return filtered
 
@@ -131,11 +136,13 @@ class TavilyContextBuilder:
 
             markdown = "\n".join(md)
 
-            tracer.DEBUG(
+            """
+            tracer.INFO(
                 func_name="to_markdown",
                 message="Web search results to markdown",
                 metadata=markdown
             )
+            """
 
             return markdown
 
@@ -156,12 +163,14 @@ class TavilyContextBuilder:
         urls = []
         for result in filtered_result["results"]:
             urls.append(result["url"])
-        
-        tracer.DEBUG(
+
+        """
+        tracer.INFO(
             func_name="get_web_sites",
             message="Links to analyzed sites",
             metadata=urls
         )
+        """
         
         return urls
 
@@ -178,7 +187,8 @@ class TavilyContextBuilder:
                 "urls": urls,
             }
 
-            tracer.DEBUG(
+            """
+            tracer.INFO(
                 func_name="build_context",
                 message="Research context built successfully",
                 metadata={
@@ -186,6 +196,7 @@ class TavilyContextBuilder:
                     "context": context,
                 }
             )
+            """
 
             return context
 
