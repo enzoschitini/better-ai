@@ -32,6 +32,29 @@ class RetrievalManager:
         except Exception as e:
             raise RuntimeError("Failed to filter documents by score:", str(e))
 
+    def filter_by_mean_score(
+        self, chunks: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
+        """
+        Filters chunks whose score is greater than or equal to the mean score of the list.
+
+        Args:
+            chunks: List of dicts containing a 'score' field.
+
+        Returns:
+            Filtered list with chunks at or above the mean. Returns [] if input is empty.
+
+        Raises:
+            RuntimeError: If an error occurs during calculation or filtering.
+        """
+        try:
+            if not chunks:
+                return []
+            mean = sum(c.get("score", 0) for c in chunks) / len(chunks)
+            return [c for c in chunks if c.get("score", 0) >= mean]
+        except Exception as exc:
+            raise RuntimeError(f"Failed to filter chunks by mean score: {str(exc)}")
+
     def generate_context(self, docs: List[Dict[str, Any]] = None) -> str:
         """
         Converte documentos para um formato compacto estilo toon.

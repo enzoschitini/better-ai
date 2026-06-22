@@ -4,11 +4,11 @@ import json
 from rich.console import Console
 from rich.panel import Panel
 
-from src.agents.files_talk.agent import FileTalkAgent
-from src.agents.files_talk.config import AGENT_AI_BANNER
+from agents.legacy.files_talk.agent import FileTalkAgent
+from agents.legacy.files_talk.config import AGENT_AI_BANNER
 
 from src.agents.utils.agno_ai_agents import AgnoAiAgents
-from src.agents.utils.test_agents.run_agent import RunAgent
+from src.agents.agent_executor import AgentExecutor
 from src.utils.unique_id_factory import IDGenerator
 
 class AgnoAgent:
@@ -45,7 +45,10 @@ class AgnoAgent:
         if "messages" not in st.session_state:
             st.session_state.messages = []
 
-        runner = RunAgent(agent=agent)
+        executor = AgentExecutor(
+            agent=agent,
+            tool_collector=None,
+        )
 
         # Mostrar histórico
         for msg in st.session_state.messages:
@@ -65,10 +68,10 @@ class AgnoAgent:
                 st.markdown(prompt)
 
             # Gera resposta fake
-            response = runner.js_response(ask=prompt)
+            response = executor.run_json(ask=prompt)
             content = response["content"]
             
-            #print(f"{json.dumps(tool_context.tool_responser.get_metadata(), indent=4, ensure_ascii=False)}")
+            #print(f"{json.dumps(tool_context.tool_context.get_metadata(), indent=4, ensure_ascii=False)}")
 
             # Salva resposta
             st.session_state.messages.append({

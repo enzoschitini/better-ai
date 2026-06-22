@@ -2,6 +2,9 @@ import uuid
 import base64
 from io import BytesIO
 
+import matplotlib
+# Force a non-GUI backend to avoid Tkinter thread errors on server/worker execution.
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from src.tracing.tracing_core import ApplicationTracing
 
@@ -22,10 +25,11 @@ class PlotCollector:
 
     def custom_show(self):
         buffer = BytesIO()
+        figure = plt.gcf()
 
         # Gera imagem em memória
-        plt.savefig(buffer, format="png")
-        plt.close()
+        figure.savefig(buffer, format="png")
+        plt.close(figure)
 
         buffer.seek(0)
         img_base64 = base64.b64encode(buffer.read()).decode("utf-8")
