@@ -1,8 +1,5 @@
 import streamlit as st
 
-# ---------------------------------------------------------------------------
-# Page registry — fonte única de verdade para todas as páginas
-# ---------------------------------------------------------------------------
 APPS: dict[str, dict] = {
     "about": {
         "label":       "📖 Sobre",
