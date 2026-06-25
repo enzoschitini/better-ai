@@ -1,5 +1,5 @@
 import streamlit as st
-from pages import PAGES, APPS
+from src.web_applications.utils.pages import PAGES, APPS
 
 # ---------------------------------------------------------------------------
 # Home page — src/web_applications/applications/home.py

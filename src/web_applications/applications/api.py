@@ -1,5 +1,5 @@
 import streamlit as st
-from web_app import PAGES
+from src.web_applications.utils.pages import PAGES
 
 st.set_page_config(page_title="API · BetterAI", page_icon="🔌", layout="wide")
 

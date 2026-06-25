@@ -1,5 +1,5 @@
 import streamlit as st
-from pages import PAGES
+from src.web_applications.utils.pages import PAGES
 
 # ---------------------------------------------------------------------------
 # Entry point — apenas configura e roda a navegação
