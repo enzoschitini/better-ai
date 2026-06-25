@@ -14,6 +14,7 @@ if __name__ == "__main__":
         # session_id=IDGenerator().uuid(),
         # user_id="user_01",
     )
-    executor.run_cli_loop(print_tool_response=True)
+    #executor.run_cli_loop(print_tool_response=True)
+    executor.run_stream_print("Olá")
 
 # python -m src.agents.knowlegbase_agent.run
