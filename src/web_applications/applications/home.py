@@ -20,9 +20,12 @@ st.title("BetterAI ✦")
 st.caption("Where intelligence finds purpose.")
 st.divider()
 
-cols = st.columns(len(APPS))
-for col, (slug, meta) in zip(cols, APPS.items()):
-    with col:
-        st.markdown(f"### {meta['label']}")
-        st.write(meta["description"])
-        st.page_link(PAGES[slug], label="Abrir →")
+password = st.text_input("Senha de acesso", type="password", placeholder="Digite a senha para acessar as aplicações...")
+
+if password == "BetterAI":
+    cols = st.columns(len(APPS))
+    for col, (slug, meta) in zip(cols, APPS.items()):
+        with col:
+            st.markdown(f"### {meta['label']}")
+            st.write(meta["description"])
+            st.page_link(PAGES[slug], label="Abrir →")
