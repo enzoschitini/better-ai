@@ -1,238 +1,240 @@
-import json
-import shlex
-import requests
-from typing import Dict, Any, Optional
-from urllib.parse import urlparse
+
+import inspect
+from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
+
+from dotenv import load_dotenv
+
+from agno.agent import Agent
+
+from agno.models.anthropic.claude import Claude
+from agno.models.google.gemini import Gemini
+from agno.models.groq.groq import Groq
+from agno.models.openai.chat import OpenAIChat
+from agno.models.openai.like import OpenAILike
+from agno.models.openai.open_responses import OpenResponses
+from agno.models.openai.responses import OpenAIResponses
+
+load_dotenv()
 
 
-class CurlCompiler:
-    def __init__(self, timeout: int = 30, verify_ssl: bool = True):
-        self.timeout = timeout
-        self.verify_ssl = verify_ssl
+class ModelGateway:
+    """
+    Unified and provider-aware model factory for Agno models.
 
-    # =========================================================
-    # PUBLIC API
-    # =========================================================
+    Supports providers:
+    - Anthropic -> Claude
+    - Google -> Gemini
+    - Groq -> Groq
+    - OpenAI -> OpenAIChat, OpenAIResponses, OpenResponses, OpenAILike
 
-    def compile(self, curl_command: str) -> Dict[str, Any]:
-        tokens = shlex.split(curl_command)
+    Main goals:
+    - Complete parameter support: any constructor parameter from the target model class can be passed.
+    - Intuitive API: one `create_model` and one `create_agent` entrypoint, plus convenience methods.
+    - Safe usage: optional strict validation for unknown parameters.
+    """
 
-        if not tokens or tokens[0] != "curl":
-            raise ValueError("Comando inválido. Deve iniciar com 'curl'.")
+    _MODEL_FACTORIES: Dict[str, Callable[..., Any]] = {
+        "anthropic": Claude,
+        "google": Gemini,
+        "groq": Groq,
+        "openai.chat": OpenAIChat,
+        "openai.responses": OpenAIResponses,
+        "openai.open_responses": OpenResponses,
+        "openai.like": OpenAILike,
+    }
 
-        result = {
-            "method": "GET",
-            "url": None,
-            "headers": {},
-            "params": {},
-            "data": None,
-            "json": None,
-            "auth": None,
-        }
+    _PROVIDER_ALIASES: Dict[str, str] = {
+        "anthropic": "anthropic",
+        "claude": "anthropic",
+        "google": "google",
+        "gemini": "google",
+        "groq": "groq",
+        "openai": "openai",
+        "open_ai": "openai",
+    }
 
-        i = 1
+    _OPENAI_VARIANT_ALIASES: Dict[str, str] = {
+        "chat": "chat",
+        "openai_chat": "chat",
+        "responses": "responses",
+        "openai_responses": "responses",
+        "open_responses": "open_responses",
+        "openresponses": "open_responses",
+        "like": "like",
+        "openai_like": "like",
+    }
 
-        while i < len(tokens):
-            token = tokens[i]
+    def __init__(self, strict_validation: bool = True) -> None:
+        self.strict_validation = strict_validation
 
-            # ==============================
-            # METHOD
-            # ==============================
-            if token in ["-X", "--request"]:
-                i += 1
-                result["method"] = tokens[i].upper()
+    @classmethod
+    def supported_providers(cls) -> Sequence[str]:
+        return ("anthropic", "google", "groq", "openai")
 
-            # ==============================
-            # HEADERS
-            # ==============================
-            elif token in ["-H", "--header"]:
-                i += 1
-                header = tokens[i]
+    @classmethod
+    def supported_openai_variants(cls) -> Sequence[str]:
+        return ("chat", "responses", "open_responses", "like")
 
-                if ":" in header:
-                    key, value = header.split(":", 1)
-                    result["headers"][key.strip()] = value.strip()
+    def supported_parameters(self, provider: str, openai_variant: str = "chat") -> List[str]:
+        factory_key = self._resolve_factory_key(provider=provider, openai_variant=openai_variant)
+        return self._get_constructor_param_names(factory_key)
 
-            # ==============================
-            # BODY
-            # ==============================
-            elif token in [
-                "-d",
-                "--data",
-                "--data-raw",
-                "--data-binary",
-                "--data-urlencode",
-            ]:
-                i += 1
-                raw_data = tokens[i]
-
-                try:
-                    parsed_json = json.loads(raw_data)
-                    result["json"] = parsed_json
-                except Exception:
-                    result["data"] = raw_data
-
-                # Define POST automaticamente
-                if result["method"] == "GET":
-                    result["method"] = "POST"
-
-            # ==============================
-            # BASIC AUTH
-            # ==============================
-            elif token in ["-u", "--user"]:
-                i += 1
-                auth = tokens[i]
-
-                if ":" in auth:
-                    username, password = auth.split(":", 1)
-                    result["auth"] = (username, password)
-
-            # ==============================
-            # URL
-            # ==============================
-            elif token.startswith("http://") or token.startswith("https://"):
-                result["url"] = token
-
-            i += 1
-
-        self._validate(result)
-
-        return result
-
-    def execute(self, curl_command: str) -> requests.Response:
-        request_data = self.compile(curl_command)
-
-        return self.call_endpoint(
-            method=request_data["method"],
-            url=request_data["url"],
-            headers=request_data["headers"],
-            data=request_data["data"],
-            json_data=request_data["json"],
-            auth=request_data["auth"],
-        )
-
-    def call_endpoint(
+    def create_model(
         self,
-        method: str,
-        url: str,
-        headers: Optional[Dict[str, str]] = None,
-        data: Optional[Any] = None,
-        json_data: Optional[Any] = None,
-        auth: Optional[tuple] = None,
-    ) -> requests.Response:
-        response = requests.request(
-            method=method,
-            url=url,
-            headers=headers,
-            data=data,
-            json=json_data,
-            auth=auth,
-            timeout=self.timeout,
-            verify=self.verify_ssl,
+        provider: str,
+        model_id: Optional[str] = None,
+        *,
+        openai_variant: str = "chat",
+        strict_validation: Optional[bool] = None,
+        **kwargs: Any,
+    ) -> Any:
+        """
+        Creates and returns an Agno model instance from the selected provider.
+
+        Args:
+            provider: One of `anthropic`, `google`, `groq`, `openai`.
+            model_id: Optional model id. If passed, overrides `id` in kwargs.
+            openai_variant: OpenAI family model class. One of
+                `chat`, `responses`, `open_responses`, `like`.
+            strict_validation: Overrides instance-level strict validation.
+            **kwargs: Any constructor parameter accepted by the selected class.
+        """
+        factory_key = self._resolve_factory_key(provider=provider, openai_variant=openai_variant)
+        constructor_kwargs = dict(kwargs)
+        if model_id is not None:
+            constructor_kwargs["id"] = model_id
+
+        should_validate = self.strict_validation if strict_validation is None else strict_validation
+        if should_validate:
+            self._validate_kwargs(factory_key, constructor_kwargs)
+
+        factory = self._MODEL_FACTORIES[factory_key]
+        return factory(**constructor_kwargs)
+
+    def create_agent(
+        self,
+        provider: str,
+        model_id: Optional[str] = None,
+        *,
+        openai_variant: str = "chat",
+        model_kwargs: Optional[Dict[str, Any]] = None,
+        **agent_kwargs: Any,
+    ) -> Agent:
+        """
+        Creates an `agno.agent.Agent` with the selected provider model.
+
+        Args:
+            provider: One of `anthropic`, `google`, `groq`, `openai`.
+            model_id: Optional model id.
+            openai_variant: OpenAI family model class.
+            model_kwargs: Optional constructor params for model creation.
+            **agent_kwargs: Extra kwargs forwarded to `Agent(...)`.
+        """
+        model = self.create_model(
+            provider=provider,
+            model_id=model_id,
+            openai_variant=openai_variant,
+            **(model_kwargs or {}),
+        )
+        return Agent(model=model, **agent_kwargs)
+
+    def anthropic(self, model_id: Optional[str] = None, **kwargs: Any) -> Claude:
+        return self.create_model(provider="anthropic", model_id=model_id, **kwargs)
+
+    def google(self, model_id: Optional[str] = None, **kwargs: Any) -> Gemini:
+        return self.create_model(provider="google", model_id=model_id, **kwargs)
+
+    def groq(self, model_id: Optional[str] = None, **kwargs: Any) -> Groq:
+        return self.create_model(provider="groq", model_id=model_id, **kwargs)
+
+    def openai_chat(self, model_id: Optional[str] = None, **kwargs: Any) -> OpenAIChat:
+        return self.create_model(
+            provider="openai",
+            model_id=model_id,
+            openai_variant="chat",
+            **kwargs,
         )
 
-        return response
+    def openai_responses(self, model_id: Optional[str] = None, **kwargs: Any) -> OpenAIResponses:
+        return self.create_model(
+            provider="openai",
+            model_id=model_id,
+            openai_variant="responses",
+            **kwargs,
+        )
 
-    # =========================================================
-    # HELPERS
-    # =========================================================
+    def open_responses(self, model_id: Optional[str] = None, **kwargs: Any) -> OpenResponses:
+        return self.create_model(
+            provider="openai",
+            model_id=model_id,
+            openai_variant="open_responses",
+            **kwargs,
+        )
 
-    def response_to_dict(self, response: requests.Response) -> Dict[str, Any]:
-        try:
-            body = response.json()
-        except Exception:
-            body = response.text
+    def openai_like(self, model_id: Optional[str] = None, **kwargs: Any) -> OpenAILike:
+        return self.create_model(
+            provider="openai",
+            model_id=model_id,
+            openai_variant="like",
+            **kwargs,
+        )
 
-        return {
-            "status_code": response.status_code,
-            "headers": dict(response.headers),
-            "body": body,
-            "success": response.ok,
-        }
+    def _resolve_factory_key(self, provider: str, openai_variant: str = "chat") -> str:
+        provider_key = (provider or "").strip().lower()
+        normalized_provider = self._PROVIDER_ALIASES.get(provider_key)
 
-    def pretty_print_response(self, response: requests.Response):
-        parsed = self.response_to_dict(response)
+        if normalized_provider is None:
+            raise ValueError(
+                f"Unsupported provider '{provider}'. Supported providers: {list(self.supported_providers())}"
+            )
 
-        print("=" * 60)
-        print(f"STATUS: {parsed['status_code']}")
-        print("=" * 60)
+        if normalized_provider != "openai":
+            return normalized_provider
 
-        print("\nHEADERS:")
-        print(json.dumps(parsed["headers"], indent=4, ensure_ascii=False))
+        variant_key = (openai_variant or "").strip().lower()
+        normalized_variant = self._OPENAI_VARIANT_ALIASES.get(variant_key)
+        if normalized_variant is None:
+            raise ValueError(
+                "Unsupported openai_variant "
+                f"'{openai_variant}'. Supported variants: {list(self.supported_openai_variants())}"
+            )
 
-        print("\nBODY:")
-        print(json.dumps(parsed["body"], indent=4, ensure_ascii=False)
-              if isinstance(parsed["body"], dict)
-              else parsed["body"])
+        return f"openai.{normalized_variant}"
 
-        print("=" * 60)
+    def _get_constructor_param_names(self, factory_key: str) -> List[str]:
+        constructor = self._MODEL_FACTORIES[factory_key]
+        signature = inspect.signature(constructor.__init__)
+        return [name for name in signature.parameters if name != "self"]
 
-    def get_domain(self, url: str) -> str:
-        return urlparse(url).netloc
+    def _validate_kwargs(self, factory_key: str, kwargs: Dict[str, Any]) -> None:
+        valid_params = set(self._get_constructor_param_names(factory_key))
+        invalid_params = sorted([key for key in kwargs.keys() if key not in valid_params])
 
-    def _validate(self, data: Dict[str, Any]):
-        if not data["url"]:
-            raise ValueError("URL não encontrada no CURL.")
+        if invalid_params:
+            raise ValueError(
+                f"Invalid parameters for '{factory_key}': {invalid_params}. "
+                f"Allowed parameters: {sorted(valid_params)}"
+            )
 
-        if not data["method"]:
-            raise ValueError("Método HTTP inválido.")
-
-    # =========================================================
-    # EXTRA FEATURES
-    # =========================================================
-
-    def generate_python_code(self, curl_command: str) -> str:
-        compiled = self.compile(curl_command)
-
-        code = f"""
-import requests
-
-response = requests.request(
-    method="{compiled['method']}",
-    url="{compiled['url']}",
-    headers={json.dumps(compiled['headers'], indent=4)},
-    json={json.dumps(compiled['json'], indent=4)},
-    data={repr(compiled['data'])}
-)
-
-print(response.status_code)
-print(response.text)
-"""
-
-        return code.strip()
-
-
-# =========================================================
-# EXEMPLO DE USO
-# =========================================================
 
 if __name__ == "__main__":
+    gateway = ModelGateway(strict_validation=True)
 
-    curl = '''
-    curl -X POST "https://httpbin.org/post" \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer TOKEN_123" \
-    -d '{"message":"hello world","value":123}'
-    '''
+    # Example 1: OpenAI chat model
+    chat_model = gateway.create_model(
+        provider="openai",
+        openai_variant="chat",
+        model_id="gpt-4.1-mini",
+        temperature=0.2,
+    )
 
-    curl = '''
-    curl --location --request POST 'http://localhost:8000/embedding'
-    '''
+    # Example 2: Build agent directly from the unified gateway
+    agent = gateway.create_agent(
+        provider="openai",
+        openai_variant="chat",
+        model_kwargs={"id": "gpt-4.1-mini", "temperature": 0.2},
+        markdown=True,
+    )
 
-    client = CurlCompiler(timeout=15)
-
-    # Compilar CURL
-    compiled = client.compile(curl)
-
-    print("\nCURL COMPILADO:")
-    print(json.dumps(compiled, indent=4, ensure_ascii=False))
-
-    # Executar
-    response = client.execute(curl)
-
-    # Mostrar resposta
-    client.pretty_print_response(response)
-
-    # Gerar código equivalente
-    print("\nCÓDIGO PYTHON GERADO:\n")
-    print(client.generate_python_code(curl))
+    _ = chat_model
+    agent.print_response("Hello!")

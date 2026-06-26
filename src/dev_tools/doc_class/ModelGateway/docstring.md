@@ -1,3 +1,4 @@
+```python
 import inspect
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
 
@@ -358,3 +359,27 @@ class ModelGateway:
                 f"Invalid parameters for '{factory_key}': {invalid_params}. "
                 f"Allowed parameters: {sorted(valid_params)}"
             )
+
+
+if __name__ == "__main__":
+    gateway = ModelGateway(strict_validation=True)
+
+    # Example 1: OpenAI chat model
+    chat_model = gateway.create_model(
+        provider="openai",
+        openai_variant="chat",
+        model_id="gpt-4.1-mini",
+        temperature=0.2,
+    )
+
+    # Example 2: Build agent directly from the unified gateway
+    agent = gateway.create_agent(
+        provider="openai",
+        openai_variant="chat",
+        model_kwargs={"id": "gpt-4.1-mini", "temperature": 0.2},
+        markdown=True,
+    )
+
+    _ = chat_model
+    agent.print_response("Hello!")
+```
