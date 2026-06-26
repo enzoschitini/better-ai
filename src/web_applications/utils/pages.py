@@ -1,6 +1,11 @@
 import streamlit as st
 
 APPS: dict[str, dict] = {
+    "classdoc": {
+        "label":       "🧾 ClassDoc",
+        "description": "Gerador de docstring e documentação de classe.",
+        "path":        "src/web_applications/applications/doc_class.py",
+    },
     "about": {
         "label":       "📖 Sobre",
         "description": "Informações sobre a plataforma.",

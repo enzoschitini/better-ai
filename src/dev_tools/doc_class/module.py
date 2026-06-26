@@ -1,4 +1,5 @@
 import time
+from pathlib import Path
 
 from src.dev_tools.doc_class.agent import GenereteDoc
 from src.dev_tools.doc_class.menage_files import TxtLoader, MarkdownSaver
@@ -54,17 +55,37 @@ class ClassDoc:
         except Exception as e:
             raise RuntimeError("Erro: ClassDoc.save_markdown", str(e))
 
+    def _output_file_path(self, name: str) -> str:
+        return str(Path(self.path) / self.class_name / f"{name}.md")
+
+    def generate_from_code(self, code: str) -> tuple[str, str, str, str]:
+        try:
+            start = time.perf_counter()
+
+            docstring, documentation = self._generate_doc(code)
+            self.save_markdown(docstring, "docstring")
+            self.save_markdown(documentation, "documentation")
+
+            docstring_path = self._output_file_path("docstring")
+            documentation_path = self._output_file_path("documentation")
+
+            end = time.perf_counter()
+            duration = end - start
+            tracer.INFO(f"Execution time: {duration:.2f} seconds")
+
+            return docstring, documentation, docstring_path, documentation_path
+
+        except Exception as e:
+            raise RuntimeError("Erro: ClassDoc.generate_from_code", str(e))
+
     def run(self):
         try:
             start = time.perf_counter()
 
             code = self.load_code()
-            docstring, documentation = self._generate_doc(code)
+            self.generate_from_code(code)
 
-            self.save_markdown(docstring, "docstring")
             tracer.INFO("Docstring saved successfully")
-
-            self.save_markdown(documentation, "documentation")
             tracer.INFO("Documentation saved successfully.")
 
             end = time.perf_counter()
