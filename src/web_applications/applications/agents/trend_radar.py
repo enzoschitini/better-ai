@@ -34,11 +34,12 @@ def collect_tool_payload(chunk: Any, parsed: Dict[str, Any]) -> Optional[Any]:
 def get_agent_response(prompt: str):
     runner: Optional[AgentExecutor] = st.session_state.get("trend_radar_runner")
     if runner is None:
+        id_generator = IDGenerator()
+
         runner = AgentExecutor.from_agent_class(
             agent_class=BaseAgent,
-            params={"citys": ["Salvador", "Sao Paulo", "Rio de Janeiro"]},
-            session_id=IDGenerator().uuid(),
-            user_id="streamlit_user",
+            session_id=id_generator.uuid(),
+            user_id=id_generator.timestamp(prefix="streamlit_user", separator="-", as_hex=True, suffix_len=6),
         )
         st.session_state.trend_radar_runner = runner
 
