@@ -1,5 +1,3 @@
-import random
-import time
 from typing import Any, Dict, Optional
 
 import streamlit as st
@@ -8,21 +6,10 @@ from src.agents.agent_executor import AgentExecutor
 from src.agents.trend_radar.agent import BaseAgent
 from src.utils.unique_id_factory import IDGenerator
 
-MOCK_RESPONSES = [
-    "Ola! Esta e uma resposta mockada para testar o chat.",
-    "Fluxo de chat funcionando com componentes nativos do Streamlit.",
-    "Mensagem recebida. No modo mockado, as respostas sao simuladas.",
-    "Tudo certo por aqui. Se quiser, ative o modo real no toggle acima.",
-]
-
 with st.sidebar:
     st.markdown("## ✦ BetterAI")
     st.markdown("---")
     st.markdown("Selecione uma aplicação abaixo para acessá-la.")
-
-def get_mock_response(_: str) -> str:
-    time.sleep(random.uniform(0.8, 1.4))
-    return random.choice(MOCK_RESPONSES)
 
 
 def collect_tool_payload(chunk: Any, parsed: Dict[str, Any]) -> Optional[Any]:
@@ -96,14 +83,6 @@ if "messages" not in st.session_state:
         {"role": "assistant", "content": "Ola! Pode enviar sua mensagem."}
     ]
 
-if "use_real_agent" not in st.session_state:
-    st.session_state.use_real_agent = False
-
-st.session_state.use_real_agent = st.toggle(
-    "Usar respostas reais (Trend Radar)",
-    value=st.session_state.use_real_agent,
-)
-
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.write(message["content"])
@@ -122,32 +101,31 @@ if prompt := st.chat_input("Digite sua mensagem"):
     with st.chat_message("assistant"):
         placeholder = st.empty()
 
-        if st.session_state.use_real_agent:
-            try:
-                st.session_state.last_tool_payload = None
-                chunks = []
+        try:
+            st.session_state.last_tool_payload = None
+            chunks = []
 
-                for chunk in get_agent_response(prompt):
-                    chunks.append(chunk)
-                    partial_reply = "".join(chunks)
-                    st.session_state.messages[assistant_message_index]["content"] = partial_reply
-                    placeholder.write(partial_reply)
+            for chunk in get_agent_response(prompt):
+                chunks.append(chunk)
+                partial_reply = "".join(chunks)
+                st.session_state.messages[assistant_message_index]["content"] = partial_reply
+                placeholder.write(partial_reply)
 
-                reply = "".join(chunks).strip()
-                if not reply:
-                    reply = "Nao consegui gerar uma resposta agora. Tente novamente em instantes."
+            reply = "".join(chunks).strip()
+            if not reply:
+                reply = "Nao consegui gerar uma resposta agora. Tente novamente em instantes."
 
-                st.session_state.messages[assistant_message_index]["content"] = reply
-                placeholder.write(reply)
-
-                tool_payload = st.session_state.last_tool_payload
-                st.session_state.messages[assistant_message_index]["tool_payload"] = tool_payload
-                render_sources(tool_payload)
-            except Exception:
-                reply = "Falha ao consultar o agente real agora. Tente novamente ou volte para o modo mockado."
-                st.session_state.messages[assistant_message_index]["content"] = reply
-                placeholder.write(reply)
-        else:
-            reply = get_mock_response(prompt)
             st.session_state.messages[assistant_message_index]["content"] = reply
             placeholder.write(reply)
+
+            tool_payload = st.session_state.last_tool_payload
+            st.session_state.messages[assistant_message_index]["tool_payload"] = tool_payload
+            render_sources(tool_payload)
+        except Exception:
+            reply = "Falha ao consultar o agente real agora. Tente novamente em instantes."
+            st.session_state.messages[assistant_message_index]["content"] = reply
+            placeholder.write(reply)
+
+# Test
+# O que estão falando da Copa do Mundo 2026
+
