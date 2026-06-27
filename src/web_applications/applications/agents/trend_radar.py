@@ -114,6 +114,11 @@ if prompt := st.chat_input("Digite sua mensagem"):
     with st.chat_message("user"):
         st.write(prompt)
 
+    st.session_state.messages.append(
+        {"role": "assistant", "content": "", "tool_payload": None}
+    )
+    assistant_message_index = len(st.session_state.messages) - 1
+
     with st.chat_message("assistant"):
         placeholder = st.empty()
 
@@ -124,27 +129,25 @@ if prompt := st.chat_input("Digite sua mensagem"):
 
                 for chunk in get_agent_response(prompt):
                     chunks.append(chunk)
-                    placeholder.write("".join(chunks))
+                    partial_reply = "".join(chunks)
+                    st.session_state.messages[assistant_message_index]["content"] = partial_reply
+                    placeholder.write(partial_reply)
 
                 reply = "".join(chunks).strip()
                 if not reply:
                     reply = "Nao consegui gerar uma resposta agora. Tente novamente em instantes."
+
+                st.session_state.messages[assistant_message_index]["content"] = reply
                 placeholder.write(reply)
 
                 tool_payload = st.session_state.last_tool_payload
+                st.session_state.messages[assistant_message_index]["tool_payload"] = tool_payload
                 render_sources(tool_payload)
-                st.session_state.messages.append(
-                    {
-                        "role": "assistant",
-                        "content": reply,
-                        "tool_payload": tool_payload,
-                    }
-                )
             except Exception:
                 reply = "Falha ao consultar o agente real agora. Tente novamente ou volte para o modo mockado."
+                st.session_state.messages[assistant_message_index]["content"] = reply
                 placeholder.write(reply)
-                st.session_state.messages.append({"role": "assistant", "content": reply})
         else:
             reply = get_mock_response(prompt)
+            st.session_state.messages[assistant_message_index]["content"] = reply
             placeholder.write(reply)
-            st.session_state.messages.append({"role": "assistant", "content": reply})
