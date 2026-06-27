@@ -203,9 +203,8 @@ def format_sources_html(payload: Any) -> str:
 
       safe_name = html.escape(str(name))
       safe_href = html.escape(url, quote=True)
-      safe_url_text = html.escape(url)
       lines.append(
-        f'<div class="source-item"><a href="{safe_href}" target="_blank" rel="noopener noreferrer">{safe_name}</a> ({safe_url_text})</div>'
+        f'<div class="source-item"><a href="{safe_href}" target="_blank" rel="noopener noreferrer">{safe_name}</a></div>'
       )
 
     if lines:
