@@ -113,7 +113,7 @@ def get_mock_response(_: str) -> str:
     time.sleep(random.uniform(1.2, 2.4))
     return random.choice(MOCK_RESPONSES)
 
-def get_agent_response(prompt: str) -> str:
+def get_agent_response(prompt: str):
   runner: Optional[AgentExecutor] = st.session_state.get("trend_radar_runner")
   if runner is None:
     runner = AgentExecutor.from_agent_class(
@@ -124,17 +124,11 @@ def get_agent_response(prompt: str) -> str:
     )
     st.session_state.trend_radar_runner = runner
 
-  chunks = []
   for chunk in runner.run_stream(ask=prompt):
     parsed = runner.parse(chunk)
     content = parsed.get("content", "")
     if content:
-      chunks.append(content)
-
-  response = "".join(chunks).strip()
-  if response:
-    return response
-  return "Nao consegui gerar uma resposta agora. Tente novamente em instantes."
+      yield content
 
 # ── Session state ─────────────────────────────────────────────────────────────
 if "messages" not in st.session_state:
@@ -213,12 +207,27 @@ if prompt := st.chat_input("Digite sua mensagem…"):
     # 2. Get response from selected mode
     if st.session_state.use_real_agent:
         try:
-            reply = get_agent_response(prompt)
+            has_streamed_content = False
+            for chunk in get_agent_response(prompt):
+                if not has_streamed_content:
+                    st.session_state.messages.append({"role": "bot", "text": ""})
+                    has_streamed_content = True
+
+                st.session_state.messages[-1]["text"] += chunk
+                render_messages(thinking=False)
+
+            if not has_streamed_content:
+                st.session_state.messages.append(
+                    {"role": "bot", "text": "Nao consegui gerar uma resposta agora. Tente novamente em instantes."}
+                )
+                render_messages(thinking=False)
         except Exception:
-            reply = "Falha ao consultar o agente real agora. Tente novamente ou volte para o modo mockado."
+            st.session_state.messages.append(
+                {"role": "bot", "text": "Falha ao consultar o agente real agora. Tente novamente ou volte para o modo mockado."}
+            )
+            render_messages(thinking=False)
     else:
         reply = get_mock_response(prompt)
-
-    # 3. Show bot reply
-    st.session_state.messages.append({"role": "bot", "text": reply})
-    render_messages(thinking=False)
+        # 3. Show bot reply
+        st.session_state.messages.append({"role": "bot", "text": reply})
+        render_messages(thinking=False)
