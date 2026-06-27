@@ -2,6 +2,7 @@ import streamlit as st
 import time
 import random
 import json
+import html
 from typing import Any, Dict, Optional
 
 from src.agents.agent_executor import AgentExecutor
@@ -61,6 +62,30 @@ st.markdown("""
     background: #f3f4f6;
     color: #111;
     border-bottom-left-radius: 4px;
+  }
+
+  .sources {
+    margin-top: 10px;
+    border-top: 1px solid #d1d5db;
+    padding-top: 8px;
+  }
+  .sources summary {
+    cursor: pointer;
+    font-size: .82rem;
+    color: #374151;
+    user-select: none;
+  }
+  .sources pre {
+    margin: 8px 0 0;
+    padding: 8px;
+    border-radius: 8px;
+    background: #e5e7eb;
+    color: #111827;
+    font-size: .78rem;
+    line-height: 1.35;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
   }
 
   .avatar {
@@ -128,6 +153,19 @@ def collect_tool_payload(chunk: Any, parsed: Dict[str, Any]) -> Optional[Any]:
 
   return None
 
+def format_sources_html(payload: Any) -> str:
+  if payload is None:
+    return ""
+
+  pretty_payload = json.dumps(payload, ensure_ascii=False, indent=2)
+  safe_payload = html.escape(pretty_payload)
+  return (
+    '<details class="sources">'
+    '<summary>Fontes</summary>'
+    f'<pre>{safe_payload}</pre>'
+    '</details>'
+  )
+
 def get_agent_response(prompt: str):
   runner: Optional[AgentExecutor] = st.session_state.get("trend_radar_runner")
   if runner is None:
@@ -193,23 +231,26 @@ st.caption(mode_caption)
 chat_area = st.empty()
 
 def render_messages(thinking: bool = False):
-    html = ""
+    rendered_html = ""
     for msg in st.session_state.messages:
         if msg["role"] == "user":
-            html += f"""
+            safe_text = html.escape(msg["text"])
+            rendered_html += f"""
             <div class="msg-row user">
-              <div class="bubble user">{msg['text']}</div>
+              <div class="bubble user">{safe_text}</div>
               <div class="avatar user">🧑</div>
             </div>"""
         else:
-            html += f"""
+            safe_text = html.escape(msg["text"])
+            sources_html = format_sources_html(msg.get("tool_payload"))
+            rendered_html += f"""
             <div class="msg-row bot">
               <div class="avatar bot">🤖</div>
-              <div class="bubble bot">{msg['text']}</div>
+              <div class="bubble bot">{safe_text}{sources_html}</div>
             </div>"""
 
     if thinking:
-        html += """
+        rendered_html += """
         <div class="msg-row bot">
           <div class="avatar bot">🤖</div>
           <div class="typing-bubble">
@@ -217,9 +258,9 @@ def render_messages(thinking: bool = False):
           </div>
         </div>"""
 
-    html += '<div id="chat-end"></div>'
+    rendered_html += '<div id="chat-end"></div>'
     chat_area.markdown(
-        f'<div>{html}</div>'
+        f'<div>{rendered_html}</div>'
         '<script>document.getElementById("chat-end").scrollIntoView({{behavior:"smooth"}});</script>',
         unsafe_allow_html=True,
     )
@@ -230,34 +271,40 @@ render_messages()
 #st.markdown('<div class="chat-caption">BetterAI</div>', unsafe_allow_html=True)
 
 if prompt := st.chat_input("Digite sua mensagem…"):
-    # 1. Show user message immediately
-    st.session_state.messages.append({"role": "user", "text": prompt})
-    render_messages(thinking=True)
+  # 1. Show user message immediately
+  st.session_state.messages.append({"role": "user", "text": prompt})
+  render_messages(thinking=True)
 
-    # 2. Get response from selected mode
-    if st.session_state.use_real_agent:
-        try:
-            has_streamed_content = False
-            for chunk in get_agent_response(prompt):
-                if not has_streamed_content:
-                    st.session_state.messages.append({"role": "bot", "text": ""})
-                    has_streamed_content = True
+  # 2. Get response from selected mode
+  if st.session_state.use_real_agent:
+    try:
+      st.session_state.last_tool_payload = None
+      has_streamed_content = False
 
-                st.session_state.messages[-1]["text"] += chunk
-                render_messages(thinking=False)
+      for chunk in get_agent_response(prompt):
+        if not has_streamed_content:
+          st.session_state.messages.append({"role": "bot", "text": "", "tool_payload": None})
+          has_streamed_content = True
 
-            if not has_streamed_content:
-                st.session_state.messages.append(
-                    {"role": "bot", "text": "Nao consegui gerar uma resposta agora. Tente novamente em instantes."}
-                )
-                render_messages(thinking=False)
-        except Exception:
-            st.session_state.messages.append(
-                {"role": "bot", "text": "Falha ao consultar o agente real agora. Tente novamente ou volte para o modo mockado."}
-            )
-            render_messages(thinking=False)
-    else:
-        reply = get_mock_response(prompt)
-        # 3. Show bot reply
-        st.session_state.messages.append({"role": "bot", "text": reply})
+        st.session_state.messages[-1]["text"] += chunk
         render_messages(thinking=False)
+
+      if has_streamed_content and st.session_state.last_tool_payload is not None:
+        st.session_state.messages[-1]["tool_payload"] = st.session_state.last_tool_payload
+        render_messages(thinking=False)
+
+      if not has_streamed_content:
+        st.session_state.messages.append(
+          {"role": "bot", "text": "Nao consegui gerar uma resposta agora. Tente novamente em instantes."}
+        )
+        render_messages(thinking=False)
+    except Exception:
+      st.session_state.messages.append(
+        {"role": "bot", "text": "Falha ao consultar o agente real agora. Tente novamente ou volte para o modo mockado."}
+      )
+      render_messages(thinking=False)
+  else:
+    reply = get_mock_response(prompt)
+    # 3. Show bot reply
+    st.session_state.messages.append({"role": "bot", "text": reply})
+    render_messages(thinking=False)
