@@ -3,6 +3,7 @@ import time
 import random
 import json
 import html
+import re
 from typing import Any, Dict, Optional
 
 from src.agents.agent_executor import AgentExecutor
@@ -87,6 +88,26 @@ st.markdown("""
     white-space: pre-wrap;
     word-break: break-word;
   }
+  .sources-list {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .source-item {
+    font-size: .82rem;
+    color: #1f2937;
+    line-height: 1.35;
+    word-break: break-word;
+  }
+  .source-item a {
+    color: #1d4ed8;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .source-item a:hover {
+    text-decoration: underline;
+  }
 
   .avatar {
     width: 32px; height: 32px;
@@ -156,6 +177,46 @@ def collect_tool_payload(chunk: Any, parsed: Dict[str, Any]) -> Optional[Any]:
 def format_sources_html(payload: Any) -> str:
   if payload is None:
     return ""
+
+  def normalize_url(raw_value: Any) -> str:
+    if not isinstance(raw_value, str):
+      return ""
+
+    text = raw_value.strip()
+    markdown_link = re.match(r"^\[[^\]]*\]\(([^\)]+)\)$", text)
+    if markdown_link:
+      return markdown_link.group(1).strip()
+
+    return text
+
+  sources = payload.get("sources") if isinstance(payload, dict) else None
+  if isinstance(sources, list) and sources:
+    lines = []
+    for source in sources:
+      if not isinstance(source, dict):
+        continue
+
+      name = source.get("name") or "Fonte"
+      url = normalize_url(source.get("url") or source.get("domain"))
+      if not url:
+        continue
+
+      safe_name = html.escape(str(name))
+      safe_href = html.escape(url, quote=True)
+      safe_url_text = html.escape(url)
+      lines.append(
+        f'<div class="source-item"><a href="{safe_href}" target="_blank" rel="noopener noreferrer">{safe_name}</a> ({safe_url_text})</div>'
+      )
+
+    if lines:
+      return (
+        '<details class="sources">'
+        '<summary>Fontes</summary>'
+        '<div class="sources-list">'
+        + "".join(lines)
+        + '</div>'
+        '</details>'
+      )
 
   pretty_payload = json.dumps(payload, ensure_ascii=False, indent=2)
   safe_payload = html.escape(pretty_payload)
