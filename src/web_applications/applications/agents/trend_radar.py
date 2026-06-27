@@ -1,7 +1,8 @@
 import streamlit as st
 import time
 import random
-from typing import Optional
+import json
+from typing import Any, Dict, Optional
 
 from src.agents.agent_executor import AgentExecutor
 from src.agents.trend_radar.agent import BaseAgent
@@ -113,6 +114,20 @@ def get_mock_response(_: str) -> str:
     time.sleep(random.uniform(1.2, 2.4))
     return random.choice(MOCK_RESPONSES)
 
+def collect_tool_payload(chunk: Any, parsed: Dict[str, Any]) -> Optional[Any]:
+  if isinstance(chunk, dict):
+    payload = chunk.get("payload")
+    if payload is not None:
+      return payload
+
+  raw_chunk = parsed.get("raw") if isinstance(parsed, dict) else None
+  if isinstance(raw_chunk, dict):
+    payload = raw_chunk.get("payload")
+    if payload is not None:
+      return payload
+
+  return None
+
 def get_agent_response(prompt: str):
   runner: Optional[AgentExecutor] = st.session_state.get("trend_radar_runner")
   if runner is None:
@@ -126,7 +141,22 @@ def get_agent_response(prompt: str):
 
   for chunk in runner.run_stream(ask=prompt):
     parsed = runner.parse(chunk)
+    event_name = parsed.get("event")
     content = parsed.get("content", "")
+    tool_name = parsed.get("tool_name")
+
+    tool_payload = collect_tool_payload(chunk, parsed)
+    if tool_payload is not None:
+      st.session_state.last_tool_payload = tool_payload
+
+    if event_name and event_name != "RunContent":
+      suffix = f" [{tool_name}]" if tool_name else ""
+      print(f"\n[{event_name}]{suffix}", flush=True)
+
+    if event_name == "ToolCallCompleted":
+      print("[ToolPayload]", flush=True)
+      print(json.dumps(tool_payload or {}, ensure_ascii=False, indent=2), flush=True)
+
     if content:
       yield content
 
