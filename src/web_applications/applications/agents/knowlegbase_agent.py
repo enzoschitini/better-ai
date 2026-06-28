@@ -7,10 +7,10 @@ if TYPE_CHECKING:
 
 with st.sidebar:
     st.markdown("## ✦ BetterAI")
-    st.markdown("### Agente: Knowledge Base")
+    st.markdown("### Agente: Base de Conhecimento")
     st.markdown("---")
-    st.markdown("Pesquisa aprofundada com coleta de fontes e contexto.")
-    st.caption("Use este chat para investigar temas em profundidade.")
+    st.markdown("Busca, consulta e gerenciamento de informacoes da base de conhecimento.")
+    st.caption("Use este chat para localizar respostas, organizar dados e validar fontes internas.")
 
 
 def collect_tool_payload(chunk: Any, parsed: Dict[str, Any]) -> Optional[Any]:
@@ -69,6 +69,33 @@ def render_sources(payload: Any) -> None:
         return
 
     with st.expander("Fontes", expanded=False):
+        files = payload.get("files") if isinstance(payload, dict) else None
+        if isinstance(files, list) and files:
+            file_names: list[str] = []
+
+            for file_item in files:
+                if not isinstance(file_item, dict):
+                    continue
+
+                name = file_item.get("name")
+                ext = file_item.get("ext")
+
+                if not isinstance(name, str) or not name.strip():
+                    continue
+
+                normalized_name = name.strip()
+                if isinstance(ext, str) and ext.strip():
+                    normalized_ext = ext.strip().lstrip(".")
+                    if normalized_ext and not normalized_name.lower().endswith(f".{normalized_ext.lower()}"):
+                        normalized_name = f"{normalized_name}.{normalized_ext}"
+
+                file_names.append(normalized_name)
+
+            if file_names:
+                unique_names = list(dict.fromkeys(file_names))
+                st.write(" | ".join(unique_names))
+                return
+
         sources = payload.get("sources") if isinstance(payload, dict) else None
         if isinstance(sources, list) and sources:
             for source in sources:
@@ -83,22 +110,22 @@ def render_sources(payload: Any) -> None:
         st.json(payload)
 
 
-st.title("Deep Research Chat")
-st.caption("Agente BetterAI para pesquisa aprofundada com fontes e contexto confiavel.")
+st.title("Base de Conhecimento Chat")
+st.caption("Agente BetterAI para consulta e gerenciamento da base de conhecimento.")
 
 if "messages" not in st.session_state:
     st.session_state.messages = [
         {
             "role": "assistant",
             "content": (
-                "Ola! Sou o agente de Deep Research da BetterAI.\n"
-                "Envie sua pergunta e eu faco uma investigacao aprofundada com fontes.\n\n"
+                "Ola! Sou o agente de Base de Conhecimento da BetterAI.\n"
+                "Envie sua pergunta para consultar, organizar e gerenciar informacoes da base.\n\n"
                 "Exemplos de perguntas:\n"
-                "1. O que analistas e imprensa internacional projetam para a Copa do Mundo 2026?\n"
-                "2. Quais tendencias de IA generativa devem ganhar mais tracao em 2026?\n"
-                "3. Como esta evoluindo a regulacao de IA no Brasil, na UE e nos EUA?\n"
-                "4. Quais riscos economicos globais podem impactar os proximos 12 meses?\n"
-                "5. Compare estrategias de transicao energetica adotadas na America Latina."
+                "1. Quais documentos temos sobre politica de acesso e controle de dados?\n"
+                "2. Resuma os principais procedimentos de onboarding registrados na base.\n"
+                "3. Liste fontes e artefatos relacionados ao projeto SCRUM-106.\n"
+                "4. O que mudou na documentacao de API no ultimo ciclo?\n"
+                "5. Encontre referencias para criar um guia de uso da base de conhecimento."
             ),
         }
     ]

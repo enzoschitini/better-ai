@@ -7,7 +7,7 @@ APPS: dict[str, dict] = {
         "path":        "src/web_applications/applications/agents/deep_research.py",
     },
     "knowledgebase_agent": {
-        "label":       "📚 Knowledge Base Agent",
+        "label":       "📚 Agente Base de Conhecimento",
         "description": "Agente para consulta e gerenciamento de base de conhecimento.",
         "path":        "src/web_applications/applications/agents/knowlegbase_agent.py",
     },
