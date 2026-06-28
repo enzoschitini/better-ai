@@ -1,0 +1,105 @@
+{
+    "payload": {
+        "job_id": "job_12345",
+        "identifiers": {
+            "client_id": "client_abc",
+            "workspace_id": "workspace_001",
+            "user_id": "user_789",
+            "file_id": "file_xyz"
+        },
+        "pipeline": {
+            "generate_tags": true
+        },
+        "embedding_metadata": {
+            "source": "uploaded_file",
+            "origin": "web_app",
+            "language": "en",
+            "tags": "#finance, #report, #2026"
+        },
+        "embedding_settings": {
+            "model": "text-embedding-3-large",
+            "dimensions": 3072,
+            "chunk_size": 500,
+            "chunk_overlap": 50,
+            "normalize": true,
+            "batch_size": 200
+        },
+        "vector_db_settings": {
+            "index_name": "backai-vectorstore",
+            "main_namespace": "default_main_namespace",
+            "global_namespace": "global_knowledge_base_dev",
+            "save_global": false,
+            "model": "text-embedding-3-large",
+            "dimensions": 3072,
+            "batch_size": 200
+        },
+        "file_info": {
+            "name": "example.pdf",
+            "extension": "pdf",
+            "mime_type": "application/pdf",
+            "size_bytes": 204800,
+            "size_kb": 200,
+            "size_mb": 0.2
+        }
+    },
+    "file_content": "Para ter acesso ao SESC, basta acessar o site e agendar um horário para ir até a unidade de\npreferência e emitir sua credencial ou pelo próprio site você pode incluir seus documentos para fazer a\ncarteirinha \nLembrando que nem todas as unidades têm essa possibilidade, ok?\nCada SESC solicita uma documentação diferente para a emissão das credenciais, por isso, é\nimportante verificar com a unidade quais os documentos necessários para você e seus dependentes.\nPelo site você consegue visualizar todas as informações das unidades (endereço, e-mail e telefone),\nassim como fazer sua credencial on-line (a depender da unidade). Sobre valores de hospedagem no\nSesc você precisa verificar diretamente com a unidade.\nhttps://www.sesc.com.br/credencial-sesc/\nPara ter acesso ao SESC, basta acessar o site e agendar um horário para ir até a unidade de\npreferência e emitir sua credencial ou pelo próprio site você pode incluir seus documentos para fazer a\ncarteirinha \nLembrando que nem todas as unidades têm essa possibilidade, ok?\nCada SESC solicita uma documentação diferente para a emissão das credenciais, por isso, é\nimportante verificar com a unidade quais os documentos necessários para você e seus dependentes.\nPelo site você consegue visualizar todas as informações das unidades (endereço, e-mail e telefone),\nassim como fazer sua credencial on-line (a depender da unidade). Sobre valores de hospedagem no\nSesc você precisa verificar diretamente com a unidade.\nhttps://www.sesc.com.br/credencial-sesc/\nCREDENCIAL PLENA - SESC\nCREDENCIAL PLENA - SESC\nDECLARAÇÃO DE VÍNCULO EMPREGATÍCIO\nDECLARAÇÃO DE VÍNCULO EMPREGATÍCIO\nNão esqueça de solicitar a sua DVE para apresentar ao Sesc junto com sua\ndocumentação completa.\nA declaração é emitida pela área de Parcerias. Para isso, basta preencher o formulário\nCLICANDO AQUI, que o time vai providenciar e fazer o envio por e-mail ou Teams.\nEm caso de dúvidas entre em contato no parcerias@stefanini.com \nNão esqueça de solicitar a sua DVE para apresentar ao Sesc junto com sua\ndocumentação completa.\nA declaração é emitida pela área de Parcerias. Para isso, basta preencher o formulário\nCLICANDO AQUI, que o time vai providenciar e fazer o envio por e-mail ou Teams.\nEm caso de dúvidas entre em contato no parcerias@stefanini.com \n",
+    "embedding_content": {
+        "file_content": "Para ter acesso ao SESC, basta acessar o site e agendar um horário para ir até a unidade de\npreferência e emitir sua credencial ou pelo próprio site você pode incluir seus documentos para fazer a\ncarteirinha \nLembrando que nem todas as unidades têm essa possibilidade, ok?\nCada SESC solicita uma documentação diferente para a emissão das credenciais, por isso, é\nimportante verificar com a unidade quais os documentos necessários para você e seus dependentes.\nPelo site você consegue visualizar todas as informações das unidades (endereço, e-mail e telefone),\nassim como fazer sua credencial on-line (a depender da unidade). Sobre valores de hospedagem no\nSesc você precisa verificar diretamente com a unidade.\nhttps://www.sesc.com.br/credencial-sesc/\nPara ter acesso ao SESC, basta acessar o site e agendar um horário para ir até a unidade de\npreferência e emitir sua credencial ou pelo próprio site você pode incluir seus documentos para fazer a\ncarteirinha \nLembrando que nem todas as unidades têm essa possibilidade, ok?\nCada SESC solicita uma documentação diferente para a emissão das credenciais, por isso, é\nimportante verificar com a unidade quais os documentos necessários para você e seus dependentes.\nPelo site você consegue visualizar todas as informações das unidades (endereço, e-mail e telefone),\nassim como fazer sua credencial on-line (a depender da unidade). Sobre valores de hospedagem no\nSesc você precisa verificar diretamente com a unidade.\nhttps://www.sesc.com.br/credencial-sesc/\nCREDENCIAL PLENA - SESC\nCREDENCIAL PLENA - SESC\nDECLARAÇÃO DE VÍNCULO EMPREGATÍCIO\nDECLARAÇÃO DE VÍNCULO EMPREGATÍCIO\nNão esqueça de solicitar a sua DVE para apresentar ao Sesc junto com sua\ndocumentação completa.\nA declaração é emitida pela área de Parcerias. Para isso, basta preencher o formulário\nCLICANDO AQUI, que o time vai providenciar e fazer o envio por e-mail ou Teams.\nEm caso de dúvidas entre em contato no parcerias@stefanini.com \nNão esqueça de solicitar a sua DVE para apresentar ao Sesc junto com sua\ndocumentação completa.\nA declaração é emitida pela área de Parcerias. Para isso, basta preencher o formulário\nCLICANDO AQUI, que o time vai providenciar e fazer o envio por e-mail ou Teams.\nEm caso de dúvidas entre em contato no parcerias@stefanini.com \n",
+        "summary": "This is additional content generated from the pipeline.",
+        "generated_tags": "#finance, #report, #2026"
+    },
+    "embedding_metadata": {
+        "client_id": "client_abc",
+        "workspace_id": "workspace_001",
+        "user_id": "user_789",
+        "file_id": "file_xyz",
+        "file_name": "example.pdf",
+        "file_extension": "pdf",
+        "source": "uploaded_file",
+        "origin": "web_app",
+        "language": "en",
+        "tags": "#finance, #report, #2026",
+        "created_at": "2026-06-28 20:54:42"
+    },
+    "usage_summary": {
+        "total_caracter_count": 2355,
+        "total_tokens": 638,
+        "total_cost_usd": "0.000083",
+        "exchange_rate": 5.1695,
+        "parts": {
+            "file_content": {
+                "caracter_count": 2276,
+                "tokens": 620,
+                "cost_usd": "0.000081"
+            },
+            "summary": {
+                "caracter_count": 55,
+                "tokens": 9,
+                "cost_usd": "0.000001"
+            },
+            "generated_tags": {
+                "caracter_count": 24,
+                "tokens": 9,
+                "cost_usd": "0.000001"
+            }
+        }
+    },
+    "embedding_response": {
+        "status": "success",
+        "message": "Embeddings saved successfully.",
+        "embedding_informations": {
+            "batch_count": 1,
+            "main_namespace": {
+                "namespace": "default_main_namespace",
+                "chunks_saved": 1,
+                "chunks_ids": [
+                    "58df96ee-92a8-4421-871a-60ccded42c4c"
+                ]
+            }
+        }
+    },
+    "save_response": {
+        "status": "success",
+        "inserted_id": "16b4bf51-dbf8-41b9-8d5a-647480e13abe"
+    }
+}
