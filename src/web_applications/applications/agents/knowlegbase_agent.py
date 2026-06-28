@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING, Any, Dict, Optional
+from html import escape
 
 import streamlit as st
 
@@ -93,7 +94,19 @@ def render_sources(payload: Any) -> None:
 
             if file_names:
                 unique_names = list(dict.fromkeys(file_names))
-                st.write(" | ".join(unique_names))
+                st.caption(f"Arquivos utilizados ({len(unique_names)})")
+
+                chips = "".join(
+                    (
+                        "<span style='display:inline-block;padding:6px 10px;margin:4px;"
+                        "border:1px solid #d6d8dc;border-radius:999px;background:#f7f8fa;"
+                        "font-size:0.85rem;line-height:1.2;'>"
+                        f"{escape(file_name)}"
+                        "</span>"
+                    )
+                    for file_name in unique_names
+                )
+                st.markdown(f"<div>{chips}</div>", unsafe_allow_html=True)
                 return
 
         sources = payload.get("sources") if isinstance(payload, dict) else None
