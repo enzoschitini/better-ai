@@ -1,10 +1,9 @@
-from typing import Any, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 import streamlit as st
 
-from src.agents.agent_executor import AgentExecutor
-from src.agents.trend_radar.agent import BaseAgent
-from src.utils.unique_id_factory import IDGenerator
+if TYPE_CHECKING:
+    from src.agents.agent_executor import AgentExecutor
 
 with st.sidebar:
     st.markdown("## ✦ BetterAI")
@@ -34,8 +33,13 @@ def collect_tool_payload(chunk: Any, parsed: Dict[str, Any]) -> Optional[Any]:
 
 
 def get_agent_response(prompt: str):
-    runner: Optional[AgentExecutor] = st.session_state.get("trend_radar_runner")
+    runner: Optional["AgentExecutor"] = st.session_state.get("trend_radar_runner")
     if runner is None:
+        # Lazy imports avoid expensive agent stack initialization during first page render.
+        from src.agents.agent_executor import AgentExecutor
+        from src.agents.trend_radar.agent import BaseAgent
+        from src.utils.unique_id_factory import IDGenerator
+
         id_generator = IDGenerator()
 
         runner = AgentExecutor.from_agent_class(
