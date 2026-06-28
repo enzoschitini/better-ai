@@ -91,7 +91,7 @@ class TrendRadarToolkit(Toolkit):
               tool_context metadata collector, if one was provided at initialization.
         """
         try:
-            print(f"\n\n     >>>> Searching for trends related to: '{query}'\n\n")
+            #print(f"\n\n     >>>> Searching for trends related to: '{query}'\n\n")
             if not query or not query.strip():
                 return "A valid query is required."
 

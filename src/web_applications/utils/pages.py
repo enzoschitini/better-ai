@@ -1,10 +1,10 @@
 import streamlit as st
 
 APPS: dict[str, dict] = {
-    "trend_radar": {
+    "deep_research": {
         "label":       "📈 Trend Radar",
         "description": "Análise e monitoramento de tendências.",
-        "path":        "src/web_applications/applications/agents/trend_radar.py",
+        "path":        "src/web_applications/applications/agents/deep_research.py",
     },
     "classdoc": {
         "label":       "🧾 ClassDoc",

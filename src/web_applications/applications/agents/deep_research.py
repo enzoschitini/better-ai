@@ -8,8 +8,10 @@ from src.utils.unique_id_factory import IDGenerator
 
 with st.sidebar:
     st.markdown("## ✦ BetterAI")
+    st.markdown("### Agente: Deep Research")
     st.markdown("---")
-    st.markdown("Selecione uma aplicação abaixo para acessá-la.")
+    st.markdown("Pesquisa aprofundada com coleta de fontes e contexto.")
+    st.caption("Use este chat para investigar temas em profundidade.")
 
 
 def collect_tool_payload(chunk: Any, parsed: Dict[str, Any]) -> Optional[Any]:
@@ -77,11 +79,24 @@ def render_sources(payload: Any) -> None:
         st.json(payload)
 
 
-st.title("AI Chat")
+st.title("Deep Research Chat")
+st.caption("Agente BetterAI para pesquisa aprofundada com fontes e contexto confiavel.")
 
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "assistant", "content": "Ola! Pode enviar sua mensagem."}
+        {
+            "role": "assistant",
+            "content": (
+                "Ola! Sou o agente de Deep Research da BetterAI.\n"
+                "Envie sua pergunta e eu faco uma investigacao aprofundada com fontes.\n\n"
+                "Exemplos de perguntas:\n"
+                "1. O que analistas e imprensa internacional projetam para a Copa do Mundo 2026?\n"
+                "2. Quais tendencias de IA generativa devem ganhar mais tracao em 2026?\n"
+                "3. Como esta evoluindo a regulacao de IA no Brasil, na UE e nos EUA?\n"
+                "4. Quais riscos economicos globais podem impactar os proximos 12 meses?\n"
+                "5. Compare estrategias de transicao energetica adotadas na America Latina."
+            ),
+        }
     ]
 
 for message in st.session_state.messages:
