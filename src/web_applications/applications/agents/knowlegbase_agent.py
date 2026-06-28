@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 
 with st.sidebar:
     st.markdown("## ✦ BetterAI")
-    st.markdown("### Agente: Deep Research")
+    st.markdown("### Agente: Knowledge Base")
     st.markdown("---")
     st.markdown("Pesquisa aprofundada com coleta de fontes e contexto.")
     st.caption("Use este chat para investigar temas em profundidade.")
@@ -33,21 +33,21 @@ def collect_tool_payload(chunk: Any, parsed: Dict[str, Any]) -> Optional[Any]:
 
 
 def get_agent_response(prompt: str):
-    runner: Optional["AgentExecutor"] = st.session_state.get("trend_radar_runner")
+    runner: Optional["AgentExecutor"] = st.session_state.get("knowledgebase_runner")
     if runner is None:
         # Lazy imports avoid expensive agent stack initialization during first page render.
         from src.agents.agent_executor import AgentExecutor
-        from src.agents.trend_radar.agent import BaseAgent
+        from src.agents.knowlegbase_agent.agent import KnowledgeBaseAgent
         from src.utils.unique_id_factory import IDGenerator
 
         id_generator = IDGenerator()
 
         runner = AgentExecutor.from_agent_class(
-            agent_class=BaseAgent,
+            agent_class=KnowledgeBaseAgent,
             session_id=id_generator.uuid(),
             user_id=id_generator.timestamp(prefix="streamlit_user", separator="-", as_hex=True, suffix_len=6),
         )
-        st.session_state.trend_radar_runner = runner
+        st.session_state.knowledgebase_runner = runner
 
     # Prevent stale tool metadata from previous turns from being emitted again.
     runner.tool_collector.clear()
