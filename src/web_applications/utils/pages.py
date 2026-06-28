@@ -6,6 +6,11 @@ APPS: dict[str, dict] = {
         "description": "Pesquisa profunda com análise e monitoramento de tendências.",
         "path":        "src/web_applications/applications/agents/deep_research.py",
     },
+    "knowledgebase_agent": {
+        "label":       "📚 Knowledge Base Agent",
+        "description": "Agente para consulta e gerenciamento de base de conhecimento.",
+        "path":        "src/web_applications/applications/agents/knowlegbase_agent.py",
+    },
     "classdoc": {
         "label":       "🧾 ClassDoc",
         "description": "Gerador de docstring e documentação de classe.",

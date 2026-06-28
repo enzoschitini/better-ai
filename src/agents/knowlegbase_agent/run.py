@@ -17,4 +17,5 @@ if __name__ == "__main__":
     #executor.run_cli_loop(print_tool_response=True)
     executor.run_stream_print("Olá")
 
+
 # python -m src.agents.knowlegbase_agent.run
