@@ -86,18 +86,31 @@ class FileProcessor:
 
 def embedding(job_id: str, user_id: str, knowledgebase_id: str):
     import tempfile
+    max_files = 5
 
     with st.sidebar:
         st.markdown("### Embedding de Arquivos")
 
         uploaded_files = st.file_uploader(
             "Selecione um ou mais arquivos",
-            type=None,
+            type=["pdf"],
             accept_multiple_files=True,
         )
 
         if uploaded_files:
             st.markdown(f"**{len(uploaded_files)} arquivo(s) selecionado(s)**")
+
+            if len(uploaded_files) > max_files:
+                st.error(f"Limite excedido: envie no maximo {max_files} arquivos PDF por vez.")
+                return
+
+            invalid_files = [
+                file.name for file in uploaded_files
+                if not file.name.lower().endswith(".pdf")
+            ]
+            if invalid_files:
+                st.error("Apenas arquivos PDF sao permitidos.")
+                return
 
             if st.button("Processar Embedding"):
                 total = len(uploaded_files)
