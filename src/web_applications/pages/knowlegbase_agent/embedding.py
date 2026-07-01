@@ -88,41 +88,78 @@ class FileProcessor:
 
 
 def embedding():
+    import tempfile
+
     with st.sidebar:
         st.markdown("Embedding")
 
-    st.title("Embedding de Arquivo")
+    st.title("Embedding de Arquivos")
 
-    uploaded_file = st.file_uploader("Selecione um arquivo", type=None)
+    uploaded_files = st.file_uploader(
+        "Selecione um ou mais arquivos",
+        type=None,
+        accept_multiple_files=True,
+    )
 
-    if uploaded_file is not None:
+    if uploaded_files:
+        st.markdown(f"**{len(uploaded_files)} arquivo(s) selecionado(s)**")
+
         if st.button("Processar Embedding"):
-            import tempfile
+            total = len(uploaded_files)
+            progress_bar = st.progress(0, text="Iniciando processamento...")
+            status_container = st.container()
 
-            with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(uploaded_file.name)[1]) as tmp:
-                tmp.write(uploaded_file.read())
-                tmp_path = tmp.name
+            results = []
 
-            try:
-                embedding_processor = FileProcessor()
+            for i, uploaded_file in enumerate(uploaded_files):
+                progress_bar.progress(i / total, text=f"Processando {i + 1}/{total}: **{uploaded_file.name}**")
 
-                file_info = embedding_processor.get_file_information(tmp_path)
-                file_info["name"] = uploaded_file.name
+                with status_container:
+                    status_placeholder = st.empty()
+                    status_placeholder.info(f"⏳ Processando: **{uploaded_file.name}**")
 
-                payload = embedding_processor.build_embedding_payload(
-                    job_id="job_12345",
-                    user_id="user_789",
-                    source="uploaded_file",
-                    knoledgebase_id="knoledgebase_001",
-                    file_info=file_info,
-                )
-                result = embedding_processor.embedding_file(payload)
+                tmp_path = None
+                try:
+                    suffix = os.path.splitext(uploaded_file.name)[1]
+                    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+                        tmp.write(uploaded_file.read())
+                        tmp_path = tmp.name
 
-                st.success("Embedding concluído com sucesso!")
-                st.write(f"**Status:** {result['status']}")
-                st.write(f"**File ID:** {result['file_id']}")
-            finally:
-                os.remove(tmp_path)
+                    embedding_processor = FileProcessor()
+
+                    file_info = embedding_processor.get_file_information(tmp_path)
+                    file_info["name"] = uploaded_file.name
+
+                    payload = embedding_processor.build_embedding_payload(
+                        job_id="job_12345",
+                        user_id="user_789",
+                        source="uploaded_file",
+                        knoledgebase_id="knoledgebase_001",
+                        file_info=file_info,
+                    )
+                    result = embedding_processor.embedding_file(payload)
+
+                    results.append({"name": uploaded_file.name, "status": "success", "file_id": result["file_id"]})
+                    status_placeholder.success(f"✅ **{uploaded_file.name}** — File ID: `{result['file_id']}`")
+
+                except Exception as e:
+                    results.append({"name": uploaded_file.name, "status": "error", "error": str(e)})
+                    status_placeholder.error(f"❌ **{uploaded_file.name}** — Erro: {e}")
+
+                finally:
+                    if tmp_path and os.path.exists(tmp_path):
+                        os.remove(tmp_path)
+
+            progress_bar.progress(1.0, text="Processamento concluído!")
+
+            success_count = sum(1 for r in results if r["status"] == "success")
+            error_count = sum(1 for r in results if r["status"] == "error")
+
+            st.divider()
+            col1, col2, col3 = st.columns(3)
+            col1.metric("Total", total)
+            col2.metric("Concluídos", success_count)
+            col3.metric("Erros", error_count)
 
 
 
