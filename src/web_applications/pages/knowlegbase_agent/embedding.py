@@ -91,6 +91,39 @@ def embedding():
     with st.sidebar:
         st.markdown("Embedding")
 
+    st.title("Embedding de Arquivo")
+
+    uploaded_file = st.file_uploader("Selecione um arquivo", type=None)
+
+    if uploaded_file is not None:
+        if st.button("Processar Embedding"):
+            import tempfile
+
+            with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(uploaded_file.name)[1]) as tmp:
+                tmp.write(uploaded_file.read())
+                tmp_path = tmp.name
+
+            try:
+                embedding_processor = FileProcessor()
+
+                file_info = embedding_processor.get_file_information(tmp_path)
+                file_info["name"] = uploaded_file.name
+
+                payload = embedding_processor.build_embedding_payload(
+                    job_id="job_12345",
+                    user_id="user_789",
+                    source="uploaded_file",
+                    knoledgebase_id="knoledgebase_001",
+                    file_info=file_info,
+                )
+                result = embedding_processor.embedding_file(payload)
+
+                st.success("Embedding concluído com sucesso!")
+                st.write(f"**Status:** {result['status']}")
+                st.write(f"**File ID:** {result['file_id']}")
+            finally:
+                os.remove(tmp_path)
+
 
 
 if __name__ == "__main__":
