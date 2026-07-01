@@ -4,11 +4,6 @@ from io import BytesIO
 
 import streamlit as st
 
-import json
-
-from io import BytesIO
-from src.embedding.modules.embedding_file import EmbeddingFile
-
 
 class FileProcessor:
     def __init__(self):
@@ -77,6 +72,8 @@ class FileProcessor:
 
 
     def embedding_file(self, payload):
+        from src.embedding.modules.embedding_file import EmbeddingFile
+
         embedder = EmbeddingFile(payload)
         embedder._init_tracking()
         result = embedder.run()
@@ -108,6 +105,7 @@ def embedding(job_id: str, user_id: str, knowledgebase_id: str):
                 status_container = st.container()
 
                 results = []
+                embedding_processor = FileProcessor()
 
                 for i, uploaded_file in enumerate(uploaded_files):
                     progress_bar.progress(i / total, text=f"Processando {i + 1}/{total}: **{uploaded_file.name}**")
@@ -122,8 +120,6 @@ def embedding(job_id: str, user_id: str, knowledgebase_id: str):
                         with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
                             tmp.write(uploaded_file.read())
                             tmp_path = tmp.name
-
-                        embedding_processor = FileProcessor()
 
                         file_info = embedding_processor.get_file_information(tmp_path)
                         file_info["name"] = uploaded_file.name

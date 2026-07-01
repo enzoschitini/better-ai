@@ -1,13 +1,13 @@
 {
     "payload": {
-        "job_id": "6b804482-f3f5-4768-8aec-462b07f8475d",
+        "job_id": "a7e5c60f-5b45-4600-b85f-d377dbdd1e3f",
         "identifiers": {
-            "user_id": "streamlit_user-18be42442f785a8cnbBbqf",
-            "file_id": "17829353909944500000z9U"
+            "user_id": "streamlit_user-18be42a8d1b277ec31RXhk",
+            "file_id": "1782935867145926400aVlc"
         },
         "embedding_metadata": {
             "source": "uploaded_file",
-            "knowledgebase_id": "kb-18be42442f785a8cLmOl4O",
+            "knowledgebase_id": "kb-18be42a8d1b277ecFNs4fL",
             "origin": "web_app"
         },
         "embedding_settings": {
@@ -42,14 +42,14 @@
         "file_content": "Para ter acesso ao SESC, basta acessar o site e agendar um horário para ir até a unidade de\npreferência e emitir sua credencial ou pelo próprio site você pode incluir seus documentos para fazer a\ncarteirinha \nLembrando que nem todas as unidades têm essa possibilidade, ok?\nCada SESC solicita uma documentação diferente para a emissão das credenciais, por isso, é\nimportante verificar com a unidade quais os documentos necessários para você e seus dependentes.\nPelo site você consegue visualizar todas as informações das unidades (endereço, e-mail e telefone),\nassim como fazer sua credencial on-line (a depender da unidade). Sobre valores de hospedagem no\nSesc você precisa verificar diretamente com a unidade.\nhttps://www.sesc.com.br/credencial-sesc/\nPara ter acesso ao SESC, basta acessar o site e agendar um horário para ir até a unidade de\npreferência e emitir sua credencial ou pelo próprio site você pode incluir seus documentos para fazer a\ncarteirinha \nLembrando que nem todas as unidades têm essa possibilidade, ok?\nCada SESC solicita uma documentação diferente para a emissão das credenciais, por isso, é\nimportante verificar com a unidade quais os documentos necessários para você e seus dependentes.\nPelo site você consegue visualizar todas as informações das unidades (endereço, e-mail e telefone),\nassim como fazer sua credencial on-line (a depender da unidade). Sobre valores de hospedagem no\nSesc você precisa verificar diretamente com a unidade.\nhttps://www.sesc.com.br/credencial-sesc/\nCREDENCIAL PLENA - SESC\nCREDENCIAL PLENA - SESC\nDECLARAÇÃO DE VÍNCULO EMPREGATÍCIO\nDECLARAÇÃO DE VÍNCULO EMPREGATÍCIO\nNão esqueça de solicitar a sua DVE para apresentar ao Sesc junto com sua\ndocumentação completa.\nA declaração é emitida pela área de Parcerias. Para isso, basta preencher o formulário\nCLICANDO AQUI, que o time vai providenciar e fazer o envio por e-mail ou Teams.\nEm caso de dúvidas entre em contato no parcerias@stefanini.com \nNão esqueça de solicitar a sua DVE para apresentar ao Sesc junto com sua\ndocumentação completa.\nA declaração é emitida pela área de Parcerias. Para isso, basta preencher o formulário\nCLICANDO AQUI, que o time vai providenciar e fazer o envio por e-mail ou Teams.\nEm caso de dúvidas entre em contato no parcerias@stefanini.com \n"
     },
     "embedding_metadata": {
-        "user_id": "streamlit_user-18be42442f785a8cnbBbqf",
-        "file_id": "17829353909944500000z9U",
+        "user_id": "streamlit_user-18be42a8d1b277ec31RXhk",
+        "file_id": "1782935867145926400aVlc",
         "file_name": "Credencial Sesc.pdf",
         "file_extension": "pdf",
         "source": "uploaded_file",
-        "knowledgebase_id": "kb-18be42442f785a8cLmOl4O",
+        "knowledgebase_id": "kb-18be42a8d1b277ecFNs4fL",
         "origin": "web_app",
-        "created_at": "2026-07-01 19:49:51"
+        "created_at": "2026-07-01 19:57:47"
     },
     "usage_summary": {
         "total_caracter_count": 2276,
@@ -66,13 +66,13 @@
                 "namespace": "default_main_namespace",
                 "chunks_saved": 1,
                 "chunks_ids": [
-                    "374f8ea3-1e3e-49dd-9101-294e899018d6"
+                    "75254cc5-77ef-47aa-b241-f4dd9ae80ca3"
                 ]
             }
         }
     },
     "save_response": {
         "status": "success",
-        "inserted_id": "d0a22c52-da7f-4a5d-b72c-b99a42ec9fed"
+        "inserted_id": "1c6cefc1-7098-46d9-aa58-aabed24da973"
     }
 }
