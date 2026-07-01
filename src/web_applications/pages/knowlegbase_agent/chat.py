@@ -6,7 +6,7 @@ from html import escape
 if TYPE_CHECKING:
     from src.agents.agent_executor import AgentExecutor
 
-def chat():
+def chat(session_id: str, user_id: str, knowledgebase_id: str):
     with st.sidebar:
         st.markdown("## ✦ BetterAI")
         st.markdown("### Agente: Base de Conhecimento")
@@ -39,14 +39,16 @@ def chat():
             # Lazy imports avoid expensive agent stack initialization during first page render.
             from src.agents.agent_executor import AgentExecutor
             from src.agents.knowlegbase_agent.agent import KnowledgeBaseAgent
-            from src.utils.unique_id_factory import IDGenerator
 
-            id_generator = IDGenerator()
+            print(f"Initializing KnowledgeBaseAgent runner for session_id={session_id}, user_id={user_id}, knowledgebase_id={knowledgebase_id}...")
 
             runner = AgentExecutor.from_agent_class(
                 agent_class=KnowledgeBaseAgent,
-                session_id=id_generator.uuid(),
-                user_id=id_generator.timestamp(prefix="streamlit_user", separator="-", as_hex=True, suffix_len=6),
+                session_id=session_id,
+                user_id=user_id,
+                params={
+                    "filter_search": {"collection_id": knowledgebase_id}
+                },
             )
             st.session_state.knowledgebase_runner = runner
 

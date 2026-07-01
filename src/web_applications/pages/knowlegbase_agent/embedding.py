@@ -40,7 +40,7 @@ class FileProcessor:
         job_id: str,
         user_id: str,
         source: str,
-        knoledgebase_id: str,
+        knowledgebase_id: str,
         file_info: dict,
     ):
         payload = {
@@ -52,7 +52,7 @@ class FileProcessor:
 
             "embedding_metadata": {
                 "source": source,
-                "knoledgebase_id": knoledgebase_id,
+                "knowledgebase_id": knowledgebase_id,
                 "origin": "web_app",
             },
 
@@ -87,7 +87,7 @@ class FileProcessor:
         }
 
 
-def embedding():
+def embedding(job_id: str, user_id: str, knowledgebase_id: str):
     import tempfile
 
     with st.sidebar:
@@ -128,11 +128,13 @@ def embedding():
                         file_info = embedding_processor.get_file_information(tmp_path)
                         file_info["name"] = uploaded_file.name
 
+                        print(f"Initializing KnowledgeBaseAgent runner for job_id={job_id}, user_id={user_id}, knowledgebase_id={knowledgebase_id}...")
+
                         payload = embedding_processor.build_embedding_payload(
-                            job_id="job_12345",
-                            user_id="user_789",
+                            job_id=job_id,
+                            user_id=user_id,
                             source="uploaded_file",
-                            knoledgebase_id="knoledgebase_001",
+                            knowledgebase_id=knowledgebase_id,
                             file_info=file_info,
                         )
                         result = embedding_processor.embedding_file(payload)
@@ -169,7 +171,7 @@ if __name__ == "__main__":
         job_id="job_12345",
         user_id="user_789",
         source="uploaded_file",
-        knoledgebase_id="knoledgebase_001",
+        knowledgebase_id="knowledgebase_001",
         file_info=file_info
     )
     result = embedding_processor.embedding_file(payload)
