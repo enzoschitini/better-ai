@@ -3,10 +3,11 @@
         "job_id": "job_12345",
         "identifiers": {
             "user_id": "user_789",
-            "file_id": "178293163735895360076Zl"
+            "file_id": "17829318734067709000Uuk"
         },
         "embedding_metadata": {
             "source": "uploaded_file",
+            "knoledgebase_id": "knoledgebase_001",
             "origin": "web_app"
         },
         "embedding_settings": {
@@ -27,12 +28,12 @@
             "batch_size": 200
         },
         "file_info": {
-            "name": "example.pdf",
+            "name": "Credencial Sesc.pdf",
             "extension": "pdf",
             "mime_type": "application/pdf",
-            "size_bytes": 204800,
-            "size_kb": 200,
-            "size_mb": 0.2
+            "size_bytes": 1685977,
+            "size_kb": 1646.46,
+            "size_mb": 1.6079
         },
         "pipeline": null
     },
@@ -42,12 +43,13 @@
     },
     "embedding_metadata": {
         "user_id": "user_789",
-        "file_id": "178293163735895360076Zl",
-        "file_name": "example.pdf",
+        "file_id": "17829318734067709000Uuk",
+        "file_name": "Credencial Sesc.pdf",
         "file_extension": "pdf",
         "source": "uploaded_file",
+        "knoledgebase_id": "knoledgebase_001",
         "origin": "web_app",
-        "created_at": "2026-07-01 18:47:19"
+        "created_at": "2026-07-01 18:51:15"
     },
     "usage_summary": {
         "total_caracter_count": 2276,
@@ -64,13 +66,13 @@
                 "namespace": "default_main_namespace",
                 "chunks_saved": 1,
                 "chunks_ids": [
-                    "942bef26-2cc0-47fd-b1c1-3432ad7f91f1"
+                    "2fed8fa6-c555-4472-8cca-750fe09237d9"
                 ]
             }
         }
     },
     "save_response": {
         "status": "success",
-        "inserted_id": "c12c00d6-77fd-4ce4-a349-aff8e8cbfc8e"
+        "inserted_id": "1bf2f7d4-8861-425f-bb81-b1429d012237"
     }
 }

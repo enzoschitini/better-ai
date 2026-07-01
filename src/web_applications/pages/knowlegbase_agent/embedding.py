@@ -1,3 +1,5 @@
+import os
+import mimetypes
 from io import BytesIO
 
 import streamlit as st
@@ -6,11 +8,6 @@ import json
 
 from io import BytesIO
 from src.embedding.modules.embedding_file import EmbeddingFile
-
-def embedding():
-    with st.sidebar:
-        st.markdown("Embedding")
-    
 
 
 class FileProcessor:
@@ -24,14 +21,17 @@ class FileProcessor:
         return file_bytes
 
     def get_file_information(self, file):
-        # Implement the logic to extract file information
+        name = os.path.basename(file)
+        extension = os.path.splitext(name)[1].lstrip(".").lower()
+        mime_type, _ = mimetypes.guess_type(file)
+        size_bytes = os.path.getsize(file)
         return {
-            "name": "example.pdf",
-            "extension": "pdf",
-            "mime_type": "application/pdf",
-            "size_bytes": 204800,
-            "size_kb": 200,
-            "size_mb": 0.2,
+            "name": name,
+            "extension": extension,
+            "mime_type": mime_type or "application/octet-stream",
+            "size_bytes": size_bytes,
+            "size_kb": round(size_bytes / 1024, 2),
+            "size_mb": round(size_bytes / (1024 * 1024), 4),
             "bytes": self._load_file(file)
         }
 
@@ -40,19 +40,19 @@ class FileProcessor:
         job_id: str,
         user_id: str,
         source: str,
+        knoledgebase_id: str,
         file_info: dict,
     ):
-
         payload = {
             "job_id": job_id,
 
             "identifiers": {
                 "user_id": user_id,
-                #"file_id": "file_xyz" # Può essere creato
             },
 
             "embedding_metadata": {
                 "source": source,
+                "knoledgebase_id": knoledgebase_id,
                 "origin": "web_app",
             },
 
@@ -87,6 +87,12 @@ class FileProcessor:
         }
 
 
+def embedding():
+    with st.sidebar:
+        st.markdown("Embedding")
+
+
+
 if __name__ == "__main__":
     embedding_processor = FileProcessor()
 
@@ -95,6 +101,7 @@ if __name__ == "__main__":
         job_id="job_12345",
         user_id="user_789",
         source="uploaded_file",
+        knoledgebase_id="knoledgebase_001",
         file_info=file_info
     )
     result = embedding_processor.embedding_file(payload)
