@@ -91,75 +91,73 @@ def embedding():
     import tempfile
 
     with st.sidebar:
-        st.markdown("Embedding")
+        st.markdown("### Embedding de Arquivos")
 
-    st.title("Embedding de Arquivos")
+        uploaded_files = st.file_uploader(
+            "Selecione um ou mais arquivos",
+            type=None,
+            accept_multiple_files=True,
+        )
 
-    uploaded_files = st.file_uploader(
-        "Selecione um ou mais arquivos",
-        type=None,
-        accept_multiple_files=True,
-    )
+        if uploaded_files:
+            st.markdown(f"**{len(uploaded_files)} arquivo(s) selecionado(s)**")
 
-    if uploaded_files:
-        st.markdown(f"**{len(uploaded_files)} arquivo(s) selecionado(s)**")
+            if st.button("Processar Embedding"):
+                total = len(uploaded_files)
+                progress_bar = st.progress(0, text="Iniciando processamento...")
+                status_container = st.container()
 
-        if st.button("Processar Embedding"):
-            total = len(uploaded_files)
-            progress_bar = st.progress(0, text="Iniciando processamento...")
-            status_container = st.container()
+                results = []
 
-            results = []
+                for i, uploaded_file in enumerate(uploaded_files):
+                    progress_bar.progress(i / total, text=f"Processando {i + 1}/{total}: **{uploaded_file.name}**")
 
-            for i, uploaded_file in enumerate(uploaded_files):
-                progress_bar.progress(i / total, text=f"Processando {i + 1}/{total}: **{uploaded_file.name}**")
+                    with status_container:
+                        status_placeholder = st.empty()
+                        status_placeholder.info(f"⏳ Processando: **{uploaded_file.name}**")
 
-                with status_container:
-                    status_placeholder = st.empty()
-                    status_placeholder.info(f"⏳ Processando: **{uploaded_file.name}**")
+                    tmp_path = None
+                    try:
+                        suffix = os.path.splitext(uploaded_file.name)[1]
+                        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+                            tmp.write(uploaded_file.read())
+                            tmp_path = tmp.name
 
-                tmp_path = None
-                try:
-                    suffix = os.path.splitext(uploaded_file.name)[1]
-                    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
-                        tmp.write(uploaded_file.read())
-                        tmp_path = tmp.name
+                        embedding_processor = FileProcessor()
 
-                    embedding_processor = FileProcessor()
+                        file_info = embedding_processor.get_file_information(tmp_path)
+                        file_info["name"] = uploaded_file.name
 
-                    file_info = embedding_processor.get_file_information(tmp_path)
-                    file_info["name"] = uploaded_file.name
+                        payload = embedding_processor.build_embedding_payload(
+                            job_id="job_12345",
+                            user_id="user_789",
+                            source="uploaded_file",
+                            knoledgebase_id="knoledgebase_001",
+                            file_info=file_info,
+                        )
+                        result = embedding_processor.embedding_file(payload)
 
-                    payload = embedding_processor.build_embedding_payload(
-                        job_id="job_12345",
-                        user_id="user_789",
-                        source="uploaded_file",
-                        knoledgebase_id="knoledgebase_001",
-                        file_info=file_info,
-                    )
-                    result = embedding_processor.embedding_file(payload)
+                        results.append({"name": uploaded_file.name, "status": "success", "file_id": result["file_id"]})
+                        status_placeholder.success(f"✅ **{uploaded_file.name}** — File ID: `{result['file_id']}`")
 
-                    results.append({"name": uploaded_file.name, "status": "success", "file_id": result["file_id"]})
-                    status_placeholder.success(f"✅ **{uploaded_file.name}** — File ID: `{result['file_id']}`")
+                    except Exception as e:
+                        results.append({"name": uploaded_file.name, "status": "error", "error": str(e)})
+                        status_placeholder.error(f"❌ **{uploaded_file.name}** — Erro: {e}")
 
-                except Exception as e:
-                    results.append({"name": uploaded_file.name, "status": "error", "error": str(e)})
-                    status_placeholder.error(f"❌ **{uploaded_file.name}** — Erro: {e}")
+                    finally:
+                        if tmp_path and os.path.exists(tmp_path):
+                            os.remove(tmp_path)
 
-                finally:
-                    if tmp_path and os.path.exists(tmp_path):
-                        os.remove(tmp_path)
+                progress_bar.progress(1.0, text="Processamento concluído!")
 
-            progress_bar.progress(1.0, text="Processamento concluído!")
+                success_count = sum(1 for r in results if r["status"] == "success")
+                error_count = sum(1 for r in results if r["status"] == "error")
 
-            success_count = sum(1 for r in results if r["status"] == "success")
-            error_count = sum(1 for r in results if r["status"] == "error")
-
-            st.divider()
-            col1, col2, col3 = st.columns(3)
-            col1.metric("Total", total)
-            col2.metric("Concluídos", success_count)
-            col3.metric("Erros", error_count)
+                st.divider()
+                col1, col2, col3 = st.columns(3)
+                col1.metric("Total", total)
+                col2.metric("Concluídos", success_count)
+                col3.metric("Erros", error_count)
 
 
 

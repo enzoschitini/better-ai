@@ -3,7 +3,7 @@
         "job_id": "job_12345",
         "identifiers": {
             "user_id": "user_789",
-            "file_id": "1782932546249336700ZT5a"
+            "file_id": "1782932727327351700PG7F"
         },
         "embedding_metadata": {
             "source": "uploaded_file",
@@ -43,13 +43,13 @@
     },
     "embedding_metadata": {
         "user_id": "user_789",
-        "file_id": "1782932546249336700ZT5a",
+        "file_id": "1782932727327351700PG7F",
         "file_name": "Credencial Sesc.pdf",
         "file_extension": "pdf",
         "source": "uploaded_file",
         "knoledgebase_id": "knoledgebase_001",
         "origin": "web_app",
-        "created_at": "2026-07-01 19:02:26"
+        "created_at": "2026-07-01 19:05:27"
     },
     "usage_summary": {
         "total_caracter_count": 2276,
@@ -66,13 +66,13 @@
                 "namespace": "default_main_namespace",
                 "chunks_saved": 1,
                 "chunks_ids": [
-                    "71f4dc63-25c9-400c-ac1b-383c52462120"
+                    "2275d9b9-8434-4a43-b45f-aa5593fc0cb2"
                 ]
             }
         }
     },
     "save_response": {
         "status": "success",
-        "inserted_id": "dcd14220-e4d8-4eb2-87fc-4673360c8509"
+        "inserted_id": "7dbac7e8-bf99-4b68-9733-3de0f738b5d4"
     }
 }
