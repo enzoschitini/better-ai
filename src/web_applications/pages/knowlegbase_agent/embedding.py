@@ -48,7 +48,7 @@ class FileProcessor:
 
             "identifiers": {
                 "user_id": user_id,
-                "file_id": "file_xyz" # Può essere creato
+                #"file_id": "file_xyz" # Può essere creato
             },
 
             "embedding_metadata": {
@@ -79,9 +79,12 @@ class FileProcessor:
     def embedding_file(self, payload):
         embedder = EmbeddingFile(payload)
         embedder._init_tracking()
-        embedder.run()
+        result = embedder.run()
         embedder.save()
-        return {"file_id": payload["identifiers"]["file_id"]}
+        return {
+            "status": "success",
+            "file_id": result["file_id"]
+        }
 
 
 if __name__ == "__main__":
@@ -97,6 +100,7 @@ if __name__ == "__main__":
     result = embedding_processor.embedding_file(payload)
 
     print("Embedding process completed successfully.")
+    print(f"Status: {result['status']}")
     print(f"File ID: {result['file_id']}")
 
 # python -m src.web_applications.pages.knowlegbase_agent.embedding

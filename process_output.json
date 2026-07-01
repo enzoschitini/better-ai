@@ -3,7 +3,7 @@
         "job_id": "job_12345",
         "identifiers": {
             "user_id": "user_789",
-            "file_id": "file_xyz"
+            "file_id": "178293163735895360076Zl"
         },
         "embedding_metadata": {
             "source": "uploaded_file",
@@ -42,12 +42,12 @@
     },
     "embedding_metadata": {
         "user_id": "user_789",
-        "file_id": "file_xyz",
+        "file_id": "178293163735895360076Zl",
         "file_name": "example.pdf",
         "file_extension": "pdf",
         "source": "uploaded_file",
         "origin": "web_app",
-        "created_at": "2026-07-01 18:44:03"
+        "created_at": "2026-07-01 18:47:19"
     },
     "usage_summary": {
         "total_caracter_count": 2276,
@@ -64,13 +64,13 @@
                 "namespace": "default_main_namespace",
                 "chunks_saved": 1,
                 "chunks_ids": [
-                    "8c833bb1-ba07-48b1-870c-a13136d42e88"
+                    "942bef26-2cc0-47fd-b1c1-3432ad7f91f1"
                 ]
             }
         }
     },
     "save_response": {
         "status": "success",
-        "inserted_id": "046ddf37-fcd8-4f1b-919f-c7291644d8f9"
+        "inserted_id": "c12c00d6-77fd-4ce4-a349-aff8e8cbfc8e"
     }
 }
