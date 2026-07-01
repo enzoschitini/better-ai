@@ -47,7 +47,7 @@ def chat(session_id: str, user_id: str, knowledgebase_id: str):
                 session_id=session_id,
                 user_id=user_id,
                 params={
-                    "filter_search": {"collection_id": knowledgebase_id}
+                    "filter_search": {"knowledgebase_id": knowledgebase_id}
                 },
             )
             st.session_state.knowledgebase_runner = runner
