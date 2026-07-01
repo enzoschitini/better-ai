@@ -32,35 +32,28 @@ class FileProcessor:
             "size_bytes": 204800,
             "size_kb": 200,
             "size_mb": 0.2,
-            "bytes": file
+            "bytes": self._load_file(file)
         }
 
     def build_embedding_payload(
         self, 
         job_id: str,
         user_id: str,
-        source: str
+        source: str,
+        file_info: dict,
     ):
 
         payload = {
-            "job_id": "job_12345",
+            "job_id": job_id,
 
             "identifiers": {
-                "client_id": "client_abc",
-                "workspace_id": "workspace_001",
-                "user_id": "user_789",
+                "user_id": user_id,
                 "file_id": "file_xyz" # Può essere creato
             },
 
-            "pipeline": {
-                "generate_tags": True,
-            },
-
             "embedding_metadata": {
-                "source": "uploaded_file",
+                "source": source,
                 "origin": "web_app",
-                "language": "en",
-                "tags": "#finance, #report, #2026"
             },
 
             "embedding_settings": {
@@ -77,15 +70,7 @@ class FileProcessor:
                 "main_namespace": "default_main_namespace",
             },
 
-            "file_info": {
-                "name": "example.pdf",
-                "extension": "pdf",
-                "mime_type": "application/pdf",
-                "size_bytes": 204800,
-                "size_kb": 200,
-                "size_mb": 0.2,
-                "bytes": self._load_file("Credencial Sesc.pdf")
-            }
+            "file_info": file_info
         }
 
         return payload
@@ -96,15 +81,22 @@ class FileProcessor:
         embedder._init_tracking()
         embedder.run()
         embedder.save()
+        return {"file_id": payload["identifiers"]["file_id"]}
 
 
 if __name__ == "__main__":
     embedding_processor = FileProcessor()
+
+    file_info = embedding_processor.get_file_information("Credencial Sesc.pdf")
     payload = embedding_processor.build_embedding_payload(
         job_id="job_12345",
         user_id="user_789",
-        source="uploaded_file"
+        source="uploaded_file",
+        file_info=file_info
     )
-    #embedding_processor.embedding_file(payload)
+    result = embedding_processor.embedding_file(payload)
+
+    print("Embedding process completed successfully.")
+    print(f"File ID: {result['file_id']}")
 
 # python -m src.web_applications.pages.knowlegbase_agent.embedding
