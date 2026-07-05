@@ -6,7 +6,11 @@ from html import escape
 if TYPE_CHECKING:
     from src.agents.agent_executor import AgentExecutor
 
-def chat():
+
+MESSAGES_KEY = "knowledgebase_messages"
+LAST_TOOL_PAYLOAD_KEY = "knowledgebase_last_tool_payload"
+
+def chat(session_id: str, user_id: str, knowledgebase_id: str):
     with st.sidebar:
         st.markdown("## ✦ BetterAI")
         st.markdown("### Agente: Base de Conhecimento")
@@ -39,14 +43,16 @@ def chat():
             # Lazy imports avoid expensive agent stack initialization during first page render.
             from src.agents.agent_executor import AgentExecutor
             from src.agents.knowlegbase_agent.agent import KnowledgeBaseAgent
-            from src.utils.unique_id_factory import IDGenerator
 
-            id_generator = IDGenerator()
+            print(f"Initializing KnowledgeBaseAgent runner for session_id={session_id}, user_id={user_id}, knowledgebase_id={knowledgebase_id}...")
 
             runner = AgentExecutor.from_agent_class(
                 agent_class=KnowledgeBaseAgent,
-                session_id=id_generator.uuid(),
-                user_id=id_generator.timestamp(prefix="streamlit_user", separator="-", as_hex=True, suffix_len=6),
+                session_id=session_id,
+                user_id=user_id,
+                params={
+                    "filter_search": {"knowledgebase_id": knowledgebase_id}
+                },
             )
             st.session_state.knowledgebase_runner = runner
 
@@ -59,7 +65,7 @@ def chat():
 
             tool_payload = collect_tool_payload(chunk, parsed)
             if tool_payload is not None:
-                st.session_state.last_tool_payload = tool_payload
+                st.session_state[LAST_TOOL_PAYLOAD_KEY] = tool_payload
 
             if content:
                 yield content
@@ -126,8 +132,8 @@ def chat():
     st.title("Base de Conhecimento Chat")
     st.caption("Agente BetterAI para consulta e gerenciamento da base de conhecimento.")
 
-    if "messages" not in st.session_state:
-        st.session_state.messages = [
+    if MESSAGES_KEY not in st.session_state:
+        st.session_state[MESSAGES_KEY] = [
             {
                 "role": "assistant",
                 "content": (
@@ -143,45 +149,45 @@ def chat():
             }
         ]
 
-    for message in st.session_state.messages:
+    for message in st.session_state[MESSAGES_KEY]:
         with st.chat_message(message["role"]):
             st.write(message["content"])
             render_sources(message.get("tool_payload"))
 
     if prompt := st.chat_input("Digite sua mensagem"):
-        st.session_state.messages.append({"role": "user", "content": prompt})
+        st.session_state[MESSAGES_KEY].append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.write(prompt)
 
-        st.session_state.messages.append(
+        st.session_state[MESSAGES_KEY].append(
             {"role": "assistant", "content": "", "tool_payload": None}
         )
-        assistant_message_index = len(st.session_state.messages) - 1
+        assistant_message_index = len(st.session_state[MESSAGES_KEY]) - 1
 
         with st.chat_message("assistant"):
             placeholder = st.empty()
 
             try:
-                st.session_state.last_tool_payload = None
+                st.session_state[LAST_TOOL_PAYLOAD_KEY] = None
                 chunks = []
 
                 for chunk in get_agent_response(prompt):
                     chunks.append(chunk)
                     partial_reply = "".join(chunks)
-                    st.session_state.messages[assistant_message_index]["content"] = partial_reply
+                    st.session_state[MESSAGES_KEY][assistant_message_index]["content"] = partial_reply
                     placeholder.write(partial_reply)
 
                 reply = "".join(chunks).strip()
                 if not reply:
                     reply = "Nao consegui gerar uma resposta agora. Tente novamente em instantes."
 
-                st.session_state.messages[assistant_message_index]["content"] = reply
+                st.session_state[MESSAGES_KEY][assistant_message_index]["content"] = reply
                 placeholder.write(reply)
 
-                tool_payload = st.session_state.last_tool_payload
-                st.session_state.messages[assistant_message_index]["tool_payload"] = tool_payload
+                tool_payload = st.session_state[LAST_TOOL_PAYLOAD_KEY]
+                st.session_state[MESSAGES_KEY][assistant_message_index]["tool_payload"] = tool_payload
                 render_sources(tool_payload)
             except Exception:
                 reply = "Falha ao consultar o agente real agora. Tente novamente em instantes."
-                st.session_state.messages[assistant_message_index]["content"] = reply
+                st.session_state[MESSAGES_KEY][assistant_message_index]["content"] = reply
                 placeholder.write(reply)

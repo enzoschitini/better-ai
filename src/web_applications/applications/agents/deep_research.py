@@ -5,6 +5,10 @@ import streamlit as st
 if TYPE_CHECKING:
     from src.agents.agent_executor import AgentExecutor
 
+
+MESSAGES_KEY = "deep_research_messages"
+LAST_TOOL_PAYLOAD_KEY = "deep_research_last_tool_payload"
+
 with st.sidebar:
     st.markdown("## ✦ BetterAI")
     st.markdown("### Agente: Deep Research")
@@ -58,7 +62,7 @@ def get_agent_response(prompt: str):
 
         tool_payload = collect_tool_payload(chunk, parsed)
         if tool_payload is not None:
-            st.session_state.last_tool_payload = tool_payload
+            st.session_state[LAST_TOOL_PAYLOAD_KEY] = tool_payload
 
         if content:
             yield content
@@ -86,8 +90,8 @@ def render_sources(payload: Any) -> None:
 st.title("Deep Research Chat")
 st.caption("Agente BetterAI para pesquisa aprofundada com fontes e contexto confiavel.")
 
-if "messages" not in st.session_state:
-    st.session_state.messages = [
+if MESSAGES_KEY not in st.session_state:
+    st.session_state[MESSAGES_KEY] = [
         {
             "role": "assistant",
             "content": (
@@ -103,47 +107,47 @@ if "messages" not in st.session_state:
         }
     ]
 
-for message in st.session_state.messages:
+for message in st.session_state[MESSAGES_KEY]:
     with st.chat_message(message["role"]):
         st.write(message["content"])
         render_sources(message.get("tool_payload"))
 
 if prompt := st.chat_input("Digite sua mensagem"):
-    st.session_state.messages.append({"role": "user", "content": prompt})
+    st.session_state[MESSAGES_KEY].append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.write(prompt)
 
-    st.session_state.messages.append(
+    st.session_state[MESSAGES_KEY].append(
         {"role": "assistant", "content": "", "tool_payload": None}
     )
-    assistant_message_index = len(st.session_state.messages) - 1
+    assistant_message_index = len(st.session_state[MESSAGES_KEY]) - 1
 
     with st.chat_message("assistant"):
         placeholder = st.empty()
 
         try:
-            st.session_state.last_tool_payload = None
+            st.session_state[LAST_TOOL_PAYLOAD_KEY] = None
             chunks = []
 
             for chunk in get_agent_response(prompt):
                 chunks.append(chunk)
                 partial_reply = "".join(chunks)
-                st.session_state.messages[assistant_message_index]["content"] = partial_reply
+                st.session_state[MESSAGES_KEY][assistant_message_index]["content"] = partial_reply
                 placeholder.write(partial_reply)
 
             reply = "".join(chunks).strip()
             if not reply:
                 reply = "Nao consegui gerar uma resposta agora. Tente novamente em instantes."
 
-            st.session_state.messages[assistant_message_index]["content"] = reply
+            st.session_state[MESSAGES_KEY][assistant_message_index]["content"] = reply
             placeholder.write(reply)
 
-            tool_payload = st.session_state.last_tool_payload
-            st.session_state.messages[assistant_message_index]["tool_payload"] = tool_payload
+            tool_payload = st.session_state[LAST_TOOL_PAYLOAD_KEY]
+            st.session_state[MESSAGES_KEY][assistant_message_index]["tool_payload"] = tool_payload
             render_sources(tool_payload)
         except Exception:
             reply = "Falha ao consultar o agente real agora. Tente novamente em instantes."
-            st.session_state.messages[assistant_message_index]["content"] = reply
+            st.session_state[MESSAGES_KEY][assistant_message_index]["content"] = reply
             placeholder.write(reply)
 
 # Test
