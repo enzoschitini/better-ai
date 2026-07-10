@@ -26,8 +26,11 @@ class Authorization:
     
     @staticmethod
     def validate_api_key(
-        api_key: str = Security(APIKeyHeader(name="X-API-Key"))
+        api_key: str | None = Security(APIKeyHeader(name="X-API-Key", auto_error=False))
     ):
+        if os.getenv("LOCAL", "").lower() == "true":
+            return True
+
         expected_api_key = os.getenv("BETTERAI_API_KEY")
 
         # print("API KEY RECEBIDA:", api_key)
