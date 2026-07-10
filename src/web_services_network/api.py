@@ -19,7 +19,7 @@ class WebServiceAPI:
     """
     This class serves as a configurable FastAPI web service wrapper, handling initialization,
     middleware setup, default routes registration, and dynamic router inclusion.
-    It also logs important runtime information such as banner, app version, and domain.
+    It also logs important runtime information such as banner, app version, and API_DOMAIN.
 
     Args:
         config (dict): Configuration settings for the web service API. Default is CONFIG.
@@ -35,12 +35,12 @@ class WebServiceAPI:
         self.config = config
         self.logger = logging.getLogger("uvicorn.error")
         self.app: FastAPI | None = None
-        self.domain = os.getenv("DOMAIN", "http://localhost:8000")
+        self.API_DOMAIN = os.getenv("API_DOMAIN", "http://localhost:8000")
 
     def _show_cover(self):
         """
         Logs the application start-up banner and key information such as app name,
-        initialization time, version, domain, and API documentation URL.
+        initialization time, version, API_DOMAIN, and API documentation URL.
         """
         current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         banner = self.config.get("banner", "")
@@ -50,10 +50,10 @@ class WebServiceAPI:
         
         self.logger.info(f"{self.config.get("app_name", "API")} initialized successfully at {current_time}.")
         self.logger.info(f"Version: {self.config.get('version', '1.0.0')}")
-        self.logger.info(f"Domain: {self.domain}")
+        self.logger.info(f"API_DOMAIN: {self.API_DOMAIN}")
 
-        self.logger.info(f"Health check available at: {self.domain}/health")
-        self.logger.info(f"Documentation available at: {self.domain}/docs")
+        self.logger.info(f"Health check available at: {self.API_DOMAIN}/health")
+        self.logger.info(f"Documentation available at: {self.API_DOMAIN}/docs")
 
     @asynccontextmanager
     async def _lifespan(self, app: FastAPI):
