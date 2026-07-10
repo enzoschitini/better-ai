@@ -2,7 +2,7 @@ LOCAL_MEMORY_DB = "src/agents/knowlegbase_agent/data/chat_sessions.db"
 DEFAULT_MODEL = "gpt-4.1-mini"
 
 PINECONE_INDEX_NAME = "backai-vectorstore"
-PINECONE_MAIN_NAMESPACE = "knowledge_base_content_agent_oboticario"
+PINECONE_MAIN_NAMESPACE = "default_main_namespace" #"knowledge_base_content_agent_oboticario"
 
 PROMPT = {
     "instructions": """

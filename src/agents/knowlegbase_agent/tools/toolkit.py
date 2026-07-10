@@ -75,6 +75,7 @@ class Toolkit(Toolkit):
             - If no relevant documents are found, an empty result or informative message may be returned.
         """
         try:
+            print(f"\n\n     >>>> Search for context generation: '{query}'\n\n")
             pine_client = PineconeClient(
                 index_name=PINECONE_INDEX_NAME,
                 main_namespace=PINECONE_MAIN_NAMESPACE

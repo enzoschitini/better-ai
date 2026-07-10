@@ -14,7 +14,7 @@ router = APIRouter(
 @router.post("/image-generation", 
     summary="Image generation based on prompts, settings, and optional images.",
     description="This endpoint accepts user input, optional instructions, configuration settings, and files to generate images using the ImageGenerate module. It processes the input and returns the generated images based on the provided parameters.",
-    #dependencies=[Depends(Authorization.validate_api_key)]
+    dependencies=[Depends(Authorization.validate_api_key)]
 )
 async def image_generation(
     user_input: str = Form(..., title="User Input", description="Main prompt used to generate the image"),

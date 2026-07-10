@@ -4,7 +4,7 @@ from io import BytesIO
 from src.embedding.modules.embedding_file import EmbeddingFile
 
 def generate_payload(view: bool = False):
-    with open("doc/test files/Candidatura.pdf", "rb") as f:
+    with open("Credencial Sesc.pdf", "rb") as f:
         file_bytes = BytesIO(f.read())
     
     if view:
@@ -38,6 +38,11 @@ def generate_payload(view: bool = False):
             "chunk_overlap": 50,
             "normalize": True,
             "batch_size": 200,
+        },
+
+        "vector_db_settings": {
+            "save_global": False,
+            "main_namespace": "default_main_namespace",
         },
 
         "file_info": {
