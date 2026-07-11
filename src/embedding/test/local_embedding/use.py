@@ -31,9 +31,9 @@ fake_embeddings = DeterministicFakeEmbedding(size=384)
 
 pipeline = LocalDynamicEmbedding(
     embeddings=fake_embeddings,
-    chunk_size=120,
-    chunk_overlap=20,
-    top_k=2,
+    chunk_size=3000,
+    chunk_overlap=300,
+    top_k=5,
 )
 
 n_chunks = pipeline.process_text(fill_texto, metadata={"fonte": "teste"})
@@ -43,7 +43,7 @@ print(f"Total de chunks armazenados: {pipeline.total_chunks}")
 resultados = pipeline.retrieve("IMPACTOS GLOBAIS")
 print("\nResultados do retriever:")
 for i, r in enumerate(resultados, 1):
-    print(f"{i}. score={r['score']:.4f} | metadata={r['metadata']}")
+    print(f">>>>>>>    {i}. score={r['score']:.4f} | metadata={r['metadata']}")
     #print(f"   conteúdo: {r['content'][:80]}...")
     print(f"   conteúdo: {r['content']}\n")
 

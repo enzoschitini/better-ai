@@ -163,10 +163,15 @@ class LocalDynamicEmbedding:
             raise ValueError("O texto de entrada não pode ser vazio.")
 
         raw_chunks = self._splitter.split_text(text)
-        documents = [
-            Document(page_content=chunk, metadata=metadata or {})
-            for chunk in raw_chunks
-        ]
+        base_metadata = dict(metadata or {})
+        documents = []
+
+        for index, chunk in enumerate(raw_chunks):
+            doc_metadata = dict(base_metadata)
+            doc_metadata["chunk_index"] = len(self._chunks) + index
+            documents.append(
+                Document(page_content=chunk, metadata=doc_metadata)
+            )
 
         if self._vectorstore is None:
             self._vectorstore = FAISS.from_documents(documents, self._embeddings)
@@ -195,14 +200,26 @@ class LocalDynamicEmbedding:
         k = top_k or self.top_k
         results = self._vectorstore.similarity_search_with_score(query, k=k)
 
-        return [
-            {
-                "content": doc.page_content,
-                "score": float(score),
-                "metadata": doc.metadata,
-            }
-            for doc, score in results
-        ]
+        formatted_results = []
+        for doc, score in results:
+            content = doc.page_content.strip()
+
+            """
+            if len(content) < 220:
+                context = content
+            else:
+                context = content[:220].rstrip() + "..."
+            """
+
+            formatted_results.append(
+                {
+                    "content": content,
+                    "score": float(score),
+                    "metadata": doc.metadata,
+                }
+            )
+
+        return formatted_results
 
     def as_retriever(self, **kwargs) -> VectorStoreRetriever:
         """
