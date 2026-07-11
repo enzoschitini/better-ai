@@ -13,6 +13,14 @@ Machine learning é uma área da inteligência artificial focada em algoritmos
 que aprendem padrões a partir de dados, sem serem explicitamente programados.
 """
 
+PATH = "src/embedding/test/local_embedding/texts"
+files = ["exploracao_espacial.txt", "historia_internet.txt", "inteligencia_artificial.txt", "mudancas_climaticas.txt", "saude_mental.txt"]
+fill_texto = ""
+
+for file in files:
+    with open(f"{PATH}/{file}", "r", encoding="utf-8") as f:
+        fill_texto += f.read() + "\n\n"
+
 # Usamos um embedding determinístico e leve apenas para validar o
 # fluxo (chunking -> embeddings -> storage -> retrieval) sem depender
 # de baixar um modelo real de sentence-transformers neste teste.
@@ -28,15 +36,16 @@ pipeline = LocalDynamicEmbedding(
     top_k=2,
 )
 
-n_chunks = pipeline.process_text(texto, metadata={"fonte": "teste"})
+n_chunks = pipeline.process_text(fill_texto, metadata={"fonte": "teste"})
 print(f"Chunks gerados: {n_chunks}")
 print(f"Total de chunks armazenados: {pipeline.total_chunks}")
 
-resultados = pipeline.retrieve("O que é machine learning?")
+resultados = pipeline.retrieve("IMPACTOS GLOBAIS")
 print("\nResultados do retriever:")
 for i, r in enumerate(resultados, 1):
     print(f"{i}. score={r['score']:.4f} | metadata={r['metadata']}")
-    print(f"   conteúdo: {r['content'][:80]}...")
+    #print(f"   conteúdo: {r['content'][:80]}...")
+    print(f"   conteúdo: {r['content']}\n")
 
 retriever = pipeline.as_retriever()
 print(f"\nObjeto Retriever nativo do LangChain: {type(retriever)}")
