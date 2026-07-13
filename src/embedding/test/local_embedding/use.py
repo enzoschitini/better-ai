@@ -1,5 +1,5 @@
 from langchain_community.embeddings import DeterministicFakeEmbedding
-from src.embedding.modules.local_embedding import LocalDynamicEmbedding
+from embedding.modules._local_embedding import LocalDynamicEmbedding
 import time
 
 texto = """
