@@ -1,3 +1,4 @@
+```python
 """
 LocalDynamicEmbedding
 =====================
@@ -666,3 +667,4 @@ class LocalDynamicEmbedding:
         self._chunks = []
         self._index_map = {}
         return self
+```
