@@ -1,7 +1,6 @@
 
-from src.embedding.modules.local_embedding.module import LocalDynamicEmbedding, EmbeddingFactory
-
 if __name__ == "__main__":
+    from src.embedding.modules.local_embedding.module import LocalDynamicEmbedding, EmbeddingFactory
     # Rode com:  python -m src.embedding.modules.local_embedding
     # (precisa ser via -m por causa do import relativo da EmbeddingFactory)
 

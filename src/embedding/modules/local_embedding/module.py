@@ -132,47 +132,77 @@ class LocalDynamicEmbedding:
     # ------------------------------------------------------------------
     @property
     def embeddings(self) -> Embeddings:
-        if self._embeddings is None:
-            # Default pedido: fake embeddings, sem precisar instanciar por fora.
-            self._embeddings = EmbeddingFactory.fake(size=self.size)
-        return self._embeddings
+        try:
+            if self._embeddings is None:
+                # Default pedido: fake embeddings, sem precisar instanciar por fora.
+                self._embeddings = EmbeddingFactory.fake(size=self.size)
+            return self._embeddings
+        except Exception as e:
+            raise RuntimeError(
+                f"Error creating embeddings. Check the parameters: size={self.size}. "
+                f"Original error: {str(e)}"
+            )
 
     @property
     def splitter(self) -> RecursiveCharacterTextSplitter:
-        if self._splitter is None:
-            self._splitter = RecursiveCharacterTextSplitter(
-                chunk_size=self.chunk_size,
-                chunk_overlap=self.chunk_overlap,
-                separators=self.separators,
+        try:
+            if self._splitter is None:
+                self._splitter = RecursiveCharacterTextSplitter(
+                    chunk_size=self.chunk_size,
+                    chunk_overlap=self.chunk_overlap,
+                    separators=self.separators,
+                )
+            return self._splitter
+        except Exception as e:
+            raise RuntimeError(
+                f"Error creating text splitter. Check the parameters: "
+                f"chunk_size={self.chunk_size}, chunk_overlap={self.chunk_overlap}, separators={self.separators}. "
+                f"Original error: {str(e)}"
             )
-        return self._splitter
 
     # ------------------------------------------------------------------
     # API fluente (builder) – monte o fluxo passo a passo
     # ------------------------------------------------------------------
     def with_embeddings(self, embeddings: Embeddings) -> "LocalDynamicEmbedding":
         """Injeta uma instância de `Embeddings` pronta."""
-        self._guard_not_built("embeddings")
-        self._embeddings = embeddings
-        return self
+        try:
+            self._guard_not_built("embeddings")
+            self._embeddings = embeddings
+            return self
+        except Exception as e:
+            raise RuntimeError(
+                f"Error setting embeddings. Ensure the embeddings instance: {str(embeddings)} is valid. "
+            )
 
     def with_fake_embeddings(
         self, size: Optional[int] = None
     ) -> "LocalDynamicEmbedding":
         """Usa fake embeddings (opcionalmente mudando o `size`)."""
-        self._guard_not_built("embeddings")
-        if size is not None:
-            self.size = size
-        self._embeddings = EmbeddingFactory.fake(size=self.size)
-        return self
+        try:
+            self._guard_not_built("embeddings")
+            if size is not None:
+                self.size = size
+            self._embeddings = EmbeddingFactory.fake(size=self.size)
+            return self
+        except Exception as e:
+            raise RuntimeError(
+                f"Error setting fake embeddings. Check the size parameter: {size}. "
+                f"Original error: {str(e)}"
+            )
 
     def with_provider(
         self, provider: str, **kwargs
     ) -> "LocalDynamicEmbedding":
         """Escolhe o provedor pela `EmbeddingFactory` (openai, huggingface...)."""
-        self._guard_not_built("embeddings")
-        self._embeddings = EmbeddingFactory.create(provider, **kwargs)
-        return self
+        try:
+            self._guard_not_built("embeddings")
+            self._embeddings = EmbeddingFactory.create(provider, **kwargs)
+            return self
+        except Exception as e:
+            raise RuntimeError(
+                f"Error setting provider '{provider}' with parameters {kwargs}. "
+                f"Original error: {str(e)}"
+            )
 
     def with_splitter(
         self,
@@ -181,15 +211,22 @@ class LocalDynamicEmbedding:
         separators: Optional[List[str]] = None,
     ) -> "LocalDynamicEmbedding":
         """Configura o text splitter."""
-        self._guard_not_built("splitter")
-        if chunk_size is not None:
-            self.chunk_size = chunk_size
-        if chunk_overlap is not None:
-            self.chunk_overlap = chunk_overlap
-        if separators is not None:
-            self.separators = list(separators)
-        self._splitter = None  # força reconstrução com os novos valores
-        return self
+        try:
+            self._guard_not_built("splitter")
+            if chunk_size is not None:
+                self.chunk_size = chunk_size
+            if chunk_overlap is not None:
+                self.chunk_overlap = chunk_overlap
+            if separators is not None:
+                self.separators = list(separators)
+            self._splitter = None  # força reconstrução com os novos valores
+            return self
+        except Exception as e:
+            raise RuntimeError(
+                f"Error setting splitter parameters: chunk_size={chunk_size}, "
+                f"chunk_overlap={chunk_overlap}, separators={separators}. "
+                f"Original error: {str(e)}"
+            )
 
     def with_top_k(self, top_k: int) -> "LocalDynamicEmbedding":
         """Define o top_k padrão do retriever."""
@@ -288,46 +325,51 @@ class LocalDynamicEmbedding:
         -------
         int : quantidade de chunks gerados nesta chamada.
         """
-        if not text or not text.strip():
-            raise ValueError("O texto de entrada não pode ser vazio.")
+        try:
+            if not text or not text.strip():
+                raise ValueError("O texto de entrada não pode ser vazio.")
 
-        raw_chunks = self.splitter.split_text(text)
-        base_metadata = dict(metadata or {})
+            raw_chunks = self.splitter.split_text(text)
+            base_metadata = dict(metadata or {})
 
-        texts: List[str] = []
-        metadatas: List[dict] = []
-        for i, chunk in enumerate(raw_chunks):
-            md = dict(base_metadata)
-            md["chunk_index"] = len(self._chunks) + i
-            texts.append(chunk)
-            metadatas.append(md)
+            texts: List[str] = []
+            metadatas: List[dict] = []
+            for i, chunk in enumerate(raw_chunks):
+                md = dict(base_metadata)
+                md["chunk_index"] = len(self._chunks) + i
+                texts.append(chunk)
+                metadatas.append(md)
 
-        # Calcula os embeddings uma vez só e reaproveita para o FAISS.
-        vectors = self.embeddings.embed_documents(texts)
+            # Calcula os embeddings uma vez só e reaproveita para o FAISS.
+            vectors = self.embeddings.embed_documents(texts)
 
-        for txt, md, vec in zip(texts, metadatas, vectors):
-            chunk_obj = Chunk(
-                index=md["chunk_index"],
-                content=txt,
-                metadata=md,
-                embedding=[float(x) for x in vec],
+            for txt, md, vec in zip(texts, metadatas, vectors):
+                chunk_obj = Chunk(
+                    index=md["chunk_index"],
+                    content=txt,
+                    metadata=md,
+                    embedding=[float(x) for x in vec],
+                )
+                self._chunks.append(chunk_obj)
+                self._index_map[chunk_obj.index] = chunk_obj
+
+            text_embeddings = list(zip(texts, vectors))
+            if self._vectorstore is None:
+                self._vectorstore = FAISS.from_embeddings(
+                    text_embeddings=text_embeddings,
+                    embedding=self.embeddings,
+                    metadatas=metadatas,
+                )
+            else:
+                self._vectorstore.add_embeddings(
+                    text_embeddings=text_embeddings, metadatas=metadatas
+                )
+
+            return len(texts)
+        except Exception as e:
+            raise RuntimeError(
+                f"Error processing text: {str(e)}"
             )
-            self._chunks.append(chunk_obj)
-            self._index_map[chunk_obj.index] = chunk_obj
-
-        text_embeddings = list(zip(texts, vectors))
-        if self._vectorstore is None:
-            self._vectorstore = FAISS.from_embeddings(
-                text_embeddings=text_embeddings,
-                embedding=self.embeddings,
-                metadatas=metadatas,
-            )
-        else:
-            self._vectorstore.add_embeddings(
-                text_embeddings=text_embeddings, metadatas=metadatas
-            )
-
-        return len(texts)
 
     # ------------------------------------------------------------------
     # Cenário 2 – Recuperação de conteúdo (Retriever)
@@ -344,24 +386,29 @@ class LocalDynamicEmbedding:
         Cada item tem: `content`, `score`, `metadata` e, se
         `include_embedding=True`, também `embedding`.
         """
-        self._ensure_processed()
+        try:
+            self._ensure_processed()
 
-        k = top_k or self.top_k
-        results = self._vectorstore.similarity_search_with_score(query, k=k)
+            k = top_k or self.top_k
+            results = self._vectorstore.similarity_search_with_score(query, k=k)
 
-        formatted_results: List[Dict] = []
-        for doc, score in results:
-            item = {
-                "content": doc.page_content.strip(),
-                "score": float(score),
-                "metadata": doc.metadata,
-            }
-            if include_embedding:
-                chunk = self._index_map.get(doc.metadata.get("chunk_index"))
-                item["embedding"] = chunk.embedding if chunk else None
-            formatted_results.append(item)
+            formatted_results: List[Dict] = []
+            for doc, score in results:
+                item = {
+                    "content": doc.page_content.strip(),
+                    "score": float(score),
+                    "metadata": doc.metadata,
+                }
+                if include_embedding:
+                    chunk = self._index_map.get(doc.metadata.get("chunk_index"))
+                    item["embedding"] = chunk.embedding if chunk else None
+                formatted_results.append(item)
 
-        return formatted_results
+            return formatted_results
+        except Exception as e:
+            raise RuntimeError(
+                f"Error retrieving results for query '{query}': {str(e)}"
+            )
 
     def as_retriever(self, **kwargs) -> VectorStoreRetriever:
         """Retorna um `VectorStoreRetriever` nativo do LangChain."""
@@ -407,7 +454,6 @@ class LocalDynamicEmbedding:
             )
 
     def clear(self) -> "LocalDynamicEmbedding":
-        """Remove todos os chunks/embeddings armazenados localmente."""
         self._vectorstore = None
         self._chunks = []
         self._index_map = {}
