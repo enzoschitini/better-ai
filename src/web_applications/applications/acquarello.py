@@ -16,6 +16,19 @@ st.set_page_config(page_title="API · BetterAI", page_icon="🔌", layout="wide"
 st.markdown("""
     <style>
         [data-testid="stSidebarNav"] { display: none; }
+        .block-container {
+            max-width: 980px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        [data-testid="stChatInput"] {
+            max-width: 980px;
+            margin-left: auto;
+            margin-right: auto;
+        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -62,7 +75,8 @@ class AcquarelloApp:
         )
 
         st.write("")
-        self._center_image("src/web_applications/pages/acquarello/cover.png")
+        #self._center_image("src/web_applications/pages/acquarello/cover.png")
+        st.image("src/web_applications/pages/acquarello/cover.png")
         st.write("")
 
         # MENU (AGORA CORRETO E ÚNICO)
