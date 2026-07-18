@@ -6,7 +6,7 @@ import streamlit as st
 from src.web_applications.utils.pages import PAGES
 from src.image_generation.image_generator_service import ImageGeneratorService
 
-from src.web_applications.pages.acquarello.prompts import GetPromptStile
+from src.web_applications.pages.acquarello.prompts import GetPromptStyle
 
 st.set_page_config(page_title="API · BetterAI", page_icon="🔌", layout="wide")
 
@@ -48,6 +48,8 @@ class AcquarelloApp:
 
         if "last_assistant" not in st.session_state:
             st.session_state.last_assistant = None
+
+        self.style_prompts = GetPromptStyle("cartoon")
     
     def _center_image(self, image_path):
         col_left, col_center, col_right = st.columns([1, 2, 1])
@@ -87,14 +89,14 @@ class AcquarelloApp:
     # -------------------------
     # IMAGE GENERATOR
     # -------------------------
-    def generate_image(self, user_prompt, image_bytes=None):
+    def generate_image(self, user_prompt, instructions, image_bytes=None):
         #pass
         #"""
         service = ImageGeneratorService()
 
         parts = service.build_parts(
             user_prompt=user_prompt,
-            instructions=GetPromptStile("watercolor").text_to_image(),
+            instructions=instructions,
             images=[image_bytes] if image_bytes else None
         )
 
@@ -139,7 +141,8 @@ class AcquarelloApp:
             with st.chat_message("assistant"):
                 with st.spinner("Gerando composição aquarela..."):
                     image_name = self.generate_image(
-                        user_prompt=st.session_state.last_user
+                        user_prompt=st.session_state.last_user,
+                        instructions=self.style_prompts.text_to_image()
                     )
 
                     resposta = "Aqui está a imagem aquarela que você pediu!"
@@ -169,7 +172,8 @@ class AcquarelloApp:
         if uploaded_file:
             with st.spinner("Gerando composição aquarela..."):
                 image_name = self.generate_image(
-                    user_prompt=GetPromptStile("watercolor").image_to_image(),
+                    user_prompt="Transform this image to the selected style.",
+                    instructions=self.style_prompts.image_to_image(),
                     image_bytes=uploaded_file.read()
                 )
 
