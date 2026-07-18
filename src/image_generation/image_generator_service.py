@@ -267,13 +267,18 @@ class ImageGeneratorService:
 
 if __name__ == "__main__":
     import json
+    from pathlib import Path
 
     # Carregar imagem
     #with open("images/img_1776014519200669500AKX2.jpg", "rb") as f:
         #image_bytes = f.read()
 
 
-    service = ImageGeneratorService()
+    service = ImageGeneratorService(
+        content_config={
+            "aspect_ratio": "9:16", # "1:1" (Quadro), "16:9" (Horizontal), "9:16" (Vertical)
+        }
+    )
 
     user_prompt = """
 Crie uma foto de uma pizzaria napolitana
@@ -292,18 +297,21 @@ Use um estilo artístico tipo os 3d da Disney Pixar, com cores vibrantes e ilumi
     responses = service.call_model(parts=parts, config=config)
     result = service.parse_responses(responses=responses)
 
+    output_dir = Path("data/images")
+    output_dir.mkdir(parents=True, exist_ok=True)
+
     # 👉 Salvar imagens
     image_paths = []
     for idx, image_info in enumerate(result["images"]):
         image_bytes = image_info["data"]
         mime_type = image_info["mime_type"]
         extension = "jpg" if mime_type == "image/jpeg" else "png"
-        filename = f"data/images/generated_image_{idx + 1}.{extension}"
+        filename = output_dir / f"generated_image_{idx + 1}.{extension}"
 
         with open(filename, "wb") as f:
             f.write(image_bytes)
 
-        image_paths.append(filename)
+        image_paths.append(str(filename))
         print(f"Imagem salva como {filename}")
 
     # 👉 Remover imagens (bytes pesados)
