@@ -6,10 +6,7 @@ import streamlit as st
 from src.web_applications.utils.pages import PAGES
 from src.image_generation.image_generator_service import ImageGeneratorService
 
-from src.web_applications.pages.acquarello.prompts import (
-    WATERCOLOR_INSTRUCTIONS,
-    IMAGE_TO_IMAGE_INSTRUCTIONS
-)
+from src.web_applications.pages.acquarello.prompts import GetPromptStile
 
 st.set_page_config(page_title="API · BetterAI", page_icon="🔌", layout="wide")
 
@@ -97,7 +94,7 @@ class AcquarelloApp:
 
         parts = service.build_parts(
             user_prompt=user_prompt,
-            instructions=WATERCOLOR_INSTRUCTIONS,
+            instructions=GetPromptStile("watercolor").text_to_image(),
             images=[image_bytes] if image_bytes else None
         )
 
@@ -172,7 +169,7 @@ class AcquarelloApp:
         if uploaded_file:
             with st.spinner("Gerando composição aquarela..."):
                 image_name = self.generate_image(
-                    user_prompt=IMAGE_TO_IMAGE_INSTRUCTIONS,
+                    user_prompt=GetPromptStile("watercolor").image_to_image(),
                     image_bytes=uploaded_file.read()
                 )
 
