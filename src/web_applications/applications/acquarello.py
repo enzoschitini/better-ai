@@ -65,7 +65,7 @@ class AcquarelloApp:
 
         st.markdown(
             "<p style='text-align: center;'>"
-            "Dê vida às suas ideias ou transforme suas imagens em pinturas em aquarela"
+            "Dê vida às suas ideias ou transforme suas imagens em pinturas no estilo que você quiser"
             "</p>",
             unsafe_allow_html=True
         )
