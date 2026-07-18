@@ -2,11 +2,11 @@ import streamlit as st
 import uuid
 from pathlib import Path
 
-import streamlit as st
 from src.web_applications.utils.pages import PAGES
 from src.image_generation.image_generator_service import ImageGeneratorService
 
 from src.web_applications.pages.acquarello.prompts import GetPromptStyle
+from src.web_applications.pages.acquarello.config import STYLE_MAPPING
 
 st.set_page_config(page_title="API · BetterAI", page_icon="🔌", layout="wide")
 
@@ -49,7 +49,11 @@ class AcquarelloApp:
         if "last_assistant" not in st.session_state:
             st.session_state.last_assistant = None
 
-        self.style_prompts = GetPromptStyle("cartoon")
+        if "style_label" not in st.session_state:
+            st.session_state.style_label = list(STYLE_MAPPING.keys())[0]
+
+        selected_style = STYLE_MAPPING[st.session_state.style_label]["style_en"]
+        self.style_prompts = GetPromptStyle(selected_style)
     
     def _center_image(self, image_path):
         col_left, col_center, col_right = st.columns([1, 2, 1])
@@ -85,6 +89,17 @@ class AcquarelloApp:
                 index=0 if st.session_state.option == "Gerar aquarela a partir de texto" else 1,
                 key="main_menu"
             )
+
+            st.session_state.style_label = st.selectbox(
+                "Escolha um estilo",
+                options=list(STYLE_MAPPING.keys()),
+                index=list(STYLE_MAPPING.keys()).index(st.session_state.style_label),
+                key="style_menu"
+            )
+
+            selected_style_config = STYLE_MAPPING[st.session_state.style_label]
+            st.caption(selected_style_config["description"])
+            self.style_prompts = GetPromptStyle(selected_style_config["style_en"])
 
     # -------------------------
     # IMAGE GENERATOR
