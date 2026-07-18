@@ -35,4 +35,8 @@ STYLE_MAPPING = {
         "style_en": "photorealistic",
         "description": "Detalhes realistas, iluminacao natural e texturas convincentes para uma representacao fiel da realidade.",
     },
+    "Nostalgico": {
+        "style_en": "nostalgic",
+        "description": "Tons suaves, cores desbotadas e elementos visuais que evocam sentimentos de nostalgia e reminiscencia.",
+    },
 }
