@@ -35,6 +35,11 @@ class AcquarelloApp:
 
         if "last_assistant" not in st.session_state:
             st.session_state.last_assistant = None
+    
+    def _center_image(self, image_path):
+        col_left, col_center, col_right = st.columns([1, 2, 1])
+        with col_center:
+            st.image(image_path)
 
     # -------------------------
     # HEADER + MENU
@@ -50,8 +55,7 @@ class AcquarelloApp:
         )
 
         st.write("")
-        st.image("src/web_applications/pages/acquarello/cover.png")
-
+        self._center_image("src/web_applications/pages/acquarello/cover.png")
         st.write("")
 
         # MENU (AGORA CORRETO E ÚNICO)
