@@ -19,4 +19,8 @@ STYLE_MAPPING = {
         "style_en": "cartoon",
         "description": "Contornos marcados, cores vibrantes e visual divertido e estilizado.",
     },
+    "Anime": {
+        "style_en": "anime",
+        "description": "Linhas definidas, olhos expressivos e proporções estilizadas tipicas da animacao japonesa.",
+    },
 }
