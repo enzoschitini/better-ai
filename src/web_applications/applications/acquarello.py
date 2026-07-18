@@ -1,8 +1,15 @@
 import streamlit as st
 import uuid
+from pathlib import Path
 
 import streamlit as st
 from src.web_applications.utils.pages import PAGES
+from src.image_generation.image_generator_service import ImageGeneratorService
+
+from src.web_applications.pages.acquarello.prompts import (
+    WATERCOLOR_INSTRUCTIONS,
+    IMAGE_TO_IMAGE_INSTRUCTIONS
+)
 
 st.set_page_config(page_title="API · BetterAI", page_icon="🔌", layout="wide")
 
@@ -73,8 +80,8 @@ class AcquarelloApp:
     # IMAGE GENERATOR
     # -------------------------
     def generate_image(self, user_prompt, image_bytes=None):
-        pass
-        """
+        #pass
+        #"""
         service = ImageGeneratorService()
 
         parts = service.build_parts(
@@ -88,19 +95,21 @@ class AcquarelloApp:
         result = service.parse_responses(responses=responses)
 
         image_name = None
+        output_dir = Path("_cache_generated_images")
+        output_dir.mkdir(parents=True, exist_ok=True)
 
         for idx, image_info in enumerate(result["images"]):
             image_bytes = image_info["data"]
             mime_type = image_info["mime_type"]
             extension = "jpg" if mime_type == "image/jpeg" else "png"
 
-            image_name = f"generated_images/{uuid.uuid4()}_{idx + 1}.{extension}"
+            image_name = output_dir / f"{uuid.uuid4()}_{idx + 1}.{extension}"
 
             with open(image_name, "wb") as f:
                 f.write(image_bytes)
 
-        return image_name
-        """
+        return str(image_name) if image_name else None
+        #"""
 
     # -------------------------
     # TEXTO -> IMAGEM
@@ -152,7 +161,7 @@ class AcquarelloApp:
         if uploaded_file:
             with st.spinner("Gerando composição aquarela..."):
                 image_name = self.generate_image(
-                    user_prompt="Imagem de um carro",  # IMAGE_TO_IMAGE_INSTRUCTIONS,
+                    user_prompt=IMAGE_TO_IMAGE_INSTRUCTIONS,
                     image_bytes=uploaded_file.read()
                 )
 
