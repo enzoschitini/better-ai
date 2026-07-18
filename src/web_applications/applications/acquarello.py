@@ -74,8 +74,7 @@ class AcquarelloApp:
         )
 
         st.write("")
-        #self._center_image("src/web_applications/pages/acquarello/cover.png")
-        st.image("src/web_applications/pages/acquarello/cover.png")
+        st.image("src/web_applications/pages/acquarello/images/cover.png")
         st.write("")
 
         # MENU NA SIDEBAR
