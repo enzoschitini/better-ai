@@ -35,10 +35,6 @@ st.markdown("""
 with st.sidebar:
     st.markdown("## 🔌 API")
     st.markdown("---")
-    st.markdown("Endpoints")
-    st.markdown("- `/health`\n- `/docs`\n- `/v1/...`")
-    st.divider()
-    st.page_link(PAGES["home"], label="← Voltar para Home")
 
 
 class AcquarelloApp:
@@ -48,7 +44,7 @@ class AcquarelloApp:
 
         # Estado global
         if "option" not in st.session_state:
-            st.session_state.option = "Gerar imagem a partir de texto"
+            st.session_state.option = "Gerar aquarela a partir de texto"
 
         if "last_user" not in st.session_state:
             st.session_state.last_user = None
@@ -79,16 +75,17 @@ class AcquarelloApp:
         st.image("src/web_applications/pages/acquarello/cover.png")
         st.write("")
 
-        # MENU (AGORA CORRETO E ÚNICO)
-        st.session_state.option = st.selectbox(
-            "Escolha uma opção",
-            options=[
-                "Gerar aquarela a partir de texto",
-                "Gerar aquarela a partir de uma foto"
-            ],
-            index=0 if st.session_state.option == "Gerar imagem a partir de texto" else 1,
-            key="main_menu"
-        )
+        # MENU NA SIDEBAR
+        with st.sidebar:
+            st.session_state.option = st.selectbox(
+                "Escolha uma opção",
+                options=[
+                    "Gerar aquarela a partir de texto",
+                    "Gerar aquarela a partir de uma foto"
+                ],
+                index=0 if st.session_state.option == "Gerar aquarela a partir de texto" else 1,
+                key="main_menu"
+            )
 
     # -------------------------
     # IMAGE GENERATOR
