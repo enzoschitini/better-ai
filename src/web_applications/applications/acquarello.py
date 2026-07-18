@@ -30,7 +30,8 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 with st.sidebar:
-    st.markdown("## 🔌 API")
+    st.title("Acquarello")
+    st.markdown("Dê vida às suas ideias ou transforme suas imagens em pinturas no estilo que você quiser.")
     st.markdown("---")
 
 
@@ -73,19 +74,6 @@ class AcquarelloApp:
     # HEADER + MENU
     # -------------------------
     def welcome(self):
-        st.title("Acquarello", text_alignment="center")
-
-        st.markdown(
-            "<p style='text-align: center;'>"
-            "Dê vida às suas ideias ou transforme suas imagens em pinturas no estilo que você quiser"
-            "</p>",
-            unsafe_allow_html=True
-        )
-
-        st.write("")
-        st.image("src/web_applications/pages/acquarello/images/cover.png")
-        st.write("")
-
         # MENU NA SIDEBAR
         with st.sidebar:
             st.session_state.option = st.selectbox(
@@ -115,6 +103,24 @@ class AcquarelloApp:
             selected_style_config = STYLE_MAPPING[st.session_state.style_label]
             st.caption(selected_style_config["description"])
             self.style_prompts = GetPromptStyle(selected_style_config["style_en"])
+
+        selected_style_config = STYLE_MAPPING.get(
+            st.session_state.style_label,
+            STYLE_MAPPING[list(STYLE_MAPPING.keys())[0]]
+        )
+
+        st.title(st.session_state.style_label, text_alignment="center")
+
+        st.markdown(
+            "<p style='text-align: center;'>"
+            f"{selected_style_config['description']}"
+            "</p>",
+            unsafe_allow_html=True
+        )
+
+        st.write("")
+        st.image("src/web_applications/pages/acquarello/images/cover.png")
+        st.write("")
 
     # -------------------------
     # IMAGE GENERATOR
