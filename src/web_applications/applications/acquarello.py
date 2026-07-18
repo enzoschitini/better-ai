@@ -36,6 +36,12 @@ with st.sidebar:
 
 class AcquarelloApp:
 
+    ASPECT_RATIO_OPTIONS = {
+        "1:1 (Quadro)": "1:1",
+        "16:9 (Horizontal)": "16:9",
+        "9:16 (Vertical)": "9:16",
+    }
+
     def __init__(self):
         st.set_page_config(page_title="Acquarello", page_icon="🎨")
 
@@ -51,6 +57,9 @@ class AcquarelloApp:
 
         if "style_label" not in st.session_state:
             st.session_state.style_label = list(STYLE_MAPPING.keys())[0]
+
+        if "aspect_ratio_label" not in st.session_state:
+            st.session_state.aspect_ratio_label = "1:1 (Quadro)"
 
         selected_style = STYLE_MAPPING[st.session_state.style_label]["style_en"]
         self.style_prompts = GetPromptStyle(selected_style)
@@ -96,6 +105,13 @@ class AcquarelloApp:
                 key="style_menu"
             )
 
+            st.session_state.aspect_ratio_label = st.selectbox(
+                "Aspect ratio",
+                options=list(self.ASPECT_RATIO_OPTIONS.keys()),
+                index=list(self.ASPECT_RATIO_OPTIONS.keys()).index(st.session_state.aspect_ratio_label),
+                key="aspect_ratio_menu"
+            )
+
             selected_style_config = STYLE_MAPPING[st.session_state.style_label]
             st.caption(selected_style_config["description"])
             self.style_prompts = GetPromptStyle(selected_style_config["style_en"])
@@ -106,7 +122,16 @@ class AcquarelloApp:
     def generate_image(self, user_prompt, instructions, image_bytes=None):
         #pass
         #"""
-        service = ImageGeneratorService()
+        selected_aspect_ratio = self.ASPECT_RATIO_OPTIONS.get(
+            st.session_state.get("aspect_ratio_label", "1:1 (Quadro)"),
+            "1:1"
+        )
+
+        service = ImageGeneratorService(
+            content_config={
+                "aspect_ratio": selected_aspect_ratio,
+            }
+        )
 
         parts = service.build_parts(
             user_prompt=user_prompt,
