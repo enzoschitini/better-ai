@@ -2,13 +2,12 @@ import streamlit as st
 import uuid
 from pathlib import Path
 
-from src.web_applications.utils.pages import PAGES
 from src.image_generation.image_generator_service import ImageGeneratorService
 
 from src.web_applications.pages.acquarello.prompts import GetPromptStyle
 from src.web_applications.pages.acquarello.config import STYLE_MAPPING
 
-st.set_page_config(page_title="API · BetterAI", page_icon="🔌", layout="wide")
+st.set_page_config(page_title="BetterAI · Acquarello", page_icon="🎨", layout="wide")
 
 st.markdown("""
     <style>
@@ -28,11 +27,6 @@ st.markdown("""
         }
     </style>
 """, unsafe_allow_html=True)
-
-with st.sidebar:
-    st.title("Acquarello")
-    st.markdown("Dê vida às suas ideias ou transforme suas imagens em pinturas no estilo que você quiser.")
-    st.markdown("---")
 
 
 class AcquarelloApp:
@@ -76,6 +70,10 @@ class AcquarelloApp:
     def welcome(self):
         # MENU NA SIDEBAR
         with st.sidebar:
+            st.title("Acquarello")
+            st.markdown("Dê vida às suas ideias ou transforme suas imagens em pinturas no estilo que você quiser.")
+            st.markdown("---")
+            
             st.session_state.option = st.selectbox(
                 "Modalidade de geração",
                 options=[
