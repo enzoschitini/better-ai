@@ -5,40 +5,33 @@ from pathlib import Path
 from src.image_generation.image_generator_service import ImageGeneratorService
 
 from src.web_applications.pages.acquarello.prompts import GetPromptStyle
-from src.web_applications.pages.acquarello.config import STYLE_MAPPING
-
-st.set_page_config(page_title="BetterAI · Acquarello", page_icon="🎨", layout="wide")
-
-st.markdown("""
-    <style>
-        [data-testid="stSidebarNav"] { display: none; }
-        .block-container {
-            max-width: 980px;
-            margin-left: auto;
-            margin-right: auto;
-            padding-left: 1rem;
-            padding-right: 1rem;
-        }
-
-        [data-testid="stChatInput"] {
-            max-width: 980px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-    </style>
-""", unsafe_allow_html=True)
-
+from src.web_applications.pages.acquarello.config import (
+    STYLE_MAPPING,
+    ASPECT_RATIO_OPTIONS,
+)
 
 class AcquarelloApp:
-
-    ASPECT_RATIO_OPTIONS = {
-        "Quadro (1:1)": "1:1",
-        "Horizontal (16:9)": "16:9",
-        "Vertical (9:16)": "9:16",
-    }
-
     def __init__(self):
-        st.set_page_config(page_title="Acquarello", page_icon="🎨")
+        st.set_page_config(page_title="BetterAI · Acquarello", page_icon="🎨", layout="wide")
+
+        st.markdown("""
+            <style>
+                [data-testid="stSidebarNav"] { display: none; }
+                .block-container {
+                    max-width: 980px;
+                    margin-left: auto;
+                    margin-right: auto;
+                    padding-left: 1rem;
+                    padding-right: 1rem;
+                }
+
+                [data-testid="stChatInput"] {
+                    max-width: 980px;
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+            </style>
+        """, unsafe_allow_html=True)
 
         # Estado global
         if "option" not in st.session_state:

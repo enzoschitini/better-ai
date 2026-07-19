@@ -9,6 +9,11 @@ DEFAULT_CONTENT_CONFIG = {
     "number_of_images": 1
 }
 
+ASPECT_RATIO_OPTIONS = {
+    "Quadro (1:1)": "1:1",
+    "Horizontal (16:9)": "16:9",
+    "Vertical (9:16)": "9:16",
+}
 
 STYLE_MAPPING = {
     "Aquarela": {
