@@ -47,7 +47,7 @@ class AcquarelloApp:
             st.session_state.style_label = list(STYLE_MAPPING.keys())[0]
 
         if "aspect_ratio_label" not in st.session_state:
-            st.session_state.aspect_ratio_label = list(self.ASPECT_RATIO_OPTIONS.keys())[0]
+            st.session_state.aspect_ratio_label = list(ASPECT_RATIO_OPTIONS.keys())[0]
 
         selected_style = STYLE_MAPPING[st.session_state.style_label]["style_en"]
         self.style_prompts = GetPromptStyle(selected_style)
@@ -86,7 +86,7 @@ class AcquarelloApp:
                 key="style_menu"
             )
 
-            aspect_ratio_options = list(self.ASPECT_RATIO_OPTIONS.keys())
+            aspect_ratio_options = list(ASPECT_RATIO_OPTIONS.keys())
             st.session_state.aspect_ratio_label = st.selectbox(
                 "Tamanho",
                 options=aspect_ratio_options,
@@ -122,8 +122,8 @@ class AcquarelloApp:
     # IMAGE GENERATOR
     # -------------------------
     def generate_image(self, user_prompt, instructions, image_bytes=None):
-        selected_aspect_ratio = self.ASPECT_RATIO_OPTIONS.get(
-            st.session_state.get("aspect_ratio_label", "1:1 (Quadro)"),
+        selected_aspect_ratio = ASPECT_RATIO_OPTIONS.get(
+            st.session_state.get("aspect_ratio_label", list(ASPECT_RATIO_OPTIONS.keys())[0]),
             "1:1"
         )
 
