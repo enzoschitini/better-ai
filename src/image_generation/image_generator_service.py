@@ -265,4 +265,4 @@ class ImageGeneratorService:
         except Exception as e:
             raise RuntimeError(f"Error parsing model responses: {str(e)}") from e
 
-# python -m src.image_generation.edit
+# python -m src.image_generation.image_generator_service

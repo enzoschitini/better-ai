@@ -31,6 +31,11 @@ APPS: dict[str, dict] = {
         "description": "Dúvidas, sugestões ou parcerias.",
         "path":        "src/web_applications/applications/contact.py",
     },
+    "acquarello": {
+        "label":       "🎨 Acquarello",
+        "description": "Gere imagens em aquarela a partir de texto ou imagens.",
+        "path":        "src/web_applications/applications/acquarello.py",
+    },
 }
 
 HOME = st.Page(
