@@ -38,9 +38,9 @@ with st.sidebar:
 class AcquarelloApp:
 
     ASPECT_RATIO_OPTIONS = {
-        "1:1 (Quadro)": "1:1",
-        "16:9 (Horizontal)": "16:9",
-        "9:16 (Vertical)": "9:16",
+        "Quadro (1:1)": "1:1",
+        "Horizontal (16:9)": "16:9",
+        "Vertical (9:16)": "9:16",
     }
 
     def __init__(self):
@@ -60,7 +60,7 @@ class AcquarelloApp:
             st.session_state.style_label = list(STYLE_MAPPING.keys())[0]
 
         if "aspect_ratio_label" not in st.session_state:
-            st.session_state.aspect_ratio_label = "1:1 (Quadro)"
+            st.session_state.aspect_ratio_label = list(self.ASPECT_RATIO_OPTIONS.keys())[0]
 
         selected_style = STYLE_MAPPING[st.session_state.style_label]["style_en"]
         self.style_prompts = GetPromptStyle(selected_style)
@@ -77,7 +77,7 @@ class AcquarelloApp:
         # MENU NA SIDEBAR
         with st.sidebar:
             st.session_state.option = st.selectbox(
-                "Escolha uma opção",
+                "Modalidade de geração",
                 options=[
                     "Gerar aquarela a partir de texto",
                     "Gerar aquarela a partir de uma foto"
@@ -87,16 +87,21 @@ class AcquarelloApp:
             )
 
             st.session_state.style_label = st.selectbox(
-                "Escolha um estilo",
+                "Estilo da composição",
                 options=list(STYLE_MAPPING.keys()),
-                index=list(STYLE_MAPPING.keys()).index(st.session_state.style_label),
+                index=list(STYLE_MAPPING.keys()).index(st.session_state.style_label)
+                if st.session_state.style_label in STYLE_MAPPING
+                else 0,
                 key="style_menu"
             )
 
+            aspect_ratio_options = list(self.ASPECT_RATIO_OPTIONS.keys())
             st.session_state.aspect_ratio_label = st.selectbox(
-                "Aspect ratio",
-                options=list(self.ASPECT_RATIO_OPTIONS.keys()),
-                index=list(self.ASPECT_RATIO_OPTIONS.keys()).index(st.session_state.aspect_ratio_label),
+                "Tamanho",
+                options=aspect_ratio_options,
+                index=aspect_ratio_options.index(st.session_state.aspect_ratio_label)
+                if st.session_state.aspect_ratio_label in aspect_ratio_options
+                else 0,
                 key="aspect_ratio_menu"
             )
 
