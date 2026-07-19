@@ -73,7 +73,7 @@ class AcquarelloApp:
             st.title("Acquarello")
             st.markdown("Dê vida às suas ideias ou transforme suas imagens em pinturas no estilo que você quiser.")
             st.markdown("---")
-            
+
             st.session_state.option = st.selectbox(
                 "Modalidade de geração",
                 options=[
@@ -129,8 +129,6 @@ class AcquarelloApp:
     # IMAGE GENERATOR
     # -------------------------
     def generate_image(self, user_prompt, instructions, image_bytes=None):
-        #pass
-        #"""
         selected_aspect_ratio = self.ASPECT_RATIO_OPTIONS.get(
             st.session_state.get("aspect_ratio_label", "1:1 (Quadro)"),
             "1:1"
@@ -167,7 +165,6 @@ class AcquarelloApp:
                 f.write(image_bytes)
 
         return str(image_name) if image_name else None
-        #"""
 
     # -------------------------
     # TEXTO -> IMAGEM
@@ -243,5 +240,4 @@ class AcquarelloApp:
 app = AcquarelloApp()
 app.run()
 
-# Run app comand
-# streamlit run app.py
+# streamlit run web_app.py
