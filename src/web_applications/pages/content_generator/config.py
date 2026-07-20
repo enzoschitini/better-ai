@@ -4,7 +4,7 @@ DATABASES = {
         "description": "Base de dados do Grupo O Boticário.",
         "link": "https://www.grupoboticario.com.br/",
         "header": {
-            "title": "O Boticário · IA de Conteúdo",
+            "title": "OBoticário · IA de Conteúdo",
             "description": "Produza conteúdo alinhado à marca com agilidade e consistência. Treinada com mais de 50 documentos do Grupo O Boticário, nossa IA entende a identidade da marca e mantém o padrão em cada texto gerado.",
             "image": "src/web_applications/pages/content_generator/images/logo_oboticario.jpg",
         }

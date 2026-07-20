@@ -28,6 +28,13 @@ def load_profile_image(path: str) -> str:
     return base64.b64encode(Path(path).read_bytes()).decode()
 
 
+@st.dialog("Sobre o projeto")
+def _show_popup():
+    st.markdown("OK")
+    #if st.button("Fechar", use_container_width=True):
+        #st.rerun()
+
+
 class ContentGeneratorApp:
     def __init__(self):
         st.set_page_config(
@@ -112,6 +119,9 @@ class ContentGeneratorApp:
         db = DATABASES[db_id]
         st.caption(db["description"])
         st.markdown(f"[Acesse a base]({db['link']})", unsafe_allow_html=True)
+
+        if st.button("ℹ️ Sobre o projeto", use_container_width=True):
+            _show_popup()
 
         self._profile_card()
 
