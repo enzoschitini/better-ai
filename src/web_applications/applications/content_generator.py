@@ -127,8 +127,6 @@ class ContentGeneratorApp:
         # Descrição da base (fora do form -> reflete o último valor aplicado)
         db_id = st.session_state.get("db_id", next(iter(DATABASES)))
         db = DATABASES[db_id]
-        st.caption(db["description"])
-        st.markdown(f"[Acesse a base]({db['link']})", unsafe_allow_html=True)
 
         if st.button("ℹ️ Sobre o projeto", use_container_width=True):
             _show_popup()
@@ -210,11 +208,13 @@ class ContentGeneratorApp:
     
     def header(self):
         config = self.get_config()
-        database_header = config["database"]["header"]
+        database = config["database"]
+        database_header = database["header"]
 
         st.image(database_header["image"], width=200)
         st.title(database_header["title"])
         st.markdown(database_header["description"])
+        st.markdown(f"[Acesse a base]({database['link']})", unsafe_allow_html=True)
         
         st.markdown("---")
 
