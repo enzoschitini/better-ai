@@ -3,6 +3,20 @@ import uuid
 from pathlib import Path
 
 
+DATABASES = {
+    "oboticario": {
+        "name": "Oboticário",
+        "description": "Base de dados do Grupo O Boticário.",
+        "link": "https://www.grupoboticario.com.br/",
+    },
+    "natura": {
+        "name": "Natura",
+        "description": "Base de dados da Natura &Co.",
+        "link": "https://www.natura.com.br/",
+    },
+}
+
+
 class ContentGeneratorApp:
     def __init__(self):
         st.set_page_config(page_title="BetterAI · Content Generator", page_icon="📝", layout="wide")
@@ -34,6 +48,16 @@ class ContentGeneratorApp:
             st.title("Gerador de Conteúdo")
             st.markdown("Crie conteúdo textual de forma automatizada.")
             st.markdown("---")
+
+            db_id = st.selectbox(
+                "Selecione a base de dados",
+                options=list(DATABASES.keys()),
+                format_func=lambda k: DATABASES[k]["name"],
+            )
+
+            db = DATABASES[db_id]
+            st.caption(db["description"])
+            st.markdown(f"[Acesse a base]({db['link']})", unsafe_allow_html=True)
 
     # -------------------------
     # TEXTO -> IMAGEM
