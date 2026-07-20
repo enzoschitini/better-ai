@@ -187,9 +187,20 @@ class ContentGeneratorApp:
             "criatividade": st.session_state.get("criatividade", 50),
             "faixa_tamanho": st.session_state.get("faixa_tamanho", (200, 800)),
         }
+    
+    def header(self):
+        config = self.get_config()
+        database_header = config["database"]["header"]
+
+        st.image(database_header["image"], width=200)
+        st.title(database_header["title"])
+        st.markdown(database_header["description"])
+        
+        st.markdown("---")
+
 
     # -------------------------
-    # TEXTO -> IMAGEM
+    # TEXTO
     # -------------------------
     def chat(self):
         if "chat_history" not in st.session_state:
@@ -224,6 +235,7 @@ class ContentGeneratorApp:
     def run(self):
         with st.sidebar:
             self.sidebar()
+        self.header()
         self.chat()
 
 
