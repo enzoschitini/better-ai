@@ -1,6 +1,7 @@
 import streamlit as st
 import uuid
 from pathlib import Path
+import base64
 
 
 DATABASES = {
@@ -74,9 +75,6 @@ class ContentGeneratorApp:
 
 
     def _profile_card(self):
-        import base64
-        from pathlib import Path
-
         def _img_to_base64(path: str) -> str:
             return base64.b64encode(Path(path).read_bytes()).decode()
 
