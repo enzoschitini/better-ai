@@ -75,12 +75,9 @@ class ContentGeneratorApp:
 
 
     def _profile_card(self):
-        def _img_to_base64(path: str) -> str:
-            return base64.b64encode(Path(path).read_bytes()).decode()
-
-        #src/web_applications/pages/acquarello/images/cover.png
-        img_b64 = _img_to_base64("src/web_applications/pages/acquarello/images/cover.png")  # caminho da sua foto
-        linkedin_url = "https://www.linkedin.com/in/seu-perfil/"  # seu LinkedIn
+        path = "src/web_applications/pages/acquarello/images/cover.png"
+        img_b64 = base64.b64encode(Path(path).read_bytes()).decode()
+        linkedin_url = "https://www.linkedin.com/in/seu-perfil/"
 
         st.markdown(
             """
