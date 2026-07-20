@@ -142,6 +142,11 @@ class ContentGeneratorApp:
     # TEXTO -> IMAGEM
     # -------------------------
     def text_to_image(self):
+        if "last_user" not in st.session_state:
+            st.session_state.last_user = None
+        if "last_assistant" not in st.session_state:
+            st.session_state.last_assistant = None
+
         prompt = st.chat_input("Digite algo...")
 
         if prompt:
