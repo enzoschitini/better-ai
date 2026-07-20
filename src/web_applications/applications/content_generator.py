@@ -4,55 +4,14 @@ import time
 from pathlib import Path
 import base64
 
-
-DATABASES = {
-    "oboticario": {
-        "name": "Oboticário",
-        "description": "Base de dados do Grupo O Boticário.",
-        "link": "https://www.grupoboticario.com.br/",
-    },
-    "natura": {
-        "name": "Natura",
-        "description": "Base de dados da Natura &Co.",
-        "link": "https://www.natura.com.br/",
-    },
-}
-
-LLM_MODELS = {
-    "openai": {
-        "name": "OpenAI",
-        "description": "Modelo de linguagem da OpenAI.",
-        "id": "gpt-4",
-    },
-    "anthropic": {
-        "name": "Claude",
-        "description": "Modelo de linguagem da Anthropic.",
-        "id": "claude-v1",
-    },
-}
+from src.web_applications.pages.content_generator.config import DATABASES, LLM_MODELS
 
 
-# =========================================================
-# RECURSOS CAROS — carregados UMA vez e reutilizados entre
-# reruns. É AQUI que mora o culpado do congelamento.
-# Cliente de LLM, conexão de banco, índice de RAG, carregar
-# a "base de dados" etc. NUNCA no __init__ (que roda a cada rerun).
-# =========================================================
 @st.cache_resource
 def build_backend(db_id: str, llm_model_id: str):
     """Constrói e cacheia tudo que é pesado.
     Trocar db_id ou modelo cria/reaproveita uma instância; não recria a cada slider.
     """
-    # >>> SEU CÓDIGO PESADO AQUI <<<
-    # Ex.:
-    #   from seu_pacote import Backend, StylePrompts
-    #   db = DATABASES[db_id]
-    #   model = LLM_MODELS[llm_model_id]
-    #   backend = Backend(database=db, model=model)   # carrega índice/base, cria cliente
-    #   style_prompts = StylePrompts()
-    #   return {"backend": backend, "style_prompts": style_prompts}
-
-    # Placeholder para o arquivo rodar. Substitua pelo de cima.
     class _StubStylePrompts:
         def text_to_image(self):
             return "estilo aquarela"
@@ -71,7 +30,6 @@ def load_profile_image(path: str) -> str:
 
 class ContentGeneratorApp:
     def __init__(self):
-        # __init__ roda a CADA rerun -> só pode ter coisa LEVE aqui.
         st.set_page_config(
             page_title="BetterAI · Content Generator",
             page_icon="📝",
@@ -97,12 +55,6 @@ class ContentGeneratorApp:
             </style>
         """, unsafe_allow_html=True)
 
-    # -------------------------
-    # SIDEBAR — usando st.form:
-    # arrastar sliders / digitar NÃO dispara rerun.
-    # Só ao clicar em "Aplicar".
-    # (O `with st.sidebar` fica no run(), fora daqui.)
-    # -------------------------
     def sidebar(self):
         with st.form("config_form", border=False):
             st.title("Gerador de Conteúdo")
@@ -239,51 +191,32 @@ class ContentGeneratorApp:
     # -------------------------
     # TEXTO -> IMAGEM
     # -------------------------
-    def text_to_image(self):
-        if "last_user" not in st.session_state:
-            st.session_state.last_user = None
-        if "last_assistant" not in st.session_state:
-            st.session_state.last_assistant = None
+    def chat(self):
+        if "chat_history" not in st.session_state:
+            st.session_state.chat_history = []
+
+        for msg in st.session_state.chat_history:
+            with st.chat_message(msg["role"]):
+                st.markdown(msg["content"])
 
         prompt = st.chat_input("Digite algo...")
 
         if prompt:
-            st.session_state.last_user = prompt
-            st.session_state.last_assistant = None
-
-        if st.session_state.last_user:
+            st.session_state.chat_history.append({"role": "user", "content": prompt})
             with st.chat_message("user"):
-                st.markdown(st.session_state.last_user)
+                st.markdown(prompt)
 
-        if st.session_state.last_user and st.session_state.last_assistant is None:
             with st.chat_message("assistant"):
                 with st.spinner("Gerando composição aquarela..."):
-                    config = self.get_config()
-
-                    # Recursos caros: pegos do cache, não reconstruídos.
-                    resources = build_backend(config["db_id"], config["llm_model_id"])
-                    style_prompts = resources["style_prompts"]
-                    # backend = resources["backend"]
-
-                    # >>> SUA GERAÇÃO REAL AQUI <<<
-                    # image_name = self.generate_image(
-                    #     user_prompt=st.session_state.last_user,
-                    #     instructions=style_prompts.text_to_image(),
-                    #     config=config,
-                    # )
-                    image_name = None  # troque pela chamada acima
-
+                    markdown_content = f"## Oboticário Malbec\n\nQuado você pensa em sofisticação e elegância, o perfume Malbec da O Boticário é a escolha perfeita. Com suas notas olfativas marcantes, ele é ideal para ocasiões especiais, encontros românticos e eventos sociais. Experimente a sensação de confiança e charme que o Malbec proporciona. 🌿✨\n\n**Dica de uso:** Aplique nos pontos de pulsação para uma experiência olfativa duradoura.\n\n[Visite nossa loja online](https://www.grupoboticario.com.br/) para adquirir o seu Malbec hoje mesmo! 🛒"
                     resposta = "Aqui está a imagem aquarela que você pediu!"
-                    st.session_state.last_assistant = resposta
 
                 st.markdown(resposta)
 
-                if image_name:
-                    st.image(image_name)
+                with st.expander("Conteúdos gerados", expanded=False):
+                    st.markdown(markdown_content)
 
-        elif st.session_state.last_assistant:
-            with st.chat_message("assistant"):
-                st.markdown(st.session_state.last_assistant)
+            st.session_state.chat_history.append({"role": "assistant", "content": resposta})
 
     # -------------------------
     # ROUTER
@@ -291,7 +224,7 @@ class ContentGeneratorApp:
     def run(self):
         with st.sidebar:
             self.sidebar()
-        self.text_to_image()
+        self.chat()
 
 
 app = ContentGeneratorApp()
