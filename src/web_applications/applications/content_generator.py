@@ -230,7 +230,7 @@ class ContentGeneratorApp:
             with st.chat_message(msg["role"]):
                 st.markdown(msg["content"])
 
-        prompt = st.chat_input("Digite algo...")
+        prompt = st.chat_input("Digite algo para gerar o conteúdo...")
 
         if prompt:
             st.session_state.chat_history.append({"role": "user", "content": prompt})
