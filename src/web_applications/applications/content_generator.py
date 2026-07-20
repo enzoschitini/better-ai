@@ -68,6 +68,77 @@ class ContentGeneratorApp:
             
             with st.expander("Configurações"):
                 pass
+            
+            self._profile_card()
+
+
+
+    def _profile_card(self):
+        import base64
+        from pathlib import Path
+
+        def _img_to_base64(path: str) -> str:
+            return base64.b64encode(Path(path).read_bytes()).decode()
+
+        #src/web_applications/pages/acquarello/images/cover.png
+        img_b64 = _img_to_base64("src/web_applications/pages/acquarello/images/cover.png")  # caminho da sua foto
+        linkedin_url = "https://www.linkedin.com/in/seu-perfil/"  # seu LinkedIn
+
+        st.markdown(
+            """
+            <style>
+            .profile-card {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 10px 14px;
+                margin-top: 20px;
+                border: 2px solid rgba(255,255,255,.15);
+                border-radius: 16px;
+                text-decoration: none !important;
+                transition: all .2s ease;
+            }
+            .profile-card:hover {
+                border-color: #0a66c2;
+                background: rgba(10,102,194,.10);
+            }
+            .profile-avatar {
+                width: 44px; height: 44px;
+                border-radius: 50%;
+                object-fit: cover;
+                flex-shrink: 0;
+            }
+            .profile-name {
+                flex: 1;
+                font-weight: 600;
+                font-size: 1.05rem;
+                color: inherit;
+            }
+            .profile-arrow {
+                font-size: 24px;
+                color: #9aa0a6;
+                line-height: 1;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        st.markdown(
+            f"""
+            <a href="{linkedin_url}" target="_blank" class="profile-card">
+                <img src="data:image/png;base64,{img_b64}" class="profile-avatar" />
+                <span class="profile-name">Enzo Schitini</span>
+                <span class="profile-arrow">&rsaquo;</span>
+            </a>
+            """,
+            unsafe_allow_html=True,
+        )
+
+
+
+
+
 
     # -------------------------
     # TEXTO -> IMAGEM
