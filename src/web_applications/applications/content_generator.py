@@ -1,5 +1,6 @@
 import streamlit as st
 import uuid
+import time
 from pathlib import Path
 import base64
 
@@ -31,18 +32,51 @@ LLM_MODELS = {
 }
 
 
-# -------------------------
-# CACHE: lê o arquivo do disco e faz base64 uma vez só,
-# em vez de a cada rerun/interação da sidebar.
-# -------------------------
+# =========================================================
+# RECURSOS CAROS — carregados UMA vez e reutilizados entre
+# reruns. É AQUI que mora o culpado do congelamento.
+# Cliente de LLM, conexão de banco, índice de RAG, carregar
+# a "base de dados" etc. NUNCA no __init__ (que roda a cada rerun).
+# =========================================================
+@st.cache_resource
+def build_backend(db_id: str, llm_model_id: str):
+    """Constrói e cacheia tudo que é pesado.
+    Trocar db_id ou modelo cria/reaproveita uma instância; não recria a cada slider.
+    """
+    # >>> SEU CÓDIGO PESADO AQUI <<<
+    # Ex.:
+    #   from seu_pacote import Backend, StylePrompts
+    #   db = DATABASES[db_id]
+    #   model = LLM_MODELS[llm_model_id]
+    #   backend = Backend(database=db, model=model)   # carrega índice/base, cria cliente
+    #   style_prompts = StylePrompts()
+    #   return {"backend": backend, "style_prompts": style_prompts}
+
+    # Placeholder para o arquivo rodar. Substitua pelo de cima.
+    class _StubStylePrompts:
+        def text_to_image(self):
+            return "estilo aquarela"
+
+    return {
+        "backend": None,
+        "style_prompts": _StubStylePrompts(),
+    }
+
+
 @st.cache_data
 def load_profile_image(path: str) -> str:
+    """Lê o arquivo do disco + base64 uma única vez (cacheado)."""
     return base64.b64encode(Path(path).read_bytes()).decode()
 
 
 class ContentGeneratorApp:
     def __init__(self):
-        st.set_page_config(page_title="BetterAI · Content Generator", page_icon="📝", layout="wide")
+        # __init__ roda a CADA rerun -> só pode ter coisa LEVE aqui.
+        st.set_page_config(
+            page_title="BetterAI · Content Generator",
+            page_icon="📝",
+            layout="wide",
+        )
 
         st.markdown("""
             <style>
@@ -64,68 +98,68 @@ class ContentGeneratorApp:
         """, unsafe_allow_html=True)
 
     # -------------------------
-    # SIDEBAR (FRAGMENT)
-    # Interações aqui reexecutam SÓ este fragment, não a página inteira.
-    # NÃO usar `with st.sidebar:` aqui dentro — ele vem de fora, no run().
+    # SIDEBAR — usando st.form:
+    # arrastar sliders / digitar NÃO dispara rerun.
+    # Só ao clicar em "Aplicar".
+    # (O `with st.sidebar` fica no run(), fora daqui.)
     # -------------------------
-    @st.fragment
     def sidebar(self):
-        st.title("Gerador de Conteúdo")
-        st.markdown("Crie conteúdo textual de forma automatizada.")
-        st.markdown("---")
+        with st.form("config_form", border=False):
+            st.title("Gerador de Conteúdo")
+            st.markdown("Crie conteúdo textual de forma automatizada.")
+            st.markdown("---")
 
-        with st.expander("Base de Dados"):
-            db_id = st.selectbox(
-                "Selecione a base de dados",
-                options=list(DATABASES.keys()),
-                format_func=lambda k: DATABASES[k]["name"],
-                key="db_id",
-            )
-            db = DATABASES[db_id]
-            st.caption(db["description"])
-            st.markdown(f"[Acesse a base]({db['link']})", unsafe_allow_html=True)
+            with st.expander("Base de Dados", expanded=True):
+                st.selectbox(
+                    "Selecione a base de dados",
+                    options=list(DATABASES.keys()),
+                    format_func=lambda k: DATABASES[k]["name"],
+                    key="db_id",
+                )
 
-        with st.expander("Objetivo"):
-            st.text_area(
-                "Objetivo",
-                placeholder="Digite as instruções aqui...",
-                height=200,
-                label_visibility="collapsed",
-                key="objetivo",
-            )
+            with st.expander("Objetivo"):
+                st.text_area(
+                    "Objetivo",
+                    placeholder="Digite as instruções aqui...",
+                    height=200,
+                    label_visibility="collapsed",
+                    key="objetivo",
+                )
 
-        with st.expander("Requisitos Extras"):
-            st.text_area(
-                "Requisitos Extras",
-                placeholder="Digite os requisitos extras aqui...",
-                height=200,
-                label_visibility="collapsed",
-                key="requisitos",
-            )
+            with st.expander("Requisitos Extras"):
+                st.text_area(
+                    "Requisitos Extras",
+                    placeholder="Digite os requisitos extras aqui...",
+                    height=200,
+                    label_visibility="collapsed",
+                    key="requisitos",
+                )
 
-        with st.expander("Configurações"):
-            st.slider(
-                "Criatividade",
-                min_value=0,
-                max_value=100,
-                value=50,
-                step=1,
-                key="criatividade",
-            )
-            st.slider(
-                "Faixa de tamanho do conteúdo",
-                min_value=0,
-                max_value=2000,
-                value=(200, 800),
-                step=50,
-                key="faixa_tamanho",
-            )
-            st.selectbox(
-                "Selecione o modelo de linguagem",
-                options=list(LLM_MODELS.keys()),
-                format_func=lambda k: LLM_MODELS[k]["name"],
-                key="llm_model_id",
-            )
+            with st.expander("Configurações"):
+                st.slider(
+                    "Quantidade de conteúdo",
+                    min_value=1, max_value=5, value=2, step=1,
+                    key="content_count",
+                )
+                st.slider(
+                    "Faixa de tamanho do conteúdo",
+                    min_value=100, max_value=2000, value=(700, 1200), step=50,
+                    key="content_size_range",
+                )
+                st.selectbox(
+                    "Modelo de Linguagem (LLM)",
+                    options=list(LLM_MODELS.keys()),
+                    format_func=lambda k: LLM_MODELS[k]["name"],
+                    key="llm_model_id",
+                )
+
+            st.form_submit_button("Aplicar", use_container_width=True)
+
+        # Descrição da base (fora do form -> reflete o último valor aplicado)
+        db_id = st.session_state.get("db_id", next(iter(DATABASES)))
+        db = DATABASES[db_id]
+        st.caption(db["description"])
+        st.markdown(f"[Acesse a base]({db['link']})", unsafe_allow_html=True)
 
         self._profile_card()
 
@@ -186,19 +220,20 @@ class ContentGeneratorApp:
         )
 
     # -------------------------
-    # Lê a configuração atual da sidebar a partir do session_state.
-    # Como todos os widgets têm `key=`, os valores estão sempre disponíveis aqui.
+    # Config atual (lida do session_state, sempre disponível)
     # -------------------------
     def get_config(self) -> dict:
         db_id = st.session_state.get("db_id")
         llm_model_id = st.session_state.get("llm_model_id")
         return {
+            "db_id": db_id,
+            "llm_model_id": llm_model_id,
             "database": DATABASES.get(db_id),
+            "llm_model": LLM_MODELS.get(llm_model_id),
             "objetivo": st.session_state.get("objetivo", ""),
             "requisitos": st.session_state.get("requisitos", ""),
             "criatividade": st.session_state.get("criatividade", 50),
             "faixa_tamanho": st.session_state.get("faixa_tamanho", (200, 800)),
-            "llm_model": LLM_MODELS.get(llm_model_id),
         }
 
     # -------------------------
@@ -216,22 +251,27 @@ class ContentGeneratorApp:
             st.session_state.last_user = prompt
             st.session_state.last_assistant = None
 
-        # Mostra última interação
         if st.session_state.last_user:
             with st.chat_message("user"):
                 st.markdown(st.session_state.last_user)
 
-        # Gera imagem
         if st.session_state.last_user and st.session_state.last_assistant is None:
             with st.chat_message("assistant"):
                 with st.spinner("Gerando composição aquarela..."):
-                    config = self.get_config()  # config atual da sidebar
+                    config = self.get_config()
 
-                    image_name = self.generate_image(
-                        user_prompt=st.session_state.last_user,
-                        instructions=self.style_prompts.text_to_image(),
-                        # config=config,  # descomente quando o generate_image aceitar
-                    )
+                    # Recursos caros: pegos do cache, não reconstruídos.
+                    resources = build_backend(config["db_id"], config["llm_model_id"])
+                    style_prompts = resources["style_prompts"]
+                    # backend = resources["backend"]
+
+                    # >>> SUA GERAÇÃO REAL AQUI <<<
+                    # image_name = self.generate_image(
+                    #     user_prompt=st.session_state.last_user,
+                    #     instructions=style_prompts.text_to_image(),
+                    #     config=config,
+                    # )
+                    image_name = None  # troque pela chamada acima
 
                     resposta = "Aqui está a imagem aquarela que você pediu!"
                     st.session_state.last_assistant = resposta
@@ -241,7 +281,6 @@ class ContentGeneratorApp:
                 if image_name:
                     st.image(image_name)
 
-        # Caso já tenha resposta
         elif st.session_state.last_assistant:
             with st.chat_message("assistant"):
                 st.markdown(st.session_state.last_assistant)
@@ -250,7 +289,6 @@ class ContentGeneratorApp:
     # ROUTER
     # -------------------------
     def run(self):
-        # O `with st.sidebar` fica AQUI (fora do fragment).
         with st.sidebar:
             self.sidebar()
         self.text_to_image()
