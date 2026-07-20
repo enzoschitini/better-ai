@@ -49,15 +49,25 @@ class ContentGeneratorApp:
             st.markdown("Crie conteúdo textual de forma automatizada.")
             st.markdown("---")
 
-            db_id = st.selectbox(
-                "Selecione a base de dados",
-                options=list(DATABASES.keys()),
-                format_func=lambda k: DATABASES[k]["name"],
-            )
+            with st.expander("Base de Dados"):
+                db_id = st.selectbox(
+                    "Selecione a base de dados",
+                    options=list(DATABASES.keys()),
+                    format_func=lambda k: DATABASES[k]["name"],
+                )
 
-            db = DATABASES[db_id]
-            st.caption(db["description"])
-            st.markdown(f"[Acesse a base]({db['link']})", unsafe_allow_html=True)
+                db = DATABASES[db_id]
+                st.caption(db["description"])
+                st.markdown(f"[Acesse a base]({db['link']})", unsafe_allow_html=True)
+
+            with st.expander("Objetivo"):
+                st.text_area("", placeholder="Digite as instruções aqui...", height=200, label_visibility="collapsed")
+            
+            with st.expander("Requisitos Extras"):
+                st.text_area("", placeholder="Digite os requisitos extras aqui...", height=200, label_visibility="collapsed")
+            
+            with st.expander("Configurações"):
+                pass
 
     # -------------------------
     # TEXTO -> IMAGEM
