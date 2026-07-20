@@ -17,6 +17,19 @@ DATABASES = {
     },
 }
 
+LLM_MODELS = {
+    "openai": {
+        "name": "OpenAI",
+        "description": "Modelo de linguagem da OpenAI.",
+        "id": "gpt-4",
+    },
+    "anthropic": {
+        "name": "Claude",
+        "description": "Modelo de linguagem da Anthropic.",
+        "id": "claude-v1",
+    },
+}
+
 
 class ContentGeneratorApp:
     def __init__(self):
@@ -68,7 +81,28 @@ class ContentGeneratorApp:
                 st.text_area("", placeholder="Digite os requisitos extras aqui...", height=200, label_visibility="collapsed")
             
             with st.expander("Configurações"):
-                pass
+                st.slider(
+                    "Criatividade",
+                    min_value=0,
+                    max_value=100,
+                    value=50,
+                    step=1,
+                )
+                st.slider(
+                    "Faixa de tamanho do conteúdo",
+                    min_value=0,
+                    max_value=2000,
+                    value=(200, 800),
+                    step=50,
+                )
+
+                llm_model_id = st.selectbox(
+                    "Selecione o modelo de linguagem",
+                    options=list(LLM_MODELS.keys()),
+                    format_func=lambda k: LLM_MODELS[k]["name"],
+                )
+
+                llm_model = LLM_MODELS[llm_model_id]
             
             self._profile_card()
 
