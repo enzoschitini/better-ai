@@ -33,3 +33,22 @@ LLM_MODELS = {
         "id": "claude-v1",
     },
 }
+
+DEFAULT_OBJECTIVE = (
+    "Gerar artigos de blog voltados para o topo do funil, com o objetivo de "
+    "atrair e educar potenciais clientes. O conteúdo deve responder a dúvidas "
+    "comuns do público-alvo, posicionar a marca como referência no assunto e "
+    "incentivar o leitor a avançar na jornada de compra.\n\n"
+    "Público-alvo: pequenos e médios empreendedores.\n"
+    "Tom de voz: informativo, acessível e próximo.\n"
+    "Objetivo de negócio: aumentar tráfego orgânico e geração de leads."
+)
+
+DEFAULT_REQUIREMENTS = (
+    "- Utilizar subtítulos (H2 e H3) para organizar o conteúdo.\n"
+    "- Evitar jargões técnicos; explicar termos quando necessário.\n"
+    "- Incluir uma introdução que contextualize o problema do leitor.\n"
+    "- Finalizar com uma chamada para ação (CTA) clara.\n"
+    "- Não mencionar marcas concorrentes.\n"
+    "- Manter frases curtas e parágrafos objetivos."
+)

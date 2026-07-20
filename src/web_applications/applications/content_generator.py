@@ -76,22 +76,29 @@ class ContentGeneratorApp:
                     key="db_id",
                 )
 
-            with st.expander("Objetivo"):
-                st.text_area(
-                    "Objetivo",
-                    placeholder="Digite as instruções aqui...",
+            with st.expander("Objetivo do Conteúdo"):
+                objetivo_input = st.text_area(
+                    "Objetivo do Conteúdo",
+                    placeholder=(
+                        "Descreva o objetivo do conteúdo que deseja gerar.\n\n"
+                        "Ex.: Escrever artigos de blog para atrair leads no topo do funil, "
+                        "com tom informativo e linguagem acessível. Público-alvo: pequenos "
+                        "empreendedores. Foco em resolver dúvidas comuns sobre gestão financeira."
+                    ),
                     height=200,
                     label_visibility="collapsed",
-                    key="objetivo",
                 )
 
             with st.expander("Requisitos Extras"):
-                st.text_area(
+                requisitos_input = st.text_area(
                     "Requisitos Extras",
-                    placeholder="Digite os requisitos extras aqui...",
+                    placeholder=(
+                        "Adicione instruções ou restrições específicas (opcional).\n\n"
+                        "Ex.: Evitar jargões técnicos. Incluir uma chamada para ação ao final. "
+                        "Usar subtítulos. Não mencionar concorrentes. Manter tom formal."
+                    ),
                     height=200,
                     label_visibility="collapsed",
-                    key="requisitos",
                 )
 
             with st.expander("Configurações"):
@@ -112,7 +119,10 @@ class ContentGeneratorApp:
                     key="llm_model_id",
                 )
 
-            st.form_submit_button("Aplicar", use_container_width=True)
+            submitted = st.form_submit_button("Aplicar", use_container_width=True)
+            if submitted:
+                st.session_state["objetivo"] = objetivo_input
+                st.session_state["requisitos"] = requisitos_input
 
         # Descrição da base (fora do form -> reflete o último valor aplicado)
         db_id = st.session_state.get("db_id", next(iter(DATABASES)))
@@ -192,7 +202,7 @@ class ContentGeneratorApp:
             "llm_model_id": llm_model_id,
             "database": DATABASES.get(db_id),
             "llm_model": LLM_MODELS.get(llm_model_id),
-            "objetivo": st.session_state.get("objetivo", ""),
+            "Objetivo do Conteúdo": st.session_state.get("Objetivo do Conteúdo", ""),
             "requisitos": st.session_state.get("requisitos", ""),
             "criatividade": st.session_state.get("criatividade", 50),
             "faixa_tamanho": st.session_state.get("faixa_tamanho", (200, 800)),
