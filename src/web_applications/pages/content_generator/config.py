@@ -5,7 +5,7 @@ DATABASES = {
         "link": "https://www.grupoboticario.com.br/",
         "header": {
             "title": "OBoticário · IA de Conteúdo",
-            "description": "Produza conteúdo alinhado à marca com agilidade e consistência. Treinada com mais de 50 documentos do Grupo O Boticário, nossa IA entende a identidade da marca e mantém o padrão em cada texto gerado.",
+            "description": "Produza conteúdo alinhado à marca com agilidade e consistência. Treinada com mais de 50 documentos do Grupo O Boticário, a IA entende a identidade da marca e mantém o padrão em cada texto gerado.",
             "image": "src/web_applications/pages/content_generator/images/logo_oboticario.jpg",
         }
     },
@@ -15,7 +15,7 @@ DATABASES = {
         "link": "https://www.natura.com.br/",
         "header": {
             "title": "Natura · IA de Conteúdo",
-            "description": "Produza conteúdo alinhado à marca com agilidade e consistência. Treinada com mais de 50 documentos da Natura &Co., nossa IA entende a identidade da marca e mantém o padrão em cada texto gerado.",
+            "description": "Produza conteúdo alinhado à marca com agilidade e consistência. Treinada com mais de 50 documentos da Natura &Co., a IA entende a identidade da marca e mantém o padrão em cada texto gerado.",
             "image": "https://www.natura.com.br/static/version1677159600/frontend/Natura/base/pt_BR/images/logo-natura.svg",
         }
     },
