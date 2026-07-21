@@ -5,6 +5,7 @@ from pathlib import Path
 import base64
 
 from src.web_applications.pages.content_generator.config import DATABASES, LLM_MODELS
+from src.utils.unique_id_factory import IDGenerator
 
 
 @st.cache_resource
@@ -43,6 +44,11 @@ class ContentGeneratorApp:
             layout="wide",
         )
 
+        self.id_generator = IDGenerator()
+        if "content_generator_user_id" not in st.session_state:
+            st.session_state["content_generator_user_id"] = self.id_generator.timestamp(prefix='USER', separator='_')
+        self.user_id = st.session_state["content_generator_user_id"]
+
         st.markdown("""
             <style>
                 [data-testid="stSidebarNav"] { display: none; }
@@ -67,6 +73,7 @@ class ContentGeneratorApp:
             st.title("Gerador de Conteúdo")
             st.markdown("Crie conteúdo textual de forma automatizada.")
             st.markdown("---")
+            st.write(f"Usuário: {self.user_id}")
 
             with st.expander("Base de Dados", expanded=True):
                 st.selectbox(
