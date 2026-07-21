@@ -141,7 +141,7 @@ class ContentGeneratorApp:
         self._profile_card()
 
     def _profile_card(self):
-        path = "src/web_applications/pages/acquarello/images/cover.png"
+        path = "src/web_applications/utils/images/profile.jpg"
         img_b64 = load_profile_image(path)  # cacheado
         linkedin_url = "https://www.linkedin.com/in/seu-perfil/"
 
