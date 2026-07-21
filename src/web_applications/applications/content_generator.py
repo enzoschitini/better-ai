@@ -166,7 +166,9 @@ class ContentGeneratorApp:
             .profile-avatar {
                 width: 44px; height: 44px;
                 border-radius: 50%;
-                object-fit: cover;
+                object-fit: contain;
+                background: #fff;
+                padding: 2px;
                 flex-shrink: 0;
             }
             .profile-name {
