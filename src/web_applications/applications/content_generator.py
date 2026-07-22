@@ -235,20 +235,33 @@ class ContentGeneratorApp:
         
         st.markdown("---")
 
-    def generate_markdown(self, content_data: dict) -> str:
-        markdown = f"# {content_data['title']}\n\n"
-        markdown += f"{content_data['summary']}\n\n"
-        markdown += f"{content_data['body']}\n\n"
-        markdown += f"**Call to Action:** {content_data['cta']}\n\n"
-        markdown += "### Hashtags\n"
-        for hashtag in content_data['hashtags']:
-            markdown += f"{hashtag} "
-        markdown += "\n\n"
-        markdown += "### Sources Used\n"
-        for source in content_data['sources_used']:
-            markdown += f"- {source}\n"
+    def generate_markdown(self, content_data) -> str:
+        if isinstance(content_data, dict):
+            contents = [content_data]
+        elif isinstance(content_data, list):
+            contents = [item for item in content_data if isinstance(item, dict)]
+        else:
+            return ""
 
-        return markdown
+        markdown_contents = []
+
+        for item in contents:
+            markdown = f"# {item.get('title', '')}\n\n"
+            markdown += f"{item.get('summary', '')}\n\n"
+            markdown += f"{item.get('body', '')}\n\n"
+            markdown += f"**Call to Action:** {item.get('cta', '')}\n\n"
+            markdown += "### Hashtags\n"
+            for hashtag in item.get('hashtags', []):
+                markdown += f"{hashtag} "
+            markdown += "\n\n"
+            markdown += "### Sources Used\n"
+            for source in item.get('sources_used', []):
+                markdown += f"- {source}\n"
+
+            markdown_contents.append(markdown)
+
+        return "\n---\n".join(markdown_contents)
+
 
     # -------------------------
     # TEXTO
