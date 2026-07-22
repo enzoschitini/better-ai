@@ -274,10 +274,18 @@ class ContentGeneratorApp:
             if index == total_contents - 1:
                 st.markdown("<div id='last-content-expander'></div>", unsafe_allow_html=True)
 
-            with st.expander(f"Prompt: {item_prompt} Content Count: {len(content) if isinstance(content, list) else 1}", expanded=index == total_contents - 1):
+            with st.expander(f"{len(content) if isinstance(content, list) else 1} Posts · **{item_prompt}** ", expanded=index == total_contents - 1):
                 posts = content if isinstance(content, list) else [content]
 
                 for post_index, post in enumerate(posts):
+                    st.markdown(
+                        f"""
+                        <div style="display:inline-block;padding:4px 10px;border:1px solid #d0d7de;border-radius:10px;background:#f6f8fa;font-weight:600;margin-bottom:8px;">
+                            Post {post_index + 1}
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
                     markdown_text = self.markdown_tools.generate_markdown(post)
                     if not markdown_text:
                         continue
