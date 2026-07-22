@@ -235,32 +235,84 @@ class ContentGeneratorApp:
         
         st.markdown("---")
 
-    def generate_markdown(self, content_data) -> str:
-        if isinstance(content_data, dict):
-            contents = [content_data]
-        elif isinstance(content_data, list):
-            contents = [item for item in content_data if isinstance(item, dict)]
-        else:
+    def generate_markdown(self, post_data: dict) -> str:
+        if not isinstance(post_data, dict):
             return ""
 
-        markdown_contents = []
+        markdown = f"# {post_data.get('title', '')}\n\n"
+        markdown += f"{post_data.get('summary', '')}\n\n"
+        markdown += f"{post_data.get('body', '')}\n\n"
+        markdown += f"**Call to Action:** {post_data.get('cta', '')}\n\n"
+        markdown += "### Hashtags\n"
+        for hashtag in post_data.get('hashtags', []):
+            markdown += f"{hashtag} "
+        markdown += "\n\n"
+        markdown += "### Sources Used\n"
+        for source in post_data.get('sources_used', []):
+            markdown += f"- {source}\n"
 
-        for item in contents:
-            markdown = f"# {item.get('title', '')}\n\n"
-            markdown += f"{item.get('summary', '')}\n\n"
-            markdown += f"{item.get('body', '')}\n\n"
-            markdown += f"**Call to Action:** {item.get('cta', '')}\n\n"
-            markdown += "### Hashtags\n"
-            for hashtag in item.get('hashtags', []):
-                markdown += f"{hashtag} "
-            markdown += "\n\n"
-            markdown += "### Sources Used\n"
-            for source in item.get('sources_used', []):
-                markdown += f"- {source}\n"
+        return markdown
 
-            markdown_contents.append(markdown)
+    def _copy_markdown_button(self, markdown_text: str, button_key: str):
+        import json
+        button_id = f"copy_btn_{button_key}"
+        status_id = f"copy_status_{button_key}"
 
-        return "\n---\n".join(markdown_contents)
+        components.html(
+            f"""
+            <div style="margin: 6px 0 2px 0;">
+                <button id="{button_id}" style="padding: 6px 12px; border-radius: 8px; border: 1px solid #d0d7de; background: #f6f8fa; cursor: pointer;">
+                    Copiar Markdown
+                </button>
+                <span id="{status_id}" style="margin-left: 8px; color: #2e7d32; font-size: 0.9rem;"></span>
+            </div>
+            <script>
+            const text = {json.dumps(markdown_text)};
+            const btn = document.getElementById('{button_id}');
+            const status = document.getElementById('{status_id}');
+
+            function showStatus(message) {{
+                status.textContent = message;
+                setTimeout(() => {{
+                    status.textContent = '';
+                }}, 2000);
+            }}
+
+            async function copyText() {{
+                status.textContent = '';
+                try {{
+                    if (navigator.clipboard && navigator.clipboard.writeText) {{
+                        await navigator.clipboard.writeText(text);
+                        showStatus('Copiado');
+                        return;
+                    }}
+                }} catch (e) {{
+                    // fallback below
+                }}
+
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.focus();
+                textarea.select();
+
+                try {{
+                    const ok = document.execCommand('copy');
+                    showStatus(ok ? 'Copiado' : 'Falha ao copiar');
+                }} catch (e) {{
+                    showStatus('Falha ao copiar');
+                }}
+
+                document.body.removeChild(textarea);
+            }}
+
+            btn.addEventListener('click', copyText);
+            </script>
+            """,
+            height=52,
+        )
 
 
     # -------------------------
@@ -299,8 +351,18 @@ class ContentGeneratorApp:
                 st.markdown("<div id='last-content-expander'></div>", unsafe_allow_html=True)
 
             with st.expander(f"Prompt: {item_prompt} Content Count: {len(content) if isinstance(content, list) else 1}", expanded=index == total_contents - 1):
-                st.markdown(self.generate_markdown(content))
-                st.markdown("---")
+                posts = content if isinstance(content, list) else [content]
+
+                for post_index, post in enumerate(posts):
+                    markdown_text = self.generate_markdown(post)
+                    if not markdown_text:
+                        continue
+
+                    st.markdown(markdown_text)
+                    self._copy_markdown_button(markdown_text, button_key=f"copy_markdown_{index}_{post_index}")
+
+                    if post_index < len(posts) - 1:
+                        st.markdown("---")
 
         if st.session_state["scroll_to_last_content"] and total_contents > 0:
             components.html(
