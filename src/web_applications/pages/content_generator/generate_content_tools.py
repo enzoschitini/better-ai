@@ -1,0 +1,71 @@
+
+import streamlit as st
+from src.content_generation.module import GenerateContent, ContentBatchOutput
+
+class GenerateContentTools:
+    def __init__(self, config: dict):
+        self.config = config
+
+        self.objective = config["objective_input"]
+        self.extra_requirements = config["extra_requirements"]
+        self.model_id = config["llm_model_id"]
+        self.filter_search = config["database"]["filter_search"]
+        self.content_count = config["content_count"]
+        self.max_results = 5
+        self.body_min_chars, self.body_max_chars = config["content_size_range"]
+
+        show = False
+        if show:
+            st.write(f"Objetivo: {self.objective}")
+            st.write(f"Requisitos extras: {self.extra_requirements}")
+            st.write(f"Modelo de LLM: {self.model_id}")
+            st.write(f"Filter search: {self.filter_search}")
+            st.write(f"Quantidade de conteúdo: {self.content_count}")
+            st.write(f"Faixa de tamanho: {self.body_min_chars} a {self.body_max_chars} caracteres")
+
+    def generate_content(self, prompt: str):
+        generator = GenerateContent(
+            filter_search=self.filter_search
+        )
+
+        generated_content = generator.generate(
+            query=prompt,
+            objective=self.objective,
+            max_results=self.max_results,
+            content_count=self.content_count,
+            body_min_chars=self.body_min_chars,
+            body_max_chars=self.body_max_chars,
+            extra_requirements=self.extra_requirements,
+        )
+        self.generated_content = generated_content
+        return generated_content
+    
+    def get_contents(self):
+        content_data = self.generated_content
+        if isinstance(content_data, ContentBatchOutput):
+            return [item.model_dump() for item in content_data.items]
+
+        if isinstance(content_data, dict):
+            items = content_data.get("items", [])
+            return [item.model_dump() if hasattr(item, "model_dump") else item for item in items]
+
+        raise TypeError(f"Unsupported generated content type: {type(content_data).__name__}")
+
+    def get_relevant_docs(self):
+        content_data = self.generated_content
+        documents = []
+
+        if isinstance(content_data, ContentBatchOutput):
+            relevant_docs = content_data.relevant_docs
+        elif isinstance(content_data, dict):
+            relevant_docs = content_data.get("relevant_docs", [])
+        else:
+            raise TypeError(f"Unsupported generated content type: {type(content_data).__name__}")
+
+        for document in relevant_docs:
+            if isinstance(document, dict):
+                file_name = document.get("name", "Unknown")
+            else:
+                file_name = getattr(document, "name", "Unknown")
+            documents.append(file_name)
+        return documents

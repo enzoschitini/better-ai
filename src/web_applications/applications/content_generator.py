@@ -9,7 +9,7 @@ from src.web_applications.pages.content_generator.config import DATABASES, LLM_M
 from src.utils.unique_id_factory import IDGenerator
 from src.web_applications.pages.content_generator.markdown_tools import MarkdownTools
 from src.content_generation.module import GenerateContent, ContentBatchOutput
-
+from src.web_applications.pages.content_generator.generate_content_tools import GenerateContentTools
 
 @st.cache_resource
 def build_backend(db_id: str, llm_model_id: str):
@@ -289,10 +289,12 @@ class ContentGeneratorApp:
         import json
         import time
         prompt = st.chat_input("Digite algo para gerar o conteúdo...")
+        generate_content_tools = GenerateContentTools(config=self.get_config())
 
         if prompt:
             with st.spinner("Gerando conteúdo..."):
-                fake_content = self.generate_content(prompt)
+                generate_content_tools.generate_content(prompt)
+                fake_content = generate_content_tools.get_contents()
                 #st.write(fake_content)
                 #with open("src/web_applications/applications/post.json", "r") as f:
                     #fake_content = json.load(f)   
@@ -340,6 +342,9 @@ class ContentGeneratorApp:
 
                     if post_index < len(posts) - 1:
                         st.markdown("---")
+
+                relevant_docs = generate_content_tools.get_relevant_docs()
+                st.write(f"**Documentos relevantes utilizados:** {', '.join(relevant_docs) if relevant_docs else 'Nenhum documento relevante encontrado.'}")
 
         if st.session_state["scroll_to_last_content"] and total_contents > 0:
             components.html(
