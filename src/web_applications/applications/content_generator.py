@@ -1,15 +1,23 @@
 import streamlit as st
 import streamlit.components.v1 as components
 import uuid
+import json
 import time
 from pathlib import Path
 import base64
 
-from src.web_applications.pages.content_generator.config import DATABASES, LLM_MODELS
 from src.utils.unique_id_factory import IDGenerator
 from src.web_applications.pages.content_generator.markdown_tools import MarkdownTools
 from src.content_generation.module import GenerateContent, ContentBatchOutput
 from src.web_applications.pages.content_generator.generate_content_tools import GenerateContentTools
+
+from src.web_applications.pages.content_generator.config import (
+    DATABASES,
+    LLM_MODELS,
+    DEFAULT_OBJECTIVE,
+    LINKEDIN_URL,
+    PROFILE_IMAGE_PATH,
+)
 
 @st.cache_resource
 def build_backend(db_id: str, llm_model_id: str):
@@ -54,8 +62,8 @@ class ContentGeneratorApp:
             st.session_state["content_generator_user_id"] = self.id_generator.timestamp(prefix='USER', separator='_')
         self.user_id = st.session_state["content_generator_user_id"]
 
-        if "fake_contents" not in st.session_state:
-            st.session_state["fake_contents"] = []
+        if "generated_contents" not in st.session_state:
+            st.session_state["generated_contents"] = []
         if "scroll_to_last_content" not in st.session_state:
             st.session_state["scroll_to_last_content"] = False
 
@@ -153,9 +161,7 @@ class ContentGeneratorApp:
         self._profile_card()
 
     def _profile_card(self):
-        path = "src/web_applications/utils/images/profile.jpg"
-        img_b64 = load_profile_image(path)  # cacheado
-        linkedin_url = "https://www.linkedin.com/in/seu-perfil/"
+        img_b64 = load_profile_image(PROFILE_IMAGE_PATH)
 
         st.markdown(
             """
@@ -203,7 +209,7 @@ class ContentGeneratorApp:
 
         st.markdown(
             f"""
-            <a href="{linkedin_url}" target="_blank" class="profile-card">
+            <a href="{LINKEDIN_URL}" target="_blank" class="profile-card">
                 <img src="data:image/png;base64,{img_b64}" class="profile-avatar" />
                 <span class="profile-name">Enzo Schitini</span>
                 <span class="profile-arrow">&rsaquo;</span>
@@ -223,7 +229,7 @@ class ContentGeneratorApp:
             "llm_model_id": llm_model_id,
             "database": DATABASES.get(db_id),
             "llm_model": LLM_MODELS.get(llm_model_id),
-            "objective_input": st.session_state.get("objective_input", "Gere conteúdo textual de forma automatizada, com tom informativo e linguagem acessível."),
+            "objective_input": st.session_state.get("objective_input", DEFAULT_OBJECTIVE),
             "extra_requirements": st.session_state.get("extra_requirements", ""),
             "content_count": st.session_state.get("content_count", 2),
             "content_size_range": st.session_state.get("content_size_range", (200, 800)),
@@ -241,77 +247,36 @@ class ContentGeneratorApp:
         
         st.markdown("---")
 
-    def generate_content(self, query: str) -> list[dict]:
-        config = self.get_config()
-
-        objective = config["objective_input"]
-        extra_requirements = config["extra_requirements"]
-        model_id = config["llm_model_id"]
-        filter_search = config["database"]["filter_search"]
-        content_count = config["content_count"]
-        body_min_chars, body_max_chars = config["content_size_range"]
-
-        show = False
-        if show:
-            st.write(f"Gerando conteúdo para a query: **{query}**")
-            st.write(f"Objetivo: {objective}")
-            st.write(f"Requisitos extras: {extra_requirements}")
-            st.write(f"Modelo de LLM: {model_id}")
-            st.write(f"Filter search: {filter_search}")
-            st.write(f"Quantidade de conteúdo: {content_count}")
-            st.write(f"Faixa de tamanho: {body_min_chars} a {body_max_chars} caracteres")
-
-        generator = GenerateContent(filter_search=filter_search)
-        generated_content = generator.generate(
-            query=query,
-            objective=objective,
-            max_results=10,
-            content_count=content_count,
-            body_min_chars=body_min_chars,
-            body_max_chars=body_max_chars,
-            extra_requirements=extra_requirements,
-        )
-
-        if isinstance(generated_content, ContentBatchOutput):
-            return [item.model_dump() for item in generated_content.items]
-
-        if isinstance(generated_content, dict):
-            items = generated_content.get("items", [])
-            return [item.model_dump() if hasattr(item, "model_dump") else item for item in items]
-
-        raise TypeError(f"Unsupported generated content type: {type(generated_content).__name__}")
-
-
     # -------------------------
     # TEXTO
     # -------------------------
     def chat(self):
-        import json
-        import time
         prompt = st.chat_input("Digite algo para gerar o conteúdo...")
         generate_content_tools = GenerateContentTools(config=self.get_config())
 
         if prompt:
             with st.spinner("Gerando conteúdo..."):
-                generate_content_tools.generate_content(prompt)
-                fake_content = generate_content_tools.get_contents()
-                relevant_docs = generate_content_tools.get_relevant_docs()
-                #st.write(fake_content)
-                #with open("src/web_applications/applications/post.json", "r") as f:
-                    #fake_content = json.load(f)   
+                fake_content = False
 
-                time.sleep(1)  # Simula tempo de processamento
+                if not fake_content:
+                    generate_content_tools.generate_content(prompt)
+                    generated_content = generate_content_tools.get_contents()
+                    relevant_docs = generate_content_tools.get_relevant_docs()
+                else:                
+                    with open("src/web_applications/applications/post.json", "r") as f:
+                        generated_content = json.load(f)   
 
-                #st.write(fake_content)
-                st.session_state["fake_contents"].append({
+                    time.sleep(1)
+
+                st.session_state["generated_contents"].append({
                     "prompt": prompt,
-                    "content": fake_content,
+                    "content": generated_content,
                     "relevant_docs": relevant_docs,
                 })
                 st.session_state["scroll_to_last_content"] = True
 
-        total_contents = len(st.session_state["fake_contents"])
-        for index, item in enumerate(st.session_state["fake_contents"]):
+        total_contents = len(st.session_state["generated_contents"])
+        for index, item in enumerate(st.session_state["generated_contents"]):
             if isinstance(item, dict) and "content" in item:
                 item_prompt = item.get("prompt", "(sem prompt)")
                 content = item["content"]

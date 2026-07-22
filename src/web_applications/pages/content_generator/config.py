@@ -1,3 +1,12 @@
+LINKEDIN_URL = "https://www.linkedin.com/in/enzoschitini"
+PROFILE_IMAGE_PATH = "src/web_applications/utils/images/profile.jpg"
+
+DEFAULT_OBJECTIVE = (
+    "Gerar artigos de blog voltados para o topo do funil, com o objetivo de "
+    "atrair e educar potenciais clientes. O conteúdo deve responder a dúvidas "
+    "comuns do público-alvo e posicionar a marca como referência no assunto."
+)
+
 DATABASES = {
     "oboticario": {
         "name": "Oboticário",
