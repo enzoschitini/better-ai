@@ -235,28 +235,54 @@ class ContentGeneratorApp:
         
         st.markdown("---")
 
+    def generate_markdown(self, content_data: dict) -> str:
+        markdown = f"# {content_data['title']}\n\n"
+        markdown += f"{content_data['summary']}\n\n"
+        markdown += f"{content_data['body']}\n\n"
+        markdown += f"**Call to Action:** {content_data['cta']}\n\n"
+        markdown += "### Hashtags\n"
+        for hashtag in content_data['hashtags']:
+            markdown += f"{hashtag} "
+        markdown += "\n\n"
+        markdown += "### Sources Used\n"
+        for source in content_data['sources_used']:
+            markdown += f"- {source}\n"
+
+        return markdown
 
     # -------------------------
     # TEXTO
     # -------------------------
     def chat(self):
+        import json
         prompt = st.chat_input("Digite algo para gerar o conteúdo...")
 
         if prompt:
-            fake_content = {
+            with open("src/web_applications/applications/post.json", "r") as f:
+                fake_content = json.load(f)   
+
+            st.write(fake_content)
+            st.session_state["fake_contents"].append({
                 "prompt": prompt,
-                "content": f"Descubra como o nosso perfume exclusivo pode transformar a sua rotina de cuidados pessoais. Com uma fragrância envolvente e duradoura, ele é perfeito para quem busca elegância e sofisticação em cada detalhe do dia a dia. Experimente agora e sinta a diferença!",
-            }
-            st.session_state["fake_contents"].append(fake_content)
+                "content": fake_content,
+            })
             st.session_state["scroll_to_last_content"] = True
 
         total_contents = len(st.session_state["fake_contents"])
-        for index, content in enumerate(st.session_state["fake_contents"]):
+        for index, item in enumerate(st.session_state["fake_contents"]):
+            if isinstance(item, dict) and "content" in item:
+                item_prompt = item.get("prompt", "(sem prompt)")
+                content = item["content"]
+            else:
+                # Backward compatibility for old session data already saved as raw content.
+                item_prompt = "(prompt não disponível)"
+                content = item
+
             if index == total_contents - 1:
                 st.markdown("<div id='last-content-expander'></div>", unsafe_allow_html=True)
 
-            with st.expander(f"Prompt: {content['prompt']}", expanded=index == total_contents - 1):
-                st.markdown(f"**Conteúdo gerado:** {content['content']}")
+            with st.expander(f"Prompt: {item_prompt}", expanded=index == total_contents - 1):
+                st.markdown(self.generate_markdown(content))
                 st.markdown("---")
 
         if st.session_state["scroll_to_last_content"] and total_contents > 0:
