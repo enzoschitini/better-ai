@@ -164,11 +164,13 @@ class ContentGeneratorApp:
                 background: rgba(10,102,194,.10);
             }
             .profile-avatar {
-                width: 44px; height: 44px;
+                width: 44px !important;
+                height: 44px !important;
+                min-width: 44px;
                 border-radius: 50%;
-                object-fit: contain;
-                background: #fff;
-                padding: 2px;
+                object-fit: cover !important;
+                object-position: center;
+                display: block;
                 flex-shrink: 0;
             }
             .profile-name {
