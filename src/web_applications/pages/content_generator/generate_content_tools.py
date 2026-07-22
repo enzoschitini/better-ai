@@ -13,6 +13,7 @@ class GenerateContentTools:
         self.content_count = config["content_count"]
         self.max_results = 5
         self.body_min_chars, self.body_max_chars = config["content_size_range"]
+        self.generated_content = None
 
         show = False
         if show:
@@ -42,6 +43,9 @@ class GenerateContentTools:
     
     def get_contents(self):
         content_data = self.generated_content
+        if content_data is None:
+            return []
+
         if isinstance(content_data, ContentBatchOutput):
             return [item.model_dump() for item in content_data.items]
 
@@ -54,6 +58,9 @@ class GenerateContentTools:
     def get_relevant_docs(self):
         content_data = self.generated_content
         documents = []
+
+        if content_data is None:
+            return documents
 
         if isinstance(content_data, ContentBatchOutput):
             relevant_docs = content_data.relevant_docs

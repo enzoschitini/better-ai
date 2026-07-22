@@ -295,6 +295,7 @@ class ContentGeneratorApp:
             with st.spinner("Gerando conteúdo..."):
                 generate_content_tools.generate_content(prompt)
                 fake_content = generate_content_tools.get_contents()
+                relevant_docs = generate_content_tools.get_relevant_docs()
                 #st.write(fake_content)
                 #with open("src/web_applications/applications/post.json", "r") as f:
                     #fake_content = json.load(f)   
@@ -305,6 +306,7 @@ class ContentGeneratorApp:
                 st.session_state["fake_contents"].append({
                     "prompt": prompt,
                     "content": fake_content,
+                    "relevant_docs": relevant_docs,
                 })
                 st.session_state["scroll_to_last_content"] = True
 
@@ -313,10 +315,12 @@ class ContentGeneratorApp:
             if isinstance(item, dict) and "content" in item:
                 item_prompt = item.get("prompt", "(sem prompt)")
                 content = item["content"]
+                relevant_docs = item.get("relevant_docs", [])
             else:
                 # Backward compatibility for old session data already saved as raw content.
                 item_prompt = "(prompt não disponível)"
                 content = item
+                relevant_docs = []
 
             if index == total_contents - 1:
                 st.markdown("<div id='last-content-expander'></div>", unsafe_allow_html=True)
@@ -343,7 +347,6 @@ class ContentGeneratorApp:
                     if post_index < len(posts) - 1:
                         st.markdown("---")
 
-                relevant_docs = generate_content_tools.get_relevant_docs()
                 st.markdown("**Documentos relevantes utilizados:**")
                 if relevant_docs:
                     docs_badges = "".join(
