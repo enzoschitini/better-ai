@@ -268,18 +268,22 @@ class ContentGeneratorApp:
     # -------------------------
     def chat(self):
         import json
+        import time
         prompt = st.chat_input("Digite algo para gerar o conteúdo...")
 
         if prompt:
-            with open("src/web_applications/applications/post.json", "r") as f:
-                fake_content = json.load(f)   
+            with st.spinner("Gerando conteúdo..."):
+                with open("src/web_applications/applications/post.json", "r") as f:
+                    fake_content = json.load(f)   
 
-            st.write(fake_content)
-            st.session_state["fake_contents"].append({
-                "prompt": prompt,
-                "content": fake_content,
-            })
-            st.session_state["scroll_to_last_content"] = True
+                time.sleep(1)  # Simula tempo de processamento
+
+                #st.write(fake_content)
+                st.session_state["fake_contents"].append({
+                    "prompt": prompt,
+                    "content": fake_content,
+                })
+                st.session_state["scroll_to_last_content"] = True
 
         total_contents = len(st.session_state["fake_contents"])
         for index, item in enumerate(st.session_state["fake_contents"]):
@@ -294,7 +298,7 @@ class ContentGeneratorApp:
             if index == total_contents - 1:
                 st.markdown("<div id='last-content-expander'></div>", unsafe_allow_html=True)
 
-            with st.expander(f"Prompt: {item_prompt}", expanded=index == total_contents - 1):
+            with st.expander(f"Prompt: {item_prompt} Content Count: {len(content) if isinstance(content, list) else 1}", expanded=index == total_contents - 1):
                 st.markdown(self.generate_markdown(content))
                 st.markdown("---")
 
