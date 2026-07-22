@@ -344,7 +344,18 @@ class ContentGeneratorApp:
                         st.markdown("---")
 
                 relevant_docs = generate_content_tools.get_relevant_docs()
-                st.write(f"**Documentos relevantes utilizados:** {', '.join(relevant_docs) if relevant_docs else 'Nenhum documento relevante encontrado.'}")
+                st.markdown("**Documentos relevantes utilizados:**")
+                if relevant_docs:
+                    docs_badges = "".join(
+                        [
+                            f"<span style='display:inline-block;padding:6px 12px;margin:4px;border:1px solid #d0d7de;border-radius:9999px;background:#f6f8fa;font-size:0.9rem;'>{doc}</span>"
+                            for doc in relevant_docs
+                        ]
+                    )
+                    st.markdown(f"<div>{docs_badges}</div>", unsafe_allow_html=True)
+                    st.write("")
+                else:
+                    st.write("Nenhum documento relevante encontrado.")
 
         if st.session_state["scroll_to_last_content"] and total_contents > 0:
             components.html(
