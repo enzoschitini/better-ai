@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import uuid
 import time
 from pathlib import Path
@@ -48,6 +49,11 @@ class ContentGeneratorApp:
         if "content_generator_user_id" not in st.session_state:
             st.session_state["content_generator_user_id"] = self.id_generator.timestamp(prefix='USER', separator='_')
         self.user_id = st.session_state["content_generator_user_id"]
+
+        if "fake_contents" not in st.session_state:
+            st.session_state["fake_contents"] = []
+        if "scroll_to_last_content" not in st.session_state:
+            st.session_state["scroll_to_last_content"] = False
 
         st.markdown("""
             <style>
@@ -234,31 +240,40 @@ class ContentGeneratorApp:
     # TEXTO
     # -------------------------
     def chat(self):
-        if "chat_history" not in st.session_state:
-            st.session_state.chat_history = []
-
-        for msg in st.session_state.chat_history:
-            with st.chat_message(msg["role"]):
-                st.markdown(msg["content"])
-
         prompt = st.chat_input("Digite algo para gerar o conteúdo...")
 
         if prompt:
-            st.session_state.chat_history.append({"role": "user", "content": prompt})
-            with st.chat_message("user"):
-                st.markdown(prompt)
+            fake_content = {
+                "prompt": prompt,
+                "content": f"Descubra como o nosso perfume exclusivo pode transformar a sua rotina de cuidados pessoais. Com uma fragrância envolvente e duradoura, ele é perfeito para quem busca elegância e sofisticação em cada detalhe do dia a dia. Experimente agora e sinta a diferença!",
+            }
+            st.session_state["fake_contents"].append(fake_content)
+            st.session_state["scroll_to_last_content"] = True
 
-            with st.chat_message("assistant"):
-                with st.spinner("Gerando composição aquarela..."):
-                    markdown_content = f"## Oboticário Malbec\n\nQuado você pensa em sofisticação e elegância, o perfume Malbec da O Boticário é a escolha perfeita. Com suas notas olfativas marcantes, ele é ideal para ocasiões especiais, encontros românticos e eventos sociais. Experimente a sensação de confiança e charme que o Malbec proporciona. 🌿✨\n\n**Dica de uso:** Aplique nos pontos de pulsação para uma experiência olfativa duradoura.\n\n[Visite nossa loja online](https://www.grupoboticario.com.br/) para adquirir o seu Malbec hoje mesmo! 🛒"
-                    resposta = "Aqui está a imagem aquarela que você pediu!"
+        total_contents = len(st.session_state["fake_contents"])
+        for index, content in enumerate(st.session_state["fake_contents"]):
+            if index == total_contents - 1:
+                st.markdown("<div id='last-content-expander'></div>", unsafe_allow_html=True)
 
-                st.markdown(resposta)
+            with st.expander(f"Prompt: {content['prompt']}", expanded=index == total_contents - 1):
+                st.markdown(f"**Conteúdo gerado:** {content['content']}")
+                st.markdown("---")
 
-                with st.expander("Conteúdos gerados", expanded=False):
-                    st.markdown(markdown_content)
+        if st.session_state["scroll_to_last_content"] and total_contents > 0:
+            components.html(
+                """
+                <script>
+                const el = window.parent.document.getElementById('last-content-expander');
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                </script>
+                """,
+                height=0,
+            )
+            st.session_state["scroll_to_last_content"] = False
 
-            st.session_state.chat_history.append({"role": "assistant", "content": resposta})
+
 
     # -------------------------
     # ROUTER
