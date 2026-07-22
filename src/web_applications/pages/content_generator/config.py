@@ -3,6 +3,7 @@ DATABASES = {
         "name": "Oboticário",
         "description": "Base de dados do Grupo O Boticário.",
         "link": "https://www.grupoboticario.com.br/",
+        "filter_search": {"collection_id": ["oboticario"]},
         "header": {
             "title": "OBoticário · IA de Conteúdo",
             "description": "Produza conteúdo alinhado à marca com agilidade e consistência. Treinada com mais de 50 documentos do Grupo O Boticário, a IA entende a identidade da marca e mantém o padrão em cada texto gerado.",
@@ -13,6 +14,7 @@ DATABASES = {
         "name": "Natura",
         "description": "Base de dados da Natura &Co.",
         "link": "https://www.natura.com.br/",
+        "filter_search": {"collection_id": ["natura"]},
         "header": {
             "title": "Natura · IA de Conteúdo",
             "description": "Produza conteúdo alinhado à marca com agilidade e consistência. Treinada com mais de 50 documentos da Natura &Co., a IA entende a identidade da marca e mantém o padrão em cada texto gerado.",

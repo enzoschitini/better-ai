@@ -8,6 +8,7 @@ import base64
 from src.web_applications.pages.content_generator.config import DATABASES, LLM_MODELS
 from src.utils.unique_id_factory import IDGenerator
 from src.web_applications.pages.content_generator.markdown_tools import MarkdownTools
+from src.content_generation.module import GenerateContent, ContentBatchOutput
 
 
 @st.cache_resource
@@ -103,6 +104,7 @@ class ContentGeneratorApp:
                     ),
                     height=200,
                     label_visibility="collapsed",
+                    key="objective_input",
                 )
 
             with st.expander("Requisitos Extras"):
@@ -115,6 +117,7 @@ class ContentGeneratorApp:
                     ),
                     height=200,
                     label_visibility="collapsed",
+                    key="extra_requirements",
                 )
 
             with st.expander("Configurações"):
@@ -220,10 +223,10 @@ class ContentGeneratorApp:
             "llm_model_id": llm_model_id,
             "database": DATABASES.get(db_id),
             "llm_model": LLM_MODELS.get(llm_model_id),
-            "Objetivo do Conteúdo": st.session_state.get("Objetivo do Conteúdo", ""),
-            "requisitos": st.session_state.get("requisitos", ""),
-            "criatividade": st.session_state.get("criatividade", 50),
-            "faixa_tamanho": st.session_state.get("faixa_tamanho", (200, 800)),
+            "objective_input": st.session_state.get("objective_input", "Gere conteúdo textual de forma automatizada, com tom informativo e linguagem acessível."),
+            "extra_requirements": st.session_state.get("extra_requirements", ""),
+            "content_count": st.session_state.get("content_count", 2),
+            "content_size_range": st.session_state.get("content_size_range", (200, 800)),
         }
     
     def header(self):
@@ -238,6 +241,37 @@ class ContentGeneratorApp:
         
         st.markdown("---")
 
+    def generate_content(self, query: str):
+        config = self.get_config()
+
+        objective = config["objective_input"]
+        extra_requirements = config["extra_requirements"]
+        model_id = config["llm_model_id"]
+        filter_search = config["database"]["filter_search"]
+        content_count = config["content_count"]
+        body_min_chars, body_max_chars = config["content_size_range"]
+
+        st.write(f"Gerando conteúdo para a query: **{query}**")
+        st.write(f"Objetivo: {objective}")
+        st.write(f"Requisitos extras: {extra_requirements}")
+        st.write(f"Modelo de LLM: {model_id}")
+        st.write(f"Filter search: {filter_search}")
+        st.write(f"Quantidade de conteúdo: {content_count}")
+        st.write(f"Faixa de tamanho: {body_min_chars} a {body_max_chars} caracteres")
+
+        """
+        generator = GenerateContent(model_id=model_id, filter_search=filter_search)
+        generated_content = generator.generate(
+            query=query,
+            objective=objective,
+            max_results=config.get("max_results", 10),
+            content_count=config.get("content_count", 50),
+            body_min_chars=body_min_chars,
+            body_max_chars=body_max_chars,
+            extra_requirements=config.get("requirements_input", ""),
+        )
+        """
+
 
     # -------------------------
     # TEXTO
@@ -249,6 +283,7 @@ class ContentGeneratorApp:
 
         if prompt:
             with st.spinner("Gerando conteúdo..."):
+                self.generate_content()
                 with open("src/web_applications/applications/post.json", "r") as f:
                     fake_content = json.load(f)   
 
@@ -318,6 +353,7 @@ class ContentGeneratorApp:
     def run(self):
         with st.sidebar:
             self.sidebar()
+        self.generate_content("bb")
         self.header()
         self.chat()
 
