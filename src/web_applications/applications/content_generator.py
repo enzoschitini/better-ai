@@ -241,7 +241,7 @@ class ContentGeneratorApp:
         
         st.markdown("---")
 
-    def generate_content(self, query: str):
+    def generate_content(self, query: str) -> list[dict]:
         config = self.get_config()
 
         objective = config["objective_input"]
@@ -251,26 +251,35 @@ class ContentGeneratorApp:
         content_count = config["content_count"]
         body_min_chars, body_max_chars = config["content_size_range"]
 
-        st.write(f"Gerando conteúdo para a query: **{query}**")
-        st.write(f"Objetivo: {objective}")
-        st.write(f"Requisitos extras: {extra_requirements}")
-        st.write(f"Modelo de LLM: {model_id}")
-        st.write(f"Filter search: {filter_search}")
-        st.write(f"Quantidade de conteúdo: {content_count}")
-        st.write(f"Faixa de tamanho: {body_min_chars} a {body_max_chars} caracteres")
+        show = False
+        if show:
+            st.write(f"Gerando conteúdo para a query: **{query}**")
+            st.write(f"Objetivo: {objective}")
+            st.write(f"Requisitos extras: {extra_requirements}")
+            st.write(f"Modelo de LLM: {model_id}")
+            st.write(f"Filter search: {filter_search}")
+            st.write(f"Quantidade de conteúdo: {content_count}")
+            st.write(f"Faixa de tamanho: {body_min_chars} a {body_max_chars} caracteres")
 
-        """
-        generator = GenerateContent(model_id=model_id, filter_search=filter_search)
+        generator = GenerateContent(filter_search=filter_search)
         generated_content = generator.generate(
             query=query,
             objective=objective,
-            max_results=config.get("max_results", 10),
-            content_count=config.get("content_count", 50),
+            max_results=10,
+            content_count=content_count,
             body_min_chars=body_min_chars,
             body_max_chars=body_max_chars,
-            extra_requirements=config.get("requirements_input", ""),
+            extra_requirements=extra_requirements,
         )
-        """
+
+        if isinstance(generated_content, ContentBatchOutput):
+            return [item.model_dump() for item in generated_content.items]
+
+        if isinstance(generated_content, dict):
+            items = generated_content.get("items", [])
+            return [item.model_dump() if hasattr(item, "model_dump") else item for item in items]
+
+        raise TypeError(f"Unsupported generated content type: {type(generated_content).__name__}")
 
 
     # -------------------------
@@ -283,9 +292,10 @@ class ContentGeneratorApp:
 
         if prompt:
             with st.spinner("Gerando conteúdo..."):
-                self.generate_content()
-                with open("src/web_applications/applications/post.json", "r") as f:
-                    fake_content = json.load(f)   
+                fake_content = self.generate_content(prompt)
+                #st.write(fake_content)
+                #with open("src/web_applications/applications/post.json", "r") as f:
+                    #fake_content = json.load(f)   
 
                 time.sleep(1)  # Simula tempo de processamento
 
@@ -353,7 +363,6 @@ class ContentGeneratorApp:
     def run(self):
         with st.sidebar:
             self.sidebar()
-        self.generate_content("bb")
         self.header()
         self.chat()
 
