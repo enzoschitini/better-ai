@@ -257,11 +257,14 @@ class ContentGeneratorApp:
         if prompt:
             with st.spinner("Gerando conteúdo..."):
                 fake_content = False
+                relevant_docs = []
+                latency = None
 
                 if not fake_content:
                     generate_content_tools.generate_content(prompt)
                     generated_content = generate_content_tools.get_contents()
                     relevant_docs = generate_content_tools.get_relevant_docs()
+                    latency = generate_content_tools.get_latency()
                 else:                
                     with open("src/web_applications/applications/post.json", "r") as f:
                         generated_content = json.load(f)   
@@ -272,6 +275,7 @@ class ContentGeneratorApp:
                     "prompt": prompt,
                     "content": generated_content,
                     "relevant_docs": relevant_docs,
+                    "latency": latency,
                 })
                 st.session_state["scroll_to_last_content"] = True
 
@@ -281,16 +285,23 @@ class ContentGeneratorApp:
                 item_prompt = item.get("prompt", "(sem prompt)")
                 content = item["content"]
                 relevant_docs = item.get("relevant_docs", [])
+                item_latency = item.get("latency")
             else:
                 # Backward compatibility for old session data already saved as raw content.
                 item_prompt = "(prompt não disponível)"
                 content = item
                 relevant_docs = []
+                item_latency = None
+
+            try:
+                latency_label = f"{float(item_latency):.2f}s" if item_latency is not None else "N/A"
+            except (TypeError, ValueError):
+                latency_label = "N/A"
 
             if index == total_contents - 1:
                 st.markdown("<div id='last-content-expander'></div>", unsafe_allow_html=True)
 
-            with st.expander(f"{len(content) if isinstance(content, list) else 1} Posts · **{item_prompt}** ", expanded=index == total_contents - 1):
+            with st.expander(f"{len(content) if isinstance(content, list) else 1} Posts · **{item_prompt}** - {latency_label}", expanded=index == total_contents - 1):
                 posts = content if isinstance(content, list) else [content]
 
                 for post_index, post in enumerate(posts):
@@ -312,6 +323,7 @@ class ContentGeneratorApp:
                     if post_index < len(posts) - 1:
                         st.markdown("---")
 
+                st.markdown("---")
                 st.markdown("**Documentos relevantes utilizados:**")
                 if relevant_docs:
                     docs_badges = "".join(

@@ -76,3 +76,20 @@ class GenerateContentTools:
                 file_name = getattr(document, "name", "Unknown")
             documents.append(file_name)
         return documents
+
+    def get_latency(self):
+        content_data = self.generated_content
+        if content_data is None:
+            return None
+
+        if isinstance(content_data, ContentBatchOutput):
+            if content_data.latency is None:
+                return None
+            return round(float(content_data.latency), 2)
+        elif isinstance(content_data, dict):
+            latency_value = content_data.get("latency")
+            if latency_value is None:
+                return None
+            return round(float(latency_value), 2)
+        else:
+            raise TypeError(f"Unsupported generated content type: {type(content_data).__name__}")
