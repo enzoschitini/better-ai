@@ -60,6 +60,44 @@ LLM_MODELS = {
     },
 }
 
+DEFAULT_LINGUAGES = {
+    "pt": {
+        "name": "Português",
+        "prompt": "Generate content in Portuguese.",
+        "id": "pt",
+    },
+    "en": {
+        "name": "Inglês",
+        "prompt": "Generate content in English.",
+        "id": "en",
+    },
+    "es": {
+        "name": "Espanhol",
+        "prompt": "Generate content in Spanish.",
+        "id": "es",
+    },
+    "it": {
+        "name": "Italiano",
+        "prompt": "Generate content in Italian.",
+        "id": "it",
+    },
+    "fr": {
+        "name": "Francês",
+        "prompt": "Generate content in French.",
+        "id": "fr",
+    },
+    "de": {
+        "name": "Alemão",
+        "prompt": "Generate content in German.",
+        "id": "de",
+    },
+    "livre": {
+        "name": "Livre",
+        "prompt": "Generate content in any language.",
+        "id": "livre",
+    },
+}
+
 DEFAULT_OBJECTIVE = (
     "Gerar artigos de blog voltados para o topo do funil, com o objetivo de "
     "atrair e educar potenciais clientes. O conteúdo deve responder a dúvidas "

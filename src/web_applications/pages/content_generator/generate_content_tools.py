@@ -9,6 +9,9 @@ class GenerateContentTools:
         self.objective = config["objective_input"]
         self.extra_requirements = config["extra_requirements"]
         self.model_id = config["llm_model_id"]
+        self.language_id = config.get("language_id", "livre")
+        self.language_prompt = config.get("language_prompt", "")
+        self.extra_requirements = self._compose_extra_requirements()
         self.filter_search = config["database"]["filter_search"]
         self.content_count = config["content_count"]
         self.max_results = 5
@@ -20,9 +23,23 @@ class GenerateContentTools:
             st.write(f"Objetivo: {self.objective}")
             st.write(f"Requisitos extras: {self.extra_requirements}")
             st.write(f"Modelo de LLM: {self.model_id}")
+            st.write(f"Idioma: {self.language_id}")
+            st.write(f"Prompt do idioma: {self.language_prompt}")
             st.write(f"Filter search: {self.filter_search}")
             st.write(f"Quantidade de conteúdo: {self.content_count}")
             st.write(f"Faixa de tamanho: {self.body_min_chars} a {self.body_max_chars} caracteres")
+
+    def _compose_extra_requirements(self) -> str:
+        base_requirements = (self.extra_requirements or "").strip()
+
+        language_instruction = (self.language_prompt or "").strip()
+        if not language_instruction:
+            return base_requirements
+
+        if not base_requirements:
+            return f"{language_instruction}"
+
+        return f"{base_requirements}\n\n{language_instruction}"
 
     def generate_content(self, prompt: str):
         generator = GenerateContent(

@@ -17,6 +17,7 @@ from src.web_applications.pages.content_generator.config import (
     DEFAULT_OBJECTIVE,
     LINKEDIN_URL,
     PROFILE_IMAGE_PATH,
+    DEFAULT_LINGUAGES,
 )
 
 @st.cache_resource
@@ -128,7 +129,7 @@ class ContentGeneratorApp:
                     key="extra_requirements",
                 )
 
-            with st.expander("Configurações"):
+            with st.expander("Configurações", expanded=True):
                 st.slider(
                     "Quantidade de conteúdo",
                     min_value=1, max_value=5, value=2, step=1,
@@ -144,6 +145,13 @@ class ContentGeneratorApp:
                     options=list(LLM_MODELS.keys()),
                     format_func=lambda k: LLM_MODELS[k]["id"],
                     key="llm_model_id",
+                )
+
+                st.selectbox(
+                    "Idioma",
+                    options=list(DEFAULT_LINGUAGES.keys()),
+                    format_func=lambda k: DEFAULT_LINGUAGES[k]["name"],
+                    key="language_id",
                 )
 
             submitted = st.form_submit_button("Aplicar", use_container_width=True)
@@ -224,6 +232,7 @@ class ContentGeneratorApp:
     def get_config(self) -> dict:
         db_id = st.session_state.get("db_id")
         llm_model_key_or_id = st.session_state.get("llm_model_id", next(iter(LLM_MODELS)))
+        language_key_or_id = st.session_state.get("language_id", next(iter(DEFAULT_LINGUAGES)))
 
         if llm_model_key_or_id in LLM_MODELS:
             llm_model = LLM_MODELS[llm_model_key_or_id]
@@ -235,11 +244,25 @@ class ContentGeneratorApp:
             )
             llm_model_id = llm_model_key_or_id
 
+        if language_key_or_id in DEFAULT_LINGUAGES:
+            language = DEFAULT_LINGUAGES[language_key_or_id]
+            language_id = language["id"]
+        else:
+            language = next(
+                (item for item in DEFAULT_LINGUAGES.values() if item["id"] == language_key_or_id),
+                None,
+            )
+            language_id = language_key_or_id
+        language_prompt = (language or {}).get("prompt", "")
+
         return {
             "db_id": db_id,
             "llm_model_id": llm_model_id,
+            "language_id": language_id,
+            "language_prompt": language_prompt,
             "database": DATABASES.get(db_id),
             "llm_model": llm_model,
+            "language": language,
             "objective_input": st.session_state.get("objective_input", DEFAULT_OBJECTIVE),
             "extra_requirements": st.session_state.get("extra_requirements", ""),
             "content_count": st.session_state.get("content_count", 2),
