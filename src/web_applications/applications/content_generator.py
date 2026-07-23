@@ -263,7 +263,7 @@ class ContentGeneratorApp:
             "database": DATABASES.get(db_id),
             "llm_model": llm_model,
             "language": language,
-            "objective_input": st.session_state.get("objective_input", DEFAULT_OBJECTIVE),
+            "objective_input": (st.session_state.get("objective_input") or "").strip() or DEFAULT_OBJECTIVE,
             "extra_requirements": st.session_state.get("extra_requirements", ""),
             "content_count": st.session_state.get("content_count", 2),
             "content_size_range": st.session_state.get("content_size_range", (200, 800)),
