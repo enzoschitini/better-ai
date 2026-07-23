@@ -1,7 +1,7 @@
 import base64
 
-from pathlib import Path
 import streamlit as st
+from pathlib import Path
 
 from src.utils.unique_id_factory import IDGenerator
 from src.web_applications.pages.content_generator.markdown_tools import MarkdownTools
@@ -16,37 +16,37 @@ from src.web_applications.pages.content_generator.config import (
     DEFAULT_LINGUAGES,
 )
 
-
-@st.cache_resource
-def build_backend(db_id: str, llm_model_id: str):
-    """
-    Constrói e cacheia tudo que é pesado.
-    Trocar db_id ou modelo cria/reaproveita uma instância; não recria a cada slider.
-    """
-    class _StubStylePrompts:
-        def text_to_image(self):
-            return "estilo aquarela"
-
-    return {
-        "backend": None,
-        "style_prompts": _StubStylePrompts(),
-    }
-
-
-@st.cache_data
-def load_profile_image(path: str) -> str:
-    """Lê o arquivo do disco + base64 uma única vez (cacheado)."""
-    return base64.b64encode(Path(path).read_bytes()).decode()
-
-
-@st.dialog("Sobre o projeto")
-def _show_popup():
-    st.markdown("OK")
-    #if st.button("Fechar", use_container_width=True):
-        #st.rerun()
-
-
 class ContentGeneratorApp:
+    @staticmethod
+    @st.cache_resource
+    def build_backend(db_id: str, llm_model_id: str):
+        """
+        Constrói e cacheia tudo que é pesado.
+        Trocar db_id ou modelo cria/reaproveita uma instância; não recria a cada slider.
+        """
+
+        class _StubStylePrompts:
+            def text_to_image(self):
+                return "estilo aquarela"
+
+        return {
+            "backend": None,
+            "style_prompts": _StubStylePrompts(),
+        }
+
+    @staticmethod
+    @st.cache_data
+    def load_profile_image(path: str) -> str:
+        """Lê o arquivo do disco + base64 uma única vez (cacheado)."""
+        return base64.b64encode(Path(path).read_bytes()).decode()
+
+    @staticmethod
+    @st.dialog("Sobre o projeto")
+    def _show_popup():
+        st.markdown("OK")
+        #if st.button("Fechar", use_container_width=True):
+            #st.rerun()
+
     def __init__(self):
         st.set_page_config(
             page_title="BetterAI · Content Generator",
@@ -167,12 +167,12 @@ class ContentGeneratorApp:
         db = DATABASES[db_id]
 
         if st.button("ℹ️ Sobre o projeto", use_container_width=True):
-            _show_popup()
+            self._show_popup()
 
         self._profile_card()
 
     def _profile_card(self):
-        img_b64 = load_profile_image(PROFILE_IMAGE_PATH)
+        img_b64 = self.load_profile_image(PROFILE_IMAGE_PATH)
 
         st.markdown(
             """
