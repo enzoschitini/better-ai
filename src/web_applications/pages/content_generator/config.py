@@ -19,17 +19,6 @@ DATABASES = {
             "image": "src/web_applications/pages/content_generator/images/logo_oboticario.jpg",
         }
     },
-    "natura": {
-        "name": "Natura",
-        "description": "Base de dados da Natura &Co.",
-        "link": "https://www.natura.com.br/",
-        "filter_search": {"collection_id": ["natura"]},
-        "header": {
-            "title": "Natura · IA de Conteúdo",
-            "description": "Produza conteúdo alinhado à marca com agilidade e consistência. Treinada com mais de 50 documentos da Natura &Co., a IA entende a identidade da marca e mantém o padrão em cada texto gerado.",
-            "image": "https://www.natura.com.br/static/version1677159600/frontend/Natura/base/pt_BR/images/logo-natura.svg",
-        }
-    },
 }
 
 LLM_MODELS = {
@@ -48,16 +37,6 @@ LLM_MODELS = {
         "description": "Modelo de linguagem da Anthropic.",
         "id": "claude-sonnet-4-6",
     },
-    "google": {
-        "name": "gemini-2.5-pro",
-        "description": "Modelo de linguagem da Google.",
-        "id": "gemini-2.5-pro",
-    },
-    "groq": {
-        "name": "llama-3.3-70b-versatile",
-        "description": "Modelo de linguagem da Groq.",
-        "id": "llama-3.3-70b-versatile",
-    },
 }
 
 DEFAULT_LINGUAGES = {
@@ -65,6 +44,11 @@ DEFAULT_LINGUAGES = {
         "name": "Português",
         "prompt": "Generate content in Portuguese.",
         "id": "pt",
+    },
+    "livre": {
+        "name": "Livre",
+        "prompt": "Generate content in any language.",
+        "id": "livre",
     },
     "en": {
         "name": "Inglês",
@@ -90,11 +74,6 @@ DEFAULT_LINGUAGES = {
         "name": "Alemão",
         "prompt": "Generate content in German.",
         "id": "de",
-    },
-    "livre": {
-        "name": "Livre",
-        "prompt": "Generate content in any language.",
-        "id": "livre",
     },
 }
 

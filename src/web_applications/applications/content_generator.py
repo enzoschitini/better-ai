@@ -90,7 +90,6 @@ class ContentGeneratorApp:
             st.title("Gerador de Conteúdo")
             st.markdown("Crie conteúdo textual de forma automatizada.")
             st.markdown("---")
-            st.write(f"Usuário: {self.user_id}")
 
             with st.expander("Base de Dados", expanded=True):
                 st.selectbox(
