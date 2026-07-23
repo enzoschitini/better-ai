@@ -23,7 +23,7 @@ EXAMPLE_REQUESTS = {
         "query": "Perfume Malbec Magnetic",
         "objective": "Criar um post para Instagram focado no Malbec Magnetic da O Boticário, destacando suas notas olfativas, ocasiões de uso e o posicionamento da fragrância como uma opção sofisticada para homens que buscam uma experiência olfativa marcante.",
         "filter_search": {"collection_id": ["oboticario"]},
-        "content_count": 5,
+        "content_count": 3,
         "body_min_chars": 700,
         "body_max_chars": 1200,
         "max_results": 5,
