@@ -1,14 +1,13 @@
-import streamlit as st
-import streamlit.components.v1 as components
-import uuid
 import json
 import time
-from pathlib import Path
 import base64
+
+from pathlib import Path
+import streamlit as st
+import streamlit.components.v1 as components
 
 from src.utils.unique_id_factory import IDGenerator
 from src.web_applications.pages.content_generator.markdown_tools import MarkdownTools
-from src.content_generation.module import GenerateContent, ContentBatchOutput
 from src.web_applications.pages.content_generator.generate_content_tools import GenerateContentTools
 
 from src.web_applications.pages.content_generator.config import (
@@ -20,9 +19,11 @@ from src.web_applications.pages.content_generator.config import (
     DEFAULT_LINGUAGES,
 )
 
+
 @st.cache_resource
 def build_backend(db_id: str, llm_model_id: str):
-    """Constrói e cacheia tudo que é pesado.
+    """
+    Constrói e cacheia tudo que é pesado.
     Trocar db_id ou modelo cria/reaproveita uma instância; não recria a cada slider.
     """
     class _StubStylePrompts:
@@ -331,7 +332,6 @@ class ContentGeneratorApp:
                 relevant_docs = item.get("relevant_docs", [])
                 item_latency = item.get("latency")
             else:
-                # Backward compatibility for old session data already saved as raw content.
                 item_prompt = "(prompt não disponível)"
                 content = item
                 relevant_docs = []
@@ -394,8 +394,6 @@ class ContentGeneratorApp:
                 height=0,
             )
             st.session_state["scroll_to_last_content"] = False
-
-
 
     # -------------------------
     # ROUTER
