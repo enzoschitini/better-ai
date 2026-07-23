@@ -18,7 +18,7 @@ class GenerateContentTools:
         self.body_min_chars, self.body_max_chars = config["content_size_range"]
         self.generated_content = None
 
-        show = True
+        show = False
         if show:
             st.write(f"Objetivo: {self.objective}")
             st.write(f"Requisitos extras: {self.extra_requirements}")
