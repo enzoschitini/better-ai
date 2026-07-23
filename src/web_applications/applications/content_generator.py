@@ -136,6 +136,11 @@ class ContentGeneratorApp:
                     key="content_count",
                 )
                 st.slider(
+                    "Máximo de resultados (contexto)",
+                    min_value=5, max_value=25, value=5, step=1,
+                    key="max_results",
+                )
+                st.slider(
                     "Faixa de tamanho do conteúdo",
                     min_value=100, max_value=2000, value=(700, 1200), step=50,
                     key="content_size_range",
@@ -266,6 +271,7 @@ class ContentGeneratorApp:
             "objective_input": (st.session_state.get("objective_input") or "").strip() or DEFAULT_OBJECTIVE,
             "extra_requirements": st.session_state.get("extra_requirements", ""),
             "content_count": st.session_state.get("content_count", 2),
+            "max_results": st.session_state.get("max_results", 5),
             "content_size_range": st.session_state.get("content_size_range", (200, 800)),
         }
     

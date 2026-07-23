@@ -14,7 +14,7 @@ class GenerateContentTools:
         self.extra_requirements = self._compose_extra_requirements()
         self.filter_search = config["database"]["filter_search"]
         self.content_count = config["content_count"]
-        self.max_results = 5
+        self.max_results = config.get("max_results", 5)
         self.body_min_chars, self.body_max_chars = config["content_size_range"]
         self.generated_content = None
 
@@ -27,6 +27,7 @@ class GenerateContentTools:
             st.write(f"Prompt do idioma: {self.language_prompt}")
             st.write(f"Filter search: {self.filter_search}")
             st.write(f"Quantidade de conteúdo: {self.content_count}")
+            st.write(f"Máximo de resultados: {self.max_results}")
             st.write(f"Faixa de tamanho: {self.body_min_chars} a {self.body_max_chars} caracteres")
 
     def _compose_extra_requirements(self) -> str:
