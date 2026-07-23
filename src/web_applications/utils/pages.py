@@ -36,6 +36,11 @@ APPS: dict[str, dict] = {
         "description": "Gere imagens em aquarela a partir de texto ou imagens.",
         "path":        "src/web_applications/applications/acquarello.py",
     },
+    "content_generator": {
+        "label":       "📝 Gerador de Conteúdo",
+        "description": "Crie conteúdo textual de forma automatizada.",
+        "path":        "src/web_applications/applications/content_generator.py",
+    },
 }
 
 HOME = st.Page(
