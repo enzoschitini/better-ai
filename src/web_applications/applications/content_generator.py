@@ -1,14 +1,11 @@
-import json
-import time
 import base64
 
 from pathlib import Path
 import streamlit as st
-import streamlit.components.v1 as components
 
 from src.utils.unique_id_factory import IDGenerator
 from src.web_applications.pages.content_generator.markdown_tools import MarkdownTools
-from src.web_applications.pages.content_generator.generate_content_tools import GenerateContentTools
+from src.web_applications.pages.content_generator.chat import Chat
 
 from src.web_applications.pages.content_generator.config import (
     DATABASES,
@@ -288,116 +285,10 @@ class ContentGeneratorApp:
         
         st.markdown("---")
 
-    # -------------------------
-    # TEXTO
-    # -------------------------
     def chat(self):
-        prompt = st.chat_input("Digite algo para gerar o conteúdo...")
-        generate_content_tools = GenerateContentTools(config=self.get_config())
+        chat = Chat(get_config=self.get_config, markdown_tools=self.markdown_tools)
+        chat.chat()
 
-        if prompt:
-            with st.spinner("Gerando conteúdo..."):
-                fake_content = False
-                relevant_docs = []
-                latency = None
-
-                if not fake_content:
-                    try:
-                        generate_content_tools.generate_content(prompt)
-                        generated_content = generate_content_tools.get_contents()
-                        relevant_docs = generate_content_tools.get_relevant_docs()
-                        latency = generate_content_tools.get_latency()
-                    except Exception as e:
-                        st.error(f"Failed to generate content: {str(e)}")
-                        return
-                else:                
-                    with open("src/web_applications/applications/post.json", "r") as f:
-                        generated_content = json.load(f)   
-
-                    time.sleep(1)
-
-                st.session_state["generated_contents"].append({
-                    "prompt": prompt,
-                    "content": generated_content,
-                    "relevant_docs": relevant_docs,
-                    "latency": latency,
-                })
-                st.session_state["scroll_to_last_content"] = True
-
-        total_contents = len(st.session_state["generated_contents"])
-        for index, item in enumerate(st.session_state["generated_contents"]):
-            if isinstance(item, dict) and "content" in item:
-                item_prompt = item.get("prompt", "(sem prompt)")
-                content = item["content"]
-                relevant_docs = item.get("relevant_docs", [])
-                item_latency = item.get("latency")
-            else:
-                item_prompt = "(prompt não disponível)"
-                content = item
-                relevant_docs = []
-                item_latency = None
-
-            try:
-                latency_label = f"{float(item_latency):.2f}s" if item_latency is not None else "N/A"
-            except (TypeError, ValueError):
-                latency_label = "N/A"
-
-            if index == total_contents - 1:
-                st.markdown("<div id='last-content-expander'></div>", unsafe_allow_html=True)
-
-            with st.expander(f"{len(content) if isinstance(content, list) else 1} Posts · **{item_prompt}** - {latency_label}", expanded=index == total_contents - 1):
-                posts = content if isinstance(content, list) else [content]
-
-                for post_index, post in enumerate(posts):
-                    st.markdown(
-                        f"""
-                        <div style="display:inline-block;padding:4px 10px;border:1px solid #d0d7de;border-radius:10px;background:#f6f8fa;font-weight:600;margin-bottom:8px;">
-                            Post {post_index + 1}
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
-                    markdown_text = self.markdown_tools.generate_markdown(post)
-                    if not markdown_text:
-                        continue
-
-                    st.markdown(markdown_text)
-                    self.markdown_tools.copy_markdown_button(markdown_text, button_key=f"copy_markdown_{index}_{post_index}")
-
-                    if post_index < len(posts) - 1:
-                        st.markdown("---")
-
-                st.markdown("---")
-                st.markdown("**Documentos relevantes utilizados:**")
-                if relevant_docs:
-                    docs_badges = "".join(
-                        [
-                            f"<span style='display:inline-block;padding:6px 12px;margin:4px;border:1px solid #d0d7de;border-radius:9999px;background:#f6f8fa;font-size:0.9rem;'>{doc}</span>"
-                            for doc in relevant_docs
-                        ]
-                    )
-                    st.markdown(f"<div>{docs_badges}</div>", unsafe_allow_html=True)
-                    st.write("")
-                else:
-                    st.write("Nenhum documento relevante encontrado.")
-
-        if st.session_state["scroll_to_last_content"] and total_contents > 0:
-            components.html(
-                """
-                <script>
-                const el = window.parent.document.getElementById('last-content-expander');
-                if (el) {
-                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-                </script>
-                """,
-                height=0,
-            )
-            st.session_state["scroll_to_last_content"] = False
-
-    # -------------------------
-    # ROUTER
-    # -------------------------
     def run(self):
         with st.sidebar:
             self.sidebar()
