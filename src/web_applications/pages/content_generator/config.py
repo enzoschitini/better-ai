@@ -34,14 +34,29 @@ DATABASES = {
 
 LLM_MODELS = {
     "openai": {
-        "name": "OpenAI",
+        "name": "gpt-4.1-mini",
         "description": "Modelo de linguagem da OpenAI.",
-        "id": "gpt-4",
+        "id": "gpt-4.1-mini",
     },
-    "anthropic": {
-        "name": "Claude",
+    "anthropic_1": {
+        "name": "claude-opus-4-5",
         "description": "Modelo de linguagem da Anthropic.",
-        "id": "claude-v1",
+        "id": "claude-opus-4-5",
+    },
+    "anthropic_2": {
+        "name": "claude-sonnet-4-6",
+        "description": "Modelo de linguagem da Anthropic.",
+        "id": "claude-sonnet-4-6",
+    },
+    "google": {
+        "name": "gemini-2.5-pro",
+        "description": "Modelo de linguagem da Google.",
+        "id": "gemini-2.5-pro",
+    },
+    "groq": {
+        "name": "llama-3.3-70b-versatile",
+        "description": "Modelo de linguagem da Groq.",
+        "id": "llama-3.3-70b-versatile",
     },
 }
 

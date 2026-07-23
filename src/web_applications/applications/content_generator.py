@@ -142,7 +142,7 @@ class ContentGeneratorApp:
                 st.selectbox(
                     "Modelo de Linguagem (LLM)",
                     options=list(LLM_MODELS.keys()),
-                    format_func=lambda k: LLM_MODELS[k]["name"],
+                    format_func=lambda k: LLM_MODELS[k]["id"],
                     key="llm_model_id",
                 )
 
@@ -223,12 +223,23 @@ class ContentGeneratorApp:
     # -------------------------
     def get_config(self) -> dict:
         db_id = st.session_state.get("db_id")
-        llm_model_id = st.session_state.get("llm_model_id")
+        llm_model_key_or_id = st.session_state.get("llm_model_id", next(iter(LLM_MODELS)))
+
+        if llm_model_key_or_id in LLM_MODELS:
+            llm_model = LLM_MODELS[llm_model_key_or_id]
+            llm_model_id = llm_model["id"]
+        else:
+            llm_model = next(
+                (model for model in LLM_MODELS.values() if model["id"] == llm_model_key_or_id),
+                None,
+            )
+            llm_model_id = llm_model_key_or_id
+
         return {
             "db_id": db_id,
             "llm_model_id": llm_model_id,
             "database": DATABASES.get(db_id),
-            "llm_model": LLM_MODELS.get(llm_model_id),
+            "llm_model": llm_model,
             "objective_input": st.session_state.get("objective_input", DEFAULT_OBJECTIVE),
             "extra_requirements": st.session_state.get("extra_requirements", ""),
             "content_count": st.session_state.get("content_count", 2),
@@ -261,10 +272,14 @@ class ContentGeneratorApp:
                 latency = None
 
                 if not fake_content:
-                    generate_content_tools.generate_content(prompt)
-                    generated_content = generate_content_tools.get_contents()
-                    relevant_docs = generate_content_tools.get_relevant_docs()
-                    latency = generate_content_tools.get_latency()
+                    try:
+                        generate_content_tools.generate_content(prompt)
+                        generated_content = generate_content_tools.get_contents()
+                        relevant_docs = generate_content_tools.get_relevant_docs()
+                        latency = generate_content_tools.get_latency()
+                    except Exception as e:
+                        st.error(f"Failed to generate content: {str(e)}")
+                        return
                 else:                
                     with open("src/web_applications/applications/post.json", "r") as f:
                         generated_content = json.load(f)   
