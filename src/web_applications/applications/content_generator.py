@@ -129,7 +129,7 @@ class ContentGeneratorApp:
                     key="extra_requirements",
                 )
 
-            with st.expander("Configurações", expanded=True):
+            with st.expander("Configurações"):
                 st.slider(
                     "Quantidade de conteúdo",
                     min_value=1, max_value=5, value=2, step=1,
