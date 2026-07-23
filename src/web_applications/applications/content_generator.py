@@ -57,7 +57,7 @@ class ContentGeneratorApp:
 
     def __init__(self):
         st.set_page_config(
-            page_title="BetterAI · Content Generator",
+            page_title="Content Generator",
             page_icon="📝",
             layout="wide",
         )
