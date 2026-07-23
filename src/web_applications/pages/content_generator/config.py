@@ -16,7 +16,7 @@ DATABASES = {
         "filter_search": {"collection_id": ["oboticario"]},
         "header": {
             "title": "OBoticário · IA de Conteúdo",
-            "description": "Produza conteúdo alinhado à marca com agilidade e consistência. Treinada com mais de 50 documentos do Grupo O Boticário, a IA entende a identidade da marca e mantém o padrão em cada texto gerado.",
+            "description": "Produza conteúdo alinhado à marca com agilidade e consistência. Treinada com documentos do Grupo O Boticário, a IA entende a identidade da marca e mantém o padrão em cada texto gerado.",
             "image": "src/web_applications/pages/content_generator/images/logo_oboticario.jpg",
         }
     },

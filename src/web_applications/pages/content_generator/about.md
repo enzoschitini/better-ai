@@ -14,7 +14,7 @@ Marcas precisam produzir muito conteúdo (posts, descrições, campanhas) com ra
 - **Tom fora da marca** — modelos genéricos escrevem "bonito", mas não soam como a marca.
 - **Alucinação** — a IA descreve produtos que não conhece, criando informações falsas.
 
-Este projeto resolve os dois: cada texto nasce **ancorado em uma base real** de mais de **50 catálogos do Grupo O Boticário**, então o resultado é fiel à marca e aos produtos — com a agilidade da IA.
+Este projeto resolve os dois: cada texto nasce **ancorado em uma base real** de **catálogos do Grupo O Boticário**, então o resultado é fiel à marca e aos produtos — com a agilidade da IA.
 
 ---
 
@@ -34,11 +34,11 @@ Em seguida é feita a busca semântica no Pinecone, recuperando os trechos mais 
 
 ---
 
-A primeira é a indexação, feita uma única vez. Os mais de 50 PDFs de catálogos são processados: o texto é extraído de cada arquivo, quebrado em trechos menores (chunks) e convertido em embeddings — representações numéricas (vetores) que capturam o significado do texto. Esses vetores ficam armazenados no Pinecone, uma vector store que permite busca por similaridade de significado, e não apenas por palavra-chave.
+A primeira é a indexação, feita uma única vez. Os PDFs de catálogos são processados: o texto é extraído de cada arquivo, quebrado em trechos menores (chunks) e convertido em embeddings — representações numéricas (vetores) que capturam o significado do texto. Esses vetores ficam armazenados no Pinecone, uma vector store que permite busca por similaridade de significado, e não apenas por palavra-chave.
 
 Os catálogos em PDF são processados e transformados em uma base de conhecimento consultável:
 
-1. **Extração** — o texto é lido de cada um dos 50+ PDFs.
+1. **Extração** — o texto é lido de cada um dos PDFs.
 2. **Chunking** — o conteúdo é dividido em trechos menores.
 3. **Embeddings** — cada trecho vira um vetor que representa seu *significado*.
 4. **Armazenamento** — os vetores são indexados no **Pinecone** (vector store).
@@ -70,7 +70,7 @@ Isto não é "uma chamada de LLM com um prompt bonito". É um pipeline de produ�
 
 ## Sobre os dados
 
-A base foi construída a partir de mais de 50 catálogos de produtos do Grupo O Boticário, cobrindo perfumaria, maquiagem, cuidados com a pele e cabelo, entre outras categorias. Esse material traz nomes de produtos, descrições, notas olfativas, benefícios e linguagem de marca — exatamente o tipo de informação que o gerador precisa para produzir textos alinhados e específicos, em vez de genéricos.
+A base foi construída a partir de catálogos de produtos do Grupo O Boticário, cobrindo perfumaria, maquiagem, cuidados com a pele e cabelo, entre outras categorias. Esse material traz nomes de produtos, descrições, notas olfativas, benefícios e linguagem de marca — exatamente o tipo de informação que o gerador precisa para produzir textos alinhados e específicos, em vez de genéricos.
 
 Ao indexar esse conteúdo em uma vector store, o sistema consegue "entender" o portfólio: ao pedir um post sobre um perfume floral, ele busca semanticamente os produtos e descrições que combinam com esse conceito, mesmo que a palavra exata não apareça no seu pedido. É isso que dá precisão e fidelidade à marca ao conteúdo gerado.
 
@@ -84,7 +84,7 @@ Ao indexar esse conteúdo em uma vector store, o sistema consegue "entender" o p
 | Recuperação | Pinecone (vector store) |
 | Estrutura de dados | Pydantic (schema + validação) |
 | Interface | Streamlit |
-| Fonte de dados | 50+ PDFs de catálogos |
+| Fonte de dados | Catálogos |
 
 ---
 
