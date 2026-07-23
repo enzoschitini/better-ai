@@ -3,7 +3,16 @@ import streamlit as st
 from src.content_generation.module import GenerateContent, ContentBatchOutput
 
 class GenerateContentTools:
+    """Utility class to configure, generate, and expose AI-generated content data."""
+
     def __init__(self, config: dict, show: bool = False):
+        """
+        Initialize content generation settings from the provided configuration.
+
+        Args:
+            config: Dictionary containing all generation and filtering parameters.
+            show: Whether to display the loaded configuration in the Streamlit UI.
+        """
         self.config = config
 
         self.objective = config["objective_input"]
@@ -22,6 +31,7 @@ class GenerateContentTools:
             self._show_config()
 
     def _show_config(self):
+        """Render the current configuration values to the Streamlit interface."""
         st.write(f"Objetivo: {self.objective}")
         st.write(f"Requisitos extras: {self.extra_requirements}")
         st.write(f"Modelo de LLM: {self.model_id}")
@@ -33,6 +43,12 @@ class GenerateContentTools:
         st.write(f"Faixa de tamanho: {self.body_min_chars} a {self.body_max_chars} caracteres")
 
     def _compose_extra_requirements(self) -> str:
+        """
+        Combine base extra requirements with the optional language instruction.
+
+        Returns:
+            A single formatted instruction string.
+        """
         try:
             base_requirements = (self.extra_requirements or "").strip()
 
@@ -49,6 +65,15 @@ class GenerateContentTools:
             return self.extra_requirements
 
     def generate_content(self, prompt: str):
+        """
+        Generate content using the configured model and retrieval settings.
+
+        Args:
+            prompt: The user query used as the generation input.
+
+        Returns:
+            Generated content payload on success, otherwise None.
+        """
         try:
             generator = GenerateContent(
                 model_id=self.model_id,
@@ -72,6 +97,15 @@ class GenerateContentTools:
             return None
     
     def get_contents(self):
+        """
+        Extract generated content items in a normalized list format.
+
+        Returns:
+            A list of content items represented as dictionaries.
+
+        Raises:
+            TypeError: If the stored generated content type is not supported.
+        """
         content_data = self.generated_content
         if content_data is None:
             return []
@@ -86,6 +120,12 @@ class GenerateContentTools:
         raise TypeError(f"Unsupported generated content type: {type(content_data).__name__}")
 
     def get_relevant_docs(self):
+        """
+        Return document names used as relevant sources during generation.
+
+        Returns:
+            A list with source document names.
+        """
         try:
             content_data = self.generated_content
             documents = []
@@ -112,6 +152,15 @@ class GenerateContentTools:
             return []
 
     def get_latency(self):
+        """
+        Get the generation latency rounded to two decimal places.
+
+        Returns:
+            The latency value in seconds, or None when unavailable.
+
+        Raises:
+            TypeError: If the stored generated content type is not supported.
+        """
         content_data = self.generated_content
         if content_data is None:
             return None

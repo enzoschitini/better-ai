@@ -3,7 +3,18 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 class MarkdownTools:
+    """Helper utilities for rendering and copying markdown content in Streamlit."""
+
     def generate_markdown(self, post_data: dict) -> str:
+        """
+        Build a markdown string from generated post data.
+
+        Args:
+            post_data: Dictionary containing post fields such as title, body, and sources.
+
+        Returns:
+            A formatted markdown string, or an error message when generation fails.
+        """
         try:
             if not isinstance(post_data, dict):
                 return ""
@@ -25,6 +36,13 @@ class MarkdownTools:
             return f"Erro ao gerar Markdown: {e}"
 
     def copy_markdown_button(self, markdown_text: str, button_key: str):
+        """
+        Render a copy-to-clipboard button for markdown text.
+
+        Args:
+            markdown_text: The markdown text that should be copied to clipboard.
+            button_key: Unique key suffix used to avoid DOM element ID collisions.
+        """
         try:
             button_id = f"copy_btn_{button_key}"
             status_id = f"copy_status_{button_key}"
