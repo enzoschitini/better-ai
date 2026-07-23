@@ -42,7 +42,7 @@ DEFAULT_BODY_MIN_CHARS = 700
 DEFAULT_BODY_MAX_CHARS = 1200
 
 PINECONE_INDEX_NAME = "backai-vectorstore"
-PINECONE_MAIN_NAMESPACE = "kb_content_generation"
+PINECONE_MAIN_NAMESPACE = "knowledge_base_content_agent_oboticario"
 
 AGENT_INSTRUCTIONS = [
     "You are a content creation specialist.",
