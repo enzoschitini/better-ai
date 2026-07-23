@@ -17,6 +17,8 @@ from src.web_applications.pages.content_generator.config import (
 )
 
 class ContentGeneratorApp:
+    ABOUT_MD_PATH = Path("src/web_applications/pages/content_generator/about.md")
+
     @staticmethod
     @st.cache_resource
     def build_backend(db_id: str, llm_model_id: str):
@@ -39,6 +41,12 @@ class ContentGeneratorApp:
     def load_profile_image(path: str) -> str:
         """Lê o arquivo do disco + base64 uma única vez (cacheado)."""
         return base64.b64encode(Path(path).read_bytes()).decode()
+
+    @staticmethod
+    @st.cache_data
+    def load_about_markdown(path: str) -> str:
+        """Load the project description markdown from disk (cached)."""
+        return Path(path).read_text(encoding="utf-8")
 
     @staticmethod
     @st.dialog("Sobre o projeto")
@@ -165,8 +173,8 @@ class ContentGeneratorApp:
         db_id = st.session_state.get("db_id", next(iter(DATABASES)))
         db = DATABASES[db_id]
 
-        if st.button("ℹ️ Sobre o projeto", use_container_width=True):
-            self._show_popup()
+        #if st.button("ℹ️ Sobre o projeto", use_container_width=True):
+            #self._show_popup()
 
         self._profile_card()
 
@@ -280,7 +288,14 @@ class ContentGeneratorApp:
         st.image(database_header["image"], width=200)
         st.title(database_header["title"])
         st.markdown(database_header["description"])
-        st.markdown(f"[Acesse a base]({database['link']})", unsafe_allow_html=True)
+        #st.markdown(f"[Acesse a base]({database['link']})", unsafe_allow_html=True)
+
+        with st.expander("Sobre o projeto", expanded=False):
+            try:
+                about_markdown = self.load_about_markdown(str(self.ABOUT_MD_PATH))
+                st.markdown(about_markdown)
+            except Exception as e:
+                st.error(f"Failed to load project description: {str(e)}")
         
         st.markdown("---")
 

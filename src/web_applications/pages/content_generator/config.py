@@ -1,5 +1,6 @@
 LINKEDIN_URL = "https://www.linkedin.com/in/enzoschitini"
 PROFILE_IMAGE_PATH = "src/web_applications/utils/images/profile.jpg"
+RAG_IMAGE_PATH = "src/web_applications/pages/content_generator/images/rag.png"
 
 DEFAULT_OBJECTIVE = (
     "Gerar artigos de blog voltados para o topo do funil, com o objetivo de "

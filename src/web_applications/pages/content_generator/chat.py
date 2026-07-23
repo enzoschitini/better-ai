@@ -69,6 +69,7 @@ class Chat:
         try:
             prompt = self._get_prompt()
             generate_content_tools = self._build_generate_tools()
+            should_scroll_to_last_content = False
 
             if prompt:
                 generated_item = self._generate_or_load_content(prompt, generate_content_tools)
@@ -76,10 +77,10 @@ class Chat:
                     return
 
                 self._append_generated_content(generated_item)
-                st.session_state["scroll_to_last_content"] = True
+                should_scroll_to_last_content = True
 
             self._render_generated_contents()
-            self._scroll_to_last_content_if_needed()
+            self._scroll_to_last_content_if_needed(should_scroll_to_last_content)
 
         except Exception as e:
             st.error(f"An error occurred during the chat process: {str(e)}")
@@ -365,15 +366,19 @@ class Chat:
 
         st.write("Nenhum documento relevante encontrado.")
 
-    def _scroll_to_last_content_if_needed(self) -> None:
+    def _scroll_to_last_content_if_needed(self, should_scroll: bool) -> None:
         """
-        Scroll the page to the latest generated-content block when flagged.
+        Scroll the page to the latest generated-content block when requested.
+
+        Args:
+            should_scroll: Whether the current rerun should trigger auto-scroll.
+                This should only be ``True`` right after a new item is added.
 
         Returns:
             None.
         """
         total_contents = len(st.session_state["generated_contents"])
-        if not st.session_state["scroll_to_last_content"] or total_contents == 0:
+        if not should_scroll or total_contents == 0:
             return
 
         components.html(
@@ -387,4 +392,3 @@ class Chat:
             """,
             height=0,
         )
-        st.session_state["scroll_to_last_content"] = False
