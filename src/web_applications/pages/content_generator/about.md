@@ -22,7 +22,7 @@ Este projeto resolve os dois: cada texto nasce **ancorado em uma base real** de 
 
 O gerador usa uma arquitetura chamada RAG (Retrieval-Augmented Generation), que combina uma base de conhecimento própria com um modelo de linguagem. O funcionamento acontece em duas etapas.
 
-!fluxo_rag_gerador_conteudo_v2.png
+![texto alternativo](https://raw.githubusercontent.com/enzoschitini/better-ai/dev/src/web_applications/pages/content_generator/images/rag.png)
 
 ### Como funciona por trás dos panos (geração)
 
