@@ -3,7 +3,7 @@ import streamlit as st
 from src.content_generation.module import GenerateContent, ContentBatchOutput
 
 class GenerateContentTools:
-    def __init__(self, config: dict):
+    def __init__(self, config: dict, show: bool = False):
         self.config = config
 
         self.objective = config["objective_input"]
@@ -18,47 +18,58 @@ class GenerateContentTools:
         self.body_min_chars, self.body_max_chars = config["content_size_range"]
         self.generated_content = None
 
-        show = False
         if show:
-            st.write(f"Objetivo: {self.objective}")
-            st.write(f"Requisitos extras: {self.extra_requirements}")
-            st.write(f"Modelo de LLM: {self.model_id}")
-            st.write(f"Idioma: {self.language_id}")
-            st.write(f"Prompt do idioma: {self.language_prompt}")
-            st.write(f"Filter search: {self.filter_search}")
-            st.write(f"Quantidade de conteúdo: {self.content_count}")
-            st.write(f"Máximo de resultados: {self.max_results}")
-            st.write(f"Faixa de tamanho: {self.body_min_chars} a {self.body_max_chars} caracteres")
+            self._show_config()
+
+    def _show_config(self):
+        st.write(f"Objetivo: {self.objective}")
+        st.write(f"Requisitos extras: {self.extra_requirements}")
+        st.write(f"Modelo de LLM: {self.model_id}")
+        st.write(f"Idioma: {self.language_id}")
+        st.write(f"Prompt do idioma: {self.language_prompt}")
+        st.write(f"Filter search: {self.filter_search}")
+        st.write(f"Quantidade de conteúdo: {self.content_count}")
+        st.write(f"Máximo de resultados: {self.max_results}")
+        st.write(f"Faixa de tamanho: {self.body_min_chars} a {self.body_max_chars} caracteres")
 
     def _compose_extra_requirements(self) -> str:
-        base_requirements = (self.extra_requirements or "").strip()
+        try:
+            base_requirements = (self.extra_requirements or "").strip()
 
-        language_instruction = (self.language_prompt or "").strip()
-        if not language_instruction:
-            return base_requirements
+            language_instruction = (self.language_prompt or "").strip()
+            if not language_instruction:
+                return base_requirements
 
-        if not base_requirements:
-            return f"{language_instruction}"
+            if not base_requirements:
+                return f"{language_instruction}"
 
-        return f"{base_requirements}\n\n{language_instruction}"
+            return f"{base_requirements}\n\n{language_instruction}"
+        except Exception as e:
+            st.error(f"Erro ao compor requisitos extras: {e}")
+            return self.extra_requirements
 
     def generate_content(self, prompt: str):
-        generator = GenerateContent(
-            model_id=self.model_id,
-            filter_search=self.filter_search
-        )
+        try:
+            generator = GenerateContent(
+                model_id=self.model_id,
+                filter_search=self.filter_search
+            )
 
-        generated_content = generator.generate(
-            query=prompt,
-            objective=self.objective,
-            max_results=self.max_results,
-            content_count=self.content_count,
-            body_min_chars=self.body_min_chars,
-            body_max_chars=self.body_max_chars,
-            extra_requirements=self.extra_requirements,
-        )
-        self.generated_content = generated_content
-        return generated_content
+            generated_content = generator.generate(
+                query=prompt,
+                objective=self.objective,
+                max_results=self.max_results,
+                content_count=self.content_count,
+                body_min_chars=self.body_min_chars,
+                body_max_chars=self.body_max_chars,
+                extra_requirements=self.extra_requirements,
+            )
+            self.generated_content = generated_content
+            return generated_content
+        except Exception as e:
+            st.error(f"Erro ao gerar conteúdo: {e}")
+            self.generated_content = None
+            return None
     
     def get_contents(self):
         content_data = self.generated_content
@@ -75,26 +86,30 @@ class GenerateContentTools:
         raise TypeError(f"Unsupported generated content type: {type(content_data).__name__}")
 
     def get_relevant_docs(self):
-        content_data = self.generated_content
-        documents = []
+        try:
+            content_data = self.generated_content
+            documents = []
 
-        if content_data is None:
-            return documents
+            if content_data is None:
+                return documents
 
-        if isinstance(content_data, ContentBatchOutput):
-            relevant_docs = content_data.relevant_docs
-        elif isinstance(content_data, dict):
-            relevant_docs = content_data.get("relevant_docs", [])
-        else:
-            raise TypeError(f"Unsupported generated content type: {type(content_data).__name__}")
-
-        for document in relevant_docs:
-            if isinstance(document, dict):
-                file_name = document.get("name", "Unknown")
+            if isinstance(content_data, ContentBatchOutput):
+                relevant_docs = content_data.relevant_docs
+            elif isinstance(content_data, dict):
+                relevant_docs = content_data.get("relevant_docs", [])
             else:
-                file_name = getattr(document, "name", "Unknown")
-            documents.append(file_name)
-        return documents
+                raise TypeError(f"Unsupported generated content type: {type(content_data).__name__}")
+
+            for document in relevant_docs:
+                if isinstance(document, dict):
+                    file_name = document.get("name", "Unknown")
+                else:
+                    file_name = getattr(document, "name", "Unknown")
+                documents.append(file_name)
+            return documents
+        except Exception as e:
+            st.error(f"Erro ao obter documentos relevantes: {e}")
+            return []
 
     def get_latency(self):
         content_data = self.generated_content
