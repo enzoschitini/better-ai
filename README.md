@@ -2,32 +2,35 @@
 
 ![BetterAI](<images/Frame 27346.png>)
 
-# Múltiplos Modelos de IA, Um Único Back-end de IA Unificado
+# Múltiplos Modelos de IA, Um Único Back-end Unificado
 
-A BetterAI é uma plataforma desenvolvida para tornar a inteligência artificial **prática, escalável e acessível** para aplicações do mundo real.
+A BetterAI é um back-end de IA modular, escrito em Python, que reúne atrás de uma única interface os provedores de modelos que normalmente vivem espalhados em SDKs incompatíveis entre si. O `ModelGateway` — construído sobre o framework Agno — cria modelos e agentes da **OpenAI, Anthropic, Google Gemini e Groq** a partir da mesma chamada, validando os parâmetros por introspecção do construtor de cada provedor para evitar erros silenciosos. Trocar de modelo passa a ser uma decisão de configuração, não uma refatoração.
 
-Em vez de construir uma infraestrutura complexa de IA do zero, a BetterAI oferece uma base sólida que permite às equipes integrar recursos inteligentes diretamente em seus sistemas, fluxos de trabalho e produtos.
+Sobre essa base roda a **Web Service Network**, uma API FastAPI que orquestra os serviços de IA em produção. Os roteadores são descobertos dinamicamente, de modo que novos serviços entram sem alterar o bootstrap da aplicação, e toda resposta segue o mesmo envelope — `job_id`, `status`, `result` e um bloco de tempo com a duração da execução. O acesso é autenticado por `X-API-Key`.
 
-Da análise de documentos à exploração avançada de dados, a BetterAI permite que organizações transformem dados em **inteligência acionável**.
+## O que a plataforma faz hoje
 
-A BetterAI reúne diversos modelos especializados de IA em uma única plataforma, projetada para gerar impacto real nos negócios.
+* **Parsing de documentos** — arquivos `txt`, `md`, `pdf` e `docx` são convertidos em dados estruturados conforme um schema definido por quem chama. Os modelos Pydantic são gerados em tempo de execução a partir de metadados JSON, então cada extração declara o seu próprio contrato de saída.
+* **Deep research** — busca web profunda via Tavily, filtrada por score e devolvida como contexto em markdown, pronta para alimentar pipelines de RAG.
+* **Base vetorial** — ingestão, busca semântica e exclusão no Pinecone, com separação entre namespace local e global, escrita em lote e rollback automático quando parte de um lote falha.
+* **Embeddings locais** — chunking e recuperação em FAISS na memória, alternando entre OpenAI, HuggingFace ou um provedor fake para testes offline.
+* **Geração de imagens** — o serviço Da-Vinci gera e edita imagens a partir de texto e de referências visuais.
 
-Em vez de depender de um único tipo de inteligência artificial, a BetterAI oferece um ecossistema diversificado de recursos de IA que trabalham juntos de forma integrada.
+## A infraestrutura por baixo
 
-Essa abordagem unificada permite que as organizações:
+Cada operação passa por uma camada própria de tracing, com logs estruturados correlacionados por `log_id` e persistidos em MongoDB ou Supabase. O custo é calculado token a token e convertido de dólar para real pela cotação oficial do Banco Central, com fallback quando não há cotação no dia. Consumo de IA, aqui, é um número auditável e não uma estimativa.
 
-* Extraiam insights dos dados
-* Automatizem fluxos de trabalho complexos
-* Gerem conteúdo em diversos formatos
-* Apoiem a tomada de decisões com sistemas inteligentes
+## Duas aplicações que rodam sobre isso
 
-Tudo isso a partir de uma **única plataforma de IA integrada**.
+O **Content Generator** gera conteúdo alinhado à identidade de uma marca a partir de catálogos de produtos indexados no Pinecone, e cita as fontes recuperadas em cada texto — o que torna cada afirmação verificável em vez de plausível. O **Acquarello** faz geração de imagens em dois modos, texto-para-imagem e imagem-para-imagem, com controle de estilo visual, projetado para quem não quer lidar com prompts complexos.
 
-**Autor:** Enzo Schitini
+**Autor:** [Enzo Schitini](https://www.linkedin.com/in/enzoschitini/?locale=it)
 
 
 
 ## **Guia de Inicialização**
+
+![alt text](<images/Gemini_Generated_Image_12swry12swry12sw (1).png>)
 
 ### **1. Atualize o Projeto**
 
@@ -302,14 +305,9 @@ Remove-Item -Recurse -Force .\.venv
 python -m venv .venv
 ```
 
-
-
-
-
 --- 
-![BetterAI](<images/Frame 27346.png>)
-![alt text](<images/Gemini_Generated_Image_12swry12swry12sw (1).png>)
 ![alt text](images/Gemini_Generated_Image_hhqir9hhqir9hhqi.png)
-![alt text](images/Gemini_Generated_Image_mmbn14mmbn14mmbn.png)
----
 
+### BetterAI — Where Intelligence Finds Purpose.
+
+Autor: [Enzo Schitini](https://www.linkedin.com/in/enzoschitini/?locale=it)
