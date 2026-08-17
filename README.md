@@ -186,13 +186,111 @@ LOCAL=false
 
 ### **6. Execute a aplicação**
 
-Com o ambiente virtual ativado e as dependências instaladas, inicie a aplicação Streamlit:
+O projeto expõe **dois serviços independentes**, que podem ser executados separadamente ou em paralelo (em terminais distintos):
+
+| **Serviço** | **Comando** | **Porta** | **Quando usar** |
+| --- | --- | --- | --- |
+| API (FastAPI) | `uvicorn web_services:app --reload` | `8000` | Consumo programático dos módulos de IA via HTTP |
+| Interface (Streamlit) | `streamlit run web_app.py` | `8501` | Uso visual das aplicações (Acquarello, Content Generator) |
+
+> **Pré-requisitos:** ambiente virtual ativado (passo 3), dependências instaladas (passo 4) e arquivo `.env` configurado (passo 5).
+> 
+
+---
+
+#### **6.1. API (FastAPI + Uvicorn)**
 
 ```
-streamlit run app.py
+uvicorn web_services:app --reload
 ```
 
-A aplicação ficará disponível em http://localhost:8501.
+A flag `--reload` reinicia o servidor automaticamente a cada alteração no código — recomendada apenas em desenvolvimento.
+
+```
+INFO:     Will watch for changes in these directories: ['C:\\Users\\user_name\\better-ai']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [2200] using StatReload
+2026-04-09 12:57:07,683 - app.py - line: 64 - INFO -
+
+╔═════════════════════════════════════════════════════════════════════════╗
+
+    ██████╗ ███████╗████████╗████████╗███████╗██████╗      █████╗ ██╗ ✦
+    ██╔══██╗██╔════╝╚══██╔══╝╚══██╔══╝██╔════╝██╔══██╗    ██╔══██╗██║
+    ██████╔╝█████╗     ██║      ██║   █████╗  ██████╔╝    ███████║██║
+    ██╔══██╗██╔══╝     ██║      ██║   ██╔══╝  ██╔══██╗    ██╔══██║██║
+    ██████╔╝███████╗   ██║      ██║   ███████╗██║  ██║    ██║  ██║██║
+    ╚═════╝ ╚══════╝   ╚═╝      ╚═╝   ╚══════╝╚═╝  ╚═╝    ╚═╝  ╚═╝╚═╝
+
+╚═════════════════════════════════════════════════════════════════════════╝
+
+                    ✦  Where intelligence finds purpose. ✦
+
+INFO:     Started server process [12468]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+```
+
+**Endereços disponíveis**
+
+| **Recurso** | **URL** |
+| --- | --- |
+| Base URL | http://localhost:8000 |
+| Health check | http://localhost:8000/health |
+| Documentação interativa (Swagger UI) | http://localhost:8000/docs |
+
+**Valide a inicialização**
+
+Confirme que a API respondeu corretamente antes de seguir:
+
+```
+curl -X GET "http://127.0.0.1:8000/health"
+```
+
+**Endpoints principais**
+
+| **Endpoint** | **Descrição** |
+| --- | --- |
+| `GET /health` | Verificação de disponibilidade do serviço |
+| `GET /health-authorization` | Verificação de disponibilidade com autenticação |
+| `POST /deep-research/context-builder` | Construção de contexto a partir de pesquisa profunda |
+| `POST /parse-content/document-parse` | Extração e estruturação de conteúdo de documentos |
+| `POST /davinci/image-generation` | Geração de imagens |
+
+Cada resposta segue um formato padronizado com `job_id`, `status`, `result` e métricas de tempo de execução. Os parâmetros e exemplos completos de request/response estão em [Web Service Network - API.ipynb](<Modules/Web Service Network/Web Service Network - API.ipynb>).
+
+---
+
+#### **6.2. Interface Streamlit**
+
+```
+streamlit run web_app.py
+```
+
+A aplicação ficará disponível em http://localhost:8501, com as seguintes páginas:
+
+| **Aplicação** | **URL** | **Documentação** |
+| --- | --- | --- |
+| Acquarello | http://localhost:8501/acquarello | [Acquarello.ipynb](<Streamlit Applications/Acquarello.ipynb>) |
+| Content Generator | http://localhost:8501/content_generator | [Content Generator.ipynb](<Streamlit Applications/Content Generator.ipynb>) |
+
+---
+
+#### **6.3. Resolução de problemas**
+
+| **Sintoma** | **Causa provável** | **O que fazer** |
+| --- | --- | --- |
+| `ModuleNotFoundError` ao iniciar | Ambiente virtual não ativado ou dependências ausentes | Reative o `.venv` (passo 3) e rode `uv sync` (passo 4) |
+| Erro de autenticação nos provedores de IA | Chaves ausentes ou inválidas no `.env` | Revise o passo 5 e confirme os valores das chaves |
+| Falha de conexão com MongoDB/Supabase/Pinecone | Credenciais ou host incorretos no `.env` | Verifique as variáveis de banco e a conectividade de rede |
+| Porta já em uso | Outra instância do serviço está ativa | Encerre o processo anterior ou use outra porta (`--port`) |
+
+Se o ambiente virtual ficar inconsistente, recrie-o do zero:
+
+```
+deactivate
+Remove-Item -Recurse -Force .\.venv
+python -m venv .venv
+```
 
 
 
