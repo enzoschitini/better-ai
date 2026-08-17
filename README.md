@@ -2,313 +2,160 @@
 
 ![BetterAI](<images/Frame 27346.png>)
 
-# Multiple AI Models, One Unified Back-end IA
+# Múltiplos Modelos de IA, Um Único Back-end de IA Unificado
 
-BetterAI is a platform designed to make artificial intelligence **practical, scalable, and accessible** for real-world applications.
+A BetterAI é uma plataforma desenvolvida para tornar a inteligência artificial **prática, escalável e acessível** para aplicações do mundo real.
 
-Instead of building complex AI infrastructure from scratch, BetterAI provides a solid foundation that allows teams to integrate intelligent capabilities directly into their systems, workflows, and products.
+Em vez de construir uma infraestrutura complexa de IA do zero, a BetterAI oferece uma base sólida que permite às equipes integrar recursos inteligentes diretamente em seus sistemas, fluxos de trabalho e produtos.
 
-From document analysis to advanced data exploration, BetterAI enables organizations to transform data into **actionable intelligence**.
+Da análise de documentos à exploração avançada de dados, a BetterAI permite que organizações transformem dados em **inteligência acionável**.
 
-BetterAI brings together multiple specialized AI models in a single platform designed to generate real business impact.
+A BetterAI reúne diversos modelos especializados de IA em uma única plataforma, projetada para gerar impacto real nos negócios.
 
-Instead of relying on a single type of artificial intelligence, BetterAI provides a diverse ecosystem of AI capabilities that work together seamlessly.
+Em vez de depender de um único tipo de inteligência artificial, a BetterAI oferece um ecossistema diversificado de recursos de IA que trabalham juntos de forma integrada.
 
-This unified approach allows organizations to:
+Essa abordagem unificada permite que as organizações:
 
-- extract insights from data  
-- automate complex workflows  
-- generate content across multiple formats  
-- support decision-making with intelligent systems  
+* Extraiam insights dos dados
+* Automatizem fluxos de trabalho complexos
+* Gerem conteúdo em diversos formatos
+* Apoiem a tomada de decisões com sistemas inteligentes
 
-All from a **single, integrated AI platform**.
+Tudo isso a partir de uma **única plataforma de IA integrada**.
 
-**Author:** Enzo Schitini
+**Autor:** Enzo Schitini
 
+
+
+## **Guia de Inicialização**
+
+### **1. Atualize o Projeto**
+
+Primeiro, certifique-se de estar na branch correta e de que o seu código está atualizado:
+
+```
+git checkout main
+git pull
+git checkout -b nome-da-sua-branch
+```
+
+---
+
+### **2. Crie o Ambiente Virtual**
+
+> **Requisito:** Python 3.14 ou superior (versão fixada em `.python-version`).
+> 
+
+Crie um ambiente virtual para isolar as dependências do projeto:
+
+```
+python -m venv .venv
+```
+
+---
+
+### **3. Ative o Ambiente Virtual**
+
+#### **PowerShell**
+
+```
+.\.venv\Scripts\Activate.ps1
+```
+
+#### **CMD**
+
+```
+.venv\Scripts\activate.bat
+```
+
+Após a ativação, o seu terminal deve ficar parecido com isto:
+
+```
+(.venv) PS C:\Users\nome_do_usuario\personal-finances>
+```
+
+---
+
+### **4. Instale as Dependências**
+
+Você pode instalar as dependências de duas formas:
+
+#### **Usando uv (recomendado)**
+
+```
+uv sync
+```
+
+---
+
+### **5. Configure as Variáveis de Ambiente**
+
+Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
+
+| **Variável** | **Descrição** |
+| --- | --- |
+| `LOCAL` | Flag para execução local (`true`/`false`) |
+| `DB_MONGO_NAME` | Nome do banco MongoDB |
+| `DB_MONGO_HOST` | Host do MongoDB |
+| `DB_MONGO_PORT` | Porta do MongoDB |
+| `DB_MONGO_USER` | Usuário do MongoDB |
+| `DB_MONGO_PASSWORD` | Senha do MongoDB |
+| `DB_MONGO_URL` | URL de conexão MongoDB |
+| `PINECONE_API_KEY` | Chave de API do Pinecone |
+| `PINECONE_INDEX_NAME` | Nome do índice no Pinecone |
+| `PINECONE_ENVIRONMENT` | Região/ambiente do Pinecone |
+| `PINECONE_NAMESPACE` | Namespace usado no Pinecone |
+| `OPENAI_API_KEY` | Chave de API da OpenAI |
+| `ANTHROPIC_API_KEY` | Chave de API da Anthropic |
+| `GOOGLE_API_KEY` | Chave de API do Google |
+| `GEMINI_API_KEY` | Chave de API do Gemini |
+
+```
+LOCAL=true
+
+# MongoDB
+DB_MONGO_NAME=********************
+DB_MONGO_HOST=********************
+DB_MONGO_PORT=********************
+DB_MONGO_USER=********************
+DB_MONGO_PASSWORD=********************
+DB_MONGO_URL=********************
+
+# Pinecone
+PINECONE_API_KEY=********************
+PINECONE_INDEX_NAME=vectorstoreindex
+PINECONE_ENVIRONMENT=us-east-1-aws
+PINECONE_NAMESPACE=KNOWLEDGE_BASE_DEV
+
+# LLMs
+OPENAI_API_KEY=********************
+ANTHROPIC_API_KEY=********************
+GOOGLE_API_KEY=********************
+GEMINI_API_KEY=********************
+```
+
+Caso precise das envs, abra um chamado em Dúvidas e Orientações Gerais - Suporte Infraestrutura - Jira Service Management.
+
+---
+
+### **6. Execute a aplicação**
+
+Com o ambiente virtual ativado e as dependências instaladas, inicie a aplicação Streamlit:
+
+```
+streamlit run app.py
+```
+
+A aplicação ficará disponível em http://localhost:8501.
+
+
+
+
+
+--- 
+![BetterAI](<images/Frame 27346.png>)
 ![alt text](<images/Gemini_Generated_Image_12swry12swry12sw (1).png>)
-
-## The Right Models for Every Task
-
-BetterAI includes specialized models designed to handle different types of intelligence and workflows.
-
-### **Alighieri** - Language Model
-
-Powerful language intelligence designed for tasks such as:
-
-- text generation  
-- document analysis  
-- summarization  
-- conversational systems  
-- decision support  
-
-Alighieri enables applications to understand and generate human language with precision and context awareness.
-
----
-
-### **Da-Vinci** - Image Generation
-
-Advanced image generation designed for visual creativity and production workflows.
-
-Capabilities include:
-
-- generating images from prompts  
-- editing existing visuals  
-- creating design variations  
-- supporting creative and marketing workflows  
-
-Da-Vinci helps teams produce **high-quality visual content with AI assistance**.
-
----
-
-### **Ennio** - Audio & Video Generation
-
-A multimodal AI system designed for dynamic media creation.
-
-Ennio can generate:
-
-- voice narration  
-- audio content  
-- multimedia assets  
-- dynamic video elements  
-
-This allows organizations to create **rich media experiences powered by AI**.
-
----
-
-### **Galileo** - Mathematical Intelligence
-
-A specialized model focused on mathematical reasoning and complex analytical tasks.
-
-Galileo enables:
-
-- advanced mathematical computation  
-- data modeling  
-- analytical reasoning  
-- problem-solving for technical domains  
-
-This model is particularly useful for **scientific, financial, and engineering applications**.
-
 ![alt text](images/Gemini_Generated_Image_hhqir9hhqir9hhqi.png)
-
-# What You Can Build With AI
-
-BetterAI enables a wide range of AI-powered capabilities that can be integrated into products, internal systems, or automation workflows.
-
-## Talk To Your Files
-
-Interact with your documents as if they were part of a conversation.
-
-Upload files such as:
-
-- PDFs  
-- Word documents  
-- Spreadsheets  
-
-BetterAI analyzes the content using advanced semantic models and allows you to:
-
-- ask questions about documents  
-- generate summaries  
-- compare information  
-- extract key insights  
-
-This dramatically accelerates **analysis, decision-making, and knowledge discovery**.
-
----
-
-## Sentiment Analysis
-
-Understand what people really think.
-
-BetterAI analyzes large volumes of text such as:
-
-- customer reviews  
-- comments  
-- support messages  
-- user feedback  
-
-The system detects:
-
-- sentiment (positive, neutral, negative)  
-- key categories  
-- hidden patterns  
-
-This transforms unstructured text into **clear, actionable insights** about user perception and behavior.
-
----
-
-## Text Classification
-
-Automatically classify text according to your business needs.
-
-BetterAI can organize large volumes of content such as:
-
-- emails  
-- documents  
-- support tickets  
-- messages  
-
-Custom categories allow the system to automatically label and structure information, reducing manual work and improving operational efficiency.
-
----
-
-## Image Generation and Editing
-
-Create and modify images using AI.
-
-BetterAI supports image generation from simple text prompts, allowing you to:
-
-- create original images  
-- generate variations of existing images  
-- edit photos using AI  
-
-This enables creative workflows and automated visual content generation using advanced image models.
-
----
-
-## Explore Your Data
-
-Explore datasets and spreadsheets in an intuitive way.
-
-BetterAI performs **automated exploratory data analysis (EDA)**, helping you:
-
-- identify patterns  
-- detect anomalies  
-- generate reports  
-- extract meaningful insights  
-
-This allows teams to understand complex datasets without requiring deep technical expertise.
-
----
-
-## Text-to-Speech (TTS)
-
-Convert text into natural, expressive audio.
-
-BetterAI can generate speech using multiple voices and styles, enabling use cases such as:
-
-- voice assistants  
-- multimedia applications  
-- accessibility tools  
-- automated narration  
-
-The system produces **high-quality audio output** that integrates easily with applications and services.
-
----
-
-## Deep Research
-
-Perform deep, multi-source research using AI.
-
-BetterAI can analyze and combine information from:
-
-- documents  
-- datasets  
-- multiple data sources  
-
-This enables the creation of:
-
-- structured reports  
-- comparisons  
-- detailed analyses  
-
-Deep research capabilities help organizations perform **strategic analysis and well-informed decision-making**.
-
 ![alt text](images/Gemini_Generated_Image_mmbn14mmbn14mmbn.png)
-
-# A Solid Foundation That Works in Production
-
-BetterAI is designed to operate reliably in real-world environments.
-
-The platform architecture focuses on **scalability, modularity, and security**, ensuring it can support both small workflows and enterprise-scale operations.
-
 ---
 
-## Modular Architecture
-
-BetterAI is built using a modular architecture designed to evolve over time.
-
-Each component operates independently, allowing the system to grow and adapt without disrupting existing features.
-
-Key characteristics:
-
-- interchangeable AI modules  
-- independent services  
-- real-time adaptation to demand  
-- easy scalability  
-
-This flexibility allows organizations to customize AI infrastructure according to their needs.
-
----
-
-## Scalability
-
-The infrastructure is designed to support business growth.
-
-BetterAI can handle:
-
-- multiple applications  
-- multiple products  
-- multiple customers  
-
-All running on the same platform while maintaining performance and stability.
-
-Whether you're running small workflows or large-scale AI operations, the system adapts to the volume and complexity of the workload.
-
----
-
-## Data Security and Isolation
-
-Security is a fundamental part of the architecture.
-
-BetterAI ensures that:
-
-- each customer's data remains isolated  
-- sensitive information is protected  
-- access is controlled and monitored  
-
-The platform is designed to guarantee **data protection, confidentiality, and full control over corporate information**.
-
----
-
-## Quick and Easy Integration
-
-BetterAI integrates seamlessly with existing systems.
-
-Using ready-to-use APIs and connectors, organizations can quickly connect AI capabilities to their workflows without complex infrastructure changes.
-
-This dramatically reduces **implementation time** and accelerates **return on investment**.
-
----
-
-## Monitoring Usage and Costs
-
-AI usage is fully trackable.
-
-BetterAI provides tools to monitor:
-
-- AI consumption  
-- system performance  
-- operational flows  
-
-This visibility helps organizations control costs, optimize usage, and avoid unexpected expenses.
-
----
-
-# Vision
-
-BetterAI aims to become a **unified platform for building intelligent systems**.
-
-A place where developers and organizations can:
-
-- integrate AI models  
-- analyze information  
-- automate workflows  
-- build intelligent applications  
-
-All supported by a scalable and reliable AI infrastructure.
-
-
-# BetterAI is where intelligence finds purpose.
-
-**Author:** Enzo Schitini
-Sat Oct 04 2025 09:49:18
