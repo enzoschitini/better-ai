@@ -94,47 +94,93 @@ Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
 
 | **Variável** | **Descrição** |
 | --- | --- |
-| `LOCAL` | Flag para execução local (`true`/`false`) |
-| `DB_MONGO_NAME` | Nome do banco MongoDB |
-| `DB_MONGO_HOST` | Host do MongoDB |
-| `DB_MONGO_PORT` | Porta do MongoDB |
-| `DB_MONGO_USER` | Usuário do MongoDB |
-| `DB_MONGO_PASSWORD` | Senha do MongoDB |
-| `DB_MONGO_URL` | URL de conexão MongoDB |
-| `PINECONE_API_KEY` | Chave de API do Pinecone |
-| `PINECONE_INDEX_NAME` | Nome do índice no Pinecone |
-| `PINECONE_ENVIRONMENT` | Região/ambiente do Pinecone |
-| `PINECONE_NAMESPACE` | Namespace usado no Pinecone |
+| `BETTERAI_API_KEY` | Chave de API interna da BetterAI |
 | `OPENAI_API_KEY` | Chave de API da OpenAI |
-| `ANTHROPIC_API_KEY` | Chave de API da Anthropic |
-| `GOOGLE_API_KEY` | Chave de API do Google |
-| `GEMINI_API_KEY` | Chave de API do Gemini |
+| `OPENAI_EMBEDDING_MODEL` | Modelo de embeddings da OpenAI utilizado |
+| `GEMINI_API_KEY` | Chave de API do Google Gemini |
+| `GROQ_API_KEY` | Chave de API da Groq |
+| `ANTHROPIC_API_KEY` | Chave de API da Anthropic (Claude) |
+| `TAVILY_API_KEY` | Chave de API do Tavily (busca web) |
+| `FAL_API_KEY` | Chave de API do Fal (geração de mídia) |
+| `EXCHANGE_RATE_API_KEY` | Chave de API de cotação de câmbio |
+| `HUGGINGFACEHUB_API_TOKEN` | Token de acesso ao Hugging Face Hub |
+| `PINECONE_API_KEY` | Chave de API do Pinecone (vector store) |
+| `PINECONE_ENVIRONMENT` | Região/ambiente do Pinecone |
+| `PINECONE_INDEX_NAME` | Nome do índice vetorial no Pinecone |
+| `PINECONE_NAMESPACE` | Namespace da base de conhecimento |
+| `PINECONE_GLOBAL_NAMESPACE` | Namespace global da base de conhecimento |
+| `MONGO_URI` | String de conexão completa do MongoDB |
+| `MONGO_USER` | Usuário do MongoDB |
+| `MONGO_PASSWORD` | Senha do MongoDB |
+| `MONGO_HOST` | Host do MongoDB |
+| `MONGO_PORT` | Porta do MongoDB |
+| `NOSQL_BACKEND` | Backend NoSQL utilizado (`local` ou remoto) |
+| `SUPABASE_URL` | URL do projeto Supabase |
+| `SUPABASE_SECRET_KEY` | Chave secreta de serviço do Supabase |
+| `SUPABASE_DATABASE_URL` | String de conexão do banco Postgres do Supabase |
+| `SUPABASE_PROJECT_NAME` | Nome do projeto Supabase |
+| `SUPABASE_PROJECT_HOST` | Host do projeto Supabase |
+| `SUPABASE_DATABASE_PASSWORD` | Senha do banco de dados Supabase |
+| `SHOW_INFO_LOGS` | Exibe logs informativos (`true`/`false`) |
+| `SHOW_METADATA` | Exibe metadados nas respostas (`true`/`false`) |
+| `FORMAT_METADATA` | Formata os metadados exibidos (`true`/`false`) |
+| `SAVE_LOGS` | Salva logs de execução (`true`/`false`) |
+| `SAVE_MONGO` | Salva dados de execução no MongoDB (`true`/`false`) |
+| `LOCAL` | Flag para execução local (`true`/`false`) |
 
 ```
-LOCAL=true
+# BetterAI
+BETTERAI_API_KEY=********************
 
-# MongoDB
-DB_MONGO_NAME=********************
-DB_MONGO_HOST=********************
-DB_MONGO_PORT=********************
-DB_MONGO_USER=********************
-DB_MONGO_PASSWORD=********************
-DB_MONGO_URL=********************
+# LLM's
+OPENAI_API_KEY=********************
+OPENAI_EMBEDDING_MODEL=text-embedding-3-large
+
+GEMINI_API_KEY=********************
+GROQ_API_KEY=********************
+ANTHROPIC_API_KEY=********************
+
+# Tools
+TAVILY_API_KEY=********************
+FAL_API_KEY=********************
+EXCHANGE_RATE_API_KEY=********************
+HUGGINGFACEHUB_API_TOKEN=********************
+
+# Database
 
 # Pinecone
 PINECONE_API_KEY=********************
-PINECONE_INDEX_NAME=vectorstoreindex
-PINECONE_ENVIRONMENT=us-east-1-aws
-PINECONE_NAMESPACE=KNOWLEDGE_BASE_DEV
+PINECONE_ENVIRONMENT=us-east-1
+PINECONE_INDEX_NAME=backai-vectorstore
+PINECONE_NAMESPACE=knowledge_base_content_agent_oboticario2
+PINECONE_GLOBAL_NAMESPACE=global_knowledge_base_content_agent2
 
-# LLMs
-OPENAI_API_KEY=********************
-ANTHROPIC_API_KEY=********************
-GOOGLE_API_KEY=********************
-GEMINI_API_KEY=********************
+# MongoDB
+MONGO_URI=********************
+MONGO_USER=********************
+MONGO_PASSWORD=********************
+MONGO_HOST=********************
+MONGO_PORT=********************
+
+NOSQL_BACKEND=local
+
+# Supabase
+SUPABASE_URL=********************
+SUPABASE_SECRET_KEY=********************
+SUPABASE_DATABASE_URL=********************
+SUPABASE_PROJECT_NAME=better-ai-bucket-storage
+SUPABASE_PROJECT_HOST=********************
+SUPABASE_DATABASE_PASSWORD=********************
+
+# Application Tracing Rules
+SHOW_INFO_LOGS=false
+SHOW_METADATA=false
+FORMAT_METADATA=false
+SAVE_LOGS=false
+SAVE_MONGO=false
+
+LOCAL=false
 ```
-
-Caso precise das envs, abra um chamado em Dúvidas e Orientações Gerais - Suporte Infraestrutura - Jira Service Management.
 
 ---
 
