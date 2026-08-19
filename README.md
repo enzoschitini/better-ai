@@ -37,7 +37,7 @@ O **Content Generator** gera conteúdo alinhado à identidade de uma marca a par
 Primeiro, certifique-se de estar na branch correta e de que o seu código está atualizado:
 
 ```
-git checkout main
+git checkout production
 git pull
 git checkout -b nome-da-sua-branch
 ```
@@ -74,7 +74,7 @@ python -m venv .venv
 Após a ativação, o seu terminal deve ficar parecido com isto:
 
 ```
-(.venv) PS C:\Users\nome_do_usuario\personal-finances>
+(.venv) PS C:\Users\nome_do_usuario\better-ai>
 ```
 
 ---
