@@ -155,8 +155,8 @@ HUGGINGFACEHUB_API_TOKEN=********************
 PINECONE_API_KEY=********************
 PINECONE_ENVIRONMENT=us-east-1
 PINECONE_INDEX_NAME=backai-vectorstore
-PINECONE_NAMESPACE=knowledge_base_content_agent_oboticario2
-PINECONE_GLOBAL_NAMESPACE=global_knowledge_base_content_agent2
+PINECONE_NAMESPACE=knowledge_base
+PINECONE_GLOBAL_NAMESPACE=global_knowledge_base
 
 # MongoDB
 MONGO_URI=********************
