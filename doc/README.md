@@ -1,6 +1,6 @@
 # BetterAI — Where Intelligence Finds Purpose
 
-![BetterAI](<images/Frame 27346.png>)
+![BetterAI](<../images/Frame 27346.png>)
 
 # Múltiplos Modelos de IA, Um Único Back-end Unificado
 
@@ -30,7 +30,7 @@ O **Content Generator** gera conteúdo alinhado à identidade de uma marca a par
 
 ## **Guia de Inicialização**
 
-![alt text](<images/Gemini_Generated_Image_12swry12swry12sw (1).png>)
+![alt text](<../images/Gemini_Generated_Image_12swry12swry12sw (1).png>)
 
 ### **1. Atualize o Projeto**
 
@@ -306,7 +306,7 @@ python -m venv .venv
 ```
 
 --- 
-![alt text](images/Gemini_Generated_Image_hhqir9hhqir9hhqi.png)
+![alt text](../images/Gemini_Generated_Image_hhqir9hhqir9hhqi.png)
 
 ### BetterAI — Where Intelligence Finds Purpose.
 
