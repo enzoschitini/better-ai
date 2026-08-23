@@ -1,6 +1,6 @@
 # BetterAI — Where Intelligence Finds Purpose
 
-![BetterAI](<images/Frame 27346.png>)
+![BetterAI](<../images/Frame 27346.png>)
 
 # Múltiplos Modelos de IA, Um Único Back-end Unificado
 
@@ -30,7 +30,7 @@ O **Content Generator** gera conteúdo alinhado à identidade de uma marca a par
 
 ## **Guia de Inicialização**
 
-![alt text](<images/Gemini_Generated_Image_12swry12swry12sw (1).png>)
+![alt text](<../images/Gemini_Generated_Image_12swry12swry12sw (1).png>)
 
 ### **1. Atualize o Projeto**
 
@@ -269,7 +269,7 @@ curl -X GET "http://127.0.0.1:8000/health"
 | `POST /parse-content/document-parse` | Extração e estruturação de conteúdo de documentos |
 | `POST /davinci/image-generation` | Geração de imagens |
 
-Cada resposta segue um formato padronizado com `job_id`, `status`, `result` e métricas de tempo de execução. Os parâmetros e exemplos completos de request/response estão em [Web Service Network - API.ipynb](<doc/Modules/Web Service Network/Web Service Network - API.ipynb>).
+Cada resposta segue um formato padronizado com `job_id`, `status`, `result` e métricas de tempo de execução. Os parâmetros e exemplos completos de request/response estão em [Web Service Network - API.ipynb](<Modules/Web Service Network/Web Service Network - API.ipynb>).
 
 ---
 
@@ -283,8 +283,8 @@ A aplicação ficará disponível em http://localhost:8501, com as seguintes p�
 
 | **Aplicação** | **URL** | **Documentação** |
 | --- | --- | --- |
-| Acquarello | http://localhost:8501/acquarello | [Acquarello.ipynb](<doc/Streamlit Applications/Acquarello.ipynb>) |
-| Content Generator | http://localhost:8501/content_generator | [Content Generator.ipynb](<doc/Streamlit Applications/Content Generator.ipynb>) |
+| Acquarello | http://localhost:8501/acquarello | [Acquarello.ipynb](<Streamlit Applications/Acquarello.ipynb>) |
+| Content Generator | http://localhost:8501/content_generator | [Content Generator.ipynb](<Streamlit Applications/Content Generator.ipynb>) |
 
 ---
 
@@ -306,7 +306,7 @@ python -m venv .venv
 ```
 
 --- 
-![alt text](images/Gemini_Generated_Image_hhqir9hhqir9hhqi.png)
+![alt text](../images/Gemini_Generated_Image_hhqir9hhqir9hhqi.png)
 
 ### BetterAI — Where Intelligence Finds Purpose.
 
