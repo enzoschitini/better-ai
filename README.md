@@ -2,312 +2,312 @@
 
 ![BetterAI](<images/Frame 27346.png>)
 
-# Multiple AI Models, One Unified Back-end IA
+# Múltiplos Modelos de IA, Um Único Back-end Unificado
 
-BetterAI is a platform designed to make artificial intelligence **practical, scalable, and accessible** for real-world applications.
+A BetterAI é um back-end de IA modular, escrito em Python, que reúne atrás de uma única interface os provedores de modelos que normalmente vivem espalhados em SDKs incompatíveis entre si. O `ModelGateway` — construído sobre o framework Agno — cria modelos e agentes da **OpenAI, Anthropic, Google Gemini e Groq** a partir da mesma chamada, validando os parâmetros por introspecção do construtor de cada provedor para evitar erros silenciosos. Trocar de modelo passa a ser uma decisão de configuração, não uma refatoração.
 
-Instead of building complex AI infrastructure from scratch, BetterAI provides a solid foundation that allows teams to integrate intelligent capabilities directly into their systems, workflows, and products.
+Sobre essa base roda a **Web Service Network**, uma API FastAPI que orquestra os serviços de IA em produção. Os roteadores são descobertos dinamicamente, de modo que novos serviços entram sem alterar o bootstrap da aplicação, e toda resposta segue o mesmo envelope — `job_id`, `status`, `result` e um bloco de tempo com a duração da execução. O acesso é autenticado por `X-API-Key`.
 
-From document analysis to advanced data exploration, BetterAI enables organizations to transform data into **actionable intelligence**.
+## O que a plataforma faz hoje
 
-BetterAI brings together multiple specialized AI models in a single platform designed to generate real business impact.
+* **Parsing de documentos** — arquivos `txt`, `md`, `pdf` e `docx` são convertidos em dados estruturados conforme um schema definido por quem chama. Os modelos Pydantic são gerados em tempo de execução a partir de metadados JSON, então cada extração declara o seu próprio contrato de saída.
+* **Deep research** — busca web profunda via Tavily, filtrada por score e devolvida como contexto em markdown, pronta para alimentar pipelines de RAG.
+* **Base vetorial** — ingestão, busca semântica e exclusão no Pinecone, com separação entre namespace local e global, escrita em lote e rollback automático quando parte de um lote falha.
+* **Embeddings locais** — chunking e recuperação em FAISS na memória, alternando entre OpenAI, HuggingFace ou um provedor fake para testes offline.
+* **Geração de imagens** — o serviço Da-Vinci gera e edita imagens a partir de texto e de referências visuais.
 
-Instead of relying on a single type of artificial intelligence, BetterAI provides a diverse ecosystem of AI capabilities that work together seamlessly.
+## A infraestrutura por baixo
 
-This unified approach allows organizations to:
+Cada operação passa por uma camada própria de tracing, com logs estruturados correlacionados por `log_id` e persistidos em MongoDB ou Supabase. O custo é calculado token a token e convertido de dólar para real pela cotação oficial do Banco Central, com fallback quando não há cotação no dia. Consumo de IA, aqui, é um número auditável e não uma estimativa.
 
-- extract insights from data  
-- automate complex workflows  
-- generate content across multiple formats  
-- support decision-making with intelligent systems  
+## Duas aplicações que rodam sobre isso
 
-All from a **single, integrated AI platform**.
+O **Content Generator** gera conteúdo alinhado à identidade de uma marca a partir de catálogos de produtos indexados no Pinecone, e cita as fontes recuperadas em cada texto — o que torna cada afirmação verificável em vez de plausível. O **Acquarello** faz geração de imagens em dois modos, texto-para-imagem e imagem-para-imagem, com controle de estilo visual, projetado para quem não quer lidar com prompts complexos.
 
-**Author:** Enzo Schitini
+**Autor:** [Enzo Schitini](https://www.linkedin.com/in/enzoschitini/?locale=it)
+
+
+
+## **Guia de Inicialização**
 
 ![alt text](<images/Gemini_Generated_Image_12swry12swry12sw (1).png>)
 
-## The Right Models for Every Task
+### **1. Atualize o Projeto**
 
-BetterAI includes specialized models designed to handle different types of intelligence and workflows.
+Primeiro, certifique-se de estar na branch correta e de que o seu código está atualizado:
 
-### **Alighieri** - Language Model
-
-Powerful language intelligence designed for tasks such as:
-
-- text generation  
-- document analysis  
-- summarization  
-- conversational systems  
-- decision support  
-
-Alighieri enables applications to understand and generate human language with precision and context awareness.
+```
+git checkout production
+git pull
+git checkout -b nome-da-sua-branch
+```
 
 ---
 
-### **Da-Vinci** - Image Generation
+### **2. Crie o Ambiente Virtual**
 
-Advanced image generation designed for visual creativity and production workflows.
+> **Requisito:** Python 3.14 ou superior (versão fixada em `.python-version`).
+> 
 
-Capabilities include:
+Crie um ambiente virtual para isolar as dependências do projeto:
 
-- generating images from prompts  
-- editing existing visuals  
-- creating design variations  
-- supporting creative and marketing workflows  
-
-Da-Vinci helps teams produce **high-quality visual content with AI assistance**.
+```
+python -m venv .venv
+```
 
 ---
 
-### **Ennio** - Audio & Video Generation
+### **3. Ative o Ambiente Virtual**
 
-A multimodal AI system designed for dynamic media creation.
+#### **PowerShell**
 
-Ennio can generate:
+```
+.\.venv\Scripts\Activate.ps1
+```
 
-- voice narration  
-- audio content  
-- multimedia assets  
-- dynamic video elements  
+#### **CMD**
 
-This allows organizations to create **rich media experiences powered by AI**.
+```
+.venv\Scripts\activate.bat
+```
+
+Após a ativação, o seu terminal deve ficar parecido com isto:
+
+```
+(.venv) PS C:\Users\nome_do_usuario\better-ai>
+```
 
 ---
 
-### **Galileo** - Mathematical Intelligence
+### **4. Instale as Dependências**
 
-A specialized model focused on mathematical reasoning and complex analytical tasks.
+Você pode instalar as dependências de duas formas:
 
-Galileo enables:
+#### **Usando uv (recomendado)**
 
-- advanced mathematical computation  
-- data modeling  
-- analytical reasoning  
-- problem-solving for technical domains  
+```
+uv sync
+```
 
-This model is particularly useful for **scientific, financial, and engineering applications**.
+---
 
+### **5. Configure as Variáveis de Ambiente**
+
+Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
+
+| **Variável** | **Descrição** |
+| --- | --- |
+| `BETTERAI_API_KEY` | Chave de API interna da BetterAI |
+| `OPENAI_API_KEY` | Chave de API da OpenAI |
+| `OPENAI_EMBEDDING_MODEL` | Modelo de embeddings da OpenAI utilizado |
+| `GEMINI_API_KEY` | Chave de API do Google Gemini |
+| `GROQ_API_KEY` | Chave de API da Groq |
+| `ANTHROPIC_API_KEY` | Chave de API da Anthropic (Claude) |
+| `TAVILY_API_KEY` | Chave de API do Tavily (busca web) |
+| `FAL_API_KEY` | Chave de API do Fal (geração de mídia) |
+| `EXCHANGE_RATE_API_KEY` | Chave de API de cotação de câmbio |
+| `HUGGINGFACEHUB_API_TOKEN` | Token de acesso ao Hugging Face Hub |
+| `PINECONE_API_KEY` | Chave de API do Pinecone (vector store) |
+| `PINECONE_ENVIRONMENT` | Região/ambiente do Pinecone |
+| `PINECONE_INDEX_NAME` | Nome do índice vetorial no Pinecone |
+| `PINECONE_NAMESPACE` | Namespace da base de conhecimento |
+| `PINECONE_GLOBAL_NAMESPACE` | Namespace global da base de conhecimento |
+| `MONGO_URI` | String de conexão completa do MongoDB |
+| `MONGO_USER` | Usuário do MongoDB |
+| `MONGO_PASSWORD` | Senha do MongoDB |
+| `MONGO_HOST` | Host do MongoDB |
+| `MONGO_PORT` | Porta do MongoDB |
+| `NOSQL_BACKEND` | Backend NoSQL utilizado (`local` ou remoto) |
+| `SUPABASE_URL` | URL do projeto Supabase |
+| `SUPABASE_SECRET_KEY` | Chave secreta de serviço do Supabase |
+| `SUPABASE_DATABASE_URL` | String de conexão do banco Postgres do Supabase |
+| `SUPABASE_PROJECT_NAME` | Nome do projeto Supabase |
+| `SUPABASE_PROJECT_HOST` | Host do projeto Supabase |
+| `SUPABASE_DATABASE_PASSWORD` | Senha do banco de dados Supabase |
+| `SHOW_INFO_LOGS` | Exibe logs informativos (`true`/`false`) |
+| `SHOW_METADATA` | Exibe metadados nas respostas (`true`/`false`) |
+| `FORMAT_METADATA` | Formata os metadados exibidos (`true`/`false`) |
+| `SAVE_LOGS` | Salva logs de execução (`true`/`false`) |
+| `SAVE_MONGO` | Salva dados de execução no MongoDB (`true`/`false`) |
+| `LOCAL` | Flag para execução local (`true`/`false`) |
+
+```
+# BetterAI
+BETTERAI_API_KEY=********************
+
+# LLM's
+OPENAI_API_KEY=********************
+OPENAI_EMBEDDING_MODEL=text-embedding-3-large
+
+GEMINI_API_KEY=********************
+GROQ_API_KEY=********************
+ANTHROPIC_API_KEY=********************
+
+# Tools
+TAVILY_API_KEY=********************
+FAL_API_KEY=********************
+EXCHANGE_RATE_API_KEY=********************
+HUGGINGFACEHUB_API_TOKEN=********************
+
+# Database
+
+# Pinecone
+PINECONE_API_KEY=********************
+PINECONE_ENVIRONMENT=us-east-1
+PINECONE_INDEX_NAME=backai-vectorstore
+PINECONE_NAMESPACE=knowledge_base
+PINECONE_GLOBAL_NAMESPACE=global_knowledge_base
+
+# MongoDB
+MONGO_URI=********************
+MONGO_USER=********************
+MONGO_PASSWORD=********************
+MONGO_HOST=********************
+MONGO_PORT=********************
+
+NOSQL_BACKEND=local
+
+# Supabase
+SUPABASE_URL=********************
+SUPABASE_SECRET_KEY=********************
+SUPABASE_DATABASE_URL=********************
+SUPABASE_PROJECT_NAME=better-ai-bucket-storage
+SUPABASE_PROJECT_HOST=********************
+SUPABASE_DATABASE_PASSWORD=********************
+
+# Application Tracing Rules
+SHOW_INFO_LOGS=false
+SHOW_METADATA=false
+FORMAT_METADATA=false
+SAVE_LOGS=false
+SAVE_MONGO=false
+
+LOCAL=false
+```
+
+---
+
+### **6. Execute a aplicação**
+
+O projeto expõe **dois serviços independentes**, que podem ser executados separadamente ou em paralelo (em terminais distintos):
+
+| **Serviço** | **Comando** | **Porta** | **Quando usar** |
+| --- | --- | --- | --- |
+| API (FastAPI) | `uvicorn web_services:app --reload` | `8000` | Consumo programático dos módulos de IA via HTTP |
+| Interface (Streamlit) | `streamlit run web_app.py` | `8501` | Uso visual das aplicações (Acquarello, Content Generator) |
+
+> **Pré-requisitos:** ambiente virtual ativado (passo 3), dependências instaladas (passo 4) e arquivo `.env` configurado (passo 5).
+> 
+
+---
+
+#### **6.1. API (FastAPI + Uvicorn)**
+
+```
+uvicorn web_services:app --reload
+```
+
+A flag `--reload` reinicia o servidor automaticamente a cada alteração no código — recomendada apenas em desenvolvimento.
+
+```
+INFO:     Will watch for changes in these directories: ['C:\\Users\\user_name\\better-ai']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [24960] using StatReload
+INFO:     Router included: /agents
+INFO:     Router included: /davinci
+INFO:     Router included: /deep-research
+INFO:     Router included: /parse-content
+INFO:     Router included: /vector-store
+INFO:     Started server process [4748]
+INFO:     Waiting for application startup.
+INFO:     
+
+    ╔═══════════════════════════════════════════════════════════════════════╗
+
+        ██████╗ ███████╗████████╗████████╗███████╗██████╗      █████╗ ██╗ ✦
+        ██╔══██╗██╔════╝╚══██╔══╝╚══██╔══╝██╔════╝██╔══██╗    ██╔══██╗██║
+        ██████╔╝█████╗     ██║      ██║   █████╗  ██████╔╝    ███████║██║
+        ██╔══██╗██╔══╝     ██║      ██║   ██╔══╝  ██╔══██╗    ██╔══██║██║
+        ██████╔╝███████╗   ██║      ██║   ███████╗██║  ██║    ██║  ██║██║
+        ╚═════╝ ╚══════╝   ╚═╝      ╚═╝   ╚══════╝╚═╝  ╚═╝    ╚═╝  ╚═╝╚═╝
+
+    ╚═══════════════════════════════════════════════════════════════════════╝
+
+                        ✦ Where intelligence finds purpose. ✦
+    
+INFO:     BetterAI Web Service Network initialized successfully at 2026-08-17 08:55:20.
+INFO:     Version: 1.0.0
+INFO:     API_DOMAIN: http://localhost:8000
+INFO:     Health check available at: http://localhost:8000/health
+INFO:     Documentation available at: http://localhost:8000/docs
+INFO:     Application startup complete.
+```
+
+**Endereços disponíveis**
+
+| **Recurso** | **URL** |
+| --- | --- |
+| Base URL | http://localhost:8000 |
+| Health check | http://localhost:8000/health |
+| Documentação interativa (Swagger UI) | http://localhost:8000/docs |
+
+**Valide a inicialização**
+
+Confirme que a API respondeu corretamente antes de seguir:
+
+```
+curl -X GET "http://127.0.0.1:8000/health"
+```
+
+**Endpoints principais**
+
+| **Endpoint** | **Descrição** |
+| --- | --- |
+| `GET /health` | Verificação de disponibilidade do serviço |
+| `GET /health-authorization` | Verificação de disponibilidade com autenticação |
+| `POST /deep-research/context-builder` | Construção de contexto a partir de pesquisa profunda |
+| `POST /parse-content/document-parse` | Extração e estruturação de conteúdo de documentos |
+| `POST /davinci/image-generation` | Geração de imagens |
+
+Cada resposta segue um formato padronizado com `job_id`, `status`, `result` e métricas de tempo de execução. Os parâmetros e exemplos completos de request/response estão em [Web Service Network - API.ipynb](<Modules/Web Service Network/Web Service Network - API.ipynb>).
+
+---
+
+#### **6.2. Interface Streamlit**
+
+```
+streamlit run web_app.py
+```
+
+A aplicação ficará disponível em http://localhost:8501, com as seguintes páginas:
+
+| **Aplicação** | **URL** | **Documentação** |
+| --- | --- | --- |
+| Acquarello | http://localhost:8501/acquarello | [Acquarello.ipynb](<Streamlit Applications/Acquarello.ipynb>) |
+| Content Generator | http://localhost:8501/content_generator | [Content Generator.ipynb](<Streamlit Applications/Content Generator.ipynb>) |
+
+---
+
+#### **6.3. Resolução de problemas**
+
+| **Sintoma** | **Causa provável** | **O que fazer** |
+| --- | --- | --- |
+| `ModuleNotFoundError` ao iniciar | Ambiente virtual não ativado ou dependências ausentes | Reative o `.venv` (passo 3) e rode `uv sync` (passo 4) |
+| Erro de autenticação nos provedores de IA | Chaves ausentes ou inválidas no `.env` | Revise o passo 5 e confirme os valores das chaves |
+| Falha de conexão com MongoDB/Supabase/Pinecone | Credenciais ou host incorretos no `.env` | Verifique as variáveis de banco e a conectividade de rede |
+| Porta já em uso | Outra instância do serviço está ativa | Encerre o processo anterior ou use outra porta (`--port`) |
+
+Se o ambiente virtual ficar inconsistente, recrie-o do zero:
+
+```
+deactivate
+Remove-Item -Recurse -Force .\.venv
+python -m venv .venv
+```
+
+--- 
 ![alt text](images/Gemini_Generated_Image_hhqir9hhqir9hhqi.png)
 
-# What You Can Build With AI
+### BetterAI — Where Intelligence Finds Purpose.
 
-BetterAI enables a wide range of AI-powered capabilities that can be integrated into products, internal systems, or automation workflows.
-
-## Talk To Your Files
-
-Interact with your documents as if they were part of a conversation.
-
-Upload files such as:
-
-- PDFs  
-- Word documents  
-- Spreadsheets  
-
-BetterAI analyzes the content using advanced semantic models and allows you to:
-
-- ask questions about documents  
-- generate summaries  
-- compare information  
-- extract key insights  
-
-This dramatically accelerates **analysis, decision-making, and knowledge discovery**.
-
----
-
-## Sentiment Analysis
-
-Understand what people really think.
-
-BetterAI analyzes large volumes of text such as:
-
-- customer reviews  
-- comments  
-- support messages  
-- user feedback  
-
-The system detects:
-
-- sentiment (positive, neutral, negative)  
-- key categories  
-- hidden patterns  
-
-This transforms unstructured text into **clear, actionable insights** about user perception and behavior.
-
----
-
-## Text Classification
-
-Automatically classify text according to your business needs.
-
-BetterAI can organize large volumes of content such as:
-
-- emails  
-- documents  
-- support tickets  
-- messages  
-
-Custom categories allow the system to automatically label and structure information, reducing manual work and improving operational efficiency.
-
----
-
-## Image Generation and Editing
-
-Create and modify images using AI.
-
-BetterAI supports image generation from simple text prompts, allowing you to:
-
-- create original images  
-- generate variations of existing images  
-- edit photos using AI  
-
-This enables creative workflows and automated visual content generation using advanced image models.
-
----
-
-## Explore Your Data
-
-Explore datasets and spreadsheets in an intuitive way.
-
-BetterAI performs **automated exploratory data analysis (EDA)**, helping you:
-
-- identify patterns  
-- detect anomalies  
-- generate reports  
-- extract meaningful insights  
-
-This allows teams to understand complex datasets without requiring deep technical expertise.
-
----
-
-## Text-to-Speech (TTS)
-
-Convert text into natural, expressive audio.
-
-BetterAI can generate speech using multiple voices and styles, enabling use cases such as:
-
-- voice assistants  
-- multimedia applications  
-- accessibility tools  
-- automated narration  
-
-The system produces **high-quality audio output** that integrates easily with applications and services.
-
----
-
-## Deep Research
-
-Perform deep, multi-source research using AI.
-
-BetterAI can analyze and combine information from:
-
-- documents  
-- datasets  
-- multiple data sources  
-
-This enables the creation of:
-
-- structured reports  
-- comparisons  
-- detailed analyses  
-
-Deep research capabilities help organizations perform **strategic analysis and well-informed decision-making**.
-
-![alt text](images/Gemini_Generated_Image_mmbn14mmbn14mmbn.png)
-
-# A Solid Foundation That Works in Production
-
-BetterAI is designed to operate reliably in real-world environments.
-
-The platform architecture focuses on **scalability, modularity, and security**, ensuring it can support both small workflows and enterprise-scale operations.
-
----
-
-## Modular Architecture
-
-BetterAI is built using a modular architecture designed to evolve over time.
-
-Each component operates independently, allowing the system to grow and adapt without disrupting existing features.
-
-Key characteristics:
-
-- interchangeable AI modules  
-- independent services  
-- real-time adaptation to demand  
-- easy scalability  
-
-This flexibility allows organizations to customize AI infrastructure according to their needs.
-
----
-
-## Scalability
-
-The infrastructure is designed to support business growth.
-
-BetterAI can handle:
-
-- multiple applications  
-- multiple products  
-- multiple customers  
-
-All running on the same platform while maintaining performance and stability.
-
-Whether you're running small workflows or large-scale AI operations, the system adapts to the volume and complexity of the workload.
-
----
-
-## Data Security and Isolation
-
-Security is a fundamental part of the architecture.
-
-BetterAI ensures that:
-
-- each customer's data remains isolated  
-- sensitive information is protected  
-- access is controlled and monitored  
-
-The platform is designed to guarantee **data protection, confidentiality, and full control over corporate information**.
-
----
-
-## Quick and Easy Integration
-
-BetterAI integrates seamlessly with existing systems.
-
-Using ready-to-use APIs and connectors, organizations can quickly connect AI capabilities to their workflows without complex infrastructure changes.
-
-This dramatically reduces **implementation time** and accelerates **return on investment**.
-
----
-
-## Monitoring Usage and Costs
-
-AI usage is fully trackable.
-
-BetterAI provides tools to monitor:
-
-- AI consumption  
-- system performance  
-- operational flows  
-
-This visibility helps organizations control costs, optimize usage, and avoid unexpected expenses.
-
----
-
-# Vision
-
-BetterAI aims to become a **unified platform for building intelligent systems**.
-
-A place where developers and organizations can:
-
-- integrate AI models  
-- analyze information  
-- automate workflows  
-- build intelligent applications  
-
-All supported by a scalable and reliable AI infrastructure.
-
-
-# BetterAI is where intelligence finds purpose.
-
-**Author:** Enzo Schitini
+Autor: [Enzo Schitini](https://www.linkedin.com/in/enzoschitini/?locale=it)
