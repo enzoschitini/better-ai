@@ -100,7 +100,6 @@ class PayloadBuilder:
         storage_payload = payload["images_storage"]
 
         response_payload = {
-            "jobId": payload["jobId"],
             "text_response": payload["text_response"],
             "images": urls
         }
