@@ -171,3 +171,205 @@ if __name__ == "__main__":
 
 # python -m src.content_parse.pydantic_shema
 ```
+
+---
+
+## Mapeamento formas de schema
+
+### 1. Entradas aceitas pela rota
+
+Formato do request: `multipart/form-data`.
+
+Campos:
+
+- `job_id` (obrigatório): `str`
+- `metadata` (obrigatório): `str` contendo JSON válido
+- `document_schema` (obrigatório): `str` contendo JSON válido
+- `file` (obrigatório): arquivo
+- `config` (opcional): `str` contendo JSON válido
+
+Regras de arquivo nesta rota:
+
+- Extensões permitidas: `txt`, `md`, `pdf`, `docx`
+- Tamanho máximo: `50 MB`
+
+Erros comuns de entrada:
+
+- `Invalid JSON in metadata`
+- `Invalid JSON in schema`
+- `Invalid JSON in config`
+
+### 2. Importante: quem interpreta o `document_schema`
+
+- `document_schema` **não** é convertido por `JsonToPydantic`.
+- Na rota, ele é convertido por `GeneratePydanticSchema` + `FieldMetadataParser`.
+- `JsonToPydantic` é usado no agente para `input_data` e `config_data`.
+
+### 3. Todas as formas de `document_schema` aceitas na prática
+
+#### 3.1 Campo declarativo simples
+
+```json
+{
+    "summary": {
+        "type": "str",
+        "description": "Resumo do conteúdo do arquivo"
+    }
+}
+```
+
+#### 3.2 Campo declarativo com `required`, `default`, `example`
+
+```json
+{
+    "title": {
+        "type": "str",
+        "required": true,
+        "description": "Título principal",
+        "example": "Relatório de Q2"
+    },
+    "confidence": {
+        "type": "float",
+        "required": false,
+        "default": 0.0,
+        "description": "Confianca da extração"
+    }
+}
+```
+
+#### 3.3 Campo declarativo com validação de tamanho
+
+```json
+{
+    "abstract": {
+        "type": "str",
+        "description": "Resumo detalhado",
+        "min_length": 20,
+        "max_length": 500
+    }
+}
+```
+
+#### 3.4 Lista declarativa de primitivos
+
+```json
+{
+    "keywords": {
+        "type": "list",
+        "items": {
+            "type": "str"
+        },
+        "description": "Palavras-chave"
+    }
+}
+```
+
+#### 3.5 Lista declarativa de objetos
+
+```json
+{
+    "entities": {
+        "type": "list",
+        "items": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "str",
+                    "description": "Nome"
+                },
+                "category": {
+                    "type": "str",
+                    "description": "Categoria"
+                },
+                "score": {
+                    "type": "float",
+                    "description": "Pontuação"
+                }
+            }
+        }
+    }
+}
+```
+
+#### 3.6 Inferência automática por exemplo (sem `type`)
+
+```json
+{
+    "summary": "texto exemplo",
+    "score": 0.98,
+    "approved": true
+}
+```
+
+#### 3.7 Inferência de objeto aninhado
+
+```json
+{
+    "invoice": {
+        "number": "INV-001",
+        "total": 199.9,
+        "paid": false
+    }
+}
+```
+
+#### 3.8 Inferência de lista de objetos
+
+```json
+{
+    "items": [
+        {
+            "sku": "A-1",
+            "quantity": 2,
+            "unit_price": 49.9
+        }
+    ]
+}
+```
+
+#### 3.9 Inferência com lista vazia
+
+```json
+{
+    "items": []
+}
+```
+
+Nesse caso, o tipo vira lista genérica.
+
+#### 3.10 Schema híbrido (declarativo + inferência no mesmo payload)
+
+```json
+{
+    "summary": {
+        "type": "str",
+        "description": "Resumo final"
+    },
+    "stats": {
+        "pages": 12,
+        "language": "pt-BR"
+    }
+}
+```
+
+### 4. Mapeamento de tipos no modo declarativo
+
+Valores reconhecidos em `type`:
+
+- `str`
+- `int`
+- `float`
+- `bool`
+- `list`
+- `dict`
+
+Se o tipo não for reconhecido, cai em `Any`.
+
+### 5. Regras e limitações importantes
+
+1. Se o campo é `dict` e possui chave `type`, ele é tratado como metadado declarativo.
+2. Para `type = "list"`, `items` é obrigatório.
+3. Lista de objetos declarativa exige `items.type = "object"` com `properties`.
+4. Campos sem `required` são opcionais por padrão.
+5. O parser aceita estrutura híbrida, misturando campos declarativos e inferidos.
+

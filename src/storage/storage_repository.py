@@ -35,16 +35,29 @@ class StorageRepository:
         if mime_type == "image/png":
             return "png"
         raise ValueError(f"Unsupported mime type for persistence: {mime_type}")
-    
+
     def upload_to_supabase(self, file_name: str, byte_data: bytes) -> str:
         manager = StorageManager(bucket_name=self.bucket_name)
         storage_name = f"{self.base_path}/{file_name}"
 
         upload_res = manager.upload_bytes(storage_name, byte_data)
 
-        if upload_res:
-            return manager.get_url(storage_name)
-            
+        if not upload_res:
+            raise RuntimeError(f"Falha ao fazer upload para o Supabase: {storage_name}")
 
+        return manager.get_url(storage_name)
 
+if __name__ == "__main__":
+    # Exemplo de uso
+    repository = StorageRepository(base_path="images/image_generations", bucket_name="images")
+    
+    # Carregar bytes de imagem
+    with open("src/storage/image.png", "rb") as f:
+        image_bytes = f.read()
+
+    # Salvar
+    url = repository.upload_to_supabase(file_name="example_image.jpg", byte_data=image_bytes)
+    print(f"Imagem salva no Supabase com URL: {url}")
+
+    # python -m src.storage.storage_repository
 
