@@ -17,7 +17,6 @@ router = APIRouter(
     dependencies=[Depends(Authorization.validate_api_key)]
 )
 async def document_parse(
-    job_id: str = Form(..., title="Job ID", description="Unique identifier for the parsing job"),
     metadata: str = Form(..., title="Metadata", description="JSON string containing document metadata"),
     document_schema: str = Form(..., title="Document Schema", description="JSON schema used to structure extracted content"),
     file: UploadFile = File(..., title="Document File", description="Supported formats: txt, md, pdf, docx"),
@@ -25,6 +24,7 @@ async def document_parse(
 ):
     try:
         resource = RequestResorse()
+        job_id = resource.job_id
 
         loader = await LoadRequestFile(
             file=file,
@@ -44,13 +44,13 @@ async def document_parse(
             file_extension=file_extension
         )
 
-        result = parser.run()
-        result = {
-            "job_id": job_id,
-            "content": result
-        }
+        parsed_result = parser.run()
+        content = parsed_result.get("content", parsed_result)
 
-        return resource.success_response(result)
+        response = resource.success_response(content)
+        response["content"] = response.pop("result")
+
+        return response
 
     except Exception as e:
         return resource.error_response(e)
