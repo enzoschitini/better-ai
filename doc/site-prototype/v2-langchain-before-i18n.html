@@ -124,16 +124,6 @@ kbd { font: 500 .75rem/1 var(--font-body); color: var(--ink-3); }
 .btn-cta:hover { background: var(--cta-hover); }
 .icon-btn { width: 32px; height: 32px; display: inline-grid; place-items: center; border-radius: 10px; border: 1px solid var(--line); color: var(--ink-2); }
 .icon-btn:hover { background: var(--fill-soft); }
-.lang { position: relative; }
-.lang-btn { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px 0 9px; border: 1px solid var(--line); border-radius: 10px; color: var(--ink-2); font-size: .8125rem; font-weight: 500; }
-.lang-btn:hover { background: var(--fill-soft); }
-.lang-btn b { font-weight: 500; letter-spacing: .02em; }
-.lang-menu { position: absolute; z-index: 50; right: 0; top: calc(100% + 6px); min-width: 10.5rem; margin: 0; padding: 6px; list-style: none; border: 1px solid var(--line); border-radius: 14px; background: var(--bg); box-shadow: var(--shadow-pop); }
-.lang-menu button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 10px; border-radius: 9px; font-size: .875rem; text-align: left; color: var(--ink-2); }
-.lang-menu button:hover { background: var(--fill-soft); color: var(--ink); }
-.lang-menu button[aria-checked="true"] { color: var(--primary); font-weight: 600; }
-.lang-menu .ck { margin-left: auto; opacity: 0; }
-.lang-menu button[aria-checked="true"] .ck { opacity: 1; }
 .tabs-row { display: flex; gap: 24px; height: 40px; border-bottom: 1px solid var(--line-soft); font-size: .875rem; overflow-x: auto; scrollbar-width: none; }
 .tabs-row::-webkit-scrollbar { display: none; }
 .tab { position: relative; display: flex; align-items: center; color: var(--ink-2); text-decoration: none; white-space: nowrap; font-weight: 500; }
@@ -381,12 +371,12 @@ figure.frame { margin-inline: 0; }
 </style>
 </head>
 <body>
-<a class="skip" href="#main" data-i="skip"></a>
+<a class="skip" href="#main">Ir para o conteúdo</a>
 
 <header class="header" id="header">
   <div class="banner" id="banner">
-    <span data-i="banner"></span>
-    <button type="button" data-ia="closeBanner"><svg class="ico" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+    <span>Protótipo de layout. O conteúdo das páginas é de exemplo.</span>
+    <button type="button" aria-label="Fechar aviso"><svg class="ico" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
   </div>
   <div class="bar">
     <div class="row1">
@@ -396,22 +386,18 @@ figure.frame { margin-inline: 0; }
         <span class="brand-name">BetterAI</span>
         <span class="brand-sub">Docs</span>
       </a>
-      <button class="search-trigger" type="button" data-open-search data-ia="searchLbl">
+      <button class="search-trigger" type="button" data-open-search aria-label="Buscar na documentação">
         <svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
-        <span data-i="searchPh"></span>
+        <span>Buscar...</span>
         <kbd>Ctrl K</kbd>
       </button>
       <div class="actions">
         <a class="btn-soft" href="#" data-fake><svg class="ico" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.2"/><circle cx="6" cy="18" r="2.2"/><circle cx="18" cy="8" r="2.2"/><path d="M6 8.2v7.6M18 10.2c0 4-6 3-12 5.6"/></svg>GitHub</a>
         <a class="btn-cta" href="#" data-fake>Swagger UI<svg class="ico" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></a>
-        <div class="lang">
-          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu" aria-expanded="false" data-ia="langLbl"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b></b></button>
-          <ul class="lang-menu" id="langMenu" role="menu" hidden></ul>
-        </div>
-        <button class="icon-btn" id="themeBtn" type="button" data-ia="themeLbl"></button>
+        <button class="icon-btn" id="themeBtn" type="button" aria-label="Alternar tema claro e escuro"></button>
       </div>
     </div>
-    <nav class="tabs-row" id="tabs" data-ia="tabsLbl"></nav>
+    <nav class="tabs-row" id="tabs" aria-label="Áreas da documentação"></nav>
     <div class="subbar">
       <button type="button" id="menuBtn" aria-controls="side" aria-expanded="false">
         <svg class="ico" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
@@ -425,27 +411,27 @@ figure.frame { margin-inline: 0; }
 </header>
 
 <div class="shell">
-  <aside class="side-wrap" id="side" data-ia="navLbl">
+  <aside class="side-wrap" id="side" aria-label="Navegação da documentação">
     <nav class="side" id="nav"></nav>
   </aside>
   <div class="main">
     <div class="main-row">
       <main class="article" id="main"><div id="page"></div></main>
-      <aside class="toc" id="toc" data-ia="onThisPage"></aside>
+      <aside class="toc" id="toc" aria-label="Nesta página"></aside>
     </div>
     <footer class="site-foot">
       <div class="foot-brand">
         <a class="brand" href="#/"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
-        <p data-i="tagline"></p>
+        <p>Where intelligence finds purpose.</p>
       </div>
       <div class="foot-col">
-        <h2 data-i="footRes"></h2>
+        <h2>Recursos</h2>
         <a href="#" data-fake>Swagger UI</a>
         <a href="#" data-fake>GitHub</a>
         <a href="#/getting-started/quickstart">Quickstart</a>
       </div>
       <div class="foot-col">
-        <h2 data-i="footPlat"></h2>
+        <h2>Plataforma</h2>
         <a href="#/modules/web-service-network/web-service-network-api">Web Service Network</a>
         <a href="#/streamlit-applications/acquarello">Acquarello</a>
         <a href="#/streamlit-applications/content-generator">Content Generator</a>
@@ -455,22 +441,22 @@ figure.frame { margin-inline: 0; }
 </div>
 <div class="scrim" id="scrim"></div>
 
-<dialog class="search" id="search" data-ia="searchLbl">
+<dialog class="search" id="search" aria-label="Buscar na documentação">
   <div class="search-field">
     <svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
-    <input id="q" type="search" data-ip="dlgPh" autocomplete="off" spellcheck="false" aria-controls="results">
+    <input id="q" type="search" placeholder="Buscar páginas e seções" autocomplete="off" spellcheck="false" aria-controls="results">
     <kbd>Esc</kbd>
   </div>
-  <ul class="results" id="results" role="listbox" data-ia="results"></ul>
+  <ul class="results" id="results" role="listbox" aria-label="Resultados"></ul>
   <div class="search-foot">
-    <span><kbd>↑</kbd><kbd>↓</kbd><span data-i="navigate"></span></span>
-    <span><kbd>Enter</kbd><span data-i="open"></span></span>
+    <span><kbd>↑</kbd><kbd>↓</kbd>navegar</span>
+    <span><kbd>Enter</kbd>abrir</span>
   </div>
 </dialog>
 
 <!-- ================= Páginas de exemplo ================= -->
 
-<template data-page="getting-started/quickstart" data-lang="pt"
+<template data-page="getting-started/quickstart"
   data-lead="Do clone ao primeiro GET /health: ambiente virtual, dependências, variáveis de ambiente e os dois serviços rodando na sua máquina.">
   <h2>1. Atualize o projeto</h2>
   <p>Comece na branch certa e com o código em dia. Crie a sua branch a partir de <code>production</code>.</p>
@@ -603,7 +589,7 @@ streamlit run web_app.py
   </div>
 </template>
 
-<template data-page="modules/agents/utils/model-gateway" data-lang="pt"
+<template data-page="modules/agents/utils/model-gateway"
   data-lead="Uma fábrica única para criar modelos e agentes Agno de qualquer provedor, com os parâmetros validados antes da chamada.">
   <p>A <code>ModelGateway</code> esconde as diferenças entre as APIs da Anthropic, do Google, da Groq e da OpenAI. Você informa o provedor e os parâmetros, e ela resolve a classe certa, confere os argumentos contra a assinatura real do construtor e devolve o modelo pronto.</p>
   <p>Ela cobre o seguinte:</p>
@@ -725,7 +711,7 @@ agent.print_response("Resuma o catálogo de produtos.")
   </ul>
 </template>
 
-<template data-page="modules/web-service-network/web-service-network-api" data-lang="pt"
+<template data-page="modules/web-service-network/web-service-network-api"
   data-lead="A API FastAPI que expõe os serviços de IA. Autenticação, formato das respostas e os endpoints disponíveis.">
   <h2>Autenticação</h2>
   <p>Toda rota protegida exige o cabeçalho <code>X-API-Key</code> com o valor de <code>BETTERAI_API_KEY</code>.</p>
@@ -818,7 +804,7 @@ print(response.json()["result"])
   </table>
 </template>
 
-<template data-page="streamlit-applications/acquarello" data-lang="pt"
+<template data-page="streamlit-applications/acquarello"
   data-lead="Geração de imagens em dois modos, com controle de estilo visual, para quem não quer lidar com prompts complexos.">
   <div class="frame">
     <video controls preload="metadata" src="../Streamlit%20Applications/videos/acquarello.mp4"></video>
@@ -853,320 +839,6 @@ streamlit run web_app.py
   <div class="callout" data-kind="note"><p>Cada geração registra o custo em dólar e em real. Veja <a href="#/modules/image-generation/cost-calculator/cost-calculator">Cost Calculator</a>.</p></div>
 </template>
 
-<template data-page="modules/agents/utils/model-gateway" data-lang="en"
-  data-lead="A single factory to create Agno models and agents from any provider, with parameters validated before the call.">
-  <p>The <code>ModelGateway</code> hides the differences between the Anthropic, Google, Groq and OpenAI APIs. You pass the provider and the parameters, and it resolves the right class, checks the arguments against the real constructor signature and returns the model ready to use.</p>
-  <p>It covers the following:</p>
-  <ul>
-    <li><strong>One entry point:</strong> the same method creates models from any provider.</li>
-    <li><strong>Provider aliases:</strong> <code>anthropic</code> and <code>claude</code> lead to the same place, as do <code>google</code> and <code>gemini</code>.</li>
-    <li><strong>Parameter validation:</strong> arguments the model does not accept raise an error before the call.</li>
-    <li><strong>Ready-made agents:</strong> <code>create_agent</code> returns an Agno agent already configured.</li>
-  </ul>
-  <div class="callout" data-kind="info"><p>All new agent code should create models through this class instead of importing provider SDKs directly.</p></div>
-
-  <h2>Try it</h2>
-  <div class="tabs">
-    <div data-tab="Anthropic">
-      <pre data-lang="python"><code>
-from src.agents.utils.model_gateway import ModelGateway
-
-gateway = ModelGateway(strict_validation=True)
-
-model = gateway.create_model(
-    provider="anthropic",
-    model_id="claude-sonnet-5-5",
-    temperature=0.2,
-)
-</code></pre>
-    </div>
-    <div data-tab="Google">
-      <pre data-lang="python"><code>
-from src.agents.utils.model_gateway import ModelGateway
-
-gateway = ModelGateway(strict_validation=True)
-
-model = gateway.create_model(
-    provider="google",
-    model_id="gemini-2.5-flash",
-    temperature=0.2,
-)
-</code></pre>
-    </div>
-    <div data-tab="OpenAI">
-      <pre data-lang="python"><code>
-from src.agents.utils.model_gateway import ModelGateway
-
-gateway = ModelGateway(strict_validation=True)
-
-# One method per variant, no provider needed
-model = gateway.openai_chat(model_id="gpt-4o-mini")
-</code></pre>
-    </div>
-    <div data-tab="Groq">
-      <pre data-lang="python"><code>
-from src.agents.utils.model_gateway import ModelGateway
-
-gateway = ModelGateway(strict_validation=True)
-
-model = gateway.groq(model_id="llama-3.3-70b-versatile")
-</code></pre>
-    </div>
-  </div>
-  <div class="cards one">
-    <a class="card row" href="#/getting-started/quickstart"><span class="card-icon" data-ico="bolt"></span><span><span class="card-title">Haven’t run the project yet?</span><span class="card-text" style="display:block">The Quickstart takes you from clone to first request.</span></span></a>
-  </div>
-
-  <h2>Execution flow</h2>
-  <ol>
-    <li>Instantiate <code>ModelGateway</code>, choosing whether validation is strict.</li>
-    <li>Call <code>create_model</code> with the <code>provider</code> and, optionally, the <code>model_id</code>.</li>
-    <li>The class normalizes the provider name and resolves the matching constructor.</li>
-    <li>With strict validation, each parameter is checked against the constructor signature.</li>
-    <li>The model is created and returned.</li>
-  </ol>
-
-  <h2>Methods</h2>
-  <table>
-    <thead><tr><th>Method</th><th>Description</th></tr></thead>
-    <tbody>
-      <tr><td><code>supported_providers</code></td><td>Lists the accepted providers</td></tr>
-      <tr><td><code>supported_parameters</code></td><td>Lists the valid parameters for a model</td></tr>
-      <tr><td><code>create_model</code></td><td>Creates an instance of the chosen model</td></tr>
-      <tr><td><code>create_agent</code></td><td>Creates an Agno agent already configured with the model</td></tr>
-      <tr><td><code>anthropic</code>, <code>google</code>, <code>groq</code></td><td>Per-provider shortcuts</td></tr>
-      <tr><td><code>openai_chat</code>, <code>openai_responses</code></td><td>Shortcuts for the OpenAI variants</td></tr>
-    </tbody>
-  </table>
-
-  <h2>Reference</h2>
-  <h3>create_model</h3>
-  <p>Creates and returns an instance of the model for the given provider.</p>
-  <table>
-    <thead><tr><th>Argument</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-    <tbody>
-      <tr><td><code>provider</code></td><td><code>str</code></td><td>required</td><td>Provider name or alias, such as <code>anthropic</code> or <code>claude</code></td></tr>
-      <tr><td><code>model_id</code></td><td><code>str | None</code></td><td><code>None</code></td><td>Model identifier. Without it, the provider default applies</td></tr>
-      <tr><td><code>openai_variant</code></td><td><code>str</code></td><td><code>"chat"</code></td><td>OpenAI variant: <code>chat</code>, <code>responses</code>, <code>open_responses</code> or <code>like</code></td></tr>
-      <tr><td><code>**kwargs</code></td><td><code>Any</code></td><td></td><td>Parameters passed to the model constructor</td></tr>
-    </tbody>
-  </table>
-  <div class="callout" data-kind="danger"><p><strong>Raises <code>ValueError</code></strong> when the provider is not recognized or, with strict validation, when a parameter does not exist in the model constructor.</p></div>
-
-  <h3>create_agent</h3>
-  <p>Calls <code>create_model</code> internally and returns a configured <code>agno.agent.Agent</code>. It accepts the same model arguments, plus the agent’s own.</p>
-  <pre data-lang="python"><code>
-agent = gateway.create_agent(
-    provider="google",
-    model_id="gemini-2.5-flash",
-    instructions="Answer in English and cite your sources.",
-    markdown=True,
-)
-
-agent.print_response("Summarize the product catalog.")
-</code></pre>
-
-  <h2>Environment variables</h2>
-  <p>The module calls <code>load_dotenv()</code> on import. The class does not read variables directly, but the models depend on each provider’s keys:</p>
-  <ul>
-    <li><code>OPENAI_API_KEY</code> for OpenAI models</li>
-    <li><code>ANTHROPIC_API_KEY</code> for Anthropic models</li>
-    <li><code>GEMINI_API_KEY</code> for Google models</li>
-  </ul>
-</template>
-
-<template data-page="modules/agents/utils/model-gateway" data-lang="it"
-  data-lead="Una factory unica per creare modelli e agenti Agno di qualsiasi provider, con i parametri validati prima della chiamata.">
-  <p>La <code>ModelGateway</code> nasconde le differenze tra le API di Anthropic, Google, Groq e OpenAI. Indichi il provider e i parametri, e lei risolve la classe giusta, controlla gli argomenti rispetto alla firma reale del costruttore e restituisce il modello pronto.</p>
-  <p>Copre quanto segue:</p>
-  <ul>
-    <li><strong>Un solo punto d’ingresso:</strong> lo stesso metodo crea modelli di qualsiasi provider.</li>
-    <li><strong>Alias dei provider:</strong> <code>anthropic</code> e <code>claude</code> portano allo stesso posto, come <code>google</code> e <code>gemini</code>.</li>
-    <li><strong>Validazione dei parametri:</strong> gli argomenti che il modello non accetta generano un errore prima della chiamata.</li>
-    <li><strong>Agenti pronti:</strong> <code>create_agent</code> restituisce un agente Agno già configurato.</li>
-  </ul>
-  <div class="callout" data-kind="info"><p>Tutto il nuovo codice degli agenti deve creare i modelli da qui, invece di importare direttamente gli SDK dei provider.</p></div>
-
-  <h2>Provalo</h2>
-  <div class="tabs">
-    <div data-tab="Anthropic">
-      <pre data-lang="python"><code>
-from src.agents.utils.model_gateway import ModelGateway
-
-gateway = ModelGateway(strict_validation=True)
-
-model = gateway.create_model(
-    provider="anthropic",
-    model_id="claude-sonnet-5-5",
-    temperature=0.2,
-)
-</code></pre>
-    </div>
-    <div data-tab="Google">
-      <pre data-lang="python"><code>
-from src.agents.utils.model_gateway import ModelGateway
-
-gateway = ModelGateway(strict_validation=True)
-
-model = gateway.create_model(
-    provider="google",
-    model_id="gemini-2.5-flash",
-    temperature=0.2,
-)
-</code></pre>
-    </div>
-    <div data-tab="OpenAI">
-      <pre data-lang="python"><code>
-from src.agents.utils.model_gateway import ModelGateway
-
-gateway = ModelGateway(strict_validation=True)
-
-# Un metodo per variante, senza indicare il provider
-model = gateway.openai_chat(model_id="gpt-4o-mini")
-</code></pre>
-    </div>
-    <div data-tab="Groq">
-      <pre data-lang="python"><code>
-from src.agents.utils.model_gateway import ModelGateway
-
-gateway = ModelGateway(strict_validation=True)
-
-model = gateway.groq(model_id="llama-3.3-70b-versatile")
-</code></pre>
-    </div>
-  </div>
-  <div class="cards one">
-    <a class="card row" href="#/getting-started/quickstart"><span class="card-icon" data-ico="bolt"></span><span><span class="card-title">Non hai ancora avviato il progetto?</span><span class="card-text" style="display:block">Il Quickstart ti porta dal clone alla prima richiesta.</span></span></a>
-  </div>
-
-  <h2>Flusso di esecuzione</h2>
-  <ol>
-    <li>Istanzia la <code>ModelGateway</code>, scegliendo se la validazione è rigorosa.</li>
-    <li>Chiama <code>create_model</code> con il <code>provider</code> e, se vuoi, il <code>model_id</code>.</li>
-    <li>La classe normalizza il nome del provider e risolve il costruttore corrispondente.</li>
-    <li>Con la validazione rigorosa, ogni parametro viene controllato rispetto alla firma del costruttore.</li>
-    <li>Il modello viene creato e restituito.</li>
-  </ol>
-
-  <h2>Metodi</h2>
-  <table>
-    <thead><tr><th>Metodo</th><th>Descrizione</th></tr></thead>
-    <tbody>
-      <tr><td><code>supported_providers</code></td><td>Elenca i provider accettati</td></tr>
-      <tr><td><code>supported_parameters</code></td><td>Elenca i parametri validi per un modello</td></tr>
-      <tr><td><code>create_model</code></td><td>Crea un’istanza del modello scelto</td></tr>
-      <tr><td><code>create_agent</code></td><td>Crea un agente Agno già configurato con il modello</td></tr>
-      <tr><td><code>anthropic</code>, <code>google</code>, <code>groq</code></td><td>Scorciatoie per provider</td></tr>
-      <tr><td><code>openai_chat</code>, <code>openai_responses</code></td><td>Scorciatoie per le varianti di OpenAI</td></tr>
-    </tbody>
-  </table>
-
-  <h2>Riferimento</h2>
-  <h3>create_model</h3>
-  <p>Crea e restituisce un’istanza del modello del provider indicato.</p>
-  <table>
-    <thead><tr><th>Argomento</th><th>Tipo</th><th>Predefinito</th><th>Descrizione</th></tr></thead>
-    <tbody>
-      <tr><td><code>provider</code></td><td><code>str</code></td><td>obbligatorio</td><td>Nome o alias del provider, come <code>anthropic</code> o <code>claude</code></td></tr>
-      <tr><td><code>model_id</code></td><td><code>str | None</code></td><td><code>None</code></td><td>Identificatore del modello. Senza di esso vale il predefinito del provider</td></tr>
-      <tr><td><code>openai_variant</code></td><td><code>str</code></td><td><code>"chat"</code></td><td>Variante di OpenAI: <code>chat</code>, <code>responses</code>, <code>open_responses</code> o <code>like</code></td></tr>
-      <tr><td><code>**kwargs</code></td><td><code>Any</code></td><td></td><td>Parametri passati al costruttore del modello</td></tr>
-    </tbody>
-  </table>
-  <div class="callout" data-kind="danger"><p><strong>Solleva <code>ValueError</code></strong> quando il provider non è riconosciuto o, con la validazione rigorosa, quando un parametro non esiste nel costruttore del modello.</p></div>
-
-  <h3>create_agent</h3>
-  <p>Chiama <code>create_model</code> internamente e restituisce un <code>agno.agent.Agent</code> configurato. Accetta gli stessi argomenti del modello, più quelli dell’agente.</p>
-  <pre data-lang="python"><code>
-agent = gateway.create_agent(
-    provider="google",
-    model_id="gemini-2.5-flash",
-    instructions="Rispondi in italiano e cita le fonti.",
-    markdown=True,
-)
-
-agent.print_response("Riassumi il catalogo dei prodotti.")
-</code></pre>
-
-  <h2>Variabili d’ambiente</h2>
-  <p>Il modulo chiama <code>load_dotenv()</code> all’importazione. La classe non legge direttamente le variabili, ma i modelli dipendono dalle chiavi di ogni provider:</p>
-  <ul>
-    <li><code>OPENAI_API_KEY</code> per i modelli di OpenAI</li>
-    <li><code>ANTHROPIC_API_KEY</code> per i modelli di Anthropic</li>
-    <li><code>GEMINI_API_KEY</code> per i modelli di Google</li>
-  </ul>
-</template>
-
-<template data-page="streamlit-applications/acquarello" data-lang="en"
-  data-lead="Image generation in two modes, with visual style control, for people who don’t want to deal with complex prompts.">
-  <div class="frame">
-    <video controls preload="metadata" src="../Streamlit%20Applications/videos/acquarello.mp4"></video>
-    <div class="frame-missing" hidden><strong>Demo video</strong><span>The file <code>videos/acquarello.mp4</code> goes here</span></div>
-  </div>
-
-  <h2>How to open it</h2>
-  <p>With the Streamlit interface running, Acquarello is at <code>http://localhost:8501/acquarello</code>.</p>
-  <pre data-lang="bash"><code>
-streamlit run web_app.py
-</code></pre>
-
-  <h2>Generation modes</h2>
-  <h3>Text to image</h3>
-  <p>Describe the scene in plain language. Acquarello builds the final prompt by combining your description with the chosen visual style.</p>
-  <h3>Image to image</h3>
-  <p>Upload one or more reference images and say what to change. The references guide the composition and colors of the result.</p>
-  <figure class="frame">
-    <img src="../../images/Frame%2027346.png" alt="Painting in blue and green tones with the name BetterAI in the center" onerror="this.closest('figure').hidden=true">
-    <figcaption>Sample output in the watercolor style.</figcaption>
-  </figure>
-
-  <h2>Parameters</h2>
-  <table>
-    <thead><tr><th>Control</th><th>What it does</th></tr></thead>
-    <tbody>
-      <tr><td>Visual style</td><td>Sets the finish: watercolor, photography, illustration</td></tr>
-      <tr><td>Aspect ratio</td><td>Image format, such as <code>1:1</code> or <code>16:9</code></td></tr>
-      <tr><td>References</td><td>Images that guide the result in image-to-image mode</td></tr>
-    </tbody>
-  </table>
-  <div class="callout" data-kind="note"><p>Each generation records its cost in dollars and reais. See <a href="#/modules/image-generation/cost-calculator/cost-calculator">Cost Calculator</a>.</p></div>
-</template>
-
-<template data-page="streamlit-applications/acquarello" data-lang="it"
-  data-lead="Generazione di immagini in due modalità, con controllo dello stile visivo, per chi non vuole occuparsi di prompt complessi.">
-  <div class="frame">
-    <video controls preload="metadata" src="../Streamlit%20Applications/videos/acquarello.mp4"></video>
-    <div class="frame-missing" hidden><strong>Video dimostrativo</strong><span>Qui va il file <code>videos/acquarello.mp4</code></span></div>
-  </div>
-
-  <h2>Come aprirlo</h2>
-  <p>Con l’interfaccia Streamlit attiva, Acquarello si trova su <code>http://localhost:8501/acquarello</code>.</p>
-  <pre data-lang="bash"><code>
-streamlit run web_app.py
-</code></pre>
-
-  <h2>Modalità di generazione</h2>
-  <h3>Da testo a immagine</h3>
-  <p>Descrivi la scena con parole semplici. Acquarello costruisce il prompt finale combinando la tua descrizione con lo stile visivo scelto.</p>
-  <h3>Da immagine a immagine</h3>
-  <p>Carica una o più immagini di riferimento e indica cosa cambiare. I riferimenti guidano la composizione e i colori del risultato.</p>
-  <figure class="frame">
-    <img src="../../images/Frame%2027346.png" alt="Dipinto in toni di blu e verde con il nome BetterAI al centro" onerror="this.closest('figure').hidden=true">
-    <figcaption>Esempio di output nello stile acquerello.</figcaption>
-  </figure>
-
-  <h2>Parametri</h2>
-  <table>
-    <thead><tr><th>Controllo</th><th>Cosa fa</th></tr></thead>
-    <tbody>
-      <tr><td>Stile visivo</td><td>Definisce la resa: acquerello, fotografia, illustrazione</td></tr>
-      <tr><td>Proporzioni</td><td>Formato dell’immagine, come <code>1:1</code> o <code>16:9</code></td></tr>
-      <tr><td>Riferimenti</td><td>Immagini che guidano il risultato nella modalità da immagine a immagine</td></tr>
-    </tbody>
-  </table>
-  <div class="callout" data-kind="note"><p>Ogni generazione registra il costo in dollari e in real. Vedi <a href="#/modules/image-generation/cost-calculator/cost-calculator">Cost Calculator</a>.</p></div>
-</template>
-
 <script>
 (() => {
   'use strict';
@@ -1178,7 +850,6 @@ streamlit run web_app.py
   const ICON = {
     chevron: '<path d="m9 6 6 6-6 6"/>',
     down: '<path d="m6 9 6 6 6-6"/>',
-    globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/>',
     sun: '<circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/>',
     moon: '<path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/>',
     copy: '<rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/>',
@@ -1201,241 +872,6 @@ streamlit run web_app.py
     folder: '<path d="M3.5 7a2 2 0 0 1 2-2h4l2 2.5h7a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/>'
   };
   const ico = (n, cls = '') => `<svg class="ico ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICON[n]}</svg>`;
-
-  /* ---------- Idiomas ---------- */
-  const LANGS = [{ id: 'en', name: 'English' }, { id: 'it', name: 'Italiano' }, { id: 'pt', name: 'Português' }];
-  const savedLang = (() => { try { return localStorage.getItem('betterai-docs-lang'); } catch (e) { return null; } })();
-  let LANG = LANGS.some(l => l.id === savedLang) ? savedLang
-    : (LANGS.find(l => (navigator.language || '').toLowerCase().startsWith(l.id)) || LANGS[2]).id;
-
-  // corpos de página gerados: a estrutura é a mesma, o texto vem do idioma
-  const homeHtml = x => `
-      <p>${x.p1}</p>
-      <p>${x.p2}</p>
-      <ul>${x.li.map(i => `<li>${i}</li>`).join('')}</ul>
-      <h2>${x.startH}</h2>
-      <div class="cards one">${card('#/getting-started/quickstart', 'bolt', 'Quickstart', x.quick, true)}</div>
-      <div class="callout" data-kind="tip"><p>${x.tip}</p></div>
-      <h2>${x.exploreH}</h2>
-      <div class="cards">${AREAS.map(a => card(`#/${a.id}`, a.icon, a.t, aboutOf(a))).join('')}</div>
-      <h2>${x.popH}</h2>
-      <div class="cards">
-        ${card('#/modules/agents/utils/model-gateway', 'boxes', 'Model Gateway', x.mg)}
-        ${card('#/modules/web-service-network/web-service-network-api', 'code', 'Web Service Network', x.wsn)}
-      </div>`;
-
-  const overviewHtml = (a, x) => {
-    const loose = a.kids.filter(k => !k.kids), dirs = a.kids.filter(k => k.kids);
-    const names = d => { const l = leaves(d).map(n => n.t); return l.slice(0, 3).join(', ') + (l.length > 3 ? x.more(l.length - 3) : ''); };
-    return `
-      <div class="callout" data-kind="note"><p>${x.note(esc(a.t))}</p></div>
-      ${loose.length ? `<h2>${esc(looseOf(a))}</h2><div class="cards">${loose.map(p => card(`#/${p.id}`, 'note', p.t, p.empty ? x.blank : x.sample)).join('')}</div>` : ''}
-      ${dirs.length ? `<h2>${x.sections}</h2><div class="cards">${dirs.map(d => card(`#/${leaves(d)[0].id}`, 'folder', d.t, names(d))).join('')}</div>` : ''}`;
-  };
-
-  const sampleHtml = (p, cls, x) => `
-      <div class="callout" data-kind="note"><p>${x.note(esc(p.src))}</p></div>
-      <h2>${x.ovH}</h2>
-      <p>${x.ov1(esc(p.t), esc([p.area.t, ...p.path].join(' / ')))}</p>
-      <p>${x.ov2}</p>
-      <h2>${x.flowH}</h2>
-      <ol>${x.flow.map(i => `<li>${i}</li>`).join('')}</ol>
-      <h2>${x.methH}</h2>
-      <table>
-        <thead><tr><th>${x.thM}</th><th>${x.thD}</th></tr></thead>
-        <tbody>${x.m.map(([n, d]) => `<tr><td><code>${n}</code></td><td>${d}</td></tr>`).join('')}</tbody>
-      </table>
-      <h2>${x.useH}</h2>
-      <pre data-lang="python"><code>service = ${cls}(local=True)
-result = service.run(payload)
-
-print(result["status"])  # completed</code></pre>
-      <h2>${x.attH}</h2>
-      <ul>${x.att.map(i => `<li>${i}</li>`).join('')}</ul>`;
-
-  const emptyHtml = (p, next, x) => `
-      <div class="empty">
-        ${ico('blank')}
-        <p class="empty-title">${x.title}</p>
-        <p>${x.text(esc(p.src))}</p>
-        ${next ? `<a class="btn-cta" href="#/${next.id}">${x.go(esc(next.t))}</a>` : ''}
-      </div>`;
-
-  const I18N = {
-    pt: {
-      skip: 'Ir para o conteúdo', banner: 'Protótipo de layout. O conteúdo das páginas é de exemplo.', closeBanner: 'Fechar aviso',
-      searchLbl: 'Buscar na documentação', searchPh: 'Buscar...', dlgPh: 'Buscar páginas e seções', results: 'Resultados',
-      navigate: 'navegar', open: 'abrir', themeLbl: 'Alternar tema claro e escuro', langLbl: 'Idioma',
-      tabsLbl: 'Áreas da documentação', navLbl: 'Navegação da documentação', onThisPage: 'Nesta página',
-      tagline: 'Where intelligence finds purpose.', footRes: 'Recursos', footPlat: 'Plataforma',
-      overview: 'Visão geral', areas: 'Áreas', popular: 'Mais consultadas', suggestions: 'Sugestões', areaOverview: 'Visão geral da área',
-      overviewOf: t => `${t}: visão geral`, badge: 'vazio',
-      copyPage: 'Copiar página', copied: 'Copiado', moreOpts: 'Mais opções', copyMd: 'Copiar como Markdown', copyMdSub: 'Para colar em um chat de IA',
-      viewSrc: 'Ver arquivo fonte', helpful: 'Esta página foi útil?', yes: 'Sim', no: 'Não', thanks: 'Obrigado pelo retorno.',
-      edit: 'Editar no GitHub', source: 'Fonte:', prev: 'Anterior', next: 'Próxima', pagerLbl: 'Páginas vizinhas',
-      anchorLbl: 'Link para esta seção', copyCode: 'Copiar código',
-      noResults: q => `Nada encontrado para “${q}”. Tente o nome de um módulo, como “Pinecone”.`,
-      untranslated: 'Esta página ainda não foi traduzida. Você está vendo a versão em português.',
-      homeTitle: 'Documentação da BetterAI', homeLead: 'Múltiplos modelos de IA, um único back-end unificado.',
-      genericLead: t => `Página de exemplo para ${t}, usada para validar o layout.`,
-      homeBody: () => homeHtml({
-        p1: 'A BetterAI é um back-end de IA modular, escrito em Python, que coloca OpenAI, Anthropic, Google Gemini e Groq atrás da mesma interface. Sobre essa base roda a Web Service Network, a API FastAPI que expõe os serviços em produção.',
-        p2: 'A plataforma faz hoje o seguinte:',
-        li: ['<strong>Parsing de documentos:</strong> converte <code>txt</code>, <code>md</code>, <code>pdf</code> e <code>docx</code> em dados estruturados, conforme o schema de quem chama.',
-          '<strong>Deep research:</strong> busca web profunda via Tavily, devolvida como contexto em markdown.',
-          '<strong>Base vetorial:</strong> ingestão, busca semântica e exclusão no Pinecone.',
-          '<strong>Embeddings locais:</strong> chunking e recuperação em FAISS na memória.',
-          '<strong>Geração de imagens:</strong> o serviço Da-Vinci gera e edita imagens a partir de texto e de referências visuais.'],
-        startH: 'Comece por aqui', quick: 'Do clone ao primeiro GET /health, em seis passos.',
-        tip: 'Com a API no ar, a documentação interativa dos endpoints fica em <code>http://localhost:8000/docs</code>.',
-        exploreH: 'Explore por área', popH: 'Mais consultadas',
-        mg: 'Modelos e agentes de qualquer provedor pela mesma chamada.', wsn: 'Autenticação, formato das respostas e endpoints.'
-      }),
-      overviewBody: a => overviewHtml(a, {
-        note: n => `Esta página de visão geral seria gerada automaticamente a partir das pastas de <code>doc/${n}</code>.`,
-        more: n => ` e mais ${n}`, blank: 'Página ainda em branco.', sample: 'Página de exemplo.', sections: 'Seções'
-      }),
-      sampleBody: (p, cls) => sampleHtml(p, cls, {
-        note: src => `<strong>Conteúdo de exemplo.</strong> Este texto existe só para validar o layout. Na versão final, a página é gerada a partir de <code>${src}</code>.`,
-        ovH: 'Visão geral',
-        ov1: (t, path) => `${t} faz parte de ${path}. Esta seção explica para que o componente serve, qual problema ele resolve e onde ele entra no restante da plataforma.`,
-        ov2: 'Um segundo parágrafo mostra o ritmo do texto corrido, com <code>código inline</code>, um <a href="#/getting-started/quickstart">link interno</a> e <strong>ênfase</strong>.',
-        flowH: 'Fluxo de execução',
-        flow: ['Instancie a classe com a configuração do ambiente.', 'Chame o método principal com os dados de entrada.', 'Trate o retorno, que segue o envelope padrão da plataforma.'],
-        methH: 'Métodos', thM: 'Método', thD: 'Descrição',
-        m: [['__init__', 'Inicializa a instância com a configuração recebida'], ['run', 'Executa a operação principal e devolve o resultado'], ['validate', 'Confere os parâmetros antes da execução']],
-        useH: 'Exemplo de uso', attH: 'Pontos de atenção',
-        att: ['As credenciais vêm do arquivo <code>.env</code>.', 'Toda execução gera um registro de tracing com <code>log_id</code>.']
-      }),
-      emptyBody: (p, next) => emptyHtml(p, next, {
-        title: 'Esta página ainda está em branco',
-        text: src => `O arquivo <code>${src}</code> existe, mas não tem conteúdo. Quando ele for preenchido, o texto aparece aqui.`,
-        go: n => `Ir para ${n}`
-      })
-    },
-
-    en: {
-      about: {
-        'getting-started': 'Installation, dependencies and license. From clone to first request.',
-        'modules': 'The platform’s AI services: agents, document parsing, deep research, embeddings, images, Pinecone and the API.',
-        'internal-source-code': 'The infrastructure underneath: tracing, databases, storage, token cost and utilities.',
-        'streamlit-applications': 'Acquarello and Content Generator, the two applications that run on the platform.'
-      },
-      loose: { 'getting-started': 'First steps', 'internal-source-code': 'General', 'streamlit-applications': 'Applications' },
-      skip: 'Skip to content', banner: 'Layout prototype. Page content is placeholder text.', closeBanner: 'Dismiss notice',
-      searchLbl: 'Search the documentation', searchPh: 'Search...', dlgPh: 'Search pages and sections', results: 'Results',
-      navigate: 'navigate', open: 'open', themeLbl: 'Toggle light and dark theme', langLbl: 'Language',
-      tabsLbl: 'Documentation areas', navLbl: 'Documentation navigation', onThisPage: 'On this page',
-      tagline: 'Where intelligence finds purpose.', footRes: 'Resources', footPlat: 'Platform',
-      overview: 'Overview', areas: 'Areas', popular: 'Most visited', suggestions: 'Suggestions', areaOverview: 'Area overview',
-      overviewOf: t => `${t}: overview`, badge: 'empty',
-      copyPage: 'Copy page', copied: 'Copied', moreOpts: 'More options', copyMd: 'Copy as Markdown', copyMdSub: 'To paste into an AI chat',
-      viewSrc: 'View source file', helpful: 'Was this page helpful?', yes: 'Yes', no: 'No', thanks: 'Thanks for the feedback.',
-      edit: 'Edit on GitHub', source: 'Source:', prev: 'Previous', next: 'Next', pagerLbl: 'Neighboring pages',
-      anchorLbl: 'Link to this section', copyCode: 'Copy code',
-      noResults: q => `Nothing found for “${q}”. Try a module name, such as “Pinecone”.`,
-      untranslated: 'This page has not been translated yet. You are seeing the Portuguese version.',
-      homeTitle: 'BetterAI documentation', homeLead: 'Multiple AI models, one unified back end.',
-      genericLead: t => `Sample page for ${t}, used to validate the layout.`,
-      homeBody: () => homeHtml({
-        p1: 'BetterAI is a modular AI back end written in Python that puts OpenAI, Anthropic, Google Gemini and Groq behind the same interface. On top of it runs the Web Service Network, the FastAPI service that exposes the platform in production.',
-        p2: 'Today the platform does the following:',
-        li: ['<strong>Document parsing:</strong> turns <code>txt</code>, <code>md</code>, <code>pdf</code> and <code>docx</code> files into structured data, following the caller’s schema.',
-          '<strong>Deep research:</strong> deep web search through Tavily, returned as markdown context.',
-          '<strong>Vector store:</strong> ingestion, semantic search and deletion on Pinecone.',
-          '<strong>Local embeddings:</strong> in-memory chunking and retrieval with FAISS.',
-          '<strong>Image generation:</strong> the Da-Vinci service generates and edits images from text and visual references.'],
-        startH: 'Start here', quick: 'From clone to your first GET /health, in six steps.',
-        tip: 'With the API running, the interactive endpoint docs are at <code>http://localhost:8000/docs</code>.',
-        exploreH: 'Explore by area', popH: 'Most visited',
-        mg: 'Models and agents from any provider through the same call.', wsn: 'Authentication, response format and endpoints.'
-      }),
-      overviewBody: a => overviewHtml(a, {
-        note: n => `This overview page would be generated automatically from the folders in <code>doc/${n}</code>.`,
-        more: n => ` and ${n} more`, blank: 'Page still blank.', sample: 'Sample page.', sections: 'Sections'
-      }),
-      sampleBody: (p, cls) => sampleHtml(p, cls, {
-        note: src => `<strong>Sample content.</strong> This text exists only to validate the layout. In the final version, the page is generated from <code>${src}</code>.`,
-        ovH: 'Overview',
-        ov1: (t, path) => `${t} is part of ${path}. This section explains what the component is for, which problem it solves and where it fits in the rest of the platform.`,
-        ov2: 'A second paragraph shows the rhythm of running text, with <code>inline code</code>, an <a href="#/getting-started/quickstart">internal link</a> and <strong>emphasis</strong>.',
-        flowH: 'Execution flow',
-        flow: ['Instantiate the class with the environment configuration.', 'Call the main method with the input data.', 'Handle the return value, which follows the platform’s standard envelope.'],
-        methH: 'Methods', thM: 'Method', thD: 'Description',
-        m: [['__init__', 'Initializes the instance with the given configuration'], ['run', 'Runs the main operation and returns the result'], ['validate', 'Checks the parameters before execution']],
-        useH: 'Usage example', attH: 'Things to watch for',
-        att: ['Credentials come from the <code>.env</code> file.', 'Every run writes a tracing record with a <code>log_id</code>.']
-      }),
-      emptyBody: (p, next) => emptyHtml(p, next, {
-        title: 'This page is still blank',
-        text: src => `The file <code>${src}</code> exists but has no content. Once it is filled in, the text will show up here.`,
-        go: n => `Go to ${n}`
-      })
-    },
-
-    it: {
-      about: {
-        'getting-started': 'Installazione, dipendenze e licenza. Dal clone alla prima richiesta.',
-        'modules': 'I servizi di IA della piattaforma: agenti, parsing di documenti, deep research, embedding, immagini, Pinecone e l’API.',
-        'internal-source-code': 'L’infrastruttura sottostante: tracing, database, storage, costo per token e utilità.',
-        'streamlit-applications': 'Acquarello e Content Generator, le due applicazioni che girano sulla piattaforma.'
-      },
-      loose: { 'getting-started': 'Primi passi', 'internal-source-code': 'Generale', 'streamlit-applications': 'Applicazioni' },
-      skip: 'Vai al contenuto', banner: 'Prototipo di layout. Il contenuto delle pagine è di esempio.', closeBanner: 'Chiudi avviso',
-      searchLbl: 'Cerca nella documentazione', searchPh: 'Cerca...', dlgPh: 'Cerca pagine e sezioni', results: 'Risultati',
-      navigate: 'naviga', open: 'apri', themeLbl: 'Cambia tema chiaro o scuro', langLbl: 'Lingua',
-      tabsLbl: 'Aree della documentazione', navLbl: 'Navigazione della documentazione', onThisPage: 'In questa pagina',
-      tagline: 'Where intelligence finds purpose.', footRes: 'Risorse', footPlat: 'Piattaforma',
-      overview: 'Panoramica', areas: 'Aree', popular: 'Più consultate', suggestions: 'Suggerimenti', areaOverview: 'Panoramica dell’area',
-      overviewOf: t => `${t}: panoramica`, badge: 'vuota',
-      copyPage: 'Copia pagina', copied: 'Copiato', moreOpts: 'Altre opzioni', copyMd: 'Copia come Markdown', copyMdSub: 'Da incollare in una chat di IA',
-      viewSrc: 'Vedi file sorgente', helpful: 'Questa pagina ti è stata utile?', yes: 'Sì', no: 'No', thanks: 'Grazie per il riscontro.',
-      edit: 'Modifica su GitHub', source: 'Fonte:', prev: 'Precedente', next: 'Successiva', pagerLbl: 'Pagine vicine',
-      anchorLbl: 'Link a questa sezione', copyCode: 'Copia codice',
-      noResults: q => `Nessun risultato per “${q}”. Prova con il nome di un modulo, come “Pinecone”.`,
-      untranslated: 'Questa pagina non è ancora stata tradotta. Stai vedendo la versione in portoghese.',
-      homeTitle: 'Documentazione di BetterAI', homeLead: 'Più modelli di IA, un unico back-end unificato.',
-      genericLead: t => `Pagina di esempio per ${t}, usata per validare il layout.`,
-      homeBody: () => homeHtml({
-        p1: 'BetterAI è un back-end di IA modulare, scritto in Python, che mette OpenAI, Anthropic, Google Gemini e Groq dietro la stessa interfaccia. Su questa base gira la Web Service Network, l’API FastAPI che espone i servizi in produzione.',
-        p2: 'Oggi la piattaforma fa quanto segue:',
-        li: ['<strong>Parsing di documenti:</strong> converte file <code>txt</code>, <code>md</code>, <code>pdf</code> e <code>docx</code> in dati strutturati, secondo lo schema di chi chiama.',
-          '<strong>Deep research:</strong> ricerca web approfondita tramite Tavily, restituita come contesto in markdown.',
-          '<strong>Base vettoriale:</strong> ingestione, ricerca semantica ed eliminazione su Pinecone.',
-          '<strong>Embedding locali:</strong> chunking e recupero in memoria con FAISS.',
-          '<strong>Generazione di immagini:</strong> il servizio Da-Vinci genera e modifica immagini a partire da testo e riferimenti visivi.'],
-        startH: 'Parti da qui', quick: 'Dal clone al primo GET /health, in sei passi.',
-        tip: 'Con l’API attiva, la documentazione interattiva degli endpoint si trova su <code>http://localhost:8000/docs</code>.',
-        exploreH: 'Esplora per area', popH: 'Più consultate',
-        mg: 'Modelli e agenti di qualsiasi provider con la stessa chiamata.', wsn: 'Autenticazione, formato delle risposte ed endpoint.'
-      }),
-      overviewBody: a => overviewHtml(a, {
-        note: n => `Questa pagina di panoramica verrebbe generata automaticamente dalle cartelle di <code>doc/${n}</code>.`,
-        more: n => ` e altre ${n}`, blank: 'Pagina ancora vuota.', sample: 'Pagina di esempio.', sections: 'Sezioni'
-      }),
-      sampleBody: (p, cls) => sampleHtml(p, cls, {
-        note: src => `<strong>Contenuto di esempio.</strong> Questo testo serve solo a validare il layout. Nella versione finale, la pagina viene generata da <code>${src}</code>.`,
-        ovH: 'Panoramica',
-        ov1: (t, path) => `${t} fa parte di ${path}. Questa sezione spiega a cosa serve il componente, quale problema risolve e dove si inserisce nel resto della piattaforma.`,
-        ov2: 'Un secondo paragrafo mostra il ritmo del testo continuo, con <code>codice inline</code>, un <a href="#/getting-started/quickstart">link interno</a> e <strong>enfasi</strong>.',
-        flowH: 'Flusso di esecuzione',
-        flow: ['Istanzia la classe con la configurazione dell’ambiente.', 'Chiama il metodo principale con i dati in ingresso.', 'Gestisci il ritorno, che segue l’envelope standard della piattaforma.'],
-        methH: 'Metodi', thM: 'Metodo', thD: 'Descrizione',
-        m: [['__init__', 'Inizializza l’istanza con la configurazione ricevuta'], ['run', 'Esegue l’operazione principale e restituisce il risultato'], ['validate', 'Controlla i parametri prima dell’esecuzione']],
-        useH: 'Esempio d’uso', attH: 'Punti di attenzione',
-        att: ['Le credenziali arrivano dal file <code>.env</code>.', 'Ogni esecuzione genera un record di tracing con <code>log_id</code>.']
-      }),
-      emptyBody: (p, next) => emptyHtml(p, next, {
-        title: 'Questa pagina è ancora vuota',
-        text: src => `Il file <code>${src}</code> esiste, ma non ha contenuto. Quando verrà compilato, il testo comparirà qui.`,
-        go: n => `Vai a ${n}`
-      })
-    }
-  };
-  const tr = (k, ...a) => { const v = I18N[LANG][k] ?? I18N.pt[k]; return typeof v === 'function' ? v(...a) : v; };
-  const aboutOf = a => I18N[LANG].about?.[a.id] ?? a.about;
-  const looseOf = a => I18N[LANG].loose?.[a.id] ?? a.loose;
-
 
   /* ---------- Árvore da documentação (espelha a pasta doc/) ---------- */
   const md = (t, file) => ({ t, ext: 'md', file });
@@ -1510,10 +946,10 @@ print(result["status"])  # completed</code></pre>
 
   /* ---------- Abas e menu lateral ---------- */
   const tabsEl = $('#tabs'), nav = $('#nav');
-  const tabLinks = () => [{ id: 'home', t: tr('overview'), href: '#/' }, ...AREAS.map(a => ({ id: a.id, t: a.t, href: `#/${a.id}` }))];
-  const renderTabs = () => { tabsEl.innerHTML = tabLinks().map(x => `<a class="tab" href="${x.href}" data-area="${x.id}">${esc(x.t)}</a>`).join(''); };
+  const tabLinks = [{ id: 'home', t: 'Visão geral', href: '#/' }, ...AREAS.map(a => ({ id: a.id, t: a.t, href: `#/${a.id}` }))];
+  tabsEl.innerHTML = tabLinks.map(t => `<a class="tab" href="${t.href}" data-area="${t.id}">${esc(t.t)}</a>`).join('');
 
-  const pageLink = n => `<li><a class="side-link" href="#/${n.id}" data-id="${n.id}"><span>${esc(n.t)}</span>${n.empty ? `<span class="badge">${esc(tr('badge'))}</span>` : ''}</a></li>`;
+  const pageLink = n => `<li><a class="side-link" href="#/${n.id}" data-id="${n.id}"><span>${esc(n.t)}</span>${n.empty ? '<span class="badge">vazio</span>' : ''}</a></li>`;
   function nodeHtml(n) {
     if (!n.kids) return pageLink(n);
     return `<li><button class="side-link side-folder" type="button" aria-expanded="false"><span>${esc(n.t)}</span>${ico('chevron', 'chev')}</button><ul class="side-sub" hidden>${n.kids.map(nodeHtml).join('')}</ul></li>`;
@@ -1524,17 +960,17 @@ print(result["status"])  # completed</code></pre>
   function renderNav(areaId) {
     if (navArea === areaId) return;
     navArea = areaId;
-    const switcher = `<div class="side-areas">${tabLinks().map(x => `<a href="${x.href}"${x.id === areaId ? ' aria-current="page"' : ''}>${esc(x.t)}</a>`).join('')}</div>`;
+    const switcher = `<div class="side-areas">${tabLinks.map(t => `<a href="${t.href}"${t.id === areaId ? ' aria-current="page"' : ''}>${esc(t.t)}</a>`).join('')}</div>`;
     let html;
     if (areaId === 'home') {
-      html = `<a class="side-link" href="#/" data-id="home"><span>${esc(tr('overview'))}</span></a>` +
-        group(tr('areas'), AREAS.map(a => `<li><a class="side-link" href="#/${a.id}"><span>${esc(a.t)}</span></a></li>`).join('')) +
-        group(tr('popular'), POPULAR.map(id => `<li><a class="side-link" href="#/${id}"><span>${esc(BY_ID.get(id).t)}</span></a></li>`).join(''));
+      html = `<a class="side-link" href="#/" data-id="home"><span>Visão geral</span></a>` +
+        group('Áreas', AREAS.map(a => `<li><a class="side-link" href="#/${a.id}"><span>${esc(a.t)}</span></a></li>`).join('')) +
+        group('Mais consultadas', POPULAR.map(id => `<li><a class="side-link" href="#/${id}"><span>${esc(BY_ID.get(id).t)}</span></a></li>`).join(''));
     } else {
       const a = AREAS.find(x => x.id === areaId);
       const loose = a.kids.filter(k => !k.kids), dirs = a.kids.filter(k => k.kids);
-      html = `<a class="side-link" href="#/${a.id}" data-id="${a.id}"><span>${esc(tr('overview'))}</span></a>` +
-        (loose.length ? group(looseOf(a), loose.map(pageLink).join('')) : '') +
+      html = `<a class="side-link" href="#/${a.id}" data-id="${a.id}"><span>Visão geral</span></a>` +
+        (loose.length ? group(a.loose, loose.map(pageLink).join('')) : '') +
         dirs.map(d => group(d.t, d.kids.map(nodeHtml).join(''))).join('');
     }
     nav.innerHTML = switcher + html;
@@ -1586,72 +1022,139 @@ print(result["status"])  # completed</code></pre>
 
   /* ---------- Corpos de página gerados ---------- */
   const card = (href, icon, title, text, row) => `<a class="card${row ? ' row' : ''}" href="${href}"><span class="card-icon">${ico(icon)}</span>${row ? '<span>' : ''}<span class="card-title">${esc(title)}</span><span class="card-text"${row ? ' style="display:block"' : ''}>${esc(text)}</span>${row ? '</span>' + ico('go', 'card-go') : ''}</a>`;
-  const homeBody = () => tr('homeBody');
-  const overviewBody = a => tr('overviewBody', a);
-  const sampleBody = p => tr('sampleBody', p, p.t.replace(/[^A-Za-z0-9]+/g, ''));
-  const emptyBody = (p, next) => tr('emptyBody', p, next);
+
+  function homeBody() {
+    return `
+      <p>A BetterAI é um back-end de IA modular, escrito em Python, que coloca OpenAI, Anthropic, Google Gemini e Groq atrás da mesma interface. Sobre essa base roda a Web Service Network, a API FastAPI que expõe os serviços em produção.</p>
+      <p>A plataforma faz hoje o seguinte:</p>
+      <ul>
+        <li><strong>Parsing de documentos:</strong> converte <code>txt</code>, <code>md</code>, <code>pdf</code> e <code>docx</code> em dados estruturados, conforme o schema de quem chama.</li>
+        <li><strong>Deep research:</strong> busca web profunda via Tavily, devolvida como contexto em markdown.</li>
+        <li><strong>Base vetorial:</strong> ingestão, busca semântica e exclusão no Pinecone.</li>
+        <li><strong>Embeddings locais:</strong> chunking e recuperação em FAISS na memória.</li>
+        <li><strong>Geração de imagens:</strong> o serviço Da-Vinci gera e edita imagens a partir de texto e de referências visuais.</li>
+      </ul>
+      <h2>Comece por aqui</h2>
+      <div class="cards one">${card('#/getting-started/quickstart', 'bolt', 'Quickstart', 'Do clone ao primeiro GET /health, em seis passos.', true)}</div>
+      <div class="callout" data-kind="tip"><p>Com a API no ar, a documentação interativa dos endpoints fica em <code>http://localhost:8000/docs</code>.</p></div>
+      <h2>Explore por área</h2>
+      <div class="cards">${AREAS.map(a => card(`#/${a.id}`, a.icon, a.t, a.about)).join('')}</div>
+      <h2>Mais consultadas</h2>
+      <div class="cards">
+        ${card('#/modules/agents/utils/model-gateway', 'boxes', 'Model Gateway', 'Modelos e agentes de qualquer provedor pela mesma chamada.')}
+        ${card('#/modules/web-service-network/web-service-network-api', 'code', 'Web Service Network', 'Autenticação, formato das respostas e endpoints.')}
+      </div>`;
+  }
+
+  function overviewBody(a) {
+    const loose = a.kids.filter(k => !k.kids), dirs = a.kids.filter(k => k.kids);
+    const names = d => { const l = leaves(d).map(x => x.t); return l.slice(0, 3).join(', ') + (l.length > 3 ? ` e mais ${l.length - 3}` : ''); };
+    return `
+      <div class="callout" data-kind="note"><p>Esta página de visão geral seria gerada automaticamente a partir das pastas de <code>doc/${esc(a.t)}</code>.</p></div>
+      ${loose.length ? `<h2>${esc(a.loose)}</h2><div class="cards">${loose.map(p => card(`#/${p.id}`, 'note', p.t, p.empty ? 'Página ainda em branco.' : 'Página de exemplo.')).join('')}</div>` : ''}
+      ${dirs.length ? `<h2>Seções</h2><div class="cards">${dirs.map(d => card(`#/${leaves(d)[0].id}`, 'folder', d.t, names(d))).join('')}</div>` : ''}`;
+  }
+
+  function sampleBody(p) {
+    const cls = p.t.replace(/[^A-Za-z0-9]+/g, '');
+    return `
+      <div class="callout" data-kind="note"><p><strong>Conteúdo de exemplo.</strong> Este texto existe só para validar o layout. Na versão final, a página é gerada a partir de <code>${esc(p.src)}</code>.</p></div>
+      <h2>Visão geral</h2>
+      <p>${esc(p.t)} faz parte de ${esc([p.area.t, ...p.path].join(' / '))}. Esta seção explica para que o componente serve, qual problema ele resolve e onde ele entra no restante da plataforma.</p>
+      <p>Um segundo parágrafo mostra o ritmo do texto corrido, com <code>código inline</code>, um <a href="#/getting-started/quickstart">link interno</a> e <strong>ênfase</strong>.</p>
+      <h2>Fluxo de execução</h2>
+      <ol>
+        <li>Instancie a classe com a configuração do ambiente.</li>
+        <li>Chame o método principal com os dados de entrada.</li>
+        <li>Trate o retorno, que segue o envelope padrão da plataforma.</li>
+      </ol>
+      <h2>Métodos</h2>
+      <table>
+        <thead><tr><th>Método</th><th>Descrição</th></tr></thead>
+        <tbody>
+          <tr><td><code>__init__</code></td><td>Inicializa a instância com a configuração recebida</td></tr>
+          <tr><td><code>run</code></td><td>Executa a operação principal e devolve o resultado</td></tr>
+          <tr><td><code>validate</code></td><td>Confere os parâmetros antes da execução</td></tr>
+        </tbody>
+      </table>
+      <h2>Exemplo de uso</h2>
+      <pre data-lang="python"><code>service = ${cls}(local=True)
+result = service.run(payload)
+
+print(result["status"])  # completed</code></pre>
+      <h2>Pontos de atenção</h2>
+      <ul>
+        <li>As credenciais vêm do arquivo <code>.env</code>.</li>
+        <li>Toda execução gera um registro de tracing com <code>log_id</code>.</li>
+      </ul>`;
+  }
+
+  function emptyBody(p, next) {
+    return `
+      <div class="empty">
+        ${ico('blank')}
+        <p class="empty-title">Esta página ainda está em branco</p>
+        <p>O arquivo <code>${esc(p.src)}</code> existe, mas não tem conteúdo. Quando ele for preenchido, o texto aparece aqui.</p>
+        ${next ? `<a class="btn-cta" href="#/${next.id}">Ir para ${esc(next.t)}</a>` : ''}
+      </div>`;
+  }
 
   /* ---------- Renderização ---------- */
   const pageEl = $('#page'), tocEl = $('#toc');
   let headings = [], currentId = null;
-
-  const tplFor = id => $(`template[data-page="${id}"][data-lang="${LANG}"]`) || $(`template[data-page="${id}"][data-lang="pt"]`);
 
   function render(p) {
     currentId = p.id;
     const areaId = p.home ? 'home' : p.area.id;
     document.title = p.home ? 'BetterAI Docs' : `${p.overview ? p.t : p.t + ' | ' + p.area.t} | BetterAI Docs`;
     const i = PAGES.indexOf(p), prev = PAGES[i - 1], next = PAGES[i + 1];
-    const tpl = tplFor(p.id);
-    const fallback = !!tpl && LANG !== 'pt' && tpl.dataset.lang === 'pt';
+    const tpl = $(`template[data-page="${p.id}"]`);
 
-    let body = p.home ? homeBody() : p.overview ? overviewBody(p.area) : p.empty ? emptyBody(p, next) : tpl ? tpl.innerHTML : sampleBody(p);
-    if (fallback) body = `<div class="callout" data-kind="note"><p>${esc(tr('untranslated'))}</p></div>` + body;
-    const lead = p.home ? tr('homeLead') : p.overview ? aboutOf(p.area) : p.empty ? '' : tpl ? tpl.dataset.lead : tr('genericLead', p.t);
-    const eyebrow = p.home || p.overview ? '' : (p.path.length ? p.path.join(' / ') : looseOf(p.area));
-    const label = n => n.overview ? tr('overviewOf', n.t) : n.home ? tr('overview') : n.t;
-    const title = p.home ? tr('homeTitle') : p.t;
+    const body = p.home ? homeBody() : p.overview ? overviewBody(p.area) : p.empty ? emptyBody(p, next) : tpl ? tpl.innerHTML : sampleBody(p);
+    const lead = p.home ? 'Múltiplos modelos de IA, um único back-end unificado.' : p.overview ? p.area.about : p.empty ? '' : tpl ? tpl.dataset.lead : `Página de exemplo para ${p.t}, usada para validar o layout.`;
+    const eyebrow = p.home || p.overview ? '' : (p.path.length ? p.path.join(' / ') : p.area.loose);
+    const label = n => n.overview ? `${n.t}: visão geral` : n.home ? 'Visão geral' : n.t;
 
     pageEl.innerHTML = `
       <header>
         ${eyebrow ? `<div class="eyebrow">${esc(eyebrow)}</div>` : ''}
         <div class="title-row">
-          <h1 class="page-title" tabindex="-1">${esc(title)}</h1>
+          <h1 class="page-title" tabindex="-1">${esc(p.t)}</h1>
           <div class="copy-page">
-            <button class="cp-main" type="button">${ico('copy')}<span>${esc(tr('copyPage'))}</span></button>
-            <button class="cp-caret" type="button" aria-label="${esc(tr('moreOpts'))}" aria-expanded="false">${ico('down')}</button>
+            <button class="cp-main" type="button">${ico('copy')}<span>Copiar página</span></button>
+            <button class="cp-caret" type="button" aria-label="Mais opções" aria-expanded="false">${ico('down')}</button>
             <div class="cp-menu" hidden>
-              <button type="button" data-fake>${esc(tr('copyMd'))}<small>${esc(tr('copyMdSub'))}</small></button>
-              <button type="button" data-fake>${esc(tr('viewSrc'))}<small>${esc(p.src || 'doc/README.md')}</small></button>
+              <button type="button" data-fake>Copiar como Markdown<small>Para colar em um chat de IA</small></button>
+              <button type="button" data-fake>Ver arquivo fonte<small>${esc(p.src || 'doc/README.md')}</small></button>
             </div>
           </div>
         </div>
         ${lead ? `<p class="lead">${esc(lead)}</p>` : ''}
-        <details class="toc-inline"><summary>${esc(tr('onThisPage'))}</summary><ul></ul></details>
+        <details class="toc-inline"><summary>Nesta página</summary><ul></ul></details>
       </header>
       <div class="prose">${body}</div>
       <div class="feedback">
-        <span class="q">${esc(tr('helpful'))}</span>
-        <button class="fb-btn" type="button">${ico('up')}${esc(tr('yes'))}</button>
-        <button class="fb-btn" type="button">${ico('dn')}${esc(tr('no'))}</button>
-        <a class="edit" href="#" data-fake>${ico('edit')}${esc(tr('edit'))}</a>
+        <span class="q">Esta página foi útil?</span>
+        <button class="fb-btn" type="button">${ico('up')}Sim</button>
+        <button class="fb-btn" type="button">${ico('dn')}Não</button>
+        <a class="edit" href="#" data-fake>${ico('edit')}Editar no GitHub</a>
       </div>
-      ${p.src ? `<p class="source">${esc(tr('source'))} <code>${esc(p.src)}</code></p>` : ''}
-      <nav class="pager" aria-label="${esc(tr('pagerLbl'))}">
-        ${prev ? `<a class="pager-link prev" href="#/${prev.home ? '' : prev.id}">${ico('chevron')}<div><small>${esc(tr('prev'))}</small><span>${esc(label(prev))}</span></div></a>` : ''}
-        ${next ? `<a class="pager-link next" href="#/${next.id}"><div><small>${esc(tr('next'))}</small><span>${esc(label(next))}</span></div>${ico('chevron')}</a>` : ''}
+      ${p.src ? `<p class="source">Fonte: <code>${esc(p.src)}</code></p>` : ''}
+      <nav class="pager" aria-label="Páginas vizinhas">
+        ${prev ? `<a class="pager-link prev" href="#/${prev.home ? '' : prev.id}">${ico('chevron')}<div><small>Anterior</small><span>${esc(label(prev))}</span></div></a>` : ''}
+        ${next ? `<a class="pager-link next" href="#/${next.id}"><div><small>Próxima</small><span>${esc(label(next))}</span></div>${ico('chevron')}</a>` : ''}
       </nav>`;
     enhance($('.prose', pageEl));
     renderNav(areaId);
     markActive(p, areaId);
     buildToc(p);
     $('#crumbArea').textContent = p.home ? 'BetterAI' : p.area.t;
-    $('#crumbPage').textContent = p.home || p.overview ? tr('overview') : p.t;
+    $('#crumbPage').textContent = p.home || p.overview ? 'Visão geral' : p.t;
   }
 
   function copyButton(getText, cls = '') {
     const b = document.createElement('button');
-    b.type = 'button'; b.className = 'copy ' + cls; b.setAttribute('aria-label', tr('copyCode')); b.innerHTML = ico('copy');
+    b.type = 'button'; b.className = 'copy ' + cls; b.setAttribute('aria-label', 'Copiar código'); b.innerHTML = ico('copy');
     b.addEventListener('click', async () => {
       try { await navigator.clipboard.writeText(getText()); } catch (e) {}
       b.innerHTML = ico('check');
@@ -1722,7 +1225,7 @@ print(result["status"])  # completed</code></pre>
       while (seen.has(id)) id = slug(h.textContent) + '-' + n++;
       seen.add(id);
       h.id = id;
-      h.insertAdjacentHTML('afterbegin', `<a class="anchor" href="#/${currentId}::${id}" aria-label="${esc(tr('anchorLbl'))}">#</a>`);
+      h.insertAdjacentHTML('afterbegin', `<a class="anchor" href="#/${currentId}::${id}" aria-label="Link para esta seção">#</a>`);
     });
   }
 
@@ -1731,7 +1234,7 @@ print(result["status"])  # completed</code></pre>
     const has = headings.length > 1;
     document.body.classList.toggle('no-toc', !has);
     const items = headings.map(h => `<li><a class="lvl-${h.tagName[1]}" href="#/${p.id}::${h.id}" data-h="${h.id}">${esc(h.textContent.replace(/^#/, ''))}</a></li>`).join('');
-    tocEl.innerHTML = has ? `<p class="toc-title">${ico('list')}${esc(tr('onThisPage'))}</p><ul>${items}</ul>` : '';
+    tocEl.innerHTML = has ? `<p class="toc-title">${ico('list')}Nesta página</p><ul>${items}</ul>` : '';
     const inline = $('.toc-inline', pageEl);
     if (has) $('ul', inline).innerHTML = items; else inline.remove();
     spy();
@@ -1783,11 +1286,11 @@ print(result["status"])  # completed</code></pre>
     const cp = e.target.closest('.cp-main');
     if (cp) {
       try { navigator.clipboard.writeText($('.page-title', pageEl).textContent + '\n\n' + $('.prose', pageEl).innerText); } catch (err) {}
-      cp.innerHTML = ico('check') + `<span>${esc(tr('copied'))}</span>`;
-      setTimeout(() => { cp.innerHTML = ico('copy') + `<span>${esc(tr('copyPage'))}</span>`; }, 1600);
+      cp.innerHTML = ico('check') + '<span>Copiado</span>';
+      setTimeout(() => { cp.innerHTML = ico('copy') + '<span>Copiar página</span>'; }, 1600);
     }
     const fb = e.target.closest('.fb-btn');
-    if (fb) { const box = fb.closest('.feedback'); $$('.fb-btn', box).forEach(b => b.remove()); $('.q', box).textContent = tr('thanks'); }
+    if (fb) { const box = fb.closest('.feedback'); $$('.fb-btn', box).forEach(b => b.remove()); $('.q', box).textContent = 'Obrigado pelo retorno.'; }
   });
 
   /* ---------- Menu no celular ---------- */
@@ -1812,16 +1315,13 @@ print(result["status"])  # completed</code></pre>
 
   /* ---------- Busca ---------- */
   const dialog = $('#search'), q = $('#q'), results = $('#results');
-  let INDEX = [];
-  function buildIndex() {
-    INDEX = [];
-    for (const p of PAGES) {
-      if (p.home) continue;
-      const where = p.overview ? tr('areaOverview') : [p.area.t, ...p.path].join(' / ');
-      INDEX.push({ href: `#/${p.id}`, title: p.t, path: where, page: true });
-      const tpl = tplFor(p.id);
-      if (tpl) $$('h2, h3', tpl.content).forEach(h => INDEX.push({ href: `#/${p.id}::${slug(h.textContent)}`, title: h.textContent, path: [p.area.t, ...p.path, p.t].join(' / ') }));
-    }
+  const INDEX = [];
+  for (const p of PAGES) {
+    if (p.home) continue;
+    const where = p.overview ? 'Visão geral da área' : [p.area.t, ...p.path].join(' / ');
+    INDEX.push({ href: `#/${p.id}`, title: p.t, path: where, page: true });
+    const tpl = $(`template[data-page="${p.id}"]`);
+    if (tpl) $$('h2, h3', tpl.content).forEach(h => INDEX.push({ href: `#/${p.id}::${slug(h.textContent)}`, title: h.textContent, path: [p.area.t, ...p.path, p.t].join(' / ') }));
   }
   const fold = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
   function mark(text, term) {
@@ -1833,7 +1333,7 @@ print(result["status"])  # completed</code></pre>
     const term = fold(q.value.trim());
     let list, label = '';
     if (!term) {
-      label = tr('suggestions');
+      label = 'Sugestões';
       list = POPULAR.map(id => INDEX.find(x => x.href === `#/${id}`));
     } else {
       list = INDEX.map(x => {
@@ -1846,7 +1346,7 @@ print(result["status"])  # completed</code></pre>
     results.innerHTML = list.length
       ? (label ? `<li class="results-label" role="presentation">${label}</li>` : '') +
         list.map((x, i) => `<li class="result" role="option" aria-selected="${i === 0}"><a href="${x.href}" tabindex="-1"><span class="r-title">${mark(x.title, term)}</span><span class="r-path">${mark(x.path, term)}</span></a></li>`).join('')
-      : `<li class="no-results" role="presentation">${esc(tr('noResults', q.value.trim()))}</li>`;
+      : `<li class="no-results" role="presentation">Nada encontrado para “${esc(q.value.trim())}”. Tente o nome de um módulo, como “Pinecone”.</li>`;
   }
   function move(d) {
     const items = $$('.result', results);
@@ -1870,42 +1370,6 @@ print(result["status"])  # completed</code></pre>
     if (e.key === 'Escape') closeNav();
   });
 
-  /* ---------- Idioma ---------- */
-  const langBtn = $('#langBtn'), langMenu = $('#langMenu');
-  function applyStatic() {
-    document.documentElement.lang = { pt: 'pt-BR', en: 'en', it: 'it' }[LANG];
-    $$('[data-i]').forEach(el => { el.textContent = tr(el.dataset.i); });
-    $$('[data-ia]').forEach(el => el.setAttribute('aria-label', tr(el.dataset.ia)));
-    $$('[data-ip]').forEach(el => el.setAttribute('placeholder', tr(el.dataset.ip)));
-  }
-  function paintLang() {
-    $('b', langBtn).textContent = LANG.toUpperCase();
-    langMenu.innerHTML = LANGS.map(l => `<li role="none"><button type="button" role="menuitemradio" data-lang="${l.id}" aria-checked="${l.id === LANG}"><span>${l.name}</span>${ico('check', 'ck')}</button></li>`).join('');
-  }
-  function closeLang() { langMenu.hidden = true; langBtn.setAttribute('aria-expanded', 'false'); }
-  function setLang(id) {
-    if (id === LANG) return;
-    LANG = id;
-    try { localStorage.setItem('betterai-docs-lang', id); } catch (e) {}
-    const y = scrollY;
-    applyStatic(); renderTabs(); buildIndex(); paintLang();
-    navArea = null; currentId = null;
-    route();
-    scrollTo(0, y);
-  }
-  langBtn.addEventListener('click', () => {
-    const open = langMenu.hidden;
-    langMenu.hidden = !open;
-    langBtn.setAttribute('aria-expanded', open);
-  });
-  langMenu.addEventListener('click', e => {
-    const b = e.target.closest('[data-lang]');
-    if (b) { setLang(b.dataset.lang); closeLang(); langBtn.focus(); }
-  });
-  document.addEventListener('click', e => { if (!e.target.closest('.lang')) closeLang(); });
-  addEventListener('keydown', e => { if (e.key === 'Escape') closeLang(); });
-
-  applyStatic(); renderTabs(); buildIndex(); paintLang();
   route();
 })();
 </script>
