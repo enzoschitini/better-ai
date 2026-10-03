@@ -1,0 +1,38 @@
+/* ---------- Responsivo ---------- */
+@media (max-width: 1279px) {
+  .toc { display: none; }
+  .toc-inline { display: block; }
+}
+@media (max-width: 1023px) {
+  .tabs-row, .header-line { display: none; }
+  .subbar { display: flex; }
+  .only-mobile { display: block; }
+  .bar { padding: 0 1rem; }
+  .brand { flex: 1 1 auto; }
+  .actions { flex: none; }
+  .actions .btn-soft, .actions .btn-cta { display: none; }
+  .search-trigger { flex: none; width: 36px; padding: 0; justify-content: center; background: none; color: var(--ink-2); }
+  .search-trigger span, .search-trigger kbd { display: none; }
+  .side-wrap { position: fixed; z-index: 60; top: 0; left: 0; height: 100dvh; width: min(86vw, 20rem); padding-top: 20px; transform: translateX(-102%); transition: transform .2s ease; border-right: 0; box-shadow: var(--shadow-pop); }
+  .nav-open .side-wrap { transform: none; }
+  .scrim { display: block; position: fixed; inset: 0; z-index: 55; background: rgba(3, 7, 16, .45); opacity: 0; pointer-events: none; transition: opacity .2s ease; }
+  .nav-open .scrim { opacity: 1; pointer-events: auto; }
+  .side-areas { display: grid; gap: 2px; margin-bottom: 18px; padding-bottom: 16px; border-bottom: 1px solid var(--line-soft); }
+  .side-areas a { padding: 7px 12px 7px 16px; border-radius: var(--radius-md); font-size: .875rem; font-weight: 500; color: var(--ink-2); text-decoration: none; }
+  .side-areas a[aria-current="page"] { color: var(--ink); background: var(--fill-soft); font-weight: 600; }
+  .main-row { padding-top: 28px; }
+  .article { padding: 0 1rem; }
+  .site-foot { padding: 32px 1rem 48px; }
+}
+@media (max-width: 640px) {
+  .page-title { font-size: 1.875rem; line-height: 2.25rem; }
+  .copy-page { display: none; }
+  .cards { grid-template-columns: 1fr; }
+  .pager { grid-template-columns: 1fr; }
+  .pager-link.next { grid-column: 1; }
+  .anchor { display: none; }
+  .feedback .edit { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; }
+}

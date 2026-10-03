@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 1. Título: "Nome da página | Área | BetterAI Docs" -->
+<title>Nome da página | Área | BetterAI Docs</title>
+<script>
+  // Define o tema antes de pintar a página, para não piscar. Não remova.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<!-- 2. Único CSS do site. Ajuste o caminho conforme a profundidade da página. -->
+<link rel="stylesheet" href="../css/design-system.css">
+</head>
+<body>
+<a class="skip" href="#main">Ir para o conteúdo</a>
+
+<!-- ============ CABEÇALHO (igual em todas as páginas) ============ -->
+<header class="header" id="header">
+  <!-- Aviso opcional. Apague o bloco inteiro se não houver aviso. -->
+  <div class="banner" id="banner">
+    <span>Texto do aviso.</span>
+    <button type="button" aria-label="Fechar aviso"><i data-ico="close"></i></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="/">
+        <img src="../../../images/Logo.png" alt="">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Buscar na documentação">
+        <i data-ico="search"></i><span>Buscar...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="#"><i data-ico="code"></i>GitHub</a>
+        <a class="btn-cta" href="#">Swagger UI<i data-ico="chevron"></i></a>
+        <!-- Seletor de idioma: fica sempre antes do botão de tema -->
+        <div class="lang">
+          <button class="lang-btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Idioma"><i data-ico="globe"></i><b>PT</b></button>
+          <ul class="lang-menu" role="menu" hidden>
+            <li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="false"><span>English</span><i class="ck" data-ico="check"></i></button></li>
+            <li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="false"><span>Italiano</span><i class="ck" data-ico="check"></i></button></li>
+            <li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="true"><span>Português</span><i class="ck" data-ico="check"></i></button></li>
+          </ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle></button>
+      </div>
+    </div>
+    <!-- Uma aba por área. A atual leva aria-current="page". -->
+    <nav class="tabs-row" aria-label="Áreas da documentação">
+      <a class="tab" href="#">Visão geral</a>
+      <a class="tab" href="#">Getting Started</a>
+      <a class="tab" href="#" aria-current="page">Modules</a>
+      <a class="tab" href="#">Internal Source Code</a>
+      <a class="tab" href="#">Streamlit Applications</a>
+    </nav>
+    <!-- Só aparece no celular -->
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false"><i data-ico="menu"></i><span>Modules</span></button>
+      <i data-ico="chevron"></i>
+      <span class="here">Nome da página</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <!-- ============ MENU LATERAL (só a área atual) ============ -->
+  <aside class="side-wrap" id="side" aria-label="Navegação da documentação">
+    <nav class="side">
+      <!-- No celular, o seletor de áreas aparece aqui dentro -->
+      <div class="side-areas">
+        <a href="#">Visão geral</a>
+        <a href="#">Getting Started</a>
+        <a href="#" aria-current="page">Modules</a>
+      </div>
+      <a class="side-link" href="#">Visão geral</a>
+      <div class="side-group">
+        <p class="side-title">Nome do grupo</p>
+        <ul>
+          <li><a class="side-link" href="#">Outra página</a></li>
+          <li><a class="side-link" href="#" aria-current="page">Nome da página</a></li>
+          <li>
+            <button class="side-link side-folder" type="button" aria-expanded="false"><span>Pasta</span><i class="chev" data-ico="chevron"></i></button>
+            <ul class="side-sub" hidden>
+              <li><a class="side-link" href="#">Página dentro da pasta</a></li>
+              <li><a class="side-link" href="#"><span>Página sem conteúdo</span><span class="badge">vazio</span></a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="main">
+    <div class="main-row">
+      <!-- ============ ARTIGO ============ -->
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Categoria / Subcategoria</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Nome da página</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button"><i data-ico="copy"></i><span>Copiar página</span></button>
+              <button class="cp-caret" type="button" aria-label="Mais opções"><i data-ico="down"></i></button>
+            </div>
+          </div>
+          <!-- Resumo: uma ou duas linhas. Obrigatório. -->
+          <p class="lead">Resumo da página em uma ou duas linhas.</p>
+          <!-- Índice recolhido: aparece só quando a tela é estreita. O ds.js preenche. -->
+          <details class="toc-inline"><summary>Nesta página</summary><ul></ul></details>
+        </header>
+
+        <!-- ===== CONTEÚDO: tudo o que muda de página para página fica aqui ===== -->
+        <div class="prose">
+          <p>Parágrafo de abertura. Diga o que é e para que serve, antes de qualquer lista.</p>
+
+          <!-- Aviso. Tipos: info, tip, warn, danger, note -->
+          <div class="callout" data-kind="info"><p>Texto do aviso.</p></div>
+
+          <h2>Título de seção</h2>
+          <p>Texto com <code>código inline</code> e um <a href="#">link</a>.</p>
+
+          <!-- Bloco de código com abas. Para bloco simples e com título, veja o catálogo. -->
+          <div class="code" data-tabs>
+            <div class="code-head">
+              <div class="code-tabs" role="tablist">
+                <button class="code-tab" type="button">Python</button>
+                <button class="code-tab" type="button">cURL</button>
+              </div>
+              <button class="copy" type="button"></button>
+            </div>
+            <div class="code-body">
+              <pre><code>print("olá")</code></pre>
+              <pre><code>curl http://localhost:8000/health</code></pre>
+            </div>
+          </div>
+
+          <h3>Subtítulo</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Coluna</th><th>Descrição</th></tr></thead>
+              <tbody><tr><td><code>valor</code></td><td>Explicação.</td></tr></tbody>
+            </table>
+          </div>
+
+          <!-- Cartões de próximos passos -->
+          <h2>Próximos passos</h2>
+          <div class="cards">
+            <a class="card" href="#"><span class="card-icon" data-ico="boxes"></span><span class="card-title">Título</span><span class="card-text">Uma frase sobre o destino.</span></a>
+            <a class="card" href="#"><span class="card-icon" data-ico="code"></span><span class="card-title">Título</span><span class="card-text">Uma frase sobre o destino.</span></a>
+          </div>
+        </div>
+
+        <!-- ============ FIM DA PÁGINA (igual em todas) ============ -->
+        <div class="feedback">
+          <span class="q">Esta página foi útil?</span>
+          <button class="fb-btn" type="button"><i data-ico="up"></i>Sim</button>
+          <button class="fb-btn" type="button"><i data-ico="dn"></i>Não</button>
+          <a class="edit" href="#"><i data-ico="edit"></i>Editar no GitHub</a>
+        </div>
+        <p class="source">Fonte: <code>doc/Pasta/Arquivo.md</code></p>
+        <nav class="pager" aria-label="Páginas vizinhas">
+          <a class="pager-link prev" href="#"><i data-ico="chevron"></i><div><small>Anterior</small><span>Página anterior</span></div></a>
+          <a class="pager-link next" href="#"><div><small>Próxima</small><span>Próxima página</span></div><i data-ico="chevron"></i></a>
+        </nav>
+      </main>
+
+      <!-- Índice da página: o ds.js monta a partir dos h2 e h3 -->
+      <aside class="toc" id="toc" data-toc aria-label="Nesta página"></aside>
+    </div>
+
+    <footer class="site-foot">
+      <div class="foot-brand">
+        <a class="brand" href="/"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+        <p>Where intelligence finds purpose.</p>
+      </div>
+      <div class="foot-col">
+        <h2>Recursos</h2>
+        <a href="#">Swagger UI</a>
+        <a href="#">GitHub</a>
+      </div>
+      <div class="foot-col">
+        <h2>Plataforma</h2>
+        <a href="#">Web Service Network</a>
+        <a href="#">Acquarello</a>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<!-- ============ BUSCA ============ -->
+<dialog class="search" id="search" aria-label="Buscar na documentação">
+  <div class="search-field">
+    <i data-ico="search"></i>
+    <input type="search" placeholder="Buscar páginas e seções" autocomplete="off" spellcheck="false">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" role="listbox" aria-label="Resultados"></ul>
+  <div class="search-foot">
+    <span><kbd>↑</kbd><kbd>↓</kbd><span>navegar</span></span>
+    <span><kbd>Enter</kbd><span>abrir</span></span>
+  </div>
+</dialog>
+
+<script src="../js/ds.js"></script>
+</body>
+</html>
