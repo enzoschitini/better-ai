@@ -21,8 +21,9 @@
     var to = e.detail;
     if (!to || to === C.lang) return;
     try { localStorage.setItem('betterai-docs-lang', to); } catch (_) {}
-    // C.alt é gerado no build, então trocar idioma nunca chuta uma URL
-    var url = (C.alt && C.alt[to]) || (C.base + '/' + to + '/');
+    // C.alt é gerado no build (caminho relativo à raiz), e C.root é o
+    // prefixo desta página até a raiz — então trocar idioma nunca chuta URL
+    var url = (C.root || '') + ((C.alt && C.alt[to]) || (to + '/'));
     location.href = url + location.hash;
   });
 
@@ -77,13 +78,14 @@
      3 seção includes · 4 migalha · 5 corpo
      +0.5 de penalidade para seção, +ordem/1000 como desempate estável */
   function rank(term) {
-    var out = [], perPage = {}, i, j;
+    // os caminhos do índice são relativos à raiz do site
+    var R = C.root || '', out = [], perPage = {}, i, j;
     for (i = 0; i < IDX.p.length; i++) {
       var p = IDX.p[i], t = fold(p[2]), c = fold(p[3]), sc = -1;
       if (t.indexOf(term) === 0) sc = 0;
       else if (t.indexOf(term) >= 0) sc = 1;
       else if (c.indexOf(term) >= 0) sc = 4;
-      if (sc >= 0) out.push({ u: p[1], t: p[2], c: p[3], s: sc + p[4] / 1000 });
+      if (sc >= 0) out.push({ u: R + p[1], t: p[2], c: p[3], s: sc + p[4] / 1000 });
     }
     for (j = 0; j < IDX.s.length; j++) {
       var s = IDX.s[j], pg = IDX.p[s[0]], h = fold(s[2]), sc2 = -1, snip = '';
@@ -97,7 +99,7 @@
       perPage[s[0]] = (perPage[s[0]] || 0) + 1;
       if (perPage[s[0]] > 3) continue;   // uma página longa não inunda a lista
       out.push({
-        u: pg[1] + '#' + s[1], t: s[2], c: pg[2] + ' / ' + pg[3],
+        u: R + pg[1] + '#' + s[1], t: s[2], c: pg[2] + ' / ' + pg[3],
         snip: snip, s: sc2 + 0.5 + pg[4] / 1000
       });
     }
@@ -124,9 +126,10 @@
 
   function suggestions() {
     if (!IDX || !IDX.popular || !IDX.popular.length) { list.innerHTML = ''; return; }
+    var R = C.root || '';
     var rows = IDX.popular.map(function (i) {
       var p = IDX.p[i];
-      return { u: p[1], t: p[2], c: p[3], s: 0 };
+      return { u: R + p[1], t: p[2], c: p[3], s: 0 };
     });
     ROWS = rows; sel = 0;
     var label = (C.i && C.i.suggestions) || 'Sugestões';

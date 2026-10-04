@@ -38,6 +38,7 @@ def css_order(entry: Path) -> list[Path]:
 
 
 def build_css(st: Settings, dist: Path) -> str:
+    """Devolve o caminho relativo à raiz do site; a página prefixa."""
     entry = st.theme / "css" / "design-system.css"
     parts = css_order(entry)
     if not parts:
@@ -51,7 +52,7 @@ def build_css(st: Settings, dist: Path) -> str:
     out = dist / "assets" / "css" / name
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_bytes(data)
-    return f"{st.base}/assets/css/{name}"
+    return f"assets/css/{name}"
 
 
 def build_js(st: Settings, dist: Path) -> str:
@@ -63,7 +64,7 @@ def build_js(st: Settings, dist: Path) -> str:
     out = dist / "assets" / "js" / name
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_bytes(data)
-    return f"{st.base}/assets/js/{name}"
+    return f"assets/js/{name}"
 
 
 def png_size(p: Path) -> tuple[int, int] | None:

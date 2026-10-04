@@ -61,7 +61,8 @@ def build(pages: list[Page], lang: str, popular: list[str], rendered: dict) -> d
             continue
         crumbs = " / ".join([page.area.name] + page.crumbs) if page.area else ""
         idx_of[page.id] = len(p_rows)
-        p_rows.append([page.id, page.url, page.title, crumbs, page.order])
+        # caminho relativo à raiz; o cliente prefixa com DOCS.root
+        p_rows.append([page.id, page.path, page.title, crumbs, page.order])
 
         html = rendered.get(page.id, "")
         for sid, title, body in _sections(html):
@@ -80,7 +81,7 @@ def build(pages: list[Page], lang: str, popular: list[str], rendered: dict) -> d
     }
 
 
-def write(index: dict, dist: Path, lang: str, base: str) -> str:
+def write(index: dict, dist: Path, lang: str) -> str:
     import hashlib
 
     data = json.dumps(index, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
@@ -89,4 +90,4 @@ def write(index: dict, dist: Path, lang: str, base: str) -> str:
     out = dist / lang / name
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_bytes(data)
-    return f"{base}/{lang}/{name}"
+    return f"{lang}/{name}"

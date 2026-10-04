@@ -36,7 +36,6 @@ def run(st: Settings, manifest, langs: list[str]) -> int:
 
     htmls = sorted(dist.rglob("*.html"))
     problems: list[str] = []
-    base = st.base
 
     def rel(p: Path) -> str:
         return p.relative_to(dist).as_posix()
@@ -57,17 +56,27 @@ def run(st: Settings, manifest, langs: list[str]) -> int:
             href = unquote(m.group(1))
             if href.startswith(("http://", "https://", "mailto:", "data:", "#")):
                 continue
-            if base and href.startswith(base):
-                href = href[len(base):]
-            if not href.startswith("/"):
+            if href.startswith("/"):
+                problems.append(
+                    f"[link] {where}: {m.group(1)} é absoluto. Todo caminho "
+                    f"interno tem de ser relativo, senão o site só funciona "
+                    f"na raiz do domínio."
+                )
                 continue
-            target = dist / href.lstrip("/")
+            # relativo: resolve em relação à pasta do próprio arquivo
+            target = (f.parent / href).resolve()
             if target.is_dir():
                 target = target / "index.html"
             if not target.is_file():
                 problems.append(f"[link] {where}: {m.group(1)} não resolve")
-            elif "/assets/" in href:
-                referenced.add(href.split("/assets/", 1)[1])
+            else:
+                try:
+                    r = target.relative_to(dist.resolve()).as_posix()
+                except ValueError:
+                    problems.append(f"[link] {where}: {m.group(1)} sai do dist/")
+                    continue
+                if r.startswith("assets/"):
+                    referenced.add(r[len("assets/"):])
 
         if 'href="#/' in txt:
             problems.append(f"[rota] {where}: ainda tem rota de hash href=\"#/\"")
@@ -88,6 +97,13 @@ def run(st: Settings, manifest, langs: list[str]) -> int:
             first_css = txt.find("<link rel=\"stylesheet\"")
             if first_script == -1 or (first_css != -1 and first_script > first_css):
                 problems.append(f"[estrutura] {where}: script de tema não é o primeiro no <head>")
+
+            # Um cartão com href="#" é sempre bug: alguma resolução de rota
+            # falhou e virou fallback. O checador de links não pega, porque
+            # "#" não é caminho.
+            dead = len(re.findall(r'class="card[^"]*" href="#"', txt))
+            if dead:
+                problems.append(f"[estrutura] {where}: {dead} cartão(ões) com href=\"#\" morto")
 
             # O ds.js também ancora títulos; sem a guarda da linha ~172 dele,
             # cada título fica com duas âncoras e aparece "##" na tela.
@@ -110,8 +126,6 @@ def run(st: Settings, manifest, langs: list[str]) -> int:
             if lang == "x-default":
                 continue
             path = href[len(st.site_url):] if st.site_url and href.startswith(st.site_url) else href
-            if base and path.startswith(base):
-                path = path[len(base):]
             target = dist / path.strip("/") / "index.html"
             if not target.is_file():
                 problems.append(f"[hreflang] {where}: alternate {lang} aponta para {href}, que não existe")
@@ -122,15 +136,15 @@ def run(st: Settings, manifest, langs: list[str]) -> int:
             if f"hreflang=\"{path.strip('/').split('/')[0]}\"" not in back and target != f:
                 pass  # reciprocidade exata é checada pelo lado de lá
 
-        if noindex:
+        # O 404 é a exceção legítima: responde em qualquer endereço que não
+        # existe, logo não tem URL canônica para declarar.
+        if noindex and where != "404.html":
             cm = _CANON.search(txt)
             if not cm:
                 problems.append(f"[noindex] {where}: noindex sem canonical")
             else:
                 cpath = cm.group(1)
                 cpath = cpath[len(st.site_url):] if st.site_url and cpath.startswith(st.site_url) else cpath
-                if base and cpath.startswith(base):
-                    cpath = cpath[len(base):]
                 ct = dist / cpath.strip("/") / "index.html"
                 # Auto-canonical numa página noindex é correto e normal: é o
                 # caso das páginas vazias, que não têm conteúdo em idioma
@@ -148,7 +162,7 @@ def run(st: Settings, manifest, langs: list[str]) -> int:
             txt = f.read_text(encoding="utf-8")
             if 'content="noindex' not in txt:
                 continue
-            url = st.site_url + base + "/" + rel(f).replace("/index.html", "/")
+            url = st.site_url + "/" + rel(f).replace("/index.html", "/")
             if f"<loc>{url}</loc>" in smtxt:
                 problems.append(f"[sitemap] {rel(f)} é noindex mas está no sitemap")
 
@@ -161,10 +175,7 @@ def run(st: Settings, manifest, langs: list[str]) -> int:
         idx = json.loads(idxs[0].read_text(encoding="utf-8"))
         for row in idx["s"]:
             page = idx["p"][row[0]]
-            path = page[1]
-            if base and path.startswith(base):
-                path = path[len(base):]
-            target = dist / path.strip("/") / "index.html"
+            target = dist / page[1].strip("/") / "index.html"
             if not target.is_file():
                 problems.append(f"[busca] {lang}: {page[0]} no índice mas sem arquivo")
                 continue

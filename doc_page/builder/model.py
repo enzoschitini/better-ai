@@ -76,7 +76,7 @@ class Page:
     lang: str
     name: str  # rótulo estrutural, do manifest
     slug_path: str  # caminho do fragmento, sem extensão
-    url: str  # '/pt/modules/agents/utils/model-gateway/'
+    path: str  # 'pt/modules/agents/utils/model-gateway/' — relativo à raiz
     out_path: str  # 'pt/modules/agents/utils/model-gateway/index.html'
     area: Area | None = None
     crumbs: list[str] = field(default_factory=list)
@@ -89,6 +89,30 @@ class Page:
     prev: Page | None = None
     next: Page | None = None
     order: int = 0  # ordem no manifest, desempate da busca
+
+    @property
+    def rel_root(self) -> str:
+        """Prefixo para voltar à raiz do site a partir desta página.
+
+        É o que torna todo link interno relativo, e por isso o site roda em
+        qualquer ponto de montagem — raiz de domínio, subpasta do GitHub
+        Pages, ou até `file://` — sem nenhuma configuração.
+        """
+        depth = self.out_path.count("/")
+        return "../" * depth if depth else ""
+
+    def href(self, other: "Page") -> str:
+        """Link desta página para outra."""
+        return self.rel_root + other.path
+
+    def asset(self, rel: str) -> str:
+        """Link desta página para um arquivo em assets/."""
+        return self.rel_root + "assets/" + rel.lstrip("/")
+
+    @property
+    def abs_url(self) -> str:
+        """Só para canonical, hreflang e sitemap."""
+        return "/" + self.path
 
     @property
     def title(self) -> str:

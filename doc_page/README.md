@@ -15,8 +15,10 @@ python -m doc_page.builder build --langs pt
 # verificar o resultado: links, hreflang, noindex, âncoras, assets, ícones
 python -m doc_page.builder check
 
-# servir dist/ como vai se comportar em produção (URL sem barra final inclusa)
-python -m doc_page.builder serve          # http://localhost:8080
+# ver no navegador
+cd doc_page/dist && python -m http.server 8765 --bind 127.0.0.1
+# ou, sem o cd:
+python -m doc_page.builder serve
 ```
 
 Nada a instalar: o build usa só a biblioteca padrão do Python 3.12.
@@ -155,15 +157,59 @@ busca. Quando você escrever o conteúdo, crie o fragmento **e** tire o
 7. **Assets** — nada embarca sem ser referenciado, nada referenciado falta.
 8. **Ícones** — todo `data-ico` existe no mapa do `ds.js`.
 
-## Publicar
+## Publicar no GitHub Pages
 
-`dist/` é um site estático puro: diretório + `index.html`, sem nenhuma regra de
-rewrite. Funciona em Railway static, GitHub Pages, Cloudflare Pages ou
-`python -m http.server`.
+Está publicado em **https://enzoschitini.github.io/better-ai/**, pelo workflow
+`.github/workflows/docs.yml`.
 
-Antes de publicar, ajuste `site_url` no `site.toml` — ele é usado no
-`canonical`, no `hreflang` e no `sitemap.xml`. Se o site não ficar na raiz do
-domínio, ajuste `base` também (ex: `base = "/docs"`).
+O build **não** roda no Pages — o Pages só serve arquivos estáticos. Quem roda
+o build é o GitHub Actions, a cada push em `main` que toque `doc_page/`. Por
+isso `dist/` não é versionado.
 
-Cache: tudo em `/assets/` e os `search-index.*.json` têm hash no nome e podem
-ser `immutable` por um ano. O HTML fica `no-cache`.
+**Antes do primeiro deploy**, em *Settings > Pages*, troque **Source** para
+**GitHub Actions**. Sem isso o deploy falha dizendo que o Pages não está
+habilitado.
+
+Para publicar à mão, sem esperar um push: aba *Actions* > *Documentação* >
+*Run workflow*.
+
+O workflow roda `check` antes de publicar, então um link quebrado, uma âncora
+inexistente ou um asset faltando **derrubam o deploy** em vez de ir para o ar.
+
+### As duas armadilhas do Pages, já resolvidas
+
+**1. O site não fica na raiz do domínio.** Num repo de projeto, o Pages serve
+em `<usuário>.github.io/<repo>/`. Um site com caminhos absolutos (`/assets/…`)
+procuraria na raiz do domínio e daria 404 em tudo.
+
+Resolvido na origem: **todo link interno é relativo**, calculado pelo build a
+partir da profundidade de cada página. A home pede `../assets/css/…`, uma
+página a cinco níveis pede `../../../../../assets/css/…`. Nenhuma
+configuração, e o site roda em qualquer ponto de montagem — inclusive aberto
+direto do disco.
+
+**2. O Jekyll ignora pasta com underscore.** O Pages roda Jekyll por padrão, e
+Jekyll não publica nada começando com `_` — o que inclui o `_design-system/`,
+onde mora o catálogo. Resolvido pelo `.nojekyll` que o build emite na raiz do
+`dist/`.
+
+Como não há caminho absoluto, o `http.server` da stdlib reproduz o Pages
+exatamente, sem nenhum handler especial. Por isso o comando de preview é o
+padrão, e o `check` **falha** se algum caminho interno sair absoluto.
+
+### Se um dia renomear o repo ou apontar um domínio
+
+Uma linha no `site.toml`:
+
+```toml
+site_url = "https://docs.betterai.dev"
+```
+
+Ela é usada só no `canonical`, no `hreflang` e no `sitemap.xml`, onde URL
+absoluta é obrigatória. Os links do site não dependem dela.
+
+### Cache
+
+Tudo em `/assets/` e os `search-index.*.json` têm hash de conteúdo no nome, e
+podem ser `immutable` por um ano. O HTML fica `no-cache`. O Pages já manda
+headers razoáveis sozinho; isso só importa se você trocar de host.

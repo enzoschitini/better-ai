@@ -1,11 +1,13 @@
 # Configuração do build. Lida com `tomllib` (stdlib no Python 3.12).
 
-# URL absoluta do site publicado. Usada no sitemap, canonical e hreflang.
-site_url = "https://docs.betterai.dev"
-
-# Prefixo de caminho, para quando o site não fica na raiz do domínio.
-# Raiz do domínio = "". Subpasta = "/better-ai" (sem barra no fim).
-base = ""
+# A única URL que o build precisa saber, e só porque canonical, hreflang e
+# sitemap exigem URL absoluta. Inclua o subcaminho, se houver.
+#
+# Todo link interno do site é relativo, então o site roda em qualquer ponto de
+# montagem sem configuração: raiz de domínio, subpasta do GitHub Pages, ou
+# aberto direto do disco. Se você renomear o repo ou apontar um domínio
+# próprio, esta linha é a única que muda.
+site_url = "https://enzoschitini.github.io/better-ai"
 
 # Link "Fonte:" e "Editar no GitHub".
 github_repo = "enzoschitini/better-ai"

@@ -1,0 +1,65 @@
+name: Documentação
+
+# Publica doc_page/dist no GitHub Pages.
+#
+# O build roda aqui, não no Pages: o Pages só serve arquivos estáticos. Por
+# isso dist/ não precisa ser versionado — é gerado a cada push.
+#
+# Antes do primeiro run, em Settings > Pages, troque "Source" para
+# "GitHub Actions". Sem isso o deploy falha dizendo que o Pages não está
+# habilitado.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'doc_page/**'
+      - '.github/workflows/docs.yml'
+  # Permite publicar à mão, sem esperar um push.
+  workflow_dispatch:
+
+# Só o necessário para publicar no Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Um deploy por vez; não cancela o que já está no ar.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      # Sem passo de instalação: o gerador usa só a biblioteca padrão.
+
+      - name: Gerar o site
+        run: python -m doc_page.builder build
+
+      - name: Verificar o resultado
+        # Falha o deploy se algum link, hreflang, âncora ou asset estiver
+        # quebrado. Melhor não publicar do que publicar errado.
+        run: python -m doc_page.builder check
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: doc_page/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

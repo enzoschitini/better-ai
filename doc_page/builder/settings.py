@@ -10,8 +10,7 @@ from pathlib import Path
 @dataclass(frozen=True)
 class Settings:
     root: Path  # doc_page/
-    site_url: str
-    base: str
+    site_url: str  # inclui o subcaminho, se houver
     github_repo: str
     github_branch: str
     swagger_url: str
@@ -45,14 +44,18 @@ class Settings:
         return f"{self.github_url}/edit/{self.github_branch}/doc_page/{rel}"
 
 
-def load(root: Path, base_override: str | None = None) -> Settings:
+def load(root: Path) -> Settings:
+    """Lê site.toml.
+
+    Não existe `base`: todos os caminhos internos do site são relativos, então
+    o site funciona em qualquer ponto de montagem sem configuração. O
+    `site_url` é usado só onde URL absoluta é obrigatória — canonical,
+    hreflang e sitemap — e deve incluir o subcaminho, se houver.
+    """
     data = tomllib.loads((root / "site.toml").read_text(encoding="utf-8"))
-    base = base_override if base_override is not None else data.get("base", "")
-    base = base.rstrip("/")
     return Settings(
         root=root,
         site_url=data.get("site_url", "").rstrip("/"),
-        base=base,
         github_repo=data.get("github_repo", ""),
         github_branch=data.get("github_branch", "main"),
         swagger_url=data.get("swagger_url", "#"),

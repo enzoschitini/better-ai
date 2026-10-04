@@ -18,17 +18,17 @@ def sitemap(pages: list[Page], st: Settings, dist: Path) -> int:
         if p.noindex:
             continue
         rows.append("  <url>")
-        rows.append(f"    <loc>{escape(st.site_url + p.url)}</loc>")
+        rows.append(f"    <loc>{escape(st.site_url + p.abs_url)}</loc>")
         for l in sorted(p.translations):
             if l in p.alt:
                 rows.append(
                     f'    <xhtml:link rel="alternate" hreflang="{l}" '
-                    f'href="{escape(st.site_url + p.alt[l])}"/>'
+                    f'href="{escape(st.site_url + "/" + p.alt[l])}"/>'
                 )
         if "pt" in p.alt:
             rows.append(
                 f'    <xhtml:link rel="alternate" hreflang="x-default" '
-                f'href="{escape(st.site_url + p.alt["pt"])}"/>'
+                f'href="{escape(st.site_url + "/" + p.alt["pt"])}"/>'
             )
         rows.append("  </url>")
 
@@ -40,6 +40,16 @@ def sitemap(pages: list[Page], st: Settings, dist: Path) -> int:
     )
     (dist / "sitemap.xml").write_text(xml, encoding="utf-8")
     return len([p for p in pages if not p.noindex])
+
+
+def nojekyll(dist: Path) -> None:
+    """Desliga o Jekyll no GitHub Pages.
+
+    Sem este arquivo o Pages roda Jekyll, que ignora todo arquivo e pasta
+    começando com `_` — e o catálogo do design system mora em
+    `_design-system/`. Custa zero e evita um 404 silencioso.
+    """
+    (dist / ".nojekyll").write_text("", encoding="utf-8")
 
 
 def robots(st: Settings, dist: Path) -> None:
@@ -60,7 +70,7 @@ def root_redirect(st: Settings, dist: Path, langs: list[str], default: str) -> N
     não tem JavaScript.
     """
     links = "\n".join(
-        f'    <li><a href="{st.base}/{l}/">{HTML_LANG.get(l, l)}</a></li>' for l in langs
+        f'    <li><a href="{l}/">{HTML_LANG.get(l, l)}</a></li>' for l in langs
     )
     html = f"""<!doctype html>
 <html lang="{HTML_LANG.get(default, default)}">
@@ -68,7 +78,7 @@ def root_redirect(st: Settings, dist: Path, langs: list[str], default: str) -> N
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, follow">
-<link rel="canonical" href="{st.site_url}{st.base}/{default}/">
+<link rel="canonical" href="{st.site_url}/{default}/">
 <title>BetterAI Docs</title>
 <script>
   (function () {{
@@ -82,10 +92,10 @@ def root_redirect(st: Settings, dist: Path, langs: list[str], default: str) -> N
         if (langs.indexOf(two) >= 0) pick = two;
       }}
     }}
-    location.replace('{st.base}/' + (pick || '{default}') + '/');
+    location.replace((pick || '{default}') + '/');
   }})();
 </script>
-<meta http-equiv="refresh" content="0;url={st.base}/{default}/">
+<meta http-equiv="refresh" content="0;url={default}/">
 </head>
 <body>
   <p>{esc(tr(default, 'redirect'))}</p>

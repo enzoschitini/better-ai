@@ -45,7 +45,7 @@ def _anchor_headings(html: str) -> str:
 
 def _empty_body(page: Page, st: Settings) -> str:
     lang = page.lang
-    url = f"{st.base}/{lang}/{page.area.slug}/"
+    url = page.rel_root + f"{lang}/{page.area.slug}/"
     return (
         '<div class="empty">\n'
         f'  <span class="empty-icon" data-ico="blank"></span>\n'
@@ -64,13 +64,12 @@ def _overview_body(page: Page, st: Settings, pages_by_id: dict) -> str:
     for k in a.kids:
         if "kids" in k:
             s = k.get("slug") or slug(k["t"])
-            kids = [c for c in k["kids"] if "kids" not in c]
-            first = kids[0] if kids else None
-            if first:
-                fid = f'{a.slug}/{s}/{first.get("slug") or slug(first["t"])}'
-            else:
-                fid = None
-            href = pages_by_id[(lang, fid)].url if fid and (lang, fid) in pages_by_id else "#"
+            # Desce até a primeira folha em qualquer profundidade: uma pasta
+            # pode conter só outras pastas (Agents contém só Utils), e aí não
+            # existe folha direta para linkar.
+            fid = _first_leaf_id(k, [a.slug, s])
+            tgt = pages_by_id.get((lang, fid)) if fid else None
+            href = page.href(tgt) if tgt else "#"
             n = sum(1 for _ in _walk_count(k))
             out.append(
                 f'  <a class="card" href="{href}">'
@@ -85,13 +84,26 @@ def _overview_body(page: Page, st: Settings, pages_by_id: dict) -> str:
                 continue
             lead = p.fragment.lead if p.fragment else ""
             out.append(
-                f'  <a class="card" href="{p.url}">'
+                f'  <a class="card" href="{page.href(p)}">'
                 f'<span class="card-icon" data-ico="{a.icon}"></span>'
                 f'<span class="card-title">{esc(k["t"])}</span>'
                 f'<span class="card-text">{esc(lead)}</span></a>'
             )
     out.append("</div>")
     return "\n".join(out)
+
+
+def _first_leaf_id(node: dict, path: list[str]) -> str | None:
+    """id da primeira folha em profundidade, para o cartão de uma pasta."""
+    for k in node.get("kids", []):
+        s = k.get("slug") or slug(k["t"])
+        if "kids" in k:
+            found = _first_leaf_id(k, path + [s])
+            if found:
+                return found
+        else:
+            return "/".join(path + [s])
+    return None
 
 
 def _walk_count(node):
@@ -108,7 +120,7 @@ def _home_body(page: Page, st: Settings, areas: list[Area]) -> str:
     cards = ['<h2>' + esc(tr(lang, "areasLbl")) + "</h2>", '<div class="cards">']
     for a in areas:
         cards.append(
-            f'  <a class="card" href="{st.base}/{lang}/{a.slug}/">'
+            f'  <a class="card" href="{page.rel_root}{lang}/{a.slug}/">'
             f'<span class="card-icon" data-ico="{a.icon}"></span>'
             f'<span class="card-title">{esc(a.title(lang))}</span>'
             f'<span class="card-text">{esc(a.about_text(lang))}</span></a>'
@@ -139,11 +151,11 @@ def _page_foot(page: Page, st: Settings) -> str:
     if page.prev or page.next:
         out.append(f'        <nav class="pager" aria-label="{esc(tr(lang, "pagerLbl"))}">')
         if page.prev:
-            out.append(f'          <a class="pager-link prev" href="{page.prev.url}">'
+            out.append(f'          <a class="pager-link prev" href="{page.href(page.prev)}">'
                        f'<i data-ico="chevron"></i><div><small>{esc(tr(lang, "prev"))}</small>'
                        f'<span>{esc(page.prev.nav_label)}</span></div></a>')
         if page.next:
-            out.append(f'          <a class="pager-link next" href="{page.next.url}">'
+            out.append(f'          <a class="pager-link next" href="{page.href(page.next)}">'
                        f'<div><small>{esc(tr(lang, "next"))}</small>'
                        f'<span>{esc(page.next.nav_label)}</span></div>'
                        f'<i data-ico="chevron"></i></a>')
@@ -166,20 +178,20 @@ def _head_meta(page: Page, st: Settings) -> str:
         # apontar para a irmã em pt criaria cadeia de canonical entre duas
         # páginas noindex, que é o que o check pega.
         if page.is_mirror and not page.empty:
-            target = page.alt.get("pt", page.url)
+            target = "/" + page.alt.get("pt", page.path)
         else:
-            target = page.url
+            target = page.abs_url
         out.append(f'<link rel="canonical" href="{st.site_url}{target}">')
     else:
-        out.append(f'<link rel="canonical" href="{st.site_url}{page.url}">')
+        out.append(f'<link rel="canonical" href="{st.site_url}{page.abs_url}">')
         # hreflang só para traduções reais. Espelho nunca declara o próprio idioma.
         for l in sorted(page.translations):
             if l in page.alt:
                 out.append(f'<link rel="alternate" hreflang="{l}" '
-                           f'href="{st.site_url}{page.alt[l]}">')
+                           f'href="{st.site_url}/{page.alt[l]}">')
         if "pt" in page.alt:
             out.append(f'<link rel="alternate" hreflang="x-default" '
-                       f'href="{st.site_url}{page.alt["pt"]}">')
+                       f'href="{st.site_url}/{page.alt["pt"]}">')
     return "\n".join(out)
 
 
@@ -254,11 +266,11 @@ def render(
     foot = []
     for label, pid in st.foot_links.items():
         p = pages_by_id.get((lang, pid))
-        foot.append(f'        <a href="{p.url if p else "#"}">{esc(label)}</a>')
+        foot.append(f'        <a href="{page.href(p) if p else "#"}">{esc(label)}</a>')
 
     docs_json = json.dumps({
-        "lang": lang, "base": st.base, "alt": page.alt,
-        "index": index_href,
+        "lang": lang, "root": page.rel_root, "alt": page.alt,
+        "index": page.rel_root + index_href,
         "i": {"noResults": tr(lang, "noResults", "%s"),
               "suggestions": tr(lang, "suggestions")},
     }, ensure_ascii=False, separators=(",", ":"))
@@ -268,17 +280,17 @@ def render(
         "head_title": esc(head_title),
         "description": esc(lead or tr(lang, "tagline")),
         "head_meta": _head_meta(page, st),
-        "css_href": css_href,
-        "js_href": js_href,
+        "css_href": page.rel_root + css_href,
+        "js_href": page.rel_root + js_href,
         "docs_json": docs_json,
-        "base": st.base,
-        "home_url": f"{st.base}/{lang}/",
+        "base": page.rel_root.rstrip("/") or ".",
+        "home_url": page.rel_root + f"{lang}/",
         "github_url": st.github_url,
         "swagger_url": st.swagger_url,
         "lang_upper": lang.upper(),
         "lang_items": "\n".join(lang_items),
-        "tabs": nav.tabs(page, areas, st.base),
-        "sidebar": nav.sidebar(page, areas, pages_by_id, st.base),
+        "tabs": nav.tabs(page, areas),
+        "sidebar": nav.sidebar(page, areas, pages_by_id),
         "subbar_area": esc(area_label),
         "subbar_here": esc(title),
         "eyebrow": eyebrow,

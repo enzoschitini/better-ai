@@ -51,7 +51,6 @@ def build_pages(
     ds_js: Path,
     langs: list[str],
     default_lang: str,
-    base: str = "",
 ) -> tuple[list[Page], list[Area]]:
     valid_icons = _icons_from_ds(ds_js)
     frags = {l: scan(content_dir, l) for l in langs}
@@ -114,7 +113,7 @@ def build_pages(
         home_frag = frags[lang].get("index") or frags[default_lang].get("index")
         pages.append(Page(
             id="home", kind="home", lang=lang, name="BetterAI",
-            slug_path="index", url=f"{base}/{lang}/", out_path=f"{lang}/index.html",
+            slug_path="index", path=f"{lang}/", out_path=f"{lang}/index.html",
             fragment=home_frag,
             is_mirror=("index" not in frags[lang] and home_frag is not None),
             translations={l for l in langs if "index" in frags[l]},
@@ -125,7 +124,7 @@ def build_pages(
         for area in areas:
             pages.append(Page(
                 id=area.slug, kind="overview", lang=lang, name=area.name,
-                slug_path="", url=f"{base}/{lang}/{area.slug}/",
+                slug_path="", path=f"{lang}/{area.slug}/",
                 out_path=f"{lang}/{area.slug}/index.html",
                 area=area, translations=set(langs), order=order,
             ))
@@ -147,7 +146,7 @@ def build_pages(
                     n = n.parent
                 pages.append(Page(
                     id=sp, kind="leaf", lang=lang, name=k["t"],
-                    slug_path=sp, url=f"{base}/{lang}/{sp}/",
+                    slug_path=sp, path=f"{lang}/{sp}/",
                     out_path=f"{lang}/{sp}/index.html",
                     area=area, crumbs=[c.name for c in chain], ancestors=chain,
                     empty=bool(k.get("empty")), fragment=frag, is_mirror=mirror,
@@ -168,6 +167,7 @@ def build_pages(
     # --- alternates por idioma --------------------------------------------
     by_id: dict[tuple[str, str], Page] = {(p.lang, p.id): p for p in pages}
     for p in pages:
-        p.alt = {l: by_id[(l, p.id)].url for l in langs if (l, p.id) in by_id}
+        # caminhos relativos à raiz; cada página prefixa com o próprio rel_root
+        p.alt = {l: by_id[(l, p.id)].path for l in langs if (l, p.id) in by_id}
 
     return pages, areas

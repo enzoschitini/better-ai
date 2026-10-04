@@ -19,41 +19,42 @@ from .slugs import esc, slug
 from .strings import tr
 
 
-def tabs(page: Page, areas: list[Area], base: str) -> str:
+def tabs(page: Page, areas: list[Area]) -> str:
     """A linha de abas: visão geral + uma por área."""
     out = []
-    home = f"{base}/{page.lang}/"
+    home = page.rel_root + f"{page.lang}/"
     cur = ' aria-current="page"' if page.kind == "home" else ""
     out.append(f'      <a class="tab" href="{home}"{cur}>{esc(tr(page.lang, "overview"))}</a>')
     for a in areas:
         active = page.area is a and page.kind != "home"
         cur = ' aria-current="page"' if active else ""
-        url = f"{base}/{page.lang}/{a.slug}/"
+        url = page.rel_root + f"{page.lang}/{a.slug}/"
         out.append(f'      <a class="tab" href="{url}"{cur}>{esc(a.title(page.lang))}</a>')
     return "\n".join(out)
 
 
-def _side_areas(page: Page, areas: list[Area], base: str) -> str:
+def _side_areas(page: Page, areas: list[Area]) -> str:
     """Seletor de áreas, que no celular aparece dentro da gaveta."""
     out = ['      <div class="side-areas">']
     cur = ' aria-current="page"' if page.kind == "home" else ""
-    out.append(f'        <a href="{base}/{page.lang}/"{cur}>{esc(tr(page.lang, "overview"))}</a>')
+    out.append(f'        <a href="{page.rel_root}{page.lang}/"{cur}>{esc(tr(page.lang, "overview"))}</a>')
     for a in areas:
         active = page.area is a and page.kind != "home"
         cur = ' aria-current="page"' if active else ""
-        out.append(f'        <a href="{base}/{page.lang}/{a.slug}/"{cur}>{esc(a.title(page.lang))}</a>')
+        out.append(f'        <a href="{page.rel_root}{page.lang}/{a.slug}/"{cur}>{esc(a.title(page.lang))}</a>')
     out.append("      </div>")
     return "\n".join(out)
 
 
 def _link(p: Page, cur: Page, lang: str) -> str:
     attr = ' aria-current="page"' if p.id == cur.id else ""
+    href = cur.href(p)
     if p.empty:
         inner = (f'<span>{esc(p.nav_label)}</span>'
                  f'<span class="badge">{esc(tr(lang, "badge"))}</span>')
     else:
         inner = f"<span>{esc(p.nav_label)}</span>"
-    return f'<li><a class="side-link" href="{p.url}"{attr}>{inner}</a></li>'
+    return f'<li><a class="side-link" href="{href}"{attr}>{inner}</a></li>'
 
 
 def _node(k: dict, path: list[str], cur: Page, pages_by_id: dict, lang: str, depth: int) -> str:
@@ -82,17 +83,17 @@ def _node(k: dict, path: list[str], cur: Page, pages_by_id: dict, lang: str, dep
     return pad + _link(p, cur, lang)
 
 
-def sidebar(page: Page, areas: list[Area], pages_by_id: dict, base: str) -> str:
+def sidebar(page: Page, areas: list[Area], pages_by_id: dict) -> str:
     """O menu lateral: só a área atual, ou a lista de áreas na home."""
     lang = page.lang
-    out = [_side_areas(page, areas, base)]
+    out = [_side_areas(page, areas)]
 
     if page.kind == "home":
         out.append(f'      <div class="side-group">')
         out.append(f'        <p class="side-title">{esc(tr(lang, "areasLbl"))}</p>')
         out.append("        <ul>")
         for a in areas:
-            url = f"{base}/{lang}/{a.slug}/"
+            url = page.rel_root + f"{lang}/{a.slug}/"
             out.append(f'          <li><a class="side-link" href="{url}">'
                        f'<span>{esc(a.title(lang))}</span></a></li>')
         out.append("        </ul>")
@@ -101,7 +102,7 @@ def sidebar(page: Page, areas: list[Area], pages_by_id: dict, base: str) -> str:
 
     a = page.area
     ov_cur = ' aria-current="page"' if page.kind == "overview" else ""
-    out.append(f'      <a class="side-link" href="{base}/{lang}/{a.slug}/"{ov_cur}>'
+    out.append(f'      <a class="side-link" href="{page.rel_root}{lang}/{a.slug}/"{ov_cur}>'
                f'{esc(tr(lang, "overview"))}</a>')
 
     loose = [k for k in a.kids if "kids" not in k]

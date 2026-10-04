@@ -10,6 +10,7 @@ Stdlib only. Nada entra no pyproject.toml por causa do build.
 from __future__ import annotations
 
 import argparse
+import re
 import shutil
 import sys
 from pathlib import Path
@@ -24,22 +25,31 @@ from doc_page.builder.tree import ManifestError, build_pages  # noqa: E402
 
 
 def cmd_build(args) -> int:
-    st = settings.load(ROOT / "doc_page", args.base)
+    st = settings.load(ROOT / "doc_page")
     langs = args.langs.split(",") if args.langs else manifest.LANGS
     default = manifest.DEFAULT_LANG
 
-    print(f"doc_page build · idiomas: {', '.join(langs)} · base: {st.base or '/'}")
+    print(f"doc_page build · idiomas: {', '.join(langs)}")
 
     pages, areas = build_pages(
-        manifest, st.content, st.theme / "js" / "ds.js", langs, default, st.base
+        manifest, st.content, st.theme / "js" / "ds.js", langs, default
     )
     by_id = {(p.lang, p.id): p for p in pages}
     print(f"  {len(pages)} páginas ({len(pages) // len(langs)} por idioma)")
 
     dist = st.dist
-    if dist.exists():
-        shutil.rmtree(dist)
-    dist.mkdir(parents=True)
+    # Limpa o conteúdo, não a pasta. No Windows, um preview rodando dentro do
+    # dist/ mantém um handle no diretório, e remover a pasta falharia com
+    # PermissionError no meio do build.
+    dist.mkdir(parents=True, exist_ok=True)
+    for item in dist.iterdir():
+        if item.is_dir():
+            shutil.rmtree(item, ignore_errors=True)
+        else:
+            try:
+                item.unlink()
+            except OSError:
+                pass
 
     layout = (st.theme / "layout.html").read_text(encoding="utf-8")
     css_href = assets.build_css(st, dist)
@@ -56,9 +66,9 @@ def cmd_build(args) -> int:
     for lang in langs:
         rendered = {pid: prose[(l, pid)][0] for (l, pid) in prose if l == lang}
         idx = searchindex.build(pages, lang, manifest.POPULAR, rendered)
-        index_href[lang] = searchindex.write(idx, dist, lang, st.base)
+        index_href[lang] = searchindex.write(idx, dist, lang)
         print(f"  busca {lang}: {len(idx['p'])} páginas, {len(idx['s'])} seções, "
-              f"{len(Path(dist / lang / index_href[lang].rsplit('/', 1)[-1]).read_bytes()) // 1024} KB")
+              f"{len((dist / index_href[lang]).read_bytes()) // 1024} KB")
 
     # passada 2: páginas completas
     written: list[Path] = []
@@ -82,9 +92,10 @@ def cmd_build(args) -> int:
     cat_html = cat_html.replace(
         "<head>", '<head>\n<meta name="robots" content="noindex, nofollow">', 1
     )
+    # o catálogo fica em _design-system/, então assets sobe um nível só
     cat_html = cat_html.replace('href="../css/', 'href="css/').replace(
         'src="../js/', 'src="js/'
-    ).replace('src="../../assets/', f'src="{st.base}/assets/')
+    ).replace('src="../../assets/', 'src="../assets/')
     (cat_dst / "index.html").write_text(cat_html, encoding="utf-8")
     shutil.copytree(st.theme / "css", cat_dst / "css", dirs_exist_ok=True)
     shutil.copytree(st.theme / "js", cat_dst / "js", dirs_exist_ok=True)
@@ -92,22 +103,36 @@ def cmd_build(args) -> int:
     # SEO
     n = seo.sitemap(pages, st, dist)
     seo.robots(st, dist)
+    seo.nojekyll(dist)
     seo.root_redirect(st, dist, langs, default)
     print(f"  sitemap: {n} URLs indexáveis ({len(pages) - n} noindex)")
 
-    # 404 com chrome completo, reusando o layout
-    home = by_id[(default, "home")]
+    # 404 com chrome completo, reusando o layout.
+    # Precisa de uma Page própria: ele mora na RAIZ do dist, não dentro de
+    # /pt/, então seu rel_root é vazio. Reusar o objeto da home daria
+    # caminhos com "../" numa página que já está na raiz.
+    import dataclasses
+
     from doc_page.builder.strings import tr as _tr
+
+    home = by_id[(default, "home")]
+    p404 = dataclasses.replace(home, id="404", path="", out_path="404.html")
+    p404.alt = {}          # não há 404 por idioma; o seletor não deve chutar
+    p404.prev = p404.next = None
     b = (f'<p>{_tr(default, "notFoundText")}</p>\n<div class="cards">\n'
          + "\n".join(
-             f'  <a class="card" href="{st.base}/{default}/{a.slug}/">'
+             f'  <a class="card" href="{default}/{a.slug}/">'
              f'<span class="card-icon" data-ico="{a.icon}"></span>'
              f'<span class="card-title">{a.title(default)}</span></a>'
              for a in areas) + "\n</div>")
     html404 = render.render(
-        home, st, areas, by_id, layout, css_href, js_href, index_href[default],
+        p404, st, areas, by_id, layout, css_href, js_href, index_href[default],
         b, _tr(default, "notFound"), "", _tr(default, "notFound"),
     ).replace("<head>", '<head>\n<meta name="robots" content="noindex, nofollow">', 1)
+    # Uma página de erro não tem URL canônica: ela responde em qualquer
+    # endereço que não existe. Declarar canonical aqui só criaria uma cadeia
+    # para o redirect da raiz, que também é noindex.
+    html404 = re.sub(r'<link rel="canonical"[^>]*>\n?', "", html404)
     (dist / "404.html").write_text(html404, encoding="utf-8")
 
     # assets referenciados — o catálogo entra na varredura, senão as imagens
@@ -124,7 +149,7 @@ def cmd_build(args) -> int:
     # structure.json por idioma, para quem quiser a árvore como dado
     import json
     for lang in langs:
-        rows = [{"id": p.id, "kind": p.kind, "url": p.url, "title": p.title,
+        rows = [{"id": p.id, "kind": p.kind, "path": p.path, "title": p.title,
                  "nav": p.nav_label, "empty": p.empty, "mirror": p.is_mirror,
                  "crumbs": p.crumbs} for p in pages if p.lang == lang]
         (dist / lang / "structure.json").write_text(
@@ -136,43 +161,38 @@ def cmd_build(args) -> int:
 
 def cmd_check(args) -> int:
     from doc_page.builder import check
-    st = settings.load(ROOT / "doc_page", args.base)
+    st = settings.load(ROOT / "doc_page")
     return check.run(st, manifest, args.langs.split(",") if args.langs else manifest.LANGS)
 
 
 def cmd_serve(args) -> int:
-    import functools
-    import http.server
-    import socketserver
+    """Atalho para o http.server da stdlib.
 
-    st = settings.load(ROOT / "doc_page", args.base)
+    Como todos os caminhos internos do site são relativos, não existe nada a
+    reescrever: o `http.server` serve o dist/ exatamente como o GitHub Pages
+    vai servir. Este subcomando só poupa o `cd` e já amarra em 127.0.0.1.
+
+    Equivalente:
+        cd doc_page/dist && python -m http.server 8765 --bind 127.0.0.1
+    """
+    import http.server
+
+    st = settings.load(ROOT / "doc_page")
     dist = st.dist
     if not dist.is_dir():
         print("dist/ não existe. Rode o build primeiro.")
         return 1
 
-    class H(http.server.SimpleHTTPRequestHandler):
-        """Mapeia /x/ → /x/index.html, para URL sem barra final se comportar
-        como vai se comportar em produção."""
-
-        def translate_path(self, path):
-            p = super().translate_path(path)
-            if Path(p).is_dir():
-                idx = Path(p) / "index.html"
-                if idx.is_file():
-                    return str(idx)
-            if not Path(p).exists() and not path.endswith("/"):
-                alt = Path(p + "/index.html")
-                if alt.is_file():
-                    return str(alt)
-            return p
-
-        def log_message(self, *a):
-            pass
-
-    handler = functools.partial(H, directory=str(dist))
-    with socketserver.TCPServer(("", args.port), handler) as srv:
-        print(f"servindo {dist} em http://localhost:{args.port}/  (Ctrl C para parar)")
+    import functools
+    handler = functools.partial(
+        http.server.SimpleHTTPRequestHandler, directory=str(dist)
+    )
+    # ThreadingHTTPServer em vez de TCPServer: ele já liga SO_REUSEADDR, então
+    # reiniciar o preview não bate em "porta em uso" por causa do TIME_WAIT.
+    # E 127.0.0.1, não 0.0.0.0: preview não precisa estar na rede local.
+    with http.server.ThreadingHTTPServer((args.bind, args.port), handler) as srv:
+        print(f"servindo {dist}")
+        print(f"  http://{args.bind}:{args.port}/   (Ctrl C para parar)")
         try:
             srv.serve_forever()
         except KeyboardInterrupt:
@@ -188,9 +208,9 @@ def main(argv: list[str] | None = None) -> int:
     for name, fn in (("build", cmd_build), ("check", cmd_check), ("serve", cmd_serve)):
         p = sub.add_parser(name)
         p.add_argument("--langs", default=None, help="ex: pt ou pt,en,it")
-        p.add_argument("--base", default=None, help="prefixo de caminho")
         if name == "serve":
-            p.add_argument("--port", type=int, default=8080)
+            p.add_argument("--port", type=int, default=8765)
+            p.add_argument("--bind", default="127.0.0.1")
         p.set_defaults(fn=fn)
 
     args = ap.parse_args(argv)
