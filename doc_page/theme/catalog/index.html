@@ -13,8 +13,8 @@
     document.documentElement.dataset.theme = t;
   })();
 </script>
-<link rel="stylesheet" href="css/design-system.css">
-<link rel="stylesheet" href="css/catalog.css">
+<link rel="stylesheet" href="../css/design-system.css">
+<link rel="stylesheet" href="../css/catalog.css">
 </head>
 <body>
 <a class="skip" href="#main">Ir para o conteúdo</a>
@@ -23,7 +23,7 @@
   <div class="bar">
     <div class="row1">
       <a class="brand" href="#">
-        <img src="../../images/Logo_Icon.png" alt="">
+        <img src="../../assets/img/logo-icon.png" alt="">
         <span class="brand-name">BetterAI</span>
         <span class="brand-sub">Design System</span>
       </a>
@@ -368,7 +368,7 @@ model = gateway.<span class="t-f">create_model</span>(
           <p>Imagens e vídeos entram em uma moldura com fundo cinza e cantos de 18 px. Vídeos têm proporção 16:9. Use <code>figure</code> com <code>figcaption</code> quando houver legenda, e sempre escreva o texto alternativo.</p>
           <div class="demo bare" data-src>
             <figure class="frame">
-              <img src="../../images/Frame%2027346.png" alt="Pintura em tons de azul e verde com o nome BetterAI ao centro">
+              <img src="../../assets/img/frame-27346.png" alt="Pintura em tons de azul e verde com o nome BetterAI ao centro">
               <figcaption>Exemplo de saída no estilo aquarela.</figcaption>
             </figure>
           </div>
@@ -526,6 +526,6 @@ model = gateway.<span class="t-f">create_model</span>(
   new MutationObserver(swatches).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 })();
 </script>
-<script src="js/ds.js"></script>
+<script src="../js/ds.js"></script>
 </body>
 </html>

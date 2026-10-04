@@ -137,10 +137,23 @@ O que o design system já garante, e que você mantém ao seguir o template:
 - Movimento reduzido: transições desligam com `prefers-reduced-motion`.
 - Texto corrido (`--ink`, `--ink-2`, `--ink-3`), links e botão principal passam de 4,5:1 nos dois temas.
 
-Pontos conhecidos, herdados do protótipo e ainda sem correção:
+As quatro falhas de contraste herdadas do protótipo foram corrigidas quando o
+site passou a ser público. Todas eram valor de token, sem mudança de HTML, e o
+matiz foi preservado — só a luminosidade desceu até bater 4,5:1:
 
-- `--ink-4` tem 2,6:1 no tema claro e 4,1:1 no escuro. Use só em ícones e detalhes decorativos, nunca em texto que a pessoa precisa ler.
-- No tema claro, três cores do realce de código ficam abaixo de 4,5:1: `--t-s` (3,3:1), `--t-c` (3,2:1) e `--t-n` (3,0:1). Se o design system for revisado para acessibilidade, comece por elas.
+| Token | Antes | Agora | Uso |
+| --- | --- | --- | --- |
+| `--ink-4` claro | `#9f9fa0` · 2,6:1 | `#767677` · 4,5:1 | texto discreto e ícones |
+| `--ink-4` escuro | `#6d6f7c` · 4,1:1 | `#747784` · 4,5:1 | texto discreto e ícones |
+| `--t-c` claro | `#8c8fa1` · 3,2:1 | `#72758b` · 4,5:1 | comentário no código |
+| `--t-s` claro | `#40a02b` · 3,3:1 | `#368724` · 4,5:1 | string no código |
+| `--t-n` claro | `#fe640b` · 3,0:1 | `#ce4c01` · 4,5:1 | número no código |
+
+No tema escuro, `--t-c`, `--t-s` e `--t-n` já passavam com folga (6,4:1,
+13,6:1 e 11,4:1) e não foram tocados.
+
+Ao mexer em qualquer cor de texto, confira a razão contra `--bg` do tema em
+questão — `#ffffff` no claro, `#030710` no escuro — e mantenha 4,5:1.
 
 ### Telas
 

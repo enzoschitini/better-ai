@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="{{html_lang}}" data-theme-default>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+  // Define o tema antes de pintar a página, para não piscar. Não remova.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<meta name="color-scheme" content="light dark">
+<title>{{head_title}}</title>
+<meta name="description" content="{{description}}">
+{{head_meta}}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="{{css_href}}">
+<link rel="icon" href="{{base}}/assets/img/logo-icon.png">
+<script>window.DOCS={{docs_json}};</script>
+<script defer src="{{js_href}}"></script>
+</head>
+<body>
+<a class="skip" href="#main">{{s_skip}}</a>
+
+<header class="header" id="header">
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="{{home_url}}">
+        <img src="{{base}}/assets/img/logo-icon.png" alt="">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="{{s_searchLbl}}">
+        <i data-ico="search"></i><span>{{s_searchPh}}</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="{{github_url}}"><i data-ico="code"></i>GitHub</a>
+        <a class="btn-cta" href="{{swagger_url}}">Swagger UI<i data-ico="chevron"></i></a>
+        <div class="lang">
+          <button class="lang-btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="{{s_langLbl}}"><i data-ico="globe"></i><b>{{lang_upper}}</b></button>
+          <ul class="lang-menu" role="menu" hidden>
+{{lang_items}}
+          </ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="{{s_themeLbl}}"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="{{s_areasLbl}}">
+{{tabs}}
+    </nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false"><i data-ico="menu"></i><span>{{subbar_area}}</span></button>
+      <i data-ico="chevron"></i>
+      <span class="here">{{subbar_here}}</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="{{s_sideNavLbl}}">
+    <nav class="side">
+{{sidebar}}
+    </nav>
+  </aside>
+
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">{{eyebrow}}</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">{{page_title}}</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><i data-ico="copy"></i><span>{{s_copyPage}}</span></button>
+            </div>
+          </div>
+          <p class="lead">{{lead}}</p>
+          <details class="toc-inline"><summary>{{s_onThisPage}}</summary><ul></ul></details>
+        </header>
+
+        <div class="prose">
+{{prose}}
+        </div>
+
+{{page_foot}}
+      </main>
+
+      <aside class="toc" id="toc" data-toc aria-label="{{s_onThisPage}}"></aside>
+    </div>
+
+    <footer class="site-foot">
+      <div class="foot-brand">
+        <a class="brand" href="{{home_url}}"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+        <p>{{s_tagline}}</p>
+      </div>
+      <div class="foot-col">
+        <h2>{{s_footResources}}</h2>
+        <a href="{{swagger_url}}">Swagger UI</a>
+        <a href="{{github_url}}">GitHub</a>
+      </div>
+      <div class="foot-col">
+        <h2>{{s_footPlatform}}</h2>
+{{foot_links}}
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="{{s_searchLbl}}">
+  <div class="search-field">
+    <i data-ico="search"></i>
+    <input type="search" placeholder="{{s_dlgPh}}" autocomplete="off" spellcheck="false">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" role="listbox" aria-label="{{s_resultsLbl}}"></ul>
+  <div class="search-foot">
+    <span><kbd>↑</kbd><kbd>↓</kbd><span>{{s_navigate}}</span></span>
+    <span><kbd>Enter</kbd><span>{{s_openRes}}</span></span>
+  </div>
+</dialog>
+</body>
+</html>

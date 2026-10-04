@@ -1,0 +1,23 @@
+# Configuração do build. Lida com `tomllib` (stdlib no Python 3.12).
+
+# URL absoluta do site publicado. Usada no sitemap, canonical e hreflang.
+site_url = "https://docs.betterai.dev"
+
+# Prefixo de caminho, para quando o site não fica na raiz do domínio.
+# Raiz do domínio = "". Subpasta = "/better-ai" (sem barra no fim).
+base = ""
+
+# Link "Fonte:" e "Editar no GitHub".
+github_repo = "enzoschitini/better-ai"
+github_branch = "main"
+
+# Links do chrome.
+swagger_url = "https://better-ai-production.up.railway.app/docs"
+
+# Aviso no topo. Vazio = sem faixa.
+banner = ""
+
+[links]
+# Coluna "Plataforma" do rodapé: rótulo = id de página.
+"Web Service Network" = "modules/web-service-network/web-service-api"
+"Acquarello" = "streamlit-applications/acquarello"

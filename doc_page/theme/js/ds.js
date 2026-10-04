@@ -169,7 +169,12 @@
     hs.forEach(function (h) {
       if (!h.id) { var id = slug(h.textContent), n = 2, base = id; while (seen[id] || document.getElementById(id)) id = base + '-' + n++; h.id = id; }
       seen[h.id] = 1;
-      h.insertAdjacentHTML('afterbegin', '<a class="anchor" href="#' + h.id + '" aria-label="Link para esta seção">#</a>');
+      // O build do site já ancora os títulos, para que o id exista no HTML
+      // antes de o JS rodar (deep link e índice de busca dependem disso).
+      // Sem esta guarda, cada título ganharia uma segunda âncora: "##".
+      if (!h.querySelector('.anchor')) {
+        h.insertAdjacentHTML('afterbegin', '<a class="anchor" href="#' + h.id + '" aria-label="Link para esta seção">#</a>');
+      }
     });
     var has = hs.length > 1;
     document.body.classList.toggle('no-toc', !has);
