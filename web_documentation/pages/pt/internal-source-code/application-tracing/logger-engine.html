@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Logger Engine | BetterAI Docs</title>
+<meta name="description" content="Página de exemplo para Logger Engine, usada para validar o layout.">
+<link rel="canonical" href="pages/pt/internal-source-code/application-tracing/logger-engine.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="../../../../_design-system/css/design-system.css">
+</head>
+<body>
+<a class="skip" href="#main">Ir para o conteúdo</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span>Protótipo de layout. O conteúdo das páginas é de exemplo.</span>
+    <button type="button" aria-label="Fechar aviso"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../pages/pt/index.html">
+        <img src="../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Buscar na documentação">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Buscar...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="#"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="#">Swagger UI<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Idioma"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>PT</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="true"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="false"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="false"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Alternar tema claro e escuro"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Áreas da documentação"><a class="tab" href="../../../../pages/pt/index.html">Visão geral</a><a class="tab" href="../../../../pages/pt/getting-started/index.html">Getting Started</a><a class="tab" href="../../../../pages/pt/modules/index.html">Modules</a><a class="tab" href="../../../../pages/pt/internal-source-code/index.html" aria-current="page">Internal Source Code</a><a class="tab" href="../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Internal Source Code</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Logger Engine</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Navegação da documentação">
+    <nav class="side"><div class="side-areas"><a href="../../../../pages/pt/index.html">Visão geral</a><a href="../../../../pages/pt/getting-started/index.html">Getting Started</a><a href="../../../../pages/pt/modules/index.html">Modules</a><a href="../../../../pages/pt/internal-source-code/index.html" aria-current="page">Internal Source Code</a><a href="../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a></div><a class="side-link" href="../../../../pages/pt/internal-source-code/index.html"><span>Visão geral</span></a><div class="side-group"><p class="side-title">Geral</p><ul><li><a class="side-link" href="../../../../pages/pt/internal-source-code/agnoui.html"><span>AgnoUI</span></a></li></ul></div><div class="side-group"><p class="side-title">Application Tracing</p><ul><li><a class="side-link" href="../../../../pages/pt/internal-source-code/application-tracing/logger-engine.html" aria-current="page"><span>Logger Engine</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/application-tracing/payload-builder.html"><span>Payload Builder</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/application-tracing/tracing-core.html"><span>Tracing Core</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/application-tracing/use.html"><span>Use</span><span class="badge">vazio</span></a></li></ul></div><div class="side-group"><p class="side-title">Database</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>No SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/database/no-sql/local-manage.html"><span>Local Manage</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/database/no-sql/mongo-manager.html"><span>Mongo Manager</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/database/no-sql/router.html"><span>Router</span></a></li></ul></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/database/sql/supabase-database.html"><span>Supabase Database</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Storage</p><ul><li><a class="side-link" href="../../../../pages/pt/internal-source-code/storage/storage-menage-repository.html"><span>Storage Menage Repository</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Supabase</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/storage/supabase/storage-menager.html"><span>Storage Menager</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Token Calculate</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Exchange Rate</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/token-calculate/exchange-rate/bcb-exchange-rate-service.html"><span>BCB Exchange Rate Service</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/token-calculate/exchange-rate/exchange-rate-service.html"><span>Exchange Rate Service</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/token-calculate/model-pricing.html"><span>Model Pricing</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/token-calculate/token-counter.html"><span>Token Counter</span></a></li></ul></div><div class="side-group"><p class="side-title">Utils</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Load Request File</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/utils/load-request-file/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/utils/load-request-file/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/utils/loader-files.html"><span>Loader Files</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/utils/unique-id-factory.html"><span>Unique ID Factory</span></a></li></ul></div><div class="side-group"><p class="side-title">Vector Store</p><ul><li><a class="side-link" href="../../../../pages/pt/internal-source-code/vector-store/pinecone-client.html"><span>Pinecone Client</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/vector-store/pinecone-embedding.html"><span>Pinecone Embedding</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/vector-store/pinecone-retriever.html"><span>Pinecone Retriever</span></a></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Application Tracing</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Logger Engine</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copiar página</span></button>
+            </div>
+          </div>
+          <p class="lead">Página de exemplo para Logger Engine, usada para validar o layout.</p>
+          <details class="toc-inline"><summary>Nesta página</summary><ul></ul></details>
+        </header>
+        <div class="prose"><div class="callout" data-kind="note"><p><strong>Conteúdo de exemplo.</strong> Este texto existe só para validar o layout. Na versão final, a página é gerada a partir de <code>ipynb_contents/Internal Source Code/Application Tracing/Logger Engine.ipynb</code>.</p></div>
+
+  <h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão geral</h2>
+  <p>Logger Engine faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
+
+  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
+  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> LoggerEngine
+
+client = <span class="t-f">LoggerEngine</span>()
+result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
+<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="parametros"><a class="anchor" href="#parametros" aria-label="Link para esta seção">#</a>Parâmetros</h2>
+  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <tbody>
+        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
+        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
+        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="observacoes"><a class="anchor" href="#observacoes" aria-label="Link para esta seção">#</a>Observações</h2>
+  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
+  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div></div>
+        <div class="feedback"></div>
+        <p class="source">Fonte: <code>ipynb_contents/Internal Source Code/Application Tracing/Logger Engine.ipynb</code></p>
+        <nav class="pager" aria-label="Páginas vizinhas"><a class="pager-link prev" href="../../../../pages/pt/internal-source-code/agnoui.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Anterior</small><span>AgnoUI</span></div></a><a class="pager-link next" href="../../../../pages/pt/internal-source-code/application-tracing/payload-builder.html"><div><small>Próxima</small><span>Payload Builder</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="Nesta página"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-brand">
+        <a class="brand" href="../../../../pages/pt/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+        <p>Where intelligence finds purpose.</p>
+      </div>
+      <div class="foot-col"><h2>Recursos</h2><a href="#">Swagger UI</a><a href="#">GitHub</a></div>
+      <div class="foot-col"><h2>Plataforma</h2><a href="../../../../pages/pt/modules/web-service-network/web-service-network-api.html">Web Service Network - API</a><a href="../../../../pages/pt/streamlit-applications/acquarello.html">Acquarello</a><a href="../../../../pages/pt/streamlit-applications/content-generator.html">Content Generator</a></div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Buscar na documentação">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Buscar páginas e seções" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Resultados"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>navegar</span></span>
+    <span><kbd>Enter</kbd><span>abrir</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "pt", "root": "../../../../", "index": "../../../../search-pt.json", "alt": {"pt": "pages/pt/internal-source-code/application-tracing/logger-engine.html", "it": "pages/it/internal-source-code/application-tracing/logger-engine.html", "en": "pages/en/internal-source-code/application-tracing/logger-engine.html"}, "i": {"noResults": "Nada encontrado para “%s”. Tente o nome de um módulo, como “Pinecone”.", "suggestions": "Sugestões"}};</script>
+<script src="../../../../_design-system/js/ds.js"></script>
+<script src="../../../../_design-system/js/docs.js"></script>
+</body>
+</html>

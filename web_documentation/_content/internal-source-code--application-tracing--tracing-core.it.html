@@ -1,0 +1,31 @@
+<page data-lead="Pagina di esempio per Tracing Core, usata per validare il layout.">
+  <div class="callout" data-kind="note"><p><strong>Contenuto di esempio.</strong> Questo testo esiste solo per validare il layout. Nella versione finale la pagina è generata da <code>ipynb_contents/Internal Source Code/Application Tracing/Tracing Core.ipynb</code>.</p></div>
+
+  <h2>Panoramica</h2>
+  <p>Tracing Core fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
+
+  <h2>Uso</h2>
+  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
+  <pre data-lang="python"><code>
+from better_ai import TracingCore
+
+client = TracingCore()
+result = client.run(model_id="claude-sonnet-5-5")
+print(result)
+  </code></pre>
+
+  <h2>Parametri</h2>
+  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
+  <table>
+    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <tbody>
+        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
+        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
+        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Note</h2>
+  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
+  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div>
+</page>

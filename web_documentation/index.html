@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BetterAI Docs</title>
+<!--
+  Gerado por .claude/skills/docs-from-ipynb/scripts/build.py. Nao edite.
+  Esta pagina so escolhe o idioma e redireciona. O site vive em pages/<lang>/.
+-->
+<script>
+  (function () {
+    var alts = {"pt": "pages/pt/index.html", "it": "pages/it/index.html", "en": "pages/en/index.html"}, order = ["pt", "it", "en"], pick = null;
+    try { pick = localStorage.getItem('betterai-docs-lang'); } catch (e) {}
+    if (!alts[pick]) {
+      var nav = (navigator.language || '').toLowerCase();
+      for (var i = 0; i < order.length; i++) {
+        if (nav.indexOf(order[i]) === 0) { pick = order[i]; break; }
+      }
+    }
+    if (!alts[pick]) pick = "pt";
+    location.replace(alts[pick] + location.hash);
+  })();
+</script>
+<meta http-equiv="refresh" content="0; url=pages/pt/index.html">
+<style>
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center;
+         font: 400 1rem/1.5 system-ui, sans-serif; background: #fff; color: #030710; }
+  a { color: #4b61d1; }
+  @media (prefers-color-scheme: dark) { body { background: #030710; color: #eceef3; } a { color: #93a4ff; } }
+</style>
+</head>
+<body>
+<p><a href="pages/pt/index.html">BetterAI Docs</a></p>
+</body>
+</html>
