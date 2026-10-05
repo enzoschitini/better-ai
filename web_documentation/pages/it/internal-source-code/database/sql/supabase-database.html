@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Supabase Database | BetterAI Docs</title>
-<meta name="description" content="Pagina di esempio per Supabase Database, usata per validare il layout.">
+<meta name="description" content="Questa documentazione descrive in dettaglio l'architettura e il funzionamento del motore di persistenza dei dati creato per interagire con Supabase, utilizzando un approccio ibrido tra l'API REST (tramite il client ufficiale) e l'accesso diretto a PostgreSQL (tramite psycopg2).">
 <link rel="canonical" href="pages/it/internal-source-code/database/sql/supabase-database.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,112 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copia pagina</span></button>
             </div>
           </div>
-          <p class="lead">Pagina di esempio per Supabase Database, usata per validare il layout.</p>
+          <p class="lead">Questa documentazione descrive in dettaglio l'architettura e il funzionamento del motore di persistenza dei dati creato per interagire con Supabase, utilizzando un approccio ibrido tra l'API REST (tramite il client ufficiale) e l'accesso diretto a PostgreSQL (tramite psycopg2).</p>
           <details class="toc-inline"><summary>In questa pagina</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Contenuto di esempio.</strong> Questo testo esiste solo per validare il layout. Nella versione finale la pagina è generata da <code>ipynb_contents/Internal Source Code/Database/SQL/Supabase Database.ipynb</code>.</p></div>
+        <div class="prose"><h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
+  <p>Il codice implementa un livello di astrazione del database diviso in due responsabilità principali: <strong>Gestione della Connessione</strong> e <strong>Motore di Query (Query Engine)</strong>.</p>
+  <p>A differenza degli approcci che dipendono solo da librerie di alto livello, questo progetto punta sulle prestazioni e su un solido controllo transazionale, consentendo esecuzioni SQL pure, la manipolazione di JSONB e operazioni in blocco (bulk operations) in sicurezza.</p>
 
-  <h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
-  <p>Supabase Database fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
+  <h2 id="flusso-di-esecuzione"><a class="anchor" href="#flusso-di-esecuzione" aria-label="Link para esta seção">#</a>Flusso di Esecuzione</h2>
+  <p>Il flusso di una normale operazione segue questi passi:</p>
+  <ol>
+    <li><strong>Inizializzazione:</strong> <code>SupabaseConnection</code> carica le variabili d'ambiente e convalida le credenziali.</li>
+    <li><strong>Lazy Loading:</strong> La connessione al database PostgreSQL viene aperta solo nel momento in cui viene richiesta la prima query.</li>
+    <li><strong>Iniezione di Dipendenza:</strong> <code>SupabaseQueryEngineer</code> riceve il metodo di connessione.</li>
+    <li><strong>Esecuzione &amp; Contesto:</strong> Il motore di query apre un cursore, esegue l'SQL e, in caso di successo, esegue il <code>commit</code>.</li>
+    <li><strong>Gestione degli Errori:</strong> Se qualcosa fallisce, viene attivato un <code>rollback</code> automatico per mantenere l'integrità dei dati.</li>
+  </ol>
 
-  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
-  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> SupabaseDatabase
-
-client = <span class="t-f">SupabaseDatabase</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parametri"><a class="anchor" href="#parametri" aria-label="Link para esta seção">#</a>Parametri</h2>
-  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
+  <h2 id="tabella-dei-metodi"><a class="anchor" href="#tabella-dei-metodi" aria-label="Link para esta seção">#</a>Tabella dei Metodi</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <thead><tr><th>Classe</th><th>Metodo</th><th>Descrizione Breve</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
+      <tr><td><strong>SupabaseConnection</strong></td><td><code>get_connection()</code></td><td>Restituisce una connessione attiva, riconnettendosi se necessario.</td></tr>
+      <tr><td><strong>SupabaseConnection</strong></td><td><code>close()</code></td><td>Chiude la connessione fisica al database.</td></tr>
+      <tr><td><strong>SupabaseQueryEngineer</strong></td><td><code>select()</code></td><td>Esegue query di lettura e restituisce una lista di dizionari.</td></tr>
+      <tr><td><strong>SupabaseQueryEngineer</strong></td><td><code>execute()</code></td><td>Esegue comandi di scrittura (Insert, Update, Delete).</td></tr>
+      <tr><td><strong>SupabaseQueryEngineer</strong></td><td><code>execute_many()</code></td><td>Esegue lo stesso comando SQL per una lista di più parametri.</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="note"><a class="anchor" href="#note" aria-label="Link para esta seção">#</a>Note</h2>
-  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
-  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div></div>
+  <h2 id="architettura-e-insights"><a class="anchor" href="#architettura-e-insights" aria-label="Link para esta seção">#</a>Architettura e Insights</h2>
+  <ul>
+    <li><strong>Resilienza (Auto-riconnessione):</strong> Il metodo <code>get_connection</code> esegue un "ping" (<code>SELECT 1</code>) sul database. Questo evita i comuni errori di "broken pipe" in ambienti serverless o quando la connessione resta inattiva per troppo tempo.</li>
+    <li><strong>Risultati Tipizzati:</strong> L'uso di <code>RealDictCursor</code> trasforma le righe del database in dizionari Python nativi, facilitando l'uso nelle API e la manipolazione dei dati.</li>
+    <li><strong>Sicurezza (SQL Injection):</strong> Il sistema utilizza la parametrizzazione (<code>%s</code>), delegando al driver la pulizia dei dati, il che previene gli attacchi di SQL injection.</li>
+  </ul>
+
+  <h2 id="documentazione-dettagliata-delle-classi"><a class="anchor" href="#documentazione-dettagliata-delle-classi" aria-label="Link para esta seção">#</a>Documentazione Dettagliata delle Classi</h2>
+
+  <h2 id="classe-supabaseconnection"><a class="anchor" href="#classe-supabaseconnection" aria-label="Link para esta seção">#</a>Classe SupabaseConnection</h2>
+  <p><strong>Descrizione</strong></p>
+  <p>Gestisce il ciclo di vita della connessione all'ecosistema Supabase. Verifica che l'ambiente sia configurato correttamente e fornisce un'interfaccia per ottenere connessioni PostgreSQL stabili attraverso il protocollo TCP.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Non ha argomenti di inizializzazione (legge direttamente da <code>.env</code>).</li>
+  </ul>
+
+  <h2 id="metodi"><a class="anchor" href="#metodi" aria-label="Link para esta seção">#</a>Metodi</h2>
+  <p><strong>1. get_connection</strong></p>
+  <ul>
+    <li><strong>Descrizione:</strong> Fornisce un'istanza di connessione <code>psycopg2</code>. Implementa il pattern Lazy Initialization.</li>
+    <li><strong>Argomenti:</strong> Nessuno.</li>
+    <li><strong>Valori di ritorno:</strong> <code>psycopg2.extensions.connection</code></li>
+    <li><strong>Raises:</strong> <code>Exception</code> se le credenziali sono errate o il database è inaccessibile.</li>
+    <li><strong>Esempi:</strong> <code>conn = connection.get_connection()</code></li>
+  </ul>
+
+  <h2 id="classe-supabasequeryengineer"><a class="anchor" href="#classe-supabasequeryengineer" aria-label="Link para esta seção">#</a>Classe SupabaseQueryEngineer</h2>
+  <p><strong>Descrizione</strong></p>
+  <p>Il "cervello" delle operazioni sul database. Questa classe isola la complessità di SQL, gestendo cursori e transazioni (Commit/Rollback) in modo trasparente per lo sviluppatore.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>get_connection</code> (Callable): Una funzione o un metodo che restituisca una connessione attiva.</li>
+  </ul>
+
+  <h2 id="metodi-2"><a class="anchor" href="#metodi-2" aria-label="Link para esta seção">#</a>Metodi</h2>
+  <p><strong>1. select</strong></p>
+  <ul>
+    <li><strong>Descrizione:</strong> Esegue query di ricerca dei dati.</li>
+    <li><strong>Argomenti:</strong>
+      <ul>
+        <li><code>query</code> (str): Comando SQL SELECT.</li>
+        <li><code>params</code> (tuple, opzionale): Valori con cui sostituire i placeholder <code>%s</code>.</li>
+      </ul>
+    </li>
+    <li><strong>Valori di ritorno:</strong> <code>List[Dict[str, Any]]</code> - Una lista in cui ogni elemento è una riga della tabella.</li>
+    <li><strong>Raises:</strong> <code>Exception</code> in caso di errore di sintassi SQL o errore di connessione.</li>
+    <li><strong>Esempi:</strong> <code>engine.select("SELECT * FROM users WHERE name = %s", ("Enzo",))</code></li>
+  </ul>
+
+  <p><strong>2. execute</strong></p>
+  <ul>
+    <li><strong>Descrizione:</strong> Esegue comandi che modificano lo stato del database (DDL o DML).</li>
+    <li><strong>Argomenti:</strong>
+      <ul>
+        <li><code>query</code> (str): Comando SQL (INSERT, UPDATE, DELETE, CREATE, ecc).</li>
+        <li><code>params</code> (tuple, opzionale): Parametri della query.</li>
+      </ul>
+    </li>
+    <li><strong>Valori di ritorno:</strong> <code>None</code></li>
+    <li><strong>Raises:</strong> <code>Exception</code> con rollback automatico in caso di errore.</li>
+    <li><strong>Esempi:</strong> <code>engine.execute("UPDATE users SET name = %s", ("Novo Nome",))</code></li>
+  </ul>
+
+  <p><strong>3. execute_many</strong></p>
+  <ul>
+    <li><strong>Descrizione:</strong> Ottimizza l'inserimento o l'aggiornamento di grandi volumi di dati.</li>
+    <li><strong>Argomenti:</strong>
+      <ul>
+        <li><code>query</code> (str): Comando SQL parametrizzato.</li>
+        <li><code>params_list</code> (List[tuple]): Lista contenente le tuple di parametri per ogni ripetizione.</li>
+      </ul>
+    </li>
+    <li><strong>Valori di ritorno:</strong> <code>None</code></li>
+    <li><strong>Raises:</strong> <code>Exception</code> se una qualsiasi delle operazioni fallisce (annulla l'intero lotto).</li>
+    <li><strong>Esempi:</strong> <code>engine.execute_many("INSERT INTO logs (msg) VALUES (%s)", [("Erro 1",), ("Erro 2",)])</code></li>
+  </ul></div>
         <div class="feedback"></div>
         <p class="source">Fonte: <code>ipynb_contents/Internal Source Code/Database/SQL/Supabase Database.ipynb</code></p>
         <nav class="pager" aria-label="Pagine vicine"><a class="pager-link prev" href="../../../../../pages/it/internal-source-code/database/no-sql/router.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Precedente</small><span>Router</span></div></a><a class="pager-link next" href="../../../../../pages/it/internal-source-code/storage/storage-menage-repository.html"><div><small>Successiva</small><span>Storage Menage Repository</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

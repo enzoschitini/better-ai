@@ -1,31 +1,121 @@
-<page data-lead="Sample page for Tracing Core, used to validate the layout.">
-  <div class="callout" data-kind="note"><p><strong>Placeholder content.</strong> This text exists only to validate the layout. In the final version the page is generated from <code>ipynb_contents/Internal Source Code/Application Tracing/Tracing Core.ipynb</code>.</p></div>
-
+<page data-lead="This is a detailed and didactic documentation of the ApplicationTracing class, designed to make it easier to implement observability in Python systems.">
   <h2>Overview</h2>
-  <p>Tracing Core is part of the BetterAI platform. This paragraph stands in for the text coming from the source, so that spacing, line measure and the side index can be checked.</p>
+  <p>The <code>ApplicationTracing</code> class acts as a <strong>Facade</strong> for log management. Instead of dealing directly with complex libraries or low-level settings, the developer uses this class to standardize how messages are recorded, displayed and stored.</p>
+  <p>The main goal is to ensure that all of the application's logs follow the same structure, making it easier to look for failures (troubleshooting) and to analyze data in tools such as MongoDB or log file viewers.</p>
 
-  <h2>Usage</h2>
-  <p>The block below shows the typical call, with syntax highlighting:</p>
-  <pre data-lang="python"><code>
-from better_ai import TracingCore
+  <h2>Execution Flow</h2>
+  <p>The class's workflow follows these stages:</p>
+  <ol>
+    <li><strong>Instantiation</strong>: The developer creates the object defining the global settings (e.g. whether to save to MongoDB, whether to show metadata on the console).</li>
+    <li><strong>Encapsulation</strong>: The constructor internally initializes the <code>LoggerEngine</code>, which is the real processing engine.</li>
+    <li><strong>Method Call</strong>: When calling a method such as <code>.INFO()</code> or <code>.ERROR()</code>, the parameters passed (message, metadata) are sent to the engine.</li>
+    <li><strong>Dynamic Override</strong>: Each log method allows overriding the global settings momentarily (e.g. the system does not save INFO logs by default, but you can force a specific log to be saved).</li>
+    <li><strong>Multi-channel Output</strong>: The log is processed and sent simultaneously to the console, local file or database, as configured.</li>
+  </ol>
 
-client = TracingCore()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parameters</h2>
-  <p>The table below exists to validate horizontal scrolling on narrow screens:</p>
+  <h2>Methods Table</h2>
   <table>
-    <thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>
+    <thead><tr><th>Method</th><th>Severity Level</th><th>Recommended Use</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identifier of the model to use.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limit in seconds for the response.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Returns the response in chunks.</td></tr>
+      <tr><td><code>__init__</code></td><td>N/A</td><td>Initial configuration and setup of the output drivers.</td></tr>
+      <tr><td><code>INFO</code></td><td>Informational</td><td>Success milestones and normal flow (e.g. "Processing completed").</td></tr>
+      <tr><td><code>DEBUG</code></td><td>Low</td><td>Technical details for developers (e.g. variable values).</td></tr>
+      <tr><td><code>WARNING</code></td><td>Medium</td><td>Unexpected situations that do not stop execution (e.g. "Slow API").</td></tr>
+      <tr><td><code>ERROR</code></td><td>High</td><td>Failures in specific features (e.g. "Failed to send email").</td></tr>
+      <tr><td><code>CRITICAL</code></td><td>Urgent</td><td>Problems that can bring the system down (e.g. "Database offline").</td></tr>
     </tbody>
   </table>
 
-  <h2>Notes</h2>
-  <p>A sample warning, to check the styling of the attention callout:</p>
-  <div class="callout" data-kind="warn"><p><strong>Development only.</strong> The values above are fictitious and must not be used in production.</p></div>
+  <h2>Architecture and Insights</h2>
+  <ul>
+    <li><strong>Separation of Concerns</strong>: The class does not know <em>how</em> to write to MongoDB; it just delegates that responsibility to the <code>LoggerEngine</code>. This makes future maintenance easier.</li>
+    <li><strong>Granular Flexibility</strong>: The design lets you have a global behavior, but full flexibility on every line of code through the optional arguments of the methods.</li>
+    <li><strong>Structured Observability</strong>: Using the <code>metadata</code> argument (dictionary) encourages structured logging (JSON), which is much easier to index and search than plain text strings.</li>
+    <li><strong>Traceability</strong>: The <code>log_id</code> parameter makes it possible to correlate logs from the same transaction that crosses different functions or files.</li>
+  </ul>
+
+  <h2>Technical Documentation</h2>
+
+  <h2><code>ApplicationTracing</code> Class</h2>
+  <h3>Description</h3>
+  <p>Class responsible for abstracting and standardizing the use of logs within the application. It encapsulates the complex logging logic and provides a simplified interface for the developer.</p>
+  <h3>Constructor Arguments</h3>
+  <ul>
+    <li><code>log_id</code> (str): Unique ID for flow tracking.</li>
+    <li><code>flag</code> (str): Marker to categorize logs.</li>
+    <li><code>file_name</code> (str): Context of the originating file.</li>
+    <li><code>log_file_name</code> (str): Name of the destination <code>.log</code> file.</li>
+    <li><code>show_info_logs</code> (bool): Enables/Disables INFO level logs on the console.</li>
+    <li><code>show_metadata</code> (bool): Defines whether technical details appear on the console.</li>
+    <li><code>save_logs</code> (bool): If <code>True</code>, writes to a physical file.</li>
+    <li><code>save_mongo</code> (bool): If <code>True</code>, persists to the database.</li>
+    <li><code>format_metadata</code> (bool): Applies visual formatting to the metadata.</li>
+  </ul>
+
+  <h2>Methods</h2>
+
+  <h2>1. INFO / DEBUG / WARNING / ERROR / CRITICAL</h2>
+  <p><em>(The methods share the same signature to keep things consistent)</em></p>
+  <p><strong>Description</strong></p>
+  <p>Record a message at the corresponding severity level, handling storage and display according to the rules defined on the instance.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>func_name</code> (Optional[str]): Name of the function where the event occurred.</li>
+    <li><code>message</code> (Optional[str]): Explanatory text of the log.</li>
+    <li><code>metadata</code> (Optional[Dict]): Dictionary with extra data (e.g. <code>{"user_id": 123}</code>).</li>
+    <li><code>save_logs</code> (Optional[bool]): Overrides the global setting for saving to a file.</li>
+    <li><code>save_mongo</code> (Optional[bool]): Overrides the global setting for saving to MongoDB.</li>
+    <li><code>show_info_logs</code> (Optional[bool]): Forces INFO logs to be shown or hidden.</li>
+    <li><code>show_metadata</code> (Optional[bool]): Forces metadata to be shown or hidden.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>None</code>: The method performs the recording (side effect) and returns no data.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>Exception</code>: May propagate database connection errors or disk write permission errors originating in the <code>LoggerEngine</code>.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+from src.tracing.tracing_core import ApplicationTracing
+
+# Inicialização
+tracer = ApplicationTracing(save_logs=True, log_id="TR-9952")
+
+# Uso simples
+tracer.INFO(
+    func_name="create_user",
+    message="App Init"
+)
+
+tracer.DEBUG(
+    func_name="create_user",
+    message="User created",
+    metadata={"user": "Enzo"},
+    #save_logs=False
+    #show_metadata=False
+)
+
+tracer.WARNING(
+    func_name="create_user",
+    message="User created",
+    metadata={"user": "Enzo"},
+)
+
+tracer.ERROR(
+    func_name="create_user",
+    message="User created",
+    metadata={"user": "Enzo"},
+)
+
+tracer.CRITICAL(
+    func_name="create_user",
+    message="User created",
+    metadata={"user": "Enzo"},
+)
+
+# Debug forçando salvamento no Mongo apenas para esta linha
+tracer.DEBUG(message="Checkpont técnico", save_mongo=True)
+</code></pre>
 </page>

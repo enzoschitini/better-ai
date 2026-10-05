@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mongo Manager | BetterAI Docs</title>
-<meta name="description" content="Página de exemplo para Mongo Manager, usada para validar o layout.">
+<meta name="description" content="Esta é uma documentação detalhada e didática da classe MongoDBManager, projetada para facilitar o entendimento de desenvolvedores que integrarão esta ferramenta em seus projetos.">
 <link rel="canonical" href="pages/pt/internal-source-code/database/no-sql/mongo-manager.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,117 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copiar página</span></button>
             </div>
           </div>
-          <p class="lead">Página de exemplo para Mongo Manager, usada para validar o layout.</p>
+          <p class="lead">Esta é uma documentação detalhada e didática da classe MongoDBManager, projetada para facilitar o entendimento de desenvolvedores que integrarão esta ferramenta em seus projetos.</p>
           <details class="toc-inline"><summary>Nesta página</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Conteúdo de exemplo.</strong> Este texto existe só para validar o layout. Na versão final, a página é gerada a partir de <code>ipynb_contents/Internal Source Code/Database/No SQL/Mongo Manager.ipynb</code>.</p></div>
+        <div class="prose"><h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão Geral</h2>
+  <p>A classe <code>MongoDBManager</code> atua como um <strong>Wrapper</strong> (ou facilitadora) para a biblioteca <code>pymongo</code>. Seu principal objetivo é simplificar a interação com bancos de dados MongoDB, abstraindo a complexidade de gerenciar conexões e garantindo que operações comuns de <strong>CRUD</strong> (Create, Read, Update, Delete) sejam realizadas de forma padronizada.</p>
+  <p>Ela é ideal para aplicações que precisam de persistência de dados flexível, lidando automaticamente com metadados como datas de criação e atualização.</p>
 
-  <h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão geral</h2>
-  <p>Mongo Manager faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
+  <h2 id="fluxo-de-execucao"><a class="anchor" href="#fluxo-de-execucao" aria-label="Link para esta seção">#</a>Fluxo de Execução</h2>
+  <p>O funcionamento da classe segue uma lógica de <strong>Lazy Loading</strong> (carregamento tardio):</p>
+  <ol>
+    <li><strong>Instanciação:</strong> Ao criar o objeto, ele apenas armazena a URI de conexão. O banco ainda não é acessado.</li>
+    <li><strong>Primeira Chamada:</strong> Quando qualquer método de operação (como <code>save_payload</code>) é invocado, ele chama internamente o método <code>connect()</code>.</li>
+    <li><strong>Conexão Persistente:</strong> O <code>MongoClient</code> é criado e armazenado no atributo <code>self.client</code>. Todas as chamadas subsequentes reutilizam essa mesma conexão para economizar recursos.</li>
+    <li><strong>Processamento:</strong> O método executa a lógica solicitada (inserção, busca, etc.).</li>
+    <li><strong>Tratamento de Erros:</strong> Se algo falhar, a conexão é encerrada preventivamente para evitar vazamentos de memória ou conexões "presas".</li>
+  </ol>
 
-  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
-  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> MongoManager
-
-client = <span class="t-f">MongoManager</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parametros"><a class="anchor" href="#parametros" aria-label="Link para esta seção">#</a>Parâmetros</h2>
-  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
+  <h2 id="tabela-de-metodos"><a class="anchor" href="#tabela-de-metodos" aria-label="Link para esta seção">#</a>Tabela de Métodos</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <thead><tr><th>Método</th><th>Descrição Breve</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
+      <tr><td><code>__init__</code></td><td>Configura a URI de conexão (via argumento ou variável de ambiente).</td></tr>
+      <tr><td><code>connect</code></td><td>Estabelece ou reaproveita a conexão com o servidor MongoDB.</td></tr>
+      <tr><td><code>close_connection</code></td><td>Finaliza a conexão ativa e limpa o cliente.</td></tr>
+      <tr><td><code>save_payload</code></td><td>Insere um novo documento com timestamp de criação.</td></tr>
+      <tr><td><code>fetch_documents</code></td><td>Busca documentos com filtros e opção de limite.</td></tr>
+      <tr><td><code>update_documents</code></td><td>Atualiza um ou vários registros, adicionando timestamp de edição.</td></tr>
+      <tr><td><code>delete_documents</code></td><td>Remove registros do banco de forma definitiva.</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="observacoes"><a class="anchor" href="#observacoes" aria-label="Link para esta seção">#</a>Observações</h2>
-  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
-  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div></div>
+  <h2 id="arquitetura-e-insights"><a class="anchor" href="#arquitetura-e-insights" aria-label="Link para esta seção">#</a>Arquitetura e Insights</h2>
+  <ul>
+    <li><strong>Gerenciamento de Estado:</strong> A classe utiliza o padrão <em>Singleton-like</em> para a conexão dentro da instância, garantindo que você não abra centenas de conexões desnecessárias.</li>
+    <li><strong>Segurança de Dados:</strong> No método de atualização, o código remove explicitamente a chave <code>_id</code> do payload de atualização (<code>new_values.pop("_id", None)</code>). Isso evita erros comuns do MongoDB onde se tenta sobrescrever o ID imutável de um documento.</li>
+    <li><strong>Rastreabilidade:</strong> A inclusão automática de <code>_created_at</code> e <code>updated_at</code> transforma documentos simples em registros auditáveis, facilitando a depuração e análise de dados posterior.</li>
+    <li><strong>Tratamento de Erros:</strong> O uso de <code>RuntimeError</code> encapsula erros de rede complexos em mensagens legíveis para o desenvolvedor da aplicação.</li>
+  </ul>
+
+  <h2 id="detalhamento-da-classe"><a class="anchor" href="#detalhamento-da-classe" aria-label="Link para esta seção">#</a>Detalhamento da Classe</h2>
+
+  <h2 id="classe-mongodbmanager"><a class="anchor" href="#classe-mongodbmanager" aria-label="Link para esta seção">#</a>Classe MongoDBManager</h2>
+  <p><strong>Descrição</strong></p>
+  <p>Gerenciador central de persistência MongoDB que encapsula o ciclo de vida da conexão e operações CRUD, garantindo a reutilização de recursos e padronização de metadados.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>mongo_uri</code> (str, opcional): String de conexão. Se omitida, busca em <code>os.getenv("MONGO_URI")</code> ou usa o padrão local.</li>
+  </ul>
+
+  <h2 id="metodos"><a class="anchor" href="#metodos" aria-label="Link para esta seção">#</a>Métodos</h2>
+
+  <h2 id="1-connect"><a class="anchor" href="#1-connect" aria-label="Link para esta seção">#</a>1. connect</h2>
+  <p><strong>Descrição:</strong> Garante que exista uma conexão ativa com o banco.</p>
+  <p><strong>Argumentos:</strong> Nenhum.</p>
+  <p><strong>Retornos:</strong> <code>MongoClient</code> (objeto de conexão do pymongo).</p>
+  <p><strong>Raises:</strong> <code>Exception</code> em caso de falha na rede ou credenciais.</p>
+  <p><strong>Exemplos:</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>manager = <span class="t-f">MongoDBManager</span>()
+client = manager.<span class="t-f">connect</span>()</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="2-save-payload"><a class="anchor" href="#2-save-payload" aria-label="Link para esta seção">#</a>2. save_payload</h2>
+  <p><strong>Descrição:</strong> Insere um dicionário no banco de dados e adiciona a data de criação.</p>
+  <p><strong>Argumentos:</strong></p>
+  <ul>
+    <li><code>database_name</code> (str): Nome do banco.</li>
+    <li><code>collection_name</code> (str): Nome da coleção.</li>
+    <li><code>payload</code> (dict): Dados a serem salvos.</li>
+  </ul>
+  <p><strong>Retornos:</strong> <code>dict</code> contendo o status e o ID gerado.</p>
+  <p><strong>Raises:</strong> <code>RuntimeError</code> se a inserção falhar.</p>
+  <p><strong>Exemplos:</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>manager.<span class="t-f">save_payload</span>(<span class="t-s">&quot;log_db&quot;</span>, <span class="t-s">&quot;events&quot;</span>, {<span class="t-s">&quot;event&quot;</span>: <span class="t-s">&quot;login_success&quot;</span>})</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-fetch-documents"><a class="anchor" href="#3-fetch-documents" aria-label="Link para esta seção">#</a>3. fetch_documents</h3>
+  <p><strong>Descrição:</strong> Localiza documentos que correspondam aos critérios informados.</p>
+  <p><strong>Argumentos:</strong></p>
+  <ul>
+    <li><code>database_name</code> (str): Nome do banco.</li>
+    <li><code>collection_name</code> (str): Nome da coleção.</li>
+    <li><code>filter</code> (dict): Filtro de busca (ex: <code>{"status": "active"}</code>).</li>
+    <li><code>limit</code> (int): Quantidade máxima de resultados.</li>
+  </ul>
+  <p><strong>Retornos:</strong> <code>List[dict]</code> (Lista de documentos encontrados).</p>
+  <p><strong>Raises:</strong> <code>RuntimeError</code>.</p>
+  <p><strong>Exemplos:</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>users = manager.<span class="t-f">fetch_documents</span>(<span class="t-s">&quot;app&quot;</span>, <span class="t-s">&quot;users&quot;</span>, {<span class="t-s">&quot;age&quot;</span>: {<span class="t-s">&quot;$gt&quot;</span>: <span class="t-n">18</span>}}, limit=<span class="t-n">10</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="4-update-documents"><a class="anchor" href="#4-update-documents" aria-label="Link para esta seção">#</a>4. update_documents</h2>
+  <p><strong>Descrição:</strong> Modifica documentos existentes e registra a data da alteração.</p>
+  <p><strong>Argumentos:</strong></p>
+  <ul>
+    <li><code>filter</code> (dict): Critério para encontrar os documentos.</li>
+    <li><code>new_values</code> (dict): Dados a serem atualizados.</li>
+    <li><code>multi</code> (bool): Se <code>True</code>, atualiza todos os documentos encontrados; se <code>False</code>, apenas o primeiro.</li>
+  </ul>
+  <p><strong>Retornos:</strong> <code>dict</code> com métricas (<code>matched_count</code>, <code>modified_count</code>).</p>
+  <p><strong>Raises:</strong> <code>RuntimeError</code>.</p>
+  <p><strong>Exemplos:</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>manager.<span class="t-f">update_documents</span>(<span class="t-s">&quot;app&quot;</span>, <span class="t-s">&quot;users&quot;</span>, {<span class="t-s">&quot;id&quot;</span>: <span class="t-n">1</span>}, {<span class="t-s">&quot;status&quot;</span>: <span class="t-s">&quot;premium&quot;</span>})</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="5-delete-documents"><a class="anchor" href="#5-delete-documents" aria-label="Link para esta seção">#</a>5. delete_documents</h2>
+  <p><strong>Descrição:</strong> Remove permanentemente documentos da coleção.</p>
+  <p><strong>Argumentos:</strong></p>
+  <ul>
+    <li><code>filter</code> (dict): Critério de exclusão.</li>
+    <li><code>multi</code> (bool): Define se apaga um ou todos os registros encontrados.</li>
+  </ul>
+  <p><strong>Retornos:</strong> <code>dict</code> com <code>deleted_count</code>.</p>
+  <p><strong>Raises:</strong> <code>RuntimeError</code>.</p>
+  <p><strong>Exemplos:</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>manager.<span class="t-f">delete_documents</span>(<span class="t-s">&quot;app&quot;</span>, <span class="t-s">&quot;temp_data&quot;</span>, {<span class="t-s">&quot;expired&quot;</span>: <span class="t-n">True</span>}, multi=<span class="t-n">True</span>)</code></pre><button class="copy floating" type="button"></button></div></div></div>
         <div class="feedback"></div>
         <p class="source">Fonte: <code>ipynb_contents/Internal Source Code/Database/No SQL/Mongo Manager.ipynb</code></p>
         <nav class="pager" aria-label="Páginas vizinhas"><a class="pager-link prev" href="../../../../../pages/pt/internal-source-code/database/no-sql/local-manage.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Anterior</small><span>Local Manage</span></div></a><a class="pager-link next" href="../../../../../pages/pt/internal-source-code/database/no-sql/router.html"><div><small>Próxima</small><span>Router</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

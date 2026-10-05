@@ -1,31 +1,120 @@
-<page data-lead="Página de exemplo para Mongo Manager, usada para validar o layout.">
-  <div class="callout" data-kind="note"><p><strong>Conteúdo de exemplo.</strong> Este texto existe só para validar o layout. Na versão final, a página é gerada a partir de <code>ipynb_contents/Internal Source Code/Database/No SQL/Mongo Manager.ipynb</code>.</p></div>
+<page data-lead="Esta é uma documentação detalhada e didática da classe MongoDBManager, projetada para facilitar o entendimento de desenvolvedores que integrarão esta ferramenta em seus projetos.">
+  <h2>Visão Geral</h2>
+  <p>A classe <code>MongoDBManager</code> atua como um <strong>Wrapper</strong> (ou facilitadora) para a biblioteca <code>pymongo</code>. Seu principal objetivo é simplificar a interação com bancos de dados MongoDB, abstraindo a complexidade de gerenciar conexões e garantindo que operações comuns de <strong>CRUD</strong> (Create, Read, Update, Delete) sejam realizadas de forma padronizada.</p>
+  <p>Ela é ideal para aplicações que precisam de persistência de dados flexível, lidando automaticamente com metadados como datas de criação e atualização.</p>
 
-  <h2>Visão geral</h2>
-  <p>Mongo Manager faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
+  <h2>Fluxo de Execução</h2>
+  <p>O funcionamento da classe segue uma lógica de <strong>Lazy Loading</strong> (carregamento tardio):</p>
+  <ol>
+    <li><strong>Instanciação:</strong> Ao criar o objeto, ele apenas armazena a URI de conexão. O banco ainda não é acessado.</li>
+    <li><strong>Primeira Chamada:</strong> Quando qualquer método de operação (como <code>save_payload</code>) é invocado, ele chama internamente o método <code>connect()</code>.</li>
+    <li><strong>Conexão Persistente:</strong> O <code>MongoClient</code> é criado e armazenado no atributo <code>self.client</code>. Todas as chamadas subsequentes reutilizam essa mesma conexão para economizar recursos.</li>
+    <li><strong>Processamento:</strong> O método executa a lógica solicitada (inserção, busca, etc.).</li>
+    <li><strong>Tratamento de Erros:</strong> Se algo falhar, a conexão é encerrada preventivamente para evitar vazamentos de memória ou conexões "presas".</li>
+  </ol>
 
-  <h2>Uso</h2>
-  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
-  <pre data-lang="python"><code>
-from better_ai import MongoManager
-
-client = MongoManager()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parâmetros</h2>
-  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
+  <h2>Tabela de Métodos</h2>
   <table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <thead><tr><th>Método</th><th>Descrição Breve</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
+      <tr><td><code>__init__</code></td><td>Configura a URI de conexão (via argumento ou variável de ambiente).</td></tr>
+      <tr><td><code>connect</code></td><td>Estabelece ou reaproveita a conexão com o servidor MongoDB.</td></tr>
+      <tr><td><code>close_connection</code></td><td>Finaliza a conexão ativa e limpa o cliente.</td></tr>
+      <tr><td><code>save_payload</code></td><td>Insere um novo documento com timestamp de criação.</td></tr>
+      <tr><td><code>fetch_documents</code></td><td>Busca documentos com filtros e opção de limite.</td></tr>
+      <tr><td><code>update_documents</code></td><td>Atualiza um ou vários registros, adicionando timestamp de edição.</td></tr>
+      <tr><td><code>delete_documents</code></td><td>Remove registros do banco de forma definitiva.</td></tr>
     </tbody>
   </table>
 
-  <h2>Observações</h2>
-  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
-  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div>
+  <h2>Arquitetura e Insights</h2>
+  <ul>
+    <li><strong>Gerenciamento de Estado:</strong> A classe utiliza o padrão <em>Singleton-like</em> para a conexão dentro da instância, garantindo que você não abra centenas de conexões desnecessárias.</li>
+    <li><strong>Segurança de Dados:</strong> No método de atualização, o código remove explicitamente a chave <code>_id</code> do payload de atualização (<code>new_values.pop("_id", None)</code>). Isso evita erros comuns do MongoDB onde se tenta sobrescrever o ID imutável de um documento.</li>
+    <li><strong>Rastreabilidade:</strong> A inclusão automática de <code>_created_at</code> e <code>updated_at</code> transforma documentos simples em registros auditáveis, facilitando a depuração e análise de dados posterior.</li>
+    <li><strong>Tratamento de Erros:</strong> O uso de <code>RuntimeError</code> encapsula erros de rede complexos em mensagens legíveis para o desenvolvedor da aplicação.</li>
+  </ul>
+
+  <h2>Detalhamento da Classe</h2>
+
+  <h2>Classe MongoDBManager</h2>
+  <p><strong>Descrição</strong></p>
+  <p>Gerenciador central de persistência MongoDB que encapsula o ciclo de vida da conexão e operações CRUD, garantindo a reutilização de recursos e padronização de metadados.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>mongo_uri</code> (str, opcional): String de conexão. Se omitida, busca em <code>os.getenv("MONGO_URI")</code> ou usa o padrão local.</li>
+  </ul>
+
+  <h2>Métodos</h2>
+
+  <h2>1. connect</h2>
+  <p><strong>Descrição:</strong> Garante que exista uma conexão ativa com o banco.</p>
+  <p><strong>Argumentos:</strong> Nenhum.</p>
+  <p><strong>Retornos:</strong> <code>MongoClient</code> (objeto de conexão do pymongo).</p>
+  <p><strong>Raises:</strong> <code>Exception</code> em caso de falha na rede ou credenciais.</p>
+  <p><strong>Exemplos:</strong></p>
+  <pre data-lang="python"><code>
+manager = MongoDBManager()
+client = manager.connect()
+</code></pre>
+
+  <h2>2. save_payload</h2>
+  <p><strong>Descrição:</strong> Insere um dicionário no banco de dados e adiciona a data de criação.</p>
+  <p><strong>Argumentos:</strong></p>
+  <ul>
+    <li><code>database_name</code> (str): Nome do banco.</li>
+    <li><code>collection_name</code> (str): Nome da coleção.</li>
+    <li><code>payload</code> (dict): Dados a serem salvos.</li>
+  </ul>
+  <p><strong>Retornos:</strong> <code>dict</code> contendo o status e o ID gerado.</p>
+  <p><strong>Raises:</strong> <code>RuntimeError</code> se a inserção falhar.</p>
+  <p><strong>Exemplos:</strong></p>
+  <pre data-lang="python"><code>
+manager.save_payload("log_db", "events", {"event": "login_success"})
+</code></pre>
+
+  <h3>3. fetch_documents</h3>
+  <p><strong>Descrição:</strong> Localiza documentos que correspondam aos critérios informados.</p>
+  <p><strong>Argumentos:</strong></p>
+  <ul>
+    <li><code>database_name</code> (str): Nome do banco.</li>
+    <li><code>collection_name</code> (str): Nome da coleção.</li>
+    <li><code>filter</code> (dict): Filtro de busca (ex: <code>{"status": "active"}</code>).</li>
+    <li><code>limit</code> (int): Quantidade máxima de resultados.</li>
+  </ul>
+  <p><strong>Retornos:</strong> <code>List[dict]</code> (Lista de documentos encontrados).</p>
+  <p><strong>Raises:</strong> <code>RuntimeError</code>.</p>
+  <p><strong>Exemplos:</strong></p>
+  <pre data-lang="python"><code>
+users = manager.fetch_documents("app", "users", {"age": {"$gt": 18}}, limit=10)
+</code></pre>
+
+  <h2>4. update_documents</h2>
+  <p><strong>Descrição:</strong> Modifica documentos existentes e registra a data da alteração.</p>
+  <p><strong>Argumentos:</strong></p>
+  <ul>
+    <li><code>filter</code> (dict): Critério para encontrar os documentos.</li>
+    <li><code>new_values</code> (dict): Dados a serem atualizados.</li>
+    <li><code>multi</code> (bool): Se <code>True</code>, atualiza todos os documentos encontrados; se <code>False</code>, apenas o primeiro.</li>
+  </ul>
+  <p><strong>Retornos:</strong> <code>dict</code> com métricas (<code>matched_count</code>, <code>modified_count</code>).</p>
+  <p><strong>Raises:</strong> <code>RuntimeError</code>.</p>
+  <p><strong>Exemplos:</strong></p>
+  <pre data-lang="python"><code>
+manager.update_documents("app", "users", {"id": 1}, {"status": "premium"})
+</code></pre>
+
+  <h2>5. delete_documents</h2>
+  <p><strong>Descrição:</strong> Remove permanentemente documentos da coleção.</p>
+  <p><strong>Argumentos:</strong></p>
+  <ul>
+    <li><code>filter</code> (dict): Critério de exclusão.</li>
+    <li><code>multi</code> (bool): Define se apaga um ou todos os registros encontrados.</li>
+  </ul>
+  <p><strong>Retornos:</strong> <code>dict</code> com <code>deleted_count</code>.</p>
+  <p><strong>Raises:</strong> <code>RuntimeError</code>.</p>
+  <p><strong>Exemplos:</strong></p>
+  <pre data-lang="python"><code>
+manager.delete_documents("app", "temp_data", {"expired": True}, multi=True)
+</code></pre>
 </page>

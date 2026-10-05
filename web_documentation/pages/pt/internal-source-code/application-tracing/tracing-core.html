@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tracing Core | BetterAI Docs</title>
-<meta name="description" content="Página de exemplo para Tracing Core, usada para validar o layout.">
+<meta name="description" content="Esta é uma documentação detalhada e didática da classe ApplicationTracing, projetada para facilitar a implementação de observabilidade em sistemas Python.">
 <link rel="canonical" href="pages/pt/internal-source-code/application-tracing/tracing-core.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,126 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copiar página</span></button>
             </div>
           </div>
-          <p class="lead">Página de exemplo para Tracing Core, usada para validar o layout.</p>
+          <p class="lead">Esta é uma documentação detalhada e didática da classe ApplicationTracing, projetada para facilitar a implementação de observabilidade em sistemas Python.</p>
           <details class="toc-inline"><summary>Nesta página</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Conteúdo de exemplo.</strong> Este texto existe só para validar o layout. Na versão final, a página é gerada a partir de <code>ipynb_contents/Internal Source Code/Application Tracing/Tracing Core.ipynb</code>.</p></div>
+        <div class="prose"><h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão Geral</h2>
+  <p>A classe <code>ApplicationTracing</code> atua como uma <strong>Fachada (Facade)</strong> para o gerenciamento de logs. Em vez de lidar diretamente com bibliotecas complexas ou configurações de baixo nível, o desenvolvedor utiliza esta classe para padronizar como as mensagens são registradas, exibidas e armazenadas.</p>
+  <p>O principal objetivo é garantir que todos os logs da aplicação sigam a mesma estrutura, facilitando a busca por falhas (troubleshooting) e a análise de dados em ferramentas como o MongoDB ou visualizadores de arquivos de log.</p>
 
-  <h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão geral</h2>
-  <p>Tracing Core faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
+  <h2 id="fluxo-de-execucao"><a class="anchor" href="#fluxo-de-execucao" aria-label="Link para esta seção">#</a>Fluxo de Execução</h2>
+  <p>O fluxo de funcionamento da classe segue estas etapas:</p>
+  <ol>
+    <li><strong>Instanciação</strong>: O desenvolvedor cria o objeto definindo as configurações globais (ex: se deve salvar no MongoDB, se deve mostrar metadados no console).</li>
+    <li><strong>Encapsulamento</strong>: O construtor inicializa internamente o <code>LoggerEngine</code>, que é o motor real de processamento.</li>
+    <li><strong>Chamada de Método</strong>: Ao chamar um método como <code>.INFO()</code> ou <code>.ERROR()</code>, os parâmetros passados (mensagem, metadados) são enviados ao motor.</li>
+    <li><strong>Sobrescrita Dinâmica</strong>: Cada método de log permite sobrescrever as configurações globais momentaneamente (ex: o sistema não salva logs INFO por padrão, mas você pode forçar o salvamento de um log específico).</li>
+    <li><strong>Saída Multi-canal</strong>: O log é processado e enviado simultaneamente para o console, arquivo local ou banco de dados, conforme configurado.</li>
+  </ol>
 
-  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
-  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> TracingCore
-
-client = <span class="t-f">TracingCore</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parametros"><a class="anchor" href="#parametros" aria-label="Link para esta seção">#</a>Parâmetros</h2>
-  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
+  <h2 id="tabela-de-metodos"><a class="anchor" href="#tabela-de-metodos" aria-label="Link para esta seção">#</a>Tabela de Métodos</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <thead><tr><th>Método</th><th>Nível de Severidade</th><th>Uso Recomendado</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
+      <tr><td><code>__init__</code></td><td>N/A</td><td>Configuração inicial e setup dos drivers de saída.</td></tr>
+      <tr><td><code>INFO</code></td><td>Informativo</td><td>Marcos de sucesso e fluxo normal (ex: "Processamento concluído").</td></tr>
+      <tr><td><code>DEBUG</code></td><td>Baixo</td><td>Detalhes técnicos para desenvolvedores (ex: valores de variáveis).</td></tr>
+      <tr><td><code>WARNING</code></td><td>Médio</td><td>Situações inesperadas que não impedem a execução (ex: "API lenta").</td></tr>
+      <tr><td><code>ERROR</code></td><td>Alto</td><td>Falhas em funcionalidades específicas (ex: "Falha ao enviar e-mail").</td></tr>
+      <tr><td><code>CRITICAL</code></td><td>Urgente</td><td>Problemas que podem derrubar o sistema (ex: "Banco de dados offline").</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="observacoes"><a class="anchor" href="#observacoes" aria-label="Link para esta seção">#</a>Observações</h2>
-  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
-  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div></div>
+  <h2 id="arquitetura-e-insights"><a class="anchor" href="#arquitetura-e-insights" aria-label="Link para esta seção">#</a>Arquitetura e Insights</h2>
+  <ul>
+    <li><strong>Separação de Preocupações</strong>: A classe não sabe <em>como</em> escrever no MongoDB; ela apenas delega essa responsabilidade para o <code>LoggerEngine</code>. Isso facilita a manutenção futura.</li>
+    <li><strong>Flexibilidade Granular</strong>: O design permite que você tenha um comportamento global, mas flexibilidade total em cada linha de código através dos argumentos opcionais nos métodos.</li>
+    <li><strong>Observabilidade Estruturada</strong>: O uso do argumento <code>metadata</code> (dicionário) incentiva o log estruturado (JSON), que é muito mais fácil de indexar e pesquisar do que simples strings de texto.</li>
+    <li><strong>Rastreabilidade</strong>: O parâmetro <code>log_id</code> permite correlacionar logs de uma mesma transação que atravessa diferentes funções ou arquivos.</li>
+  </ul>
+
+  <h2 id="documentacao-tecnica"><a class="anchor" href="#documentacao-tecnica" aria-label="Link para esta seção">#</a>Documentação Técnica</h2>
+
+  <h2 id="classe-applicationtracing"><a class="anchor" href="#classe-applicationtracing" aria-label="Link para esta seção">#</a>Classe <code>ApplicationTracing</code></h2>
+  <h3 id="descricao"><a class="anchor" href="#descricao" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Classe responsável por abstrair e padronizar o uso de logs dentro da aplicação. Ela encapsula a lógica complexa de logging e fornece uma interface simplificada para o desenvolvedor.</p>
+  <h3 id="argumentos-do-construtor"><a class="anchor" href="#argumentos-do-construtor" aria-label="Link para esta seção">#</a>Argumentos do Construtor</h3>
+  <ul>
+    <li><code>log_id</code> (str): ID único para rastreamento de fluxo.</li>
+    <li><code>flag</code> (str): Marcador para categorizar logs.</li>
+    <li><code>file_name</code> (str): Contexto do arquivo de origem.</li>
+    <li><code>log_file_name</code> (str): Nome do arquivo <code>.log</code> de destino.</li>
+    <li><code>show_info_logs</code> (bool): Habilita/Desabilita logs de nível INFO no console.</li>
+    <li><code>show_metadata</code> (bool): Define se detalhes técnicos aparecem no console.</li>
+    <li><code>save_logs</code> (bool): Se <code>True</code>, grava em arquivo físico.</li>
+    <li><code>save_mongo</code> (bool): Se <code>True</code>, persiste no banco de dados.</li>
+    <li><code>format_metadata</code> (bool): Aplica formatação visual aos metadados.</li>
+  </ul>
+
+  <h2 id="metodos"><a class="anchor" href="#metodos" aria-label="Link para esta seção">#</a>Métodos</h2>
+
+  <h2 id="1-info-debug-warning-error-critical"><a class="anchor" href="#1-info-debug-warning-error-critical" aria-label="Link para esta seção">#</a>1. INFO / DEBUG / WARNING / ERROR / CRITICAL</h2>
+  <p><em>(Os métodos compartilham a mesma assinatura para manter a consistência)</em></p>
+  <p><strong>Descrição</strong></p>
+  <p>Registram uma mensagem no nível de severidade correspondente, processando o armazenamento e a exibição conforme as regras definidas na instância.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>func_name</code> (Optional[str]): Nome da função onde o evento ocorreu.</li>
+    <li><code>message</code> (Optional[str]): Texto explicativo do log.</li>
+    <li><code>metadata</code> (Optional[Dict]): Dicionário com dados extras (ex: <code>{"user_id": 123}</code>).</li>
+    <li><code>save_logs</code> (Optional[bool]): Sobrescreve a configuração global de salvamento em arquivo.</li>
+    <li><code>save_mongo</code> (Optional[bool]): Sobrescreve a configuração global de salvamento no MongoDB.</li>
+    <li><code>show_info_logs</code> (Optional[bool]): Força a exibição ou ocultação de logs INFO.</li>
+    <li><code>show_metadata</code> (Optional[bool]): Força a exibição ou ocultação de metadados.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>None</code>: O método realiza o registro (efeito colateral) e não retorna dados.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>Exception</code>: Pode propagar erros de conexão com banco de dados ou permissão de escrita em disco originados no <code>LoggerEngine</code>.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> src.tracing.tracing_core <span class="t-k">import</span> ApplicationTracing
+
+<span class="t-c"># Inicialização</span>
+tracer = <span class="t-f">ApplicationTracing</span>(save_logs=<span class="t-n">True</span>, log_id=<span class="t-s">&quot;TR-9952&quot;</span>)
+
+<span class="t-c"># Uso simples</span>
+tracer.<span class="t-f">INFO</span>(
+    func_name=<span class="t-s">&quot;create_user&quot;</span>,
+    message=<span class="t-s">&quot;App Init&quot;</span>
+)
+
+tracer.<span class="t-f">DEBUG</span>(
+    func_name=<span class="t-s">&quot;create_user&quot;</span>,
+    message=<span class="t-s">&quot;User created&quot;</span>,
+    metadata={<span class="t-s">&quot;user&quot;</span>: <span class="t-s">&quot;Enzo&quot;</span>},
+    <span class="t-c">#save_logs=False</span>
+    <span class="t-c">#show_metadata=False</span>
+)
+
+tracer.<span class="t-f">WARNING</span>(
+    func_name=<span class="t-s">&quot;create_user&quot;</span>,
+    message=<span class="t-s">&quot;User created&quot;</span>,
+    metadata={<span class="t-s">&quot;user&quot;</span>: <span class="t-s">&quot;Enzo&quot;</span>},
+)
+
+tracer.<span class="t-f">ERROR</span>(
+    func_name=<span class="t-s">&quot;create_user&quot;</span>,
+    message=<span class="t-s">&quot;User created&quot;</span>,
+    metadata={<span class="t-s">&quot;user&quot;</span>: <span class="t-s">&quot;Enzo&quot;</span>},
+)
+
+tracer.<span class="t-f">CRITICAL</span>(
+    func_name=<span class="t-s">&quot;create_user&quot;</span>,
+    message=<span class="t-s">&quot;User created&quot;</span>,
+    metadata={<span class="t-s">&quot;user&quot;</span>: <span class="t-s">&quot;Enzo&quot;</span>},
+)
+
+<span class="t-c"># Debug forçando salvamento no Mongo apenas para esta linha</span>
+tracer.<span class="t-f">DEBUG</span>(message=<span class="t-s">&quot;Checkpont técnico&quot;</span>, save_mongo=<span class="t-n">True</span>)</code></pre><button class="copy floating" type="button"></button></div></div></div>
         <div class="feedback"></div>
         <p class="source">Fonte: <code>ipynb_contents/Internal Source Code/Application Tracing/Tracing Core.ipynb</code></p>
         <nav class="pager" aria-label="Páginas vizinhas"><a class="pager-link prev" href="../../../../pages/pt/internal-source-code/application-tracing/payload-builder.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Anterior</small><span>Payload Builder</span></div></a><a class="pager-link next" href="../../../../pages/pt/internal-source-code/application-tracing/use.html"><div><small>Próxima</small><span>Use</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
