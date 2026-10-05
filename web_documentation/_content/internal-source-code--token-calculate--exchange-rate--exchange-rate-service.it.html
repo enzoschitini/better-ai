@@ -1,31 +1,150 @@
-<page data-lead="Pagina di esempio per Exchange Rate Service, usata per validare il layout.">
-  <div class="callout" data-kind="note"><p><strong>Contenuto di esempio.</strong> Questo testo esiste solo per validare il layout. Nella versione finale la pagina è generata da <code>ipynb_contents/Internal Source Code/Token Calculate/Exchange Rate/Exchange Rate Service.md</code>.</p></div>
-
+<page data-lead="La classe ExchangeRateService è responsabile della gestione dei cambi del dollaro statunitense, combinando l'ottenimento di dati aggiornati dall'API della Banca Centrale del Brasile (BCB) con l'archiviazione locale di tali record per consultazioni future.">
   <h2>Panoramica</h2>
-  <p>Exchange Rate Service fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
+  <p>La classe <code>ExchangeRateService</code> è responsabile della gestione dei cambi del dollaro statunitense, combinando l'ottenimento di dati aggiornati dall'API della Banca Centrale del Brasile (BCB) con l'archiviazione locale di tali record per consultazioni future. Mantiene uno storico limitato delle quotazioni per ottimizzare il database locale, evitando l'archiviazione eccessiva di dati vecchi.</p>
+  <p>Questo servizio è utile per le applicazioni che hanno bisogno del cambio del dollaro aggiornato, ma devono anche garantire un accesso rapido ai dati recenti anche nei momenti in cui l'API esterna non funziona. Archiviando localmente e limitando i dati conservati, la classe offre una soluzione efficiente e resiliente per i sistemi che dipendono da questa informazione.</p>
+  <p>In pratica, la classe può essere usata per ottenere il cambio del dollaro in tempo reale, con fallback automatico sull'ultimo valore disponibile e persistenza del dato per consultazioni future.</p>
 
-  <h2>Uso</h2>
-  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
-  <pre data-lang="python"><code>
-from better_ai import ExchangeRateService
+  <h2>Flusso di Esecuzione</h2>
+  <ol>
+    <li>Si istanzia un oggetto della classe <code>ExchangeRateService</code>.</li>
+    <li>Si chiama il metodo <code>get_usd_rate()</code> per ottenere il cambio del dollaro.</li>
+    <li>Il metodo verifica se esiste già un record della quotazione del giorno nel database locale.</li>
+    <li>Se il record del giorno è già disponibile, restituisce quel valore direttamente dal database.</li>
+    <li>In caso contrario, consulta la quotazione più recente sull'API del BCB.</li>
+    <li>Se l'API restituisce un valore valido:
+      <ul>
+        <li>Il valore viene memorizzato nel database locale.</li>
+        <li>Viene applicata una regola per limitare il numero di record salvati (mantenendo fino a 5 record).</li>
+        <li>Il valore viene restituito.</li>
+      </ul>
+    </li>
+    <li>Se l'API fallisce e ci sono dati precedenti nel database, viene restituito l'ultimo valore memorizzato.</li>
+    <li>Se non ci sono dati, viene restituito un valore base di default e questa base viene memorizzata localmente.</li>
+    <li>Il database locale viene sempre mantenuto con al massimo 5 record, rimuovendo i più vecchi quando necessario.</li>
+    <li>In caso di errore durante il processo, viene sollevato un <code>RuntimeError</code>.</li>
+  </ol>
 
-client = ExchangeRateService()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parametri</h2>
-  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
+  <h2>Tabella dei Metodi della Classe</h2>
   <table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <thead><tr><th>Metodo</th><th>Descrizione</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
+      <tr><td><code>__init__</code></td><td>Inizializza il servizio, configura database locale e date.</td></tr>
+      <tr><td><code>_get_bcb_rate</code></td><td>Cerca la quotazione più recente del dollaro sull'API del BCB.</td></tr>
+      <tr><td><code>_get_last_db_record</code></td><td>Ottiene l'ultimo record memorizzato localmente.</td></tr>
+      <tr><td><code>_enforce_limit</code></td><td>Limita il numero di record salvati, eliminando i più vecchi.</td></tr>
+      <tr><td><code>get_usd_rate</code></td><td>Ottiene il cambio del dollaro con fallback e persistenza.</td></tr>
     </tbody>
   </table>
 
-  <h2>Note</h2>
-  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
-  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div>
+  <h2>Punti Importanti dell'Architettura e Insights</h2>
+  <ul>
+    <li><strong>Design basato su un fallback robusto:</strong> Il metodo <code>get_usd_rate</code> cerca di dare priorità ai dati aggiornati, ma gestisce con eleganza i guasti dell'API esterna usando dati locali o una base predefinita.</li>
+    <li><strong>Incapsulamento:</strong> L'uso di metodi privati (<code>_get_bcb_rate</code>, <code>_get_last_db_record</code>, <code>_enforce_limit</code>) separa le responsabilità all'interno della classe, mantenendo pulita l'interfaccia per l'utente.</li>
+    <li><strong>Limitazione dello storico:</strong> Mantenere un limite massimo di record evita la crescita incontrollata del database locale, il che è importante per prestazioni e spazio.</li>
+    <li><strong>Integrazione con altre classi:</strong> La classe utilizza <code>DocumentStore</code> per la persistenza locale e <code>BCBExchangeRateService</code> per l'integrazione con l'API esterna dei cambi, dimostrando composizione e separazione delle responsabilità.</li>
+    <li><strong>Uso del formato data standardizzato:</strong> Le date vengono sempre memorizzate e confrontate nel formato ISO <code>%Y-%m-%d</code>, garantendo coerenza.</li>
+    <li><strong>Gestione delle eccezioni:</strong> Gli errori generici vengono catturati e incapsulati in un <code>RuntimeError</code> per segnalare errori specifici di questo servizio.</li>
+  </ul>
+
+  <h2>Descrizione della Classe e dei Metodi</h2>
+
+  <h2>Classe <code>ExchangeRateService</code></h2>
+  <h3>Descrizione</h3>
+  <p>Classe per gestire i cambi del dollaro statunitense. Cerca le quotazioni sull'API della Banca Centrale del Brasile, memorizza le informazioni localmente, mantiene uno storico limitato dei dati e offre accesso alla quotazione attuale con meccanismi di fallback per garantire la continuità del servizio anche in caso di guasti esterni.</p>
+
+  <h3>Metodi</h3>
+
+  <h3>1. <code>__init__</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Inizializza l'istanza del servizio, configurando il gestore del database locale, definendo una base predefinita di quotazione e memorizzando la data attuale formattata.</p>
+  <p><strong>Argomenti</strong></p>
+  <p>Nessuno.</p>
+  <p><strong>Valori di ritorno</strong></p>
+  <p>Non restituisce alcun valore.</p>
+  <p><strong>Raises</strong></p>
+  <p>Nessuna.</p>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+service = ExchangeRateService()
+</code></pre>
+
+  <h3>2. <code>_get_bcb_rate</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Recupera la quotazione più recente del dollaro sull'API della Banca Centrale del Brasile utilizzando il servizio <code>BCBExchangeRateService</code>.</p>
+  <p><strong>Argomenti</strong></p>
+  <p>Nessuno.</p>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>float: Valore della quotazione più recente del dollaro ottenuta dall'API.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <p>Nessuna (si assume che gli errori siano gestiti esternamente).</p>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+rate = service._get_bcb_rate()
+print(rate)  # Exemplo esperado: 5.25
+</code></pre>
+
+  <h3>3. <code>_get_last_db_record</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Cerca nel database locale il record più recente della quotazione del dollaro. Restituisce il record con la data maggiore, oppure None se non ci sono record.</p>
+  <p><strong>Argomenti</strong></p>
+  <p>Nessuno.</p>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>dict o None: Dizionario con il record più recente oppure None se il database è vuoto.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <p>Nessuna.</p>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+last_record = service._get_last_db_record()
+if last_record:
+    print(last_record["rate"])
+else:
+    print("Nenhum registro encontrado.")
+</code></pre>
+
+  <h3>4. <code>_enforce_limit</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Limita il numero massimo di record salvati nel database locale al valore specificato, rimuovendo i record più vecchi se il limite viene superato.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>limit (int): Numero massimo di record consentiti nel database. Il valore predefinito è 5.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <p>Non restituisce alcun valore.</p>
+  <p><strong>Raises</strong></p>
+  <p>Nessuna.</p>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+service._enforce_limit(limit=5)
+# Garante que no banco existam no máximo 5 registros recentes.
+</code></pre>
+
+  <h3>5. <code>get_usd_rate</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Ottiene il cambio attuale del dollaro statunitense. Verifica prima se la quotazione del giorno è già salvata nel database locale; in caso contrario, tenta di cercarla sull'API del BCB. Se l'API restituisce dati, li salva localmente limitando lo storico. Se l'API fallisce, restituisce l'ultimo valore salvato o un valore base predefinito. Gestisce gli errori generici sollevando <code>RuntimeError</code>.</p>
+  <p><strong>Argomenti</strong></p>
+  <p>Nessuno.</p>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>float: Quotazione attuale pronta all'uso.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>RuntimeError: Nel caso di un errore generale nell'ottenimento o nell'archiviazione della quotazione.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+try:
+    rate = service.get_usd_rate()
+    print(f"Cotação do dólar: {rate}")
+except RuntimeError:
+    print("Não foi possível obter a cotação.")
+
+# python -m src.tokens_calculate.exchange_rate
+</code></pre>
+
+  <h2>Fine della documentazione.</h2>
 </page>

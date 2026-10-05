@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Exchange Rate Service | BetterAI Docs</title>
-<meta name="description" content="Sample page for Exchange Rate Service, used to validate the layout.">
+<meta name="description" content="The ExchangeRateService class is responsible for managing US dollar exchange rates, combining the retrieval of up-to-date data from the Central Bank of Brazil (BCB) API with local storage of these records for future queries.">
 <link rel="canonical" href="pages/en/internal-source-code/token-calculate/exchange-rate/exchange-rate-service.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,147 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copy page</span></button>
             </div>
           </div>
-          <p class="lead">Sample page for Exchange Rate Service, used to validate the layout.</p>
+          <p class="lead">The ExchangeRateService class is responsible for managing US dollar exchange rates, combining the retrieval of up-to-date data from the Central Bank of Brazil (BCB) API with local storage of these records for future queries.</p>
           <details class="toc-inline"><summary>On this page</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Placeholder content.</strong> This text exists only to validate the layout. In the final version the page is generated from <code>ipynb_contents/Internal Source Code/Token Calculate/Exchange Rate/Exchange Rate Service.md</code>.</p></div>
+        <div class="prose"><h2 id="overview"><a class="anchor" href="#overview" aria-label="Link para esta seção">#</a>Overview</h2>
+  <p>The <code>ExchangeRateService</code> class is responsible for managing US dollar exchange rates, combining the retrieval of up-to-date data from the Central Bank of Brazil (BCB) API with local storage of these records for future queries. It keeps a limited history of rates to optimize the local database, avoiding excessive storage of old data.</p>
+  <p>This service is useful for applications that need the up-to-date dollar rate, but also need to guarantee quick access to recent data even when the external API fails. By storing locally and limiting the data kept, the class provides an efficient and resilient solution for systems that depend on this information.</p>
+  <p>In practice, the class can be used to obtain the real-time dollar rate, with automatic fallback to the last available value and persistence of the data for future queries.</p>
 
-  <h2 id="overview"><a class="anchor" href="#overview" aria-label="Link para esta seção">#</a>Overview</h2>
-  <p>Exchange Rate Service is part of the BetterAI platform. This paragraph stands in for the text coming from the source, so that spacing, line measure and the side index can be checked.</p>
+  <h2 id="execution-flow"><a class="anchor" href="#execution-flow" aria-label="Link para esta seção">#</a>Execution Flow</h2>
+  <ol>
+    <li>An object of the <code>ExchangeRateService</code> class is instantiated.</li>
+    <li>The <code>get_usd_rate()</code> method is called to obtain the dollar rate.</li>
+    <li>The method checks whether a record of the day's rate already exists in the local database.</li>
+    <li>If the day's record is already available, it returns that value straight from the database.</li>
+    <li>If not, it queries the most recent rate from the BCB API.</li>
+    <li>If the API returns a valid value:
+      <ul>
+        <li>The value is stored in the local database.</li>
+        <li>A rule is applied to limit the number of saved records (keeping up to 5 records).</li>
+        <li>The value is returned.</li>
+      </ul>
+    </li>
+    <li>If the API fails and there is previous data in the database, the last stored value is returned.</li>
+    <li>If there is no data, a default base value is returned and this base is stored locally.</li>
+    <li>The local database is always kept at a maximum of 5 records, removing the oldest ones when necessary.</li>
+    <li>If an error occurs during the process, a <code>RuntimeError</code> is raised.</li>
+  </ol>
 
-  <h2 id="usage"><a class="anchor" href="#usage" aria-label="Link para esta seção">#</a>Usage</h2>
-  <p>The block below shows the typical call, with syntax highlighting:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> ExchangeRateService
-
-client = <span class="t-f">ExchangeRateService</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parameters"><a class="anchor" href="#parameters" aria-label="Link para esta seção">#</a>Parameters</h2>
-  <p>The table below exists to validate horizontal scrolling on narrow screens:</p>
+  <h2 id="class-methods-table"><a class="anchor" href="#class-methods-table" aria-label="Link para esta seção">#</a>Class Methods Table</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>
+    <thead><tr><th>Method</th><th>Description</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identifier of the model to use.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limit in seconds for the response.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Returns the response in chunks.</td></tr>
+      <tr><td><code>__init__</code></td><td>Initializes the service, configures the local database and dates.</td></tr>
+      <tr><td><code>_get_bcb_rate</code></td><td>Fetches the most recent dollar rate from the BCB API.</td></tr>
+      <tr><td><code>_get_last_db_record</code></td><td>Gets the last record stored locally.</td></tr>
+      <tr><td><code>_enforce_limit</code></td><td>Limits the number of saved records, deleting the old ones.</td></tr>
+      <tr><td><code>get_usd_rate</code></td><td>Gets the dollar rate with fallback and persistence.</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="notes"><a class="anchor" href="#notes" aria-label="Link para esta seção">#</a>Notes</h2>
-  <p>A sample warning, to check the styling of the attention callout:</p>
-  <div class="callout" data-kind="warn"><p><strong>Development only.</strong> The values above are fictitious and must not be used in production.</p></div></div>
+  <h2 id="key-architecture-points-and-insights"><a class="anchor" href="#key-architecture-points-and-insights" aria-label="Link para esta seção">#</a>Key Architecture Points and Insights</h2>
+  <ul>
+    <li><strong>Design based on a robust fallback:</strong> The <code>get_usd_rate</code> method tries to prioritize up-to-date data, but gracefully handles failures of the external API by using local data or a default base.</li>
+    <li><strong>Encapsulation:</strong> The use of private methods (<code>_get_bcb_rate</code>, <code>_get_last_db_record</code>, <code>_enforce_limit</code>) separates responsibilities inside the class, keeping the interface clean for the user.</li>
+    <li><strong>History limit:</strong> Keeping a maximum number of records avoids uncontrolled growth of the local database, which is important for performance and space.</li>
+    <li><strong>Integration with other classes:</strong> The class uses <code>DocumentStore</code> for local persistence and <code>BCBExchangeRateService</code> for integration with the external rate API, demonstrating composition and separation of responsibilities.</li>
+    <li><strong>Use of a standardized date format:</strong> Dates are always stored and compared in the ISO format <code>%Y-%m-%d</code>, ensuring consistency.</li>
+    <li><strong>Exception handling:</strong> General errors are caught and wrapped in a <code>RuntimeError</code> to signal failures specific to this service.</li>
+  </ul>
+
+  <h2 id="class-and-methods-description"><a class="anchor" href="#class-and-methods-description" aria-label="Link para esta seção">#</a>Class and Methods Description</h2>
+
+  <h2 id="exchangerateservice-class"><a class="anchor" href="#exchangerateservice-class" aria-label="Link para esta seção">#</a><code>ExchangeRateService</code> Class</h2>
+  <h3 id="description"><a class="anchor" href="#description" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>Class to manage US dollar exchange rates. It fetches rates from the Central Bank of Brazil API, stores the information locally, keeps a limited history of the data and offers access to the current rate with fallback mechanisms to guarantee service continuity even in case of external failures.</p>
+
+  <h3 id="methods"><a class="anchor" href="#methods" aria-label="Link para esta seção">#</a>Methods</h3>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Initializes the service instance, configuring the local database manager, setting a default rate base and storing the current formatted date.</p>
+  <p><strong>Arguments</strong></p>
+  <p>None.</p>
+  <p><strong>Returns</strong></p>
+  <p>Returns no value.</p>
+  <p><strong>Raises</strong></p>
+  <p>None.</p>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>service = <span class="t-f">ExchangeRateService</span>()</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-get-bcb-rate"><a class="anchor" href="#2-get-bcb-rate" aria-label="Link para esta seção">#</a>2. <code>_get_bcb_rate</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Retrieves the most recent dollar rate from the Central Bank of Brazil API using the <code>BCBExchangeRateService</code> service.</p>
+  <p><strong>Arguments</strong></p>
+  <p>None.</p>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>float: Value of the most recent dollar rate obtained from the API.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <p>None (assuming errors are handled externally).</p>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>rate = service.<span class="t-f">_get_bcb_rate</span>()
+<span class="t-f">print</span>(rate)  <span class="t-c"># Exemplo esperado: 5.25</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-get-last-db-record"><a class="anchor" href="#3-get-last-db-record" aria-label="Link para esta seção">#</a>3. <code>_get_last_db_record</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Fetches the most recent dollar rate record from the local database. Returns the record with the latest date, or None if there are no records.</p>
+  <p><strong>Arguments</strong></p>
+  <p>None.</p>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>dict or None: Dictionary with the most recent record or None if the database is empty.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <p>None.</p>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>last_record = service.<span class="t-f">_get_last_db_record</span>()
+<span class="t-k">if</span> last_record:
+    <span class="t-f">print</span>(last_record[<span class="t-s">&quot;rate&quot;</span>])
+<span class="t-k">else</span>:
+    <span class="t-f">print</span>(<span class="t-s">&quot;Nenhum registro encontrado.&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-enforce-limit"><a class="anchor" href="#4-enforce-limit" aria-label="Link para esta seção">#</a>4. <code>_enforce_limit</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Limits the maximum number of records saved in the local database to the specified value, removing the oldest records if the limit is exceeded.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>limit (int): Maximum number of records allowed in the database. Default is 5.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <p>Returns no value.</p>
+  <p><strong>Raises</strong></p>
+  <p>None.</p>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>service.<span class="t-f">_enforce_limit</span>(limit=<span class="t-n">5</span>)
+<span class="t-c"># Garante que no banco existam no máximo 5 registros recentes.</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="5-get-usd-rate"><a class="anchor" href="#5-get-usd-rate" aria-label="Link para esta seção">#</a>5. <code>get_usd_rate</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Gets the current US dollar rate. It first checks whether the day's rate is already saved in the local database; otherwise, it tries to fetch it from the BCB API. If the API returns data, it saves it locally while limiting the history. If the API fails, it returns the last saved value or a default base value. It handles general errors by raising <code>RuntimeError</code>.</p>
+  <p><strong>Arguments</strong></p>
+  <p>None.</p>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>float: Current rate ready for use.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>RuntimeError: In case of a general failure in obtaining or storing the rate.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">try</span>:
+    rate = service.<span class="t-f">get_usd_rate</span>()
+    <span class="t-f">print</span>(f<span class="t-s">&quot;Cotação do dólar: {rate}&quot;</span>)
+<span class="t-k">except</span> RuntimeError:
+    <span class="t-f">print</span>(<span class="t-s">&quot;Não foi possível obter a cotação.&quot;</span>)
+
+<span class="t-c"># python -m src.tokens_calculate.exchange_rate</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="end-of-documentation"><a class="anchor" href="#end-of-documentation" aria-label="Link para esta seção">#</a>End of documentation.</h2></div>
         <div class="feedback"></div>
         <p class="source">Source: <code>ipynb_contents/Internal Source Code/Token Calculate/Exchange Rate/Exchange Rate Service.md</code></p>
         <nav class="pager" aria-label="Neighboring pages"><a class="pager-link prev" href="../../../../../pages/en/internal-source-code/token-calculate/exchange-rate/bcb-exchange-rate-service.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Previous</small><span>BCB Exchange Rate Service</span></div></a><a class="pager-link next" href="../../../../../pages/en/internal-source-code/token-calculate/model-pricing.html"><div><small>Next</small><span>Model Pricing</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

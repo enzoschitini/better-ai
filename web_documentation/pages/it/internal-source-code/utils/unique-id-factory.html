@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Unique ID Factory | BetterAI Docs</title>
-<meta name="description" content="Pagina di esempio per Unique ID Factory, usata per validare il layout.">
+<meta name="description" content="Questa è una documentazione dettagliata e didattica della classe IDGenerator, progettata per offrire una visione chiara delle sue capacità e del suo funzionamento interno.">
 <link rel="canonical" href="pages/it/internal-source-code/utils/unique-id-factory.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,127 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copia pagina</span></button>
             </div>
           </div>
-          <p class="lead">Pagina di esempio per Unique ID Factory, usata per validare il layout.</p>
+          <p class="lead">Questa è una documentazione dettagliata e didattica della classe IDGenerator, progettata per offrire una visione chiara delle sue capacità e del suo funzionamento interno.</p>
           <details class="toc-inline"><summary>In questa pagina</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Contenuto di esempio.</strong> Questo testo esiste solo per validare il layout. Nella versione finale la pagina è generata da <code>ipynb_contents/Internal Source Code/Utils/Unique ID Factory.ipynb</code>.</p></div>
+        <div class="prose"><h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
+  <p>La classe <code>IDGenerator</code> è uno strumento di utilità robusto sviluppato in Python per la creazione di identificatori univoci. Nei sistemi software, la scelta dell'ID giusto è cruciale: alcuni devono essere ordinabili nel tempo (come i log), altri devono essere impossibili da indovinare (come i token di recupero della password) e altri ancora devono seguire formati di business specifici (come i protocolli di assistenza).</p>
+  <p>Questa classe centralizza queste esigenze in un'interfaccia semplice, utilizzando librerie standard di Python focalizzate sulla sicurezza (<code>secrets</code>) e sull'unicità (<code>uuid</code>).</p>
 
-  <h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
-  <p>Unique ID Factory fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
+  <h2 id="flusso-di-esecuzione"><a class="anchor" href="#flusso-di-esecuzione" aria-label="Link para esta seção">#</a>Flusso di Esecuzione</h2>
+  <p>Il flusso di funzionamento della classe si basa sul pattern <strong>Static Utility</strong>. Poiché tutti i metodi sono decorati con <code>@classmethod</code>, non serve istanziare la classe (fare <code>gen = IDGenerator()</code>) per usarla.</p>
+  <ol>
+    <li><strong>Chiamata del Metodo:</strong> L'utente richiede un tipo di ID (es: <code>IDGenerator.token()</code>).</li>
+    <li><strong>Validazione dell'Input:</strong> Il metodo verifica che i parametri (come lunghezza o versione) siano validi.</li>
+    <li><strong>Elaborazione/Generazione:</strong>
+      <ul>
+        <li>Per gli <strong>UUID</strong>, consulta il modulo <code>uuid</code>.</li>
+        <li>Per i <strong>Timestamp</strong>, cattura il tempo in nanosecondi (<code>time.time_ns()</code>).</li>
+        <li>Per <strong>Custom/Token</strong>, usa <code>secrets</code> per selezionare caratteri casuali in modo crittograficamente sicuro.</li>
+      </ul>
+    </li>
+    <li><strong>Ritorno:</strong> L'identificatore viene formattato come <code>string</code> e restituito al chiamante.</li>
+  </ol>
 
-  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
-  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> UniqueIdFactory
-
-client = <span class="t-f">UniqueIdFactory</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parametri"><a class="anchor" href="#parametri" aria-label="Link para esta seção">#</a>Parametri</h2>
-  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
+  <h2 id="tabella-dei-metodi"><a class="anchor" href="#tabella-dei-metodi" aria-label="Link para esta seção">#</a>Tabella dei Metodi</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <thead><tr><th>Metodo</th><th>Finalità Principale</th><th>Caratteristica Chiave</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
+      <tr><td><code>uuid(version)</code></td><td>Identificazione universale univoca.</td><td>Standard RFC 4122 (128 bit).</td></tr>
+      <tr><td><code>timestamp(...)</code></td><td>ID che seguono un ordine cronologico.</td><td>Basato su nanosecondi + suffisso casuale.</td></tr>
+      <tr><td><code>token(len, safe)</code></td><td>Sicurezza e autenticazione.</td><td>Crittograficamente forte e sicuro per gli URL.</td></tr>
+      <tr><td><code>custom(pattern)</code></td><td>Identificatori con regole di business.</td><td>Usa maschere per definire numeri e lettere.</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="note"><a class="anchor" href="#note" aria-label="Link para esta seção">#</a>Note</h2>
-  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
-  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div></div>
+  <h2 id="architettura-e-spunti"><a class="anchor" href="#architettura-e-spunti" aria-label="Link para esta seção">#</a>Architettura e Spunti</h2>
+  <ul>
+    <li><strong>Sicurezza Crittografica:</strong> L'uso di <code>secrets</code> al posto di <code>random</code> garantisce che gli ID generati per i token non possano essere previsti con attacchi a forza bruta o analisi statistica.</li>
+    <li><strong>Alta Granularità:</strong> Usando <code>time.time_ns()</code> nel metodo timestamp, la probabilità di collisione (due ID uguali generati nello stesso momento) si riduce drasticamente, perché la precisione è di miliardesimi di secondo.</li>
+    <li><strong>Flessibilità tramite Maschere:</strong> Il metodo <code>custom</code> funziona come un "Mini-Template Engine", permettendo agli sviluppatori di creare formati come <code>NF-2024-####</code> senza dover riscrivere la logica di generazione casuale.</li>
+  </ul>
+
+  <h2 id="dettaglio-tecnico"><a class="anchor" href="#dettaglio-tecnico" aria-label="Link para esta seção">#</a>Dettaglio Tecnico</h2>
+
+  <h2 id="classe-idgenerator"><a class="anchor" href="#classe-idgenerator" aria-label="Link para esta seção">#</a>Classe IDGenerator</h2>
+  <p><strong>Descrizione</strong></p>
+  <p>Una classe di utilità di metodi di classe orientata alla generazione di stringhe di identificazione. Non richiede stato interno e si concentra sulla purezza delle funzioni di generazione.</p>
+  <p><strong>Argomenti</strong></p>
+  <p>La classe in sé non riceve argomenti di inizializzazione (è una classe statica).</p>
+  <p><strong>Metodi</strong></p>
+
+  <h2 id="1-uuid"><a class="anchor" href="#1-uuid" aria-label="Link para esta seção">#</a>1. uuid</h2>
+  <p><strong>Descrizione:</strong> Genera un Identificatore Univoco Universale (UUID). È la scelta migliore per le chiavi primarie di database distribuiti.</p>
+  <p><strong>Argomenti:</strong></p>
+  <ul>
+    <li><code>version</code> (int): La versione dell'UUID. Supporta <code>1</code> (tempo + MAC address) o <code>4</code> (totalmente casuale). Predefinito: <code>4</code>.</li>
+  </ul>
+  <p><strong>Valori di ritorno:</strong></p>
+  <ul>
+    <li><code>str</code>: L'UUID formattato (es: <code>8f3...</code>).</li>
+  </ul>
+  <p><strong>Raises:</strong></p>
+  <ul>
+    <li><code>ValueError</code>: Se la versione indicata è diversa da 1 o 4.</li>
+  </ul>
+  <p><strong>Esempi:</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>IDGenerator.<span class="t-f">uuid</span>(version=<span class="t-n">4</span>) <span class="t-c"># '784a0d9b-2b41-4c12-8877-6f8d92305381'</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="2-timestamp"><a class="anchor" href="#2-timestamp" aria-label="Link para esta seção">#</a>2. timestamp</h2>
+  <p><strong>Descrizione:</strong> Crea un ID basato sul momento esatto dell'esecuzione. Eccellente per i log e per i sistemi in cui l'ordine di creazione conta.</p>
+  <p><strong>Argomenti:</strong></p>
+  <ul>
+    <li><code>prefix</code> (str): Testo iniziale.</li>
+    <li><code>separator</code> (str): Carattere di collegamento.</li>
+    <li><code>as_hex</code> (bool): Se <code>True</code>, converte il tempo in base esadecimale (più corto).</li>
+    <li><code>suffix_len</code> (int): Quantità di caratteri casuali extra alla fine per evitare collisioni.</li>
+  </ul>
+  <p><strong>Valori di ritorno:</strong></p>
+  <ul>
+    <li><code>str</code>: Stringa temporale formattata.</li>
+  </ul>
+  <p><strong>Raises:</strong></p>
+  <ul>
+    <li><code>ValueError</code>: Se <code>suffix_len</code> è negativo.</li>
+  </ul>
+  <p><strong>Esempi:</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>IDGenerator.<span class="t-f">timestamp</span>(prefix=<span class="t-s">&quot;PEDIDO&quot;</span>, separator=<span class="t-s">&quot;-&quot;</span>, as_hex=<span class="t-n">True</span>)
+<span class="t-c"># 'PEDIDO-18f74d0a2bc5f1a39aB3'</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="3-token"><a class="anchor" href="#3-token" aria-label="Link para esta seção">#</a>3. token</h2>
+  <p><strong>Descrizione:</strong> Genera una sequenza casuale sicura. Consigliato per password temporanee, chiavi API e token di sessione.</p>
+  <p><strong>Argomenti:</strong></p>
+  <ul>
+    <li><code>length</code> (int): Lunghezza della stringa.</li>
+    <li><code>url_safe</code> (bool): Se <code>True</code>, rimuove i caratteri che possono causare errori negli URL (come <code>+</code> o <code>/</code>).</li>
+  </ul>
+  <p><strong>Valori di ritorno:</strong></p>
+  <ul>
+    <li><code>str</code>: Token casuale.</li>
+  </ul>
+  <p><strong>Raises:</strong></p>
+  <ul>
+    <li><code>ValueError</code>: Se <code>length</code> è minore o uguale a zero.</li>
+  </ul>
+  <p><strong>Esempi:</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>IDGenerator.<span class="t-f">token</span>(length=<span class="t-n">12</span>, url_safe=<span class="t-n">True</span>) <span class="t-c"># 'kL9_zP2mNx8A'</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="4-custom"><a class="anchor" href="#4-custom" aria-label="Link para esta seção">#</a>4. custom</h2>
+  <p><strong>Descrizione:</strong> Genera un ID seguendo un modello visivo (maschera) definito dall'utente.</p>
+  <p><strong>Argomenti:</strong></p>
+  <ul>
+    <li><code>pattern</code> (str): Stringa contenente i marcatori <code>#</code> (numero), <code>?</code> (lettera) o  (entrambi).</li>
+  </ul>
+  <p><strong>Valori di ritorno:</strong></p>
+  <ul>
+    <li><code>str</code>: Stringa formattata secondo il pattern.</li>
+  </ul>
+  <p><strong>Raises:</strong></p>
+  <ul>
+    <li><code>ValueError</code>: Se il pattern è vuoto.</li>
+  </ul>
+  <p><strong>Esempi:</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>IDGenerator.<span class="t-f">custom</span>(<span class="t-s">&quot;PLA-####-??&quot;</span>) <span class="t-c"># 'PLA-5521-XW'</span></code></pre><button class="copy floating" type="button"></button></div></div></div>
         <div class="feedback"></div>
         <p class="source">Fonte: <code>ipynb_contents/Internal Source Code/Utils/Unique ID Factory.ipynb</code></p>
         <nav class="pager" aria-label="Pagine vicine"><a class="pager-link prev" href="../../../../pages/it/internal-source-code/utils/loader-files.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Precedente</small><span>Loader Files</span></div></a><a class="pager-link next" href="../../../../pages/it/internal-source-code/vector-store/pinecone-client.html"><div><small>Successiva</small><span>Pinecone Client</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
