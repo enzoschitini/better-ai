@@ -79,6 +79,9 @@ Alternatives of the same command — one tab each, first one visible:
 Use `<codetabs>` only for genuine alternatives — one OS or one tool instead of another.
 Sequential steps are separate blocks.
 
+Code stays in English in all three language files; only its comments are translated (see
+`translation.md`, "Code blocks"). Every `<pre>` must exist in `pt`, `it` and `en`.
+
 The content of a `<pre>` is HTML-escaped text: write `&lt;`, `&gt;` and `&amp;` escaped.
 The build unescapes it, highlights it, and re-escapes it.
 

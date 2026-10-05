@@ -1,31 +1,128 @@
-<page data-lead="Sample page for Documentation, used to validate the layout.">
-  <div class="callout" data-kind="note"><p><strong>Placeholder content.</strong> This text exists only to validate the layout. In the final version the page is generated from <code>ipynb_contents/Internal Source Code/Utils/Load Request File/Documentation.md</code>.</p></div>
-
+<page data-lead="">
   <h2>Overview</h2>
-  <p>Documentation is part of the BetterAI platform. This paragraph stands in for the text coming from the source, so that spacing, line measure and the side index can be checked.</p>
+  <p>The <code>LoadRequestFile</code> class was developed to make the process of loading and validating files sent in requests through FastAPI easier. It ensures that the received file has an allowed extension and MIME type, and checks that its size is within a configured limit, avoiding problems such as improper uploads or very large files that could compromise the system.</p>
+  <p>In practice, this class can be used to safely control which files an application accepts for processing, protecting the backend against unexpected or malicious input. For example, it can be used in APIs where users upload images, documents or other files, ensuring compliance with the defined rules.</p>
 
-  <h2>Usage</h2>
-  <p>The block below shows the typical call, with syntax highlighting:</p>
-  <pre data-lang="python"><code>
-from better_ai import Documentation
+  <h2>Execution Flow</h2>
+  <ol>
+    <li>An instance of the class is created by passing the request's <code>UploadFile</code> object and, optionally, lists of allowed extensions and MIME types, plus the maximum allowed size.</li>
+    <li>The <code>load()</code> method is called asynchronously to read the content of the request's file.</li>
+    <li>During loading, the class calculates the file size in bytes and megabytes and keeps a copy of the content in a <code>BytesIO</code> object, making future access easier.</li>
+    <li>Next, the file is validated against the lists of allowed extensions and MIME types, and its size is checked to make sure it does not exceed the configured limit.</li>
+    <li>If any validation fails, an HTTP 400 exception is raised with a clear message about the reason.</li>
+    <li>If all validations pass, the instance with the file's information and content is returned, ready for later use in the application flow.</li>
+  </ol>
 
-client = Documentation()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parameters</h2>
-  <p>The table below exists to validate horizontal scrolling on narrow screens:</p>
+  <h2>Class Methods Table</h2>
   <table>
-    <thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>
+    <thead><tr><th>Method</th><th>Description</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identifier of the model to use.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limit in seconds for the response.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Returns the response in chunks.</td></tr>
+      <tr><td><code>__init__</code></td><td>Initializes the instance with the file, settings and basic data.</td></tr>
+      <tr><td><code>load</code></td><td>Loads the file content, calculates metadata and performs validations.</td></tr>
+      <tr><td><code>to_dict</code></td><td>Returns a dictionary with information about the loaded file.</td></tr>
     </tbody>
   </table>
 
-  <h2>Notes</h2>
-  <p>A sample warning, to check the styling of the attention callout:</p>
-  <div class="callout" data-kind="warn"><p><strong>Development only.</strong> The values above are fictitious and must not be used in production.</p></div>
+  <h2>Important Architecture Points and Insights</h2>
+  <ul>
+    <li>The class fully encapsulates the loading and validation logic, promoting reuse and a clear separation of responsibilities.</li>
+    <li>Using the <code>BytesIO</code> module makes it possible to work with the file content in memory without needing to save it to disk, increasing efficiency.</li>
+    <li>The design uses specific validations and raises HTTP exceptions directly, integrating easily with FastAPI's error handling flow.</li>
+    <li>It depends on external settings for the allowed extensions and MIME types, giving flexibility for adjustments without changing the source code.</li>
+    <li>The modular architecture allows simple extension, for example by adding other validations without changing the public interface.</li>
+  </ul>
+
+  <h2>Class and Methods Description</h2>
+
+  <h2><code>LoadRequestFile</code> Class</h2>
+  <h3>Description</h3>
+  <p><code>LoadRequestFile</code> is a utility for handling files sent via an HTTP request with FastAPI. It is responsible for loading the received file, extracting information such as extension, MIME type and size, and validating that the file is within the allowed standards configured for the system.</p>
+  <h3>Constructor Arguments</h3>
+  <table>
+    <thead><tr><th>Argument</th><th>Type</th><th>Description</th><th>Default Value</th></tr></thead>
+    <tbody>
+      <tr><td><code>file</code></td><td><code>UploadFile</code></td><td>File sent in the request to be loaded and validated.</td><td>None (required)</td></tr>
+      <tr><td><code>allowed_extensions</code></td><td><code>list[str]</code></td><td>List of extensions allowed for validation.</td><td><code>ALLOWED_EXTENSIONS</code></td></tr>
+      <tr><td><code>allowed_mimetypes</code></td><td><code>list[str]</code></td><td>List of MIME types allowed for validation.</td><td><code>ALL_MIMETYPES</code></td></tr>
+      <tr><td><code>max_size_mb</code></td><td><code>float</code></td><td>Maximum size allowed for the file in megabytes.</td><td>10</td></tr>
+    </tbody>
+  </table>
+  <h3>Methods</h3>
+
+  <h3>1. <code>__init__</code></h3>
+  <h3>Description</h3>
+  <p>Initializes an instance of the class with the received file and the validation settings, preparing attributes for loading and future validations.</p>
+  <h3>Arguments</h3>
+  <ul>
+    <li><code>file</code> (<code>UploadFile</code>): File sent in the request.</li>
+    <li><code>allowed_extensions</code> (<code>list[str]</code>): Allowed extensions. Default: <code>ALLOWED_EXTENSIONS</code>.</li>
+    <li><code>allowed_mimetypes</code> (<code>list[str]</code>): Allowed MIME types. Default: <code>ALL_MIMETYPES</code>.</li>
+    <li><code>max_size_mb</code> (<code>float</code>): Maximum size allowed (in MB). Default: 10.</li>
+  </ul>
+  <h3>Returns</h3>
+  <ul>
+    <li>Does not return a value.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <h3>Examples</h3>
+  <pre data-lang="python"><code>
+# Criar uma instância para validar arquivo recebido e configurar limites
+loader = LoadRequestFile(file, max_size_mb=5)
+</code></pre>
+
+  <h3>2. <code>load</code></h3>
+  <h3>Description</h3>
+  <p>Asynchronous method that loads the entire content of the file, calculates its size in bytes and megabytes, stores the data in memory and performs all the established validations (extension, MIME type and size).</p>
+  <h3>Arguments</h3>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <h3>Returns</h3>
+  <ul>
+    <li><code>LoadRequestFile</code>: returns the instance itself with loaded and validated data.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li><code>HTTPException</code>: if any validation fails, with status 400 and an informative message.</li>
+  </ul>
+  <h3>Examples</h3>
+  <pre data-lang="python"><code>
+# Uso assíncrono: carregar e validar arquivo recebido na requisição
+loader = await LoadRequestFile(file).load()
+print(loader.to_dict())
+# Exemplo de saída:
+# {
+#   "filename": "photo.jpg",
+#   "extension": "jpg",
+#   "mimetype": "image/jpeg",
+#   "size_bytes": 152000,
+#   "size_mb": 0.15
+# }
+</code></pre>
+
+  <h3>3. <code>to_dict</code></h3>
+  <h3>Description</h3>
+  <p>Generates a dictionary with the main metadata of the loaded file, making inspection and eventual logging or API response easier.</p>
+  <h3>Arguments</h3>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <h3>Returns</h3>
+  <ul>
+    <li><code>dict</code>: containing <code>filename</code>, <code>extension</code>, <code>mimetype</code>, <code>size_bytes</code> and rounded <code>size_mb</code>.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <h3>Examples</h3>
+  <pre data-lang="python"><code>
+# Obter informações resumidas sobre o arquivo carregado
+info = loader.to_dict()
+print(info["filename"])  # ex: "document.pdf"
+print(info["size_mb"])   # ex: 2.45
+</code></pre>
 </page>

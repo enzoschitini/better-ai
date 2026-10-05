@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Documentation | BetterAI Docs</title>
-<meta name="description" content="Sample page for Documentation, used to validate the layout.">
+<meta name="description" content="BetterAI Docs">
 <link rel="canonical" href="pages/en/internal-source-code/utils/load-request-file/documentation.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,129 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copy page</span></button>
             </div>
           </div>
-          <p class="lead">Sample page for Documentation, used to validate the layout.</p>
+          
           <details class="toc-inline"><summary>On this page</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Placeholder content.</strong> This text exists only to validate the layout. In the final version the page is generated from <code>ipynb_contents/Internal Source Code/Utils/Load Request File/Documentation.md</code>.</p></div>
+        <div class="prose"><h2 id="overview"><a class="anchor" href="#overview" aria-label="Link para esta seção">#</a>Overview</h2>
+  <p>The <code>LoadRequestFile</code> class was developed to make the process of loading and validating files sent in requests through FastAPI easier. It ensures that the received file has an allowed extension and MIME type, and checks that its size is within a configured limit, avoiding problems such as improper uploads or very large files that could compromise the system.</p>
+  <p>In practice, this class can be used to safely control which files an application accepts for processing, protecting the backend against unexpected or malicious input. For example, it can be used in APIs where users upload images, documents or other files, ensuring compliance with the defined rules.</p>
 
-  <h2 id="overview"><a class="anchor" href="#overview" aria-label="Link para esta seção">#</a>Overview</h2>
-  <p>Documentation is part of the BetterAI platform. This paragraph stands in for the text coming from the source, so that spacing, line measure and the side index can be checked.</p>
+  <h2 id="execution-flow"><a class="anchor" href="#execution-flow" aria-label="Link para esta seção">#</a>Execution Flow</h2>
+  <ol>
+    <li>An instance of the class is created by passing the request's <code>UploadFile</code> object and, optionally, lists of allowed extensions and MIME types, plus the maximum allowed size.</li>
+    <li>The <code>load()</code> method is called asynchronously to read the content of the request's file.</li>
+    <li>During loading, the class calculates the file size in bytes and megabytes and keeps a copy of the content in a <code>BytesIO</code> object, making future access easier.</li>
+    <li>Next, the file is validated against the lists of allowed extensions and MIME types, and its size is checked to make sure it does not exceed the configured limit.</li>
+    <li>If any validation fails, an HTTP 400 exception is raised with a clear message about the reason.</li>
+    <li>If all validations pass, the instance with the file's information and content is returned, ready for later use in the application flow.</li>
+  </ol>
 
-  <h2 id="usage"><a class="anchor" href="#usage" aria-label="Link para esta seção">#</a>Usage</h2>
-  <p>The block below shows the typical call, with syntax highlighting:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> Documentation
-
-client = <span class="t-f">Documentation</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parameters"><a class="anchor" href="#parameters" aria-label="Link para esta seção">#</a>Parameters</h2>
-  <p>The table below exists to validate horizontal scrolling on narrow screens:</p>
+  <h2 id="class-methods-table"><a class="anchor" href="#class-methods-table" aria-label="Link para esta seção">#</a>Class Methods Table</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>
+    <thead><tr><th>Method</th><th>Description</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identifier of the model to use.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limit in seconds for the response.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Returns the response in chunks.</td></tr>
+      <tr><td><code>__init__</code></td><td>Initializes the instance with the file, settings and basic data.</td></tr>
+      <tr><td><code>load</code></td><td>Loads the file content, calculates metadata and performs validations.</td></tr>
+      <tr><td><code>to_dict</code></td><td>Returns a dictionary with information about the loaded file.</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="notes"><a class="anchor" href="#notes" aria-label="Link para esta seção">#</a>Notes</h2>
-  <p>A sample warning, to check the styling of the attention callout:</p>
-  <div class="callout" data-kind="warn"><p><strong>Development only.</strong> The values above are fictitious and must not be used in production.</p></div></div>
+  <h2 id="important-architecture-points-and-insights"><a class="anchor" href="#important-architecture-points-and-insights" aria-label="Link para esta seção">#</a>Important Architecture Points and Insights</h2>
+  <ul>
+    <li>The class fully encapsulates the loading and validation logic, promoting reuse and a clear separation of responsibilities.</li>
+    <li>Using the <code>BytesIO</code> module makes it possible to work with the file content in memory without needing to save it to disk, increasing efficiency.</li>
+    <li>The design uses specific validations and raises HTTP exceptions directly, integrating easily with FastAPI's error handling flow.</li>
+    <li>It depends on external settings for the allowed extensions and MIME types, giving flexibility for adjustments without changing the source code.</li>
+    <li>The modular architecture allows simple extension, for example by adding other validations without changing the public interface.</li>
+  </ul>
+
+  <h2 id="class-and-methods-description"><a class="anchor" href="#class-and-methods-description" aria-label="Link para esta seção">#</a>Class and Methods Description</h2>
+
+  <h2 id="loadrequestfile-class"><a class="anchor" href="#loadrequestfile-class" aria-label="Link para esta seção">#</a><code>LoadRequestFile</code> Class</h2>
+  <h3 id="description"><a class="anchor" href="#description" aria-label="Link para esta seção">#</a>Description</h3>
+  <p><code>LoadRequestFile</code> is a utility for handling files sent via an HTTP request with FastAPI. It is responsible for loading the received file, extracting information such as extension, MIME type and size, and validating that the file is within the allowed standards configured for the system.</p>
+  <h3 id="constructor-arguments"><a class="anchor" href="#constructor-arguments" aria-label="Link para esta seção">#</a>Constructor Arguments</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argument</th><th>Type</th><th>Description</th><th>Default Value</th></tr></thead>
+    <tbody>
+      <tr><td><code>file</code></td><td><code>UploadFile</code></td><td>File sent in the request to be loaded and validated.</td><td>None (required)</td></tr>
+      <tr><td><code>allowed_extensions</code></td><td><code>list[str]</code></td><td>List of extensions allowed for validation.</td><td><code>ALLOWED_EXTENSIONS</code></td></tr>
+      <tr><td><code>allowed_mimetypes</code></td><td><code>list[str]</code></td><td>List of MIME types allowed for validation.</td><td><code>ALL_MIMETYPES</code></td></tr>
+      <tr><td><code>max_size_mb</code></td><td><code>float</code></td><td>Maximum size allowed for the file in megabytes.</td><td>10</td></tr>
+    </tbody>
+  </table></div>
+  <h3 id="methods"><a class="anchor" href="#methods" aria-label="Link para esta seção">#</a>Methods</h3>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <h3 id="description-2"><a class="anchor" href="#description-2" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>Initializes an instance of the class with the received file and the validation settings, preparing attributes for loading and future validations.</p>
+  <h3 id="arguments"><a class="anchor" href="#arguments" aria-label="Link para esta seção">#</a>Arguments</h3>
+  <ul>
+    <li><code>file</code> (<code>UploadFile</code>): File sent in the request.</li>
+    <li><code>allowed_extensions</code> (<code>list[str]</code>): Allowed extensions. Default: <code>ALLOWED_EXTENSIONS</code>.</li>
+    <li><code>allowed_mimetypes</code> (<code>list[str]</code>): Allowed MIME types. Default: <code>ALL_MIMETYPES</code>.</li>
+    <li><code>max_size_mb</code> (<code>float</code>): Maximum size allowed (in MB). Default: 10.</li>
+  </ul>
+  <h3 id="returns"><a class="anchor" href="#returns" aria-label="Link para esta seção">#</a>Returns</h3>
+  <ul>
+    <li>Does not return a value.</li>
+  </ul>
+  <h3 id="raises"><a class="anchor" href="#raises" aria-label="Link para esta seção">#</a>Raises</h3>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <h3 id="examples"><a class="anchor" href="#examples" aria-label="Link para esta seção">#</a>Examples</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-c"># Criar uma instância para validar arquivo recebido e configurar limites</span>
+loader = <span class="t-f">LoadRequestFile</span>(file, max_size_mb=<span class="t-n">5</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-load"><a class="anchor" href="#2-load" aria-label="Link para esta seção">#</a>2. <code>load</code></h3>
+  <h3 id="description-3"><a class="anchor" href="#description-3" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>Asynchronous method that loads the entire content of the file, calculates its size in bytes and megabytes, stores the data in memory and performs all the established validations (extension, MIME type and size).</p>
+  <h3 id="arguments-2"><a class="anchor" href="#arguments-2" aria-label="Link para esta seção">#</a>Arguments</h3>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <h3 id="returns-2"><a class="anchor" href="#returns-2" aria-label="Link para esta seção">#</a>Returns</h3>
+  <ul>
+    <li><code>LoadRequestFile</code>: returns the instance itself with loaded and validated data.</li>
+  </ul>
+  <h3 id="raises-2"><a class="anchor" href="#raises-2" aria-label="Link para esta seção">#</a>Raises</h3>
+  <ul>
+    <li><code>HTTPException</code>: if any validation fails, with status 400 and an informative message.</li>
+  </ul>
+  <h3 id="examples-2"><a class="anchor" href="#examples-2" aria-label="Link para esta seção">#</a>Examples</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-c"># Uso assíncrono: carregar e validar arquivo recebido na requisição</span>
+loader = <span class="t-k">await</span> <span class="t-f">LoadRequestFile</span>(file).<span class="t-f">load</span>()
+<span class="t-f">print</span>(loader.<span class="t-f">to_dict</span>())
+<span class="t-c"># Exemplo de saída:</span>
+<span class="t-c"># {</span>
+<span class="t-c">#   &quot;filename&quot;: &quot;photo.jpg&quot;,</span>
+<span class="t-c">#   &quot;extension&quot;: &quot;jpg&quot;,</span>
+<span class="t-c">#   &quot;mimetype&quot;: &quot;image/jpeg&quot;,</span>
+<span class="t-c">#   &quot;size_bytes&quot;: 152000,</span>
+<span class="t-c">#   &quot;size_mb&quot;: 0.15</span>
+<span class="t-c"># }</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-to-dict"><a class="anchor" href="#3-to-dict" aria-label="Link para esta seção">#</a>3. <code>to_dict</code></h3>
+  <h3 id="description-4"><a class="anchor" href="#description-4" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>Generates a dictionary with the main metadata of the loaded file, making inspection and eventual logging or API response easier.</p>
+  <h3 id="arguments-3"><a class="anchor" href="#arguments-3" aria-label="Link para esta seção">#</a>Arguments</h3>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <h3 id="returns-3"><a class="anchor" href="#returns-3" aria-label="Link para esta seção">#</a>Returns</h3>
+  <ul>
+    <li><code>dict</code>: containing <code>filename</code>, <code>extension</code>, <code>mimetype</code>, <code>size_bytes</code> and rounded <code>size_mb</code>.</li>
+  </ul>
+  <h3 id="raises-3"><a class="anchor" href="#raises-3" aria-label="Link para esta seção">#</a>Raises</h3>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <h3 id="examples-3"><a class="anchor" href="#examples-3" aria-label="Link para esta seção">#</a>Examples</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-c"># Obter informações resumidas sobre o arquivo carregado</span>
+info = loader.<span class="t-f">to_dict</span>()
+<span class="t-f">print</span>(info[<span class="t-s">&quot;filename&quot;</span>])  <span class="t-c"># ex: &quot;document.pdf&quot;</span>
+<span class="t-f">print</span>(info[<span class="t-s">&quot;size_mb&quot;</span>])   <span class="t-c"># ex: 2.45</span></code></pre><button class="copy floating" type="button"></button></div></div></div>
         <div class="feedback"></div>
         <p class="source">Source: <code>ipynb_contents/Internal Source Code/Utils/Load Request File/Documentation.md</code></p>
         <nav class="pager" aria-label="Neighboring pages"><a class="pager-link prev" href="../../../../../pages/en/internal-source-code/token-calculate/token-counter.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Previous</small><span>Token Counter</span></div></a><a class="pager-link next" href="../../../../../pages/en/internal-source-code/utils/load-request-file/use.html"><div><small>Next</small><span>Use</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
