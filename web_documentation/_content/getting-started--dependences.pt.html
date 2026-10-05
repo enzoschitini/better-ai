@@ -1,0 +1,31 @@
+<page data-lead="Página de exemplo para Dependences, usada para validar o layout.">
+  <div class="callout" data-kind="note"><p><strong>Conteúdo de exemplo.</strong> Este texto existe só para validar o layout. Na versão final, a página é gerada a partir de <code>ipynb_contents/Getting Started/2. Dependences.ipynb</code>.</p></div>
+
+  <h2>Visão geral</h2>
+  <p>Dependences faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
+
+  <h2>Uso</h2>
+  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
+  <pre data-lang="python"><code>
+from better_ai import Dependences
+
+client = Dependences()
+result = client.run(model_id="claude-sonnet-5-5")
+print(result)
+  </code></pre>
+
+  <h2>Parâmetros</h2>
+  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
+  <table>
+    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <tbody>
+        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
+        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
+        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Observações</h2>
+  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
+  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div>
+</page>

@@ -1,0 +1,318 @@
+{
+  "site": {
+    "name": "BetterAI Docs",
+    "brand": "BetterAI",
+    "brandSub": "Docs",
+    "tagline": "Where intelligence finds purpose.",
+    "baseUrl": ""
+  },
+  "links": {
+    "github": "#",
+    "swagger": "#",
+    "repo": ""
+  },
+  "footer": {
+    "resources": [
+      {
+        "label": "Swagger UI",
+        "url": "#"
+      },
+      {
+        "label": "GitHub",
+        "url": "#"
+      }
+    ],
+    "platform": [
+      "modules/web-service-network/web-service-network-api",
+      "streamlit-applications/acquarello",
+      "streamlit-applications/content-generator"
+    ]
+  },
+  "areas": [
+    {
+      "dir": "Getting Started",
+      "icon": "bolt",
+      "about": {
+        "pt": "Instalação, dependências e licença. Do clone ao primeiro request.",
+        "it": "Installazione, dipendenze e licenza. Dal clone alla prima richiesta.",
+        "en": "Installation, dependencies and license. From clone to first request."
+      },
+      "loose": {
+        "pt": "Primeiros passos",
+        "it": "Primi passi",
+        "en": "First steps"
+      }
+    },
+    {
+      "dir": "Modules",
+      "icon": "boxes",
+      "about": {
+        "pt": "Os serviços de IA da plataforma: agentes, parsing de documentos, deep research, embeddings, imagens, Pinecone e a API.",
+        "it": "I servizi di IA della piattaforma: agenti, parsing di documenti, deep research, embedding, immagini, Pinecone e l’API.",
+        "en": "The platform’s AI services: agents, document parsing, deep research, embeddings, images, Pinecone and the API."
+      },
+      "loose": {
+        "pt": "Geral",
+        "it": "Generale",
+        "en": "General"
+      }
+    },
+    {
+      "dir": "Internal Source Code",
+      "icon": "code",
+      "about": {
+        "pt": "A infraestrutura por baixo: tracing, bancos de dados, storage, custo por token e utilitários.",
+        "it": "L’infrastruttura sottostante: tracing, database, storage, costo per token e utilità.",
+        "en": "The infrastructure underneath: tracing, databases, storage, token cost and utilities."
+      },
+      "loose": {
+        "pt": "Geral",
+        "it": "Generale",
+        "en": "General"
+      }
+    },
+    {
+      "dir": "Streamlit Applications",
+      "icon": "layout",
+      "about": {
+        "pt": "Acquarello e Content Generator, as duas aplicações que rodam sobre a plataforma.",
+        "it": "Acquarello e Content Generator, le due applicazioni che girano sulla piattaforma.",
+        "en": "Acquarello and Content Generator, the two applications that run on the platform."
+      },
+      "loose": {
+        "pt": "Aplicações",
+        "it": "Applicazioni",
+        "en": "Applications"
+      }
+    }
+  ],
+  "ui": {
+    "pt": {
+      "skip": "Ir para o conteúdo",
+      "searchLbl": "Buscar na documentação",
+      "searchPh": "Buscar...",
+      "dlgPh": "Buscar páginas e seções",
+      "results": "Resultados",
+      "navigate": "navegar",
+      "open": "abrir",
+      "themeLbl": "Alternar tema claro e escuro",
+      "langLbl": "Idioma",
+      "tabsLbl": "Áreas da documentação",
+      "navLbl": "Navegação da documentação",
+      "onThisPage": "Nesta página",
+      "footRes": "Recursos",
+      "footPlat": "Plataforma",
+      "overview": "Visão geral",
+      "areas": "Áreas",
+      "popular": "Mais consultadas",
+      "suggestions": "Sugestões",
+      "areaOverview": "Visão geral da área",
+      "overviewOf": "%s: visão geral",
+      "badge": "vazio",
+      "copyPage": "Copiar página",
+      "helpful": "Esta página foi útil?",
+      "edit": "Editar no GitHub",
+      "source": "Fonte:",
+      "prev": "Anterior",
+      "next": "Próxima",
+      "pagerLbl": "Páginas vizinhas",
+      "noResults": "Nada encontrado para “%s”. Tente o nome de um módulo, como “Pinecone”.",
+      "untranslated": "Esta página ainda não foi traduzida. Você está vendo a versão em português.",
+      "homeTitle": "Documentação da BetterAI",
+      "homeLead": "Múltiplos modelos de IA, um único back-end unificado.",
+      "sections": "Seções",
+      "more": " e mais %d",
+      "blankCard": "Página ainda em branco.",
+      "pageCard": "Página da documentação.",
+      "emptyTitle": "Esta página ainda está em branco",
+      "emptySourceBlank": "O arquivo <code>%s</code> existe, mas não tem conteúdo. Quando ele for preenchido, o texto aparece aqui.",
+      "emptyPending": "O conteúdo de <code>%s</code> ainda não foi publicado nesta documentação.",
+      "goTo": "Ir para %s",
+      "banner": "Protótipo de layout. O conteúdo das páginas é de exemplo.",
+      "closeBanner": "Fechar aviso"
+    },
+    "it": {
+      "skip": "Vai al contenuto",
+      "searchLbl": "Cerca nella documentazione",
+      "searchPh": "Cerca...",
+      "dlgPh": "Cerca pagine e sezioni",
+      "results": "Risultati",
+      "navigate": "naviga",
+      "open": "apri",
+      "themeLbl": "Cambia tema chiaro o scuro",
+      "langLbl": "Lingua",
+      "tabsLbl": "Aree della documentazione",
+      "navLbl": "Navigazione della documentazione",
+      "onThisPage": "In questa pagina",
+      "footRes": "Risorse",
+      "footPlat": "Piattaforma",
+      "overview": "Panoramica",
+      "areas": "Aree",
+      "popular": "Più consultate",
+      "suggestions": "Suggerimenti",
+      "areaOverview": "Panoramica dell’area",
+      "overviewOf": "%s: panoramica",
+      "badge": "vuota",
+      "copyPage": "Copia pagina",
+      "helpful": "Questa pagina ti è stata utile?",
+      "edit": "Modifica su GitHub",
+      "source": "Fonte:",
+      "prev": "Precedente",
+      "next": "Successiva",
+      "pagerLbl": "Pagine vicine",
+      "noResults": "Nessun risultato per “%s”. Prova con il nome di un modulo, come “Pinecone”.",
+      "untranslated": "Questa pagina non è ancora stata tradotta. Stai vedendo la versione in portoghese.",
+      "homeTitle": "Documentazione di BetterAI",
+      "homeLead": "Più modelli di IA, un unico back-end unificato.",
+      "sections": "Sezioni",
+      "more": " e altre %d",
+      "blankCard": "Pagina ancora vuota.",
+      "pageCard": "Pagina della documentazione.",
+      "emptyTitle": "Questa pagina è ancora vuota",
+      "emptySourceBlank": "Il file <code>%s</code> esiste, ma non ha contenuto. Quando verrà compilato, il testo comparirà qui.",
+      "emptyPending": "Il contenuto di <code>%s</code> non è ancora stato pubblicato in questa documentazione.",
+      "goTo": "Vai a %s",
+      "banner": "Prototipo di layout. Il contenuto delle pagine è di esempio.",
+      "closeBanner": "Chiudi avviso"
+    },
+    "en": {
+      "skip": "Skip to content",
+      "searchLbl": "Search the documentation",
+      "searchPh": "Search...",
+      "dlgPh": "Search pages and sections",
+      "results": "Results",
+      "navigate": "navigate",
+      "open": "open",
+      "themeLbl": "Toggle light and dark theme",
+      "langLbl": "Language",
+      "tabsLbl": "Documentation areas",
+      "navLbl": "Documentation navigation",
+      "onThisPage": "On this page",
+      "footRes": "Resources",
+      "footPlat": "Platform",
+      "overview": "Overview",
+      "areas": "Areas",
+      "popular": "Most visited",
+      "suggestions": "Suggestions",
+      "areaOverview": "Area overview",
+      "overviewOf": "%s: overview",
+      "badge": "empty",
+      "copyPage": "Copy page",
+      "helpful": "Was this page helpful?",
+      "edit": "Edit on GitHub",
+      "source": "Source:",
+      "prev": "Previous",
+      "next": "Next",
+      "pagerLbl": "Neighboring pages",
+      "noResults": "Nothing found for “%s”. Try a module name, such as “Pinecone”.",
+      "untranslated": "This page has not been translated yet. You are seeing the Portuguese version.",
+      "homeTitle": "BetterAI documentation",
+      "homeLead": "Multiple AI models, one unified back end.",
+      "sections": "Sections",
+      "more": " and %d more",
+      "blankCard": "Page still blank.",
+      "pageCard": "Documentation page.",
+      "emptyTitle": "This page is still blank",
+      "emptySourceBlank": "The file <code>%s</code> exists but has no content. Once it is filled in, the text will show up here.",
+      "emptyPending": "The content of <code>%s</code> has not been published to this documentation yet.",
+      "goTo": "Go to %s",
+      "banner": "Layout prototype. Page content is placeholder text.",
+      "closeBanner": "Dismiss notice"
+    }
+  },
+  "home": {
+    "pt": {
+      "p1": "A BetterAI é um back-end de IA modular, escrito em Python, que coloca OpenAI, Anthropic, Google Gemini e Groq atrás da mesma interface. Sobre essa base roda a Web Service Network, a API FastAPI que expõe os serviços em produção.",
+      "p2": "A plataforma faz hoje o seguinte:",
+      "li": [
+        "<strong>Parsing de documentos:</strong> converte <code>txt</code>, <code>md</code>, <code>pdf</code> e <code>docx</code> em dados estruturados, conforme o schema de quem chama.",
+        "<strong>Deep research:</strong> busca web profunda via Tavily, devolvida como contexto em markdown.",
+        "<strong>Base vetorial:</strong> ingestão, busca semântica e exclusão no Pinecone.",
+        "<strong>Embeddings locais:</strong> chunking e recuperação em FAISS na memória.",
+        "<strong>Geração de imagens:</strong> o serviço Da-Vinci gera e edita imagens a partir de texto e de referências visuais."
+      ],
+      "startH": "Comece por aqui",
+      "quick": {
+        "id": "getting-started/quickstart",
+        "icon": "bolt",
+        "text": "Do clone ao primeiro GET /health, em seis passos."
+      },
+      "tip": "Com a API no ar, a documentação interativa dos endpoints fica em <code>http://localhost:8000/docs</code>.",
+      "exploreH": "Explore por área",
+      "popular": [
+        {
+          "id": "modules/agents/utils/model-gateway",
+          "icon": "boxes",
+          "text": "Modelos e agentes de qualquer provedor pela mesma chamada."
+        },
+        {
+          "id": "modules/web-service-network/web-service-network-api",
+          "icon": "code",
+          "text": "Autenticação, formato das respostas e endpoints."
+        }
+      ]
+    },
+    "it": {
+      "p1": "BetterAI è un back-end di IA modulare, scritto in Python, che mette OpenAI, Anthropic, Google Gemini e Groq dietro la stessa interfaccia. Su questa base gira la Web Service Network, l’API FastAPI che espone i servizi in produzione.",
+      "p2": "Oggi la piattaforma fa quanto segue:",
+      "li": [
+        "<strong>Parsing di documenti:</strong> converte file <code>txt</code>, <code>md</code>, <code>pdf</code> e <code>docx</code> in dati strutturati, secondo lo schema di chi chiama.",
+        "<strong>Deep research:</strong> ricerca web approfondita tramite Tavily, restituita come contesto in markdown.",
+        "<strong>Base vettoriale:</strong> ingestione, ricerca semantica ed eliminazione su Pinecone.",
+        "<strong>Embedding locali:</strong> chunking e recupero in memoria con FAISS.",
+        "<strong>Generazione di immagini:</strong> il servizio Da-Vinci genera e modifica immagini a partire da testo e riferimenti visivi."
+      ],
+      "startH": "Parti da qui",
+      "quick": {
+        "id": "getting-started/quickstart",
+        "icon": "bolt",
+        "text": "Dal clone al primo GET /health, in sei passi."
+      },
+      "tip": "Con l’API attiva, la documentazione interattiva degli endpoint si trova su <code>http://localhost:8000/docs</code>.",
+      "exploreH": "Esplora per area",
+      "popular": [
+        {
+          "id": "modules/agents/utils/model-gateway",
+          "icon": "boxes",
+          "text": "Modelli e agenti di qualsiasi provider con la stessa chiamata."
+        },
+        {
+          "id": "modules/web-service-network/web-service-network-api",
+          "icon": "code",
+          "text": "Autenticazione, formato delle risposte ed endpoint."
+        }
+      ]
+    },
+    "en": {
+      "p1": "BetterAI is a modular AI back end written in Python that puts OpenAI, Anthropic, Google Gemini and Groq behind the same interface. On top of it runs the Web Service Network, the FastAPI service that exposes the platform in production.",
+      "p2": "Today the platform does the following:",
+      "li": [
+        "<strong>Document parsing:</strong> turns <code>txt</code>, <code>md</code>, <code>pdf</code> and <code>docx</code> files into structured data, following the caller’s schema.",
+        "<strong>Deep research:</strong> deep web search through Tavily, returned as markdown context.",
+        "<strong>Vector store:</strong> ingestion, semantic search and deletion on Pinecone.",
+        "<strong>Local embeddings:</strong> in-memory chunking and retrieval with FAISS.",
+        "<strong>Image generation:</strong> the Da-Vinci service generates and edits images from text and visual references."
+      ],
+      "startH": "Start here",
+      "quick": {
+        "id": "getting-started/quickstart",
+        "icon": "bolt",
+        "text": "From clone to your first GET /health, in six steps."
+      },
+      "tip": "With the API running, the interactive endpoint docs are at <code>http://localhost:8000/docs</code>.",
+      "exploreH": "Explore by area",
+      "popular": [
+        {
+          "id": "modules/agents/utils/model-gateway",
+          "icon": "boxes",
+          "text": "Models and agents from any provider through the same call."
+        },
+        {
+          "id": "modules/web-service-network/web-service-network-api",
+          "icon": "code",
+          "text": "Authentication, response format and endpoints."
+        }
+      ]
+    }
+  }
+}
