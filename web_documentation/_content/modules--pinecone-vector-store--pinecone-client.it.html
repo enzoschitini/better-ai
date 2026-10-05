@@ -1,31 +1,162 @@
-<page data-lead="Pagina di esempio per Pinecone Client, usata per validare il layout.">
-  <div class="callout" data-kind="note"><p><strong>Contenuto di esempio.</strong> Questo testo esiste solo per validare il layout. Nella versione finale la pagina è generata da <code>ipynb_contents/Modules/Pinecone Vector Store/Pinecone Client.md</code>.</p></div>
-
+<page data-lead="">
   <h2>Panoramica</h2>
-  <p>Pinecone Client fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
+  <p>La classe <code>PineconeClient</code> è un client unificato per facilitare l'integrazione con il servizio Pinecone, utilizzato per l'archiviazione e la ricerca vettoriale. Gestisce la configurazione necessaria per autenticarsi con le API di OpenAI e Pinecone, inizializza gli embeddings per la vettorizzazione, crea e gestisce i VectorStore e i namespace associati.</p>
+  <p>Questo client risolve il problema comune di gestire singolarmente configurazione, autenticazione e creazione degli oggetti Pinecone, centralizzando queste responsabilità in un'interfaccia semplice. In pratica, può essere usato dagli sviluppatori che devono indicizzare e interrogare dati vettoriali per applicazioni di ricerca semantica, raccomandazione o NLP, semplificando il processo di connessione a Pinecone e OpenAI.</p>
 
-  <h2>Uso</h2>
-  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
-  <pre data-lang="python"><code>
-from better_ai import PineconeClient
+  <h2>Flusso di Esecuzione</h2>
+  <ol>
+    <li><strong>Inizializzazione del Client (<code>__init__</code>)</strong>: riceve parametri opzionali o legge le variabili d'ambiente per configurare l'indice, i namespace e il modello di embeddings. Valida che le chiavi API siano disponibili e solleva eccezioni in caso contrario.</li>
+    <li><strong>Caricamento delle Credenziali e delle Configurazioni</strong>: configura il nome dell'indice Pinecone, i namespace principale e globale e il modello di embedding da usare, utilizzando i valori predefiniti della configurazione o gli input dell'utente.</li>
+    <li><strong>Inizializzazione della Connessione a Pinecone (<code>_init_pinecone</code>)</strong>: crea un'istanza del client Pinecone autenticata con la chiave fornita e seleziona l'indice configurato per le operazioni.</li>
+    <li><strong>Inizializzazione del Modello di Embeddings (<code>_init_embeddings</code>)</strong>: istanzia il modello OpenAIEmbeddings, responsabile di generare i vettori di testo da usare con Pinecone.</li>
+    <li><strong>Uso del Client per Ottenere i Namespace (<code>get_namespace</code>)</strong>: risolve quale namespace utilizzare, dando priorità al valore specificato nella chiamata o a quello principale configurato.</li>
+    <li><strong>Creazione di un VectorStore Configurato (<code>create_vector_store</code>)</strong>: costruisce un oggetto PineconeVectorStore collegato all'indice, al namespace e al modello di embeddings, pronto per indicizzare o cercare vettori.</li>
+  </ol>
 
-client = PineconeClient()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parametri</h2>
-  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
+  <h2>Tabella dei Metodi della Classe</h2>
   <table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <thead><tr><th>Metodo</th><th>Descrizione</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
+      <tr><td><code>__init__</code></td><td>Inizializza il client Pinecone con credenziali e configurazioni.</td></tr>
+      <tr><td><code>_init_pinecone</code></td><td>Stabilisce la connessione con Pinecone e seleziona l'indice.</td></tr>
+      <tr><td><code>_init_embeddings</code></td><td>Inizializza il modello di embeddings usato per la vettorizzazione.</td></tr>
+      <tr><td><code>get_namespace</code></td><td>Risolve e restituisce il namespace da utilizzare.</td></tr>
+      <tr><td><code>create_vector_store</code></td><td>Crea e restituisce un PineconeVectorStore configurato per un namespace.</td></tr>
     </tbody>
   </table>
 
-  <h2>Note</h2>
-  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
-  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div>
+  <h2>Punti Importanti dell'Architettura e Spunti</h2>
+  <ul>
+    <li><strong>Centralizzazione della Configurazione e dell'Inizializzazione</strong>: la classe raggruppa la lettura delle configurazioni (ambiente e default), la verifica delle credenziali e le inizializzazioni, promuovendo maggiore sicurezza e chiarezza nel bootstrap del client.</li>
+    <li><strong>Uso di Decorator per Logging e Gestione degli Errori</strong>: il decorator <code>trace</code> è applicato ai metodi critici per standardizzare la generazione di log informativi e la cattura delle eccezioni, facilitando il monitoraggio.</li>
+    <li><strong>Separazione delle Responsabilità</strong>: i metodi interni (<code>_init_pinecone</code>, <code>_init_embeddings</code>) sono incapsulati e completano la configurazione fatta nel costruttore, mantenendo il costruttore snello.</li>
+    <li><strong>Integrazione con Altre Classi</strong>: utilizza classi esterne di Langchain per embeddings e vector store (<code>OpenAIEmbeddings</code> e <code>PineconeVectorStore</code>), oltre a una configurazione personalizzata (<code>PineconeVectorStoreConfig</code>) e a un sistema di tracing interno (<code>ApplicationTracing</code>).</li>
+    <li><strong>Flessibilità dei Parametri</strong>: permette di sovrascrivere le configurazioni predefinite tramite argomenti nel costruttore e nei metodi, favorendo riutilizzabilità e semplice personalizzazione.</li>
+  </ul>
+
+  <h2>Descrizione della Classe e dei Metodi</h2>
+
+  <h2>Classe <code>PineconeClient</code></h2>
+  <h3>Descrizione</h3>
+  <p>Responsabile di gestire la connessione e le operazioni di base con il servizio Pinecone per l'archiviazione vettoriale. Automatizza il caricamento delle credenziali necessarie, inizializza l'indice e gli embeddings e astrae la creazione di store e namespace, facilitando l'uso della base vettoriale nelle applicazioni.</p>
+  <h3>Argomenti del Costruttore</h3>
+  <table>
+    <thead><tr><th>Argomento</th><th>Tipo</th><th>Descrizione</th><th>Valore Predefinito</th></tr></thead>
+    <tbody>
+      <tr><td><code>index_name</code></td><td><code>Optional[str]</code></td><td>Nome dell'indice Pinecone da usare</td><td>None</td></tr>
+      <tr><td><code>main_namespace</code></td><td><code>Optional[str]</code></td><td>Namespace principale per le operazioni vettoriali</td><td>None</td></tr>
+      <tr><td><code>global_namespace</code></td><td><code>Optional[str]</code></td><td>Namespace globale per le operazioni</td><td>None</td></tr>
+      <tr><td><code>embedding_model</code></td><td><code>Optional[str]</code></td><td>Nome del modello di embedding OpenAI per la generazione dei vettori</td><td>None</td></tr>
+    </tbody>
+  </table>
+  <h3>Metodi</h3>
+
+  <h3>1. <code>__init__</code></h3>
+  <h3>Descrizione</h3>
+  <p>Inizializza il client Pinecone, caricando le credenziali, definendo le configurazioni di indice e namespace e inizializzando le connessioni con Pinecone e con il modello di embeddings.</p>
+  <h3>Argomenti</h3>
+  <ul>
+    <li><code>index_name</code> (Optional[str]): nome dell'indice Pinecone.</li>
+    <li><code>main_namespace</code> (Optional[str]): namespace principale.</li>
+    <li><code>global_namespace</code> (Optional[str]): namespace globale.</li>
+    <li><code>embedding_model</code> (Optional[str]): nome del modello per gli embeddings.</li>
+  </ul>
+  <h3>Valori di ritorno</h3>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li><code>EnvironmentError</code>: se le chiavi dell'API OpenAI o Pinecone non vengono trovate.</li>
+    <li><code>ValueError</code>: se il nome dell'indice non viene indicato o configurato.</li>
+  </ul>
+  <h3>Esempi</h3>
+  <pre data-lang="python"><code>
+client = PineconeClient(
+    index_name="meu_indice",
+    main_namespace="namespace_principal",
+    embedding_model="text-embedding-ada-002"
+)
+</code></pre>
+
+  <h3>2. <code>_init_pinecone</code></h3>
+  <h3>Descrizione</h3>
+  <p>Stabilisce la connessione con il servizio Pinecone utilizzando la chiave API e seleziona l'indice configurato per le operazioni successive.</p>
+  <h3>Argomenti</h3>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <h3>Valori di ritorno</h3>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li>Può propagare eccezioni relative alla connessione con Pinecone.</li>
+  </ul>
+  <h3>Esempi</h3>
+  <pre data-lang="python"><code>
+client._init_pinecone()  # Normalmente chamado dentro do construtor
+</code></pre>
+
+  <h3>3. <code>_init_embeddings</code></h3>
+  <h3>Descrizione</h3>
+  <p>Inizializza il modello di embeddings da usare per generare vettori a partire dai testi. Può ricevere un modello specifico o usare quello predefinito configurato all'inizializzazione del client.</p>
+  <h3>Argomenti</h3>
+  <ul>
+    <li><code>model_name</code> (Optional[str]): nome del modello di embedding.</li>
+    <li>Se non indicato, usa il modello predefinito configurato.</li>
+  </ul>
+  <h3>Valori di ritorno</h3>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <h3>Esempi</h3>
+  <pre data-lang="python"><code>
+client._init_embeddings("text-embedding-ada-002")
+</code></pre>
+
+  <h3>4. <code>get_namespace</code></h3>
+  <h3>Descrizione</h3>
+  <p>Risolve quale namespace utilizzare per un'operazione, dando priorità a quello indicato esplicitamente nel parametro oppure restituendo il namespace principale configurato.</p>
+  <h3>Argomenti</h3>
+  <ul>
+    <li><code>namespace</code> (Optional[str]): namespace desiderato.</li>
+  </ul>
+  <h3>Valori di ritorno</h3>
+  <ul>
+    <li><code>str</code>: il namespace effettivamente utilizzato.</li>
+  </ul>
+  <h3>Esempi</h3>
+  <pre data-lang="python"><code>
+ns = client.get_namespace("namespace_especifico")
+print(ns)  # "namespace_especifico"
+
+ns = client.get_namespace()
+print(ns)  # retorna o main_namespace configurado
+</code></pre>
+
+  <h3>5. <code>create_vector_store</code></h3>
+  <h3>Descrizione</h3>
+  <p>Crea e restituisce un'istanza di <code>PineconeVectorStore</code> configurata per un namespace e un modello di embeddings specifici, utile per l'ingestione e le interrogazioni vettoriali.</p>
+  <h3>Argomenti</h3>
+  <ul>
+    <li><code>namespace</code> (Optional[str]): namespace da usare nel vector store.</li>
+    <li><code>embedding_model</code> (Optional[OpenAIEmbeddings]): modello di embeddings da utilizzare.</li>
+  </ul>
+  <h3>Valori di ritorno</h3>
+  <ul>
+    <li><code>PineconeVectorStore</code>: istanza configurata del vector store.</li>
+  </ul>
+  <h3>Esempi</h3>
+  <pre data-lang="python"><code>
+vector_store = client.create_vector_store(namespace="minerais")
+# Usa main_namespace e modelo padrão caso não informado
+
+embeddings = OpenAIEmbeddings(model="text-embedding-ada-002")
+vector_store_custom = client.create_vector_store(
+    namespace="custom_ns",
+    embedding_model=embeddings
+)
+</code></pre>
 </page>

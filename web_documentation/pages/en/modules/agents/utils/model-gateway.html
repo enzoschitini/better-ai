@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Gateway | BetterAI Docs</title>
-<meta name="description" content="Sample page for Model Gateway, used to validate the layout.">
+<meta name="description" content="BetterAI Docs">
 <link rel="canonical" href="pages/en/modules/agents/utils/model-gateway.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,418 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copy page</span></button>
             </div>
           </div>
-          <p class="lead">Sample page for Model Gateway, used to validate the layout.</p>
+          
           <details class="toc-inline"><summary>On this page</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Placeholder content.</strong> This text exists only to validate the layout. In the final version the page is generated from <code>ipynb_contents/Modules/Agents/Utils/Model Gateway.md</code>.</p></div>
+        <div class="prose"><h2 id="overview"><a class="anchor" href="#overview" aria-label="Link para esta seção">#</a>Overview</h2>
+  <p>The <code>ModelGateway</code> class acts as a unified, provider-aware factory for the models of the Agno library. Its main purpose is to abstract the complexity of the different APIs of language model providers, offering a simple, consistent and safe interface to create instances of those models and agents that use them.</p>
+  <p>It solves the problem of the dispersion and variation in the interfaces of models from different providers (Anthropic, Google, Groq, OpenAI and OpenAI variants), allowing the developer to select the desired model through a single class, which manages the creation and automatic validation of the parameters. In this way, the practical use of the class simplifies integration with multiple models without needing to know the specific details of each one.</p>
+  <p>In practice, you can create a model or agent by specifying only the provider name and relevant parameters, while <code>ModelGateway</code> handles the mapping to the correct class and optionally validates the arguments, avoiding common errors and promoting greater productivity and safety in development.</p>
 
-  <h2 id="overview"><a class="anchor" href="#overview" aria-label="Link para esta seção">#</a>Overview</h2>
-  <p>Model Gateway is part of the BetterAI platform. This paragraph stands in for the text coming from the source, so that spacing, line measure and the side index can be checked.</p>
+  <h2 id="execution-flow"><a class="anchor" href="#execution-flow" aria-label="Link para esta seção">#</a>Execution Flow</h2>
+  <ol>
+    <li><strong>Instantiate the class</strong> <code>ModelGateway</code>, optionally defining whether you want strict validation of the parameters (the default is <code>True</code>).</li>
+    <li><strong>Call the method</strong> <code>create_model</code> passing the <code>provider</code> name, optionally the <code>model_id</code>, the <code>openai_variant</code> variant (if applicable), and any other model parameters.</li>
+    <li>The class <strong>internally resolves which constructor to use</strong> by mapping the provider and, if it is OpenAI, also the variant, to the appropriate model class.</li>
+    <li>If strict validation is enabled, <code>ModelGateway</code> <strong>validates that all the parameters provided are valid</strong>, based on the signature of the model class constructor.</li>
+    <li>The model instance is created and returned, ready to use.</li>
+    <li>Optionally, an agent can be created with <code>create_agent</code>, which internally calls <code>create_model</code> and instantiates an <code>Agent</code> object from the Agno library, configured with the selected model and additional parameters.</li>
+    <li>For convenience, there are convenience methods for each of the most common providers and variants, such as <code>anthropic()</code>, <code>google()</code>, <code>openai_chat()</code>, among others, allowing models to be created directly without having to specify the provider manually.</li>
+  </ol>
 
-  <h2 id="usage"><a class="anchor" href="#usage" aria-label="Link para esta seção">#</a>Usage</h2>
-  <p>The block below shows the typical call, with syntax highlighting:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> ModelGateway
-
-client = <span class="t-f">ModelGateway</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parameters"><a class="anchor" href="#parameters" aria-label="Link para esta seção">#</a>Parameters</h2>
-  <p>The table below exists to validate horizontal scrolling on narrow screens:</p>
+  <h2 id="class-methods-table"><a class="anchor" href="#class-methods-table" aria-label="Link para esta seção">#</a>Class Methods Table</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>
+    <thead><tr><th>Method</th><th>Description</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identifier of the model to use.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limit in seconds for the response.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Returns the response in chunks.</td></tr>
+      <tr><td><code>__init__</code></td><td>Initializes the instance with validation control.</td></tr>
+      <tr><td><code>supported_providers</code></td><td>Returns the supported providers.</td></tr>
+      <tr><td><code>supported_openai_variants</code></td><td>Returns the supported OpenAI variants.</td></tr>
+      <tr><td><code>supported_parameters</code></td><td>Returns valid parameters for the model.</td></tr>
+      <tr><td><code>create_model</code></td><td>Creates and returns an instance of the chosen model.</td></tr>
+      <tr><td><code>create_agent</code></td><td>Creates an agent configured with the selected model.</td></tr>
+      <tr><td><code>anthropic</code></td><td>Creates an instance of the Anthropic Claude model.</td></tr>
+      <tr><td><code>google</code></td><td>Creates an instance of the Google Gemini model.</td></tr>
+      <tr><td><code>groq</code></td><td>Creates an instance of the Groq model.</td></tr>
+      <tr><td><code>openai_chat</code></td><td>Creates an instance of the OpenAIChat model.</td></tr>
+      <tr><td><code>openai_responses</code></td><td>Creates an instance of the OpenAIResponses model.</td></tr>
+      <tr><td><code>open_responses</code></td><td>Creates an instance of the OpenResponses model.</td></tr>
+      <tr><td><code>openai_like</code></td><td>Creates an instance of the OpenAILike model.</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="notes"><a class="anchor" href="#notes" aria-label="Link para esta seção">#</a>Notes</h2>
-  <p>A sample warning, to check the styling of the attention callout:</p>
-  <div class="callout" data-kind="warn"><p><strong>Development only.</strong> The values above are fictitious and must not be used in production.</p></div></div>
+  <h2 id="environment-variables"><a class="anchor" href="#environment-variables" aria-label="Link para esta seção">#</a>Environment Variables</h2>
+  <p>This module imports and calls <code>load_dotenv()</code> at the start, indicating that it loads environment variables defined in a <code>.env</code> file. Although the class itself does not directly use environment variables, the underlying models probably depend on API keys and settings that are configured via ENV. Common example:</p>
+  <ul>
+    <li><code>OPENAI_API_KEY</code>: API key for authentication with OpenAI models.</li>
+    <li><code>ANTHROPIC_API_KEY</code>: key for Anthropic.</li>
+    <li><code>GEMINI_API_KEY</code>: credentials for the Google service.</li>
+    <li>Others specific to each provider.</li>
+  </ul>
+
+  <h2 id="important-architecture-points-and-insights"><a class="anchor" href="#important-architecture-points-and-insights" aria-label="Link para esta seção">#</a>Important Architecture Points and Insights</h2>
+  <ul>
+    <li><strong>Factory Design:</strong> The class uses the factory pattern to create model instances based on normalized keys, promoting extensibility and centralization of creation.</li>
+    <li><strong>Aliases and Normalization:</strong> Uses dictionaries to allow multiple names for the same provider or OpenAI variants, improving usability.</li>
+    <li><strong>Parameter Validation:</strong> Inspects the constructor signature of the models to validate the arguments received, avoiding silent errors.</li>
+    <li><strong>Separation between Model and Agent:</strong> Although it creates models, it directly supports creating agents configured with those models, decoupling responsibilities.</li>
+    <li><strong>Dependency on the Agno Library:</strong> Uses classes from the <code>agno.models</code> package and <code>agno.agent.Agent</code>, so it is a wrapper specialized for this stack.</li>
+  </ul>
+
+  <h2 id="class-and-methods-description"><a class="anchor" href="#class-and-methods-description" aria-label="Link para esta seção">#</a>Class and Methods Description</h2>
+
+  <h2 id="modelgateway-class"><a class="anchor" href="#modelgateway-class" aria-label="Link para esta seção">#</a><code>ModelGateway</code> Class</h2>
+  <h3 id="description"><a class="anchor" href="#description" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>Responsible for unifying the creation of models from different providers in a safe and simple way. Allows specifying the provider and variants (in the case of OpenAI) and creating both model instances and agents that use them, ensuring that the parameters are correct and aligned with the specific implementations of each model.</p>
+  <h3 id="constructor-arguments"><a class="anchor" href="#constructor-arguments" aria-label="Link para esta seção">#</a>Constructor Arguments</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argument</th><th>Type</th><th>Description</th><th>Default Value</th></tr></thead>
+    <tbody>
+      <tr><td><code>strict_validation</code></td><td>bool</td><td>Flag that enables strict validation of parameters. If <code>True</code>, invalid parameters cause an error.</td><td>True</td></tr>
+    </tbody>
+  </table></div>
+  <h3 id="methods"><a class="anchor" href="#methods" aria-label="Link para esta seção">#</a>Methods</h3>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Initializes the class instance, defining the parameter validation behavior for the creation of the models.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>strict_validation</code> (bool): Enables/disables strict validation of the parameters. Default <code>True</code>.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>Does not return a value.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>gateway = <span class="t-f">ModelGateway</span>(strict_validation=<span class="t-n">False</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-supported-providers"><a class="anchor" href="#2-supported-providers" aria-label="Link para esta seção">#</a>2. <code>supported_providers</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Returns a list of the model providers supported by the class.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>Sequence[str]</code>: Sequence of names of the supported providers, e.g. <code>("anthropic", "google", "groq", "openai")</code>.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-f">print</span>(ModelGateway.<span class="t-f">supported_providers</span>())
+<span class="t-c"># ('anthropic', 'google', 'groq', 'openai')</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-supported-openai-variants"><a class="anchor" href="#3-supported-openai-variants" aria-label="Link para esta seção">#</a>3. <code>supported_openai_variants</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Returns the specific OpenAI variants supported for model selection.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>Sequence[str]</code>: Sequence of supported OpenAI variants, example <code>("chat", "responses", "open_responses", "like")</code>.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-f">print</span>(ModelGateway.<span class="t-f">supported_openai_variants</span>())
+<span class="t-c"># ('chat', 'responses', 'open_responses', 'like')</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-supported-parameters"><a class="anchor" href="#4-supported-parameters" aria-label="Link para esta seção">#</a>4. <code>supported_parameters</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Returns the list of names of the parameters valid for the constructor of a given model/provider.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>provider</code> (str): Provider name (e.g. "openai", "google", "anthropic").</li>
+    <li><code>openai_variant</code> (str): OpenAI variant. Default <code>"chat"</code>.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>List[str]</code>: List of the names of the parameters accepted by the model constructor.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: If the provider or variant is invalid.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>params = gateway.<span class="t-f">supported_parameters</span>(provider=<span class="t-s">&quot;openai&quot;</span>, openai_variant=<span class="t-s">&quot;like&quot;</span>)
+<span class="t-f">print</span>(<span class="t-s">&quot;temperature&quot;</span> <span class="t-k">in</span> params)
+<span class="t-c"># True (se for parâmetro válido)</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="5-create-model"><a class="anchor" href="#5-create-model" aria-label="Link para esta seção">#</a>5. <code>create_model</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Creates and returns an instance of the model corresponding to the provider and variant, passing the necessary parameters to the constructor. Validates the arguments if enabled.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>provider</code> (str): Provider name - <code>"anthropic"</code>, <code>"google"</code>, <code>"groq"</code> or <code>"openai"</code>.</li>
+    <li><code>model_id</code> (Optional[str]): Model ID to override the constructor's <code>id</code> parameter.</li>
+    <li><code>openai_variant</code> (str, keyword-only): OpenAI variant to be used, default <code>"chat"</code>.</li>
+    <li><code>strict_validation</code> (Optional[bool], keyword-only): Override for strict validation in the method, ignoring the instance configuration.</li>
+    <li><code>**kwargs</code> (Any): All the additional parameters accepted by the model constructor.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>Specific instance of the requested model.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: If invalid parameters are passed (when validation is enabled).</li>
+    <li><code>ValueError</code>: If the provider or OpenAI variant is invalid.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>model = gateway.<span class="t-f">create_model</span>(
+    provider=<span class="t-s">&quot;openai&quot;</span>,
+    openai_variant=<span class="t-s">&quot;chat&quot;</span>,
+    model_id=<span class="t-s">&quot;gpt-4.1-mini&quot;</span>,
+    temperature=<span class="t-n">0.2</span>,
+)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="6-create-agent"><a class="anchor" href="#6-create-agent" aria-label="Link para esta seção">#</a>6. <code>create_agent</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Creates an <code>Agent</code> object configured with the model created according to the provider and variant, including parameters specific to the model and to the agent.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>provider</code> (str): Provider name.</li>
+    <li><code>model_id</code> (Optional[str]): Model ID (optional).</li>
+    <li><code>openai_variant</code> (str, keyword-only): OpenAI variant, default <code>"chat"</code>.</li>
+    <li><code>model_kwargs</code> (Optional[Dict[str, Any]]): Dictionary of parameters for the model.</li>
+    <li><code>**agent_kwargs</code> (Any): Extra parameters forwarded to the agent constructor.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>Agent</code>: Instance of the <code>Agent</code> class configured with the model and parameters provided.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Same as <code>create_model</code> for the creation of the model.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>agent = gateway.<span class="t-f">create_agent</span>(
+    provider=<span class="t-s">&quot;openai&quot;</span>,
+    openai_variant=<span class="t-s">&quot;chat&quot;</span>,
+    model_kwargs={<span class="t-s">&quot;id&quot;</span>: <span class="t-s">&quot;gpt-4.1-mini&quot;</span>, <span class="t-s">&quot;temperature&quot;</span>: <span class="t-n">0.2</span>},
+    markdown=<span class="t-n">True</span>,
+)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="7-anthropic"><a class="anchor" href="#7-anthropic" aria-label="Link para esta seção">#</a>7. <code>anthropic</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Convenience method to create the Anthropic Claude model with optional parameters.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>model_id</code> (Optional[str]): Model ID.</li>
+    <li><code>**kwargs</code> (Any): Parameters for the Claude constructor.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>Claude</code>: Instance of the Claude model.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Same as <code>create_model</code>.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>claude = gateway.<span class="t-f">anthropic</span>(model_id=<span class="t-s">&quot;claude-v1&quot;</span>, temperature=<span class="t-n">0.5</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="8-google"><a class="anchor" href="#8-google" aria-label="Link para esta seção">#</a>8. <code>google</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Convenience method to create the Google Gemini model with optional parameters.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>model_id</code> (Optional[str]): Model ID.</li>
+    <li><code>**kwargs</code> (Any): Parameters for the Gemini constructor.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>Gemini</code>: Instance of the Gemini model.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Same as <code>create_model</code>.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>gemini = gateway.<span class="t-f">google</span>(model_id=<span class="t-s">&quot;gemini-pro&quot;</span>, max_tokens=<span class="t-n">1000</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="9-groq"><a class="anchor" href="#9-groq" aria-label="Link para esta seção">#</a>9. <code>groq</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Convenience method to create the Groq model with optional parameters.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>model_id</code> (Optional[str]): Model ID.</li>
+    <li><code>**kwargs</code> (Any): Parameters for the Groq constructor.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>Groq</code>: Instance of the Groq model.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Same as <code>create_model</code>.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>groq_model = gateway.<span class="t-f">groq</span>(model_id=<span class="t-s">&quot;groq-xyz&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="10-openai-chat"><a class="anchor" href="#10-openai-chat" aria-label="Link para esta seção">#</a>10. <code>openai_chat</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Convenience method to create the OpenAIChat model with optional parameters.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>model_id</code> (Optional[str]): Model ID.</li>
+    <li><code>**kwargs</code> (Any): Parameters for the OpenAIChat constructor.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>OpenAIChat</code>: Instance of the OpenAIChat model.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Same as <code>create_model</code>.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>chat = gateway.<span class="t-f">openai_chat</span>(model_id=<span class="t-s">&quot;gpt-4&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="11-openai-responses"><a class="anchor" href="#11-openai-responses" aria-label="Link para esta seção">#</a>11. <code>openai_responses</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Convenience method to create the OpenAIResponses model with optional parameters.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>model_id</code> (Optional[str]): Model ID.</li>
+    <li><code>**kwargs</code> (Any): Parameters for the OpenAIResponses constructor.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>OpenAIResponses</code>: Instance of the OpenAIResponses model.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Same as <code>create_model</code>.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>responses = gateway.<span class="t-f">openai_responses</span>(model_id=<span class="t-s">&quot;some-id&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="12-open-responses"><a class="anchor" href="#12-open-responses" aria-label="Link para esta seção">#</a>12. <code>open_responses</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Convenience method to create the OpenResponses model with optional parameters.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>model_id</code> (Optional[str]): Model ID.</li>
+    <li><code>**kwargs</code> (Any): Parameters for the OpenResponses constructor.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>OpenResponses</code>: Instance of the OpenResponses model.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Same as <code>create_model</code>.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>open_resp = gateway.<span class="t-f">open_responses</span>(model_id=<span class="t-s">&quot;openresp-1&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="13-openai-like"><a class="anchor" href="#13-openai-like" aria-label="Link para esta seção">#</a>13. <code>openai_like</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Convenience method to create the OpenAILike model with optional parameters.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>model_id</code> (Optional[str]): Model ID.</li>
+    <li><code>**kwargs</code> (Any): Parameters for the OpenAILike constructor.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>OpenAILike</code>: Instance of the OpenAILike model.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Same as <code>create_model</code>.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>like_model = gateway.<span class="t-f">openai_like</span>(model_id=<span class="t-s">&quot;like-1&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="14-resolve-factory-key"><a class="anchor" href="#14-resolve-factory-key" aria-label="Link para esta seção">#</a>14. <code>_resolve_factory_key</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Resolves the internal key used to access the model constructor given the provider name and variant (if OpenAI).</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>provider</code> (str): Provider name.</li>
+    <li><code>openai_variant</code> (str): OpenAI variant. Default <code>"chat"</code>.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>str</code>: Key of the factories dictionary to obtain the constructor.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: If the provider or variant is invalid.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>key = gateway.<span class="t-f">_resolve_factory_key</span>(<span class="t-s">&quot;openai&quot;</span>, <span class="t-s">&quot;like&quot;</span>)
+<span class="t-f">print</span>(key)  <span class="t-c"># &quot;openai.like&quot;</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="15-get-constructor-param-names"><a class="anchor" href="#15-get-constructor-param-names" aria-label="Link para esta seção">#</a>15. <code>_get_constructor_param_names</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Returns the names of the constructor parameters of the model class associated with a factory key.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>factory_key</code> (str): Key of the model constructor.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>List[str]</code>: List of parameter names, except <code>self</code>.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>params = gateway.<span class="t-f">_get_constructor_param_names</span>(<span class="t-s">&quot;openai.chat&quot;</span>)
+<span class="t-f">print</span>(<span class="t-s">&quot;temperature&quot;</span> <span class="t-k">in</span> params)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="16-validate-kwargs"><a class="anchor" href="#16-validate-kwargs" aria-label="Link para esta seção">#</a>16. <code>_validate_kwargs</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Validates whether the keys of the parameters dictionary are valid for the model constructor.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>factory_key</code> (str): Constructor key.</li>
+    <li><code>kwargs</code> (Dict[str, Any]): Parameters to validate.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: If invalid parameters are found.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>gateway.<span class="t-f">_validate_kwargs</span>(<span class="t-s">&quot;openai.chat&quot;</span>, {<span class="t-s">&quot;temperature&quot;</span>: <span class="t-n">0.7</span>, <span class="t-s">&quot;foo&quot;</span>: <span class="t-n">123</span>})
+<span class="t-c"># Gera ValueError: parâmetro 'foo' inválido</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="real-usage-examples"><a class="anchor" href="#real-usage-examples" aria-label="Link para esta seção">#</a>Real Usage Examples</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">if</span> __name__ == <span class="t-s">&quot;__main__&quot;</span>:
+    gateway = <span class="t-f">ModelGateway</span>(strict_validation=<span class="t-n">True</span>)
+
+    <span class="t-c"># Criando um modelo OpenAI Chat com ID e temperatura ajustada</span>
+    chat_model = gateway.<span class="t-f">create_model</span>(
+        provider=<span class="t-s">&quot;openai&quot;</span>,
+        openai_variant=<span class="t-s">&quot;chat&quot;</span>,
+        model_id=<span class="t-s">&quot;gpt-4.1-mini&quot;</span>,
+        temperature=<span class="t-n">0.2</span>,
+    )
+
+    <span class="t-c"># Criando um agente com o mesmo modelo e opção markdown ativada</span>
+    agent = gateway.<span class="t-f">create_agent</span>(
+        provider=<span class="t-s">&quot;openai&quot;</span>,
+        openai_variant=<span class="t-s">&quot;chat&quot;</span>,
+        model_kwargs={<span class="t-s">&quot;id&quot;</span>: <span class="t-s">&quot;gpt-4.1-mini&quot;</span>, <span class="t-s">&quot;temperature&quot;</span>: <span class="t-n">0.2</span>},
+        markdown=<span class="t-n">True</span>,
+    )
+
+    _ = chat_model
+    agent.<span class="t-f">print_response</span>(<span class="t-s">&quot;Hello!&quot;</span>)
+
+    <span class="t-c"># python -m src.agents.utils.model_gateway</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>This documentation allows developers to quickly integrate models from multiple providers in a safe, robust and intuitive way using the powerful abstraction offered by the <code>ModelGateway</code> class.</p></div>
         <div class="feedback"></div>
         <p class="source">Source: <code>ipynb_contents/Modules/Agents/Utils/Model Gateway.md</code></p>
         <nav class="pager" aria-label="Neighboring pages"><a class="pager-link prev" href="../../../../../pages/en/modules/agents/utils/database.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Previous</small><span>Database</span></div></a><a class="pager-link next" href="../../../../../pages/en/modules/content-parse/content-parsing-agent/documentation.html"><div><small>Next</small><span>Documentation</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

@@ -1,31 +1,245 @@
-<page data-lead="Página de exemplo para Retrieval Manager, usada para validar o layout.">
-  <div class="callout" data-kind="note"><p><strong>Conteúdo de exemplo.</strong> Este texto existe só para validar o layout. Na versão final, a página é gerada a partir de <code>ipynb_contents/Modules/Pinecone Vector Store/Retrieval Manager.md</code>.</p></div>
+<page data-lead="">
+  <h2>Visão Geral</h2>
+  <p>A classe <code>RetrievalManager</code> é uma ferramenta de gerenciamento de documentos recuperados, voltada para cenários de busca e análise de dados textuais. Ela facilita a filtragem de documentos baseada em scores (pontuações), a geração de contextos textuais compactos para uso em modelos de linguagem e a extração organizada de metadados de arquivos.</p>
+  <p>Em aplicações práticas, essa classe pode ser usada para controlar grandes volumes de documentos retornados em sistemas de recuperação da informação, garantindo que apenas os mais relevantes (com score acima de certo limiar ou acima da média) sejam considerados. Além disso, com a geração de contextos formatados, torna-se mais eficiente a federação desses conteúdos para LLMs ou outras análises textuais.</p>
 
-  <h2>Visão geral</h2>
-  <p>Retrieval Manager faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
+  <h2>Fluxo de Execução</h2>
+  <ol>
+    <li><strong>Inicialização:</strong> Ao criar uma instância de <code>RetrievalManager</code>, você fornece uma lista de documentos, opcionalmente um score mínimo e se deseja que a filtragem por score seja feita automaticamente. Se a filtragem automática for ativada, a lista interna de documentos já estará pré-filtrada.</li>
+    <li><strong>Filtragem por Score:</strong> Pode-se filtrar documentos para manter apenas aqueles cujo score seja maior ou igual ao score mínimo desejado, usando <code>get_by_score</code>.</li>
+    <li><strong>Filtragem pela Média:</strong> Para refinamento, <code>filter_by_mean_score</code> permite filtrar um conjunto de chunks, mantendo só os que tenham score maior ou igual à média do conjunto.</li>
+    <li><strong>Geração de Contexto Compacto:</strong> <code>generate_context</code> transforma os documentos em uma string formatada linha a linha, mostrando score e texto de forma compacta para facilitar seu uso.</li>
+    <li><strong>Extração de Metadados de Arquivos:</strong> Por meio do método <code>get_files</code>, arquivos associados aos documentos são identificados e organizados para facilitar o acesso à sua identificação, nome, extensão e score máximo obtido.</li>
+  </ol>
 
-  <h2>Uso</h2>
-  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
-  <pre data-lang="python"><code>
-from better_ai import RetrievalManager
-
-client = RetrievalManager()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parâmetros</h2>
-  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
+  <h2>Tabela de Métodos da Classe</h2>
   <table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <thead><tr><th>Método</th><th>Descrição</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
+      <tr><td><code>__init__</code></td><td>Inicializa a instância com documentos e configurações</td></tr>
+      <tr><td><code>get_by_score</code></td><td>Filtra documentos com score maior ou igual ao mínimo</td></tr>
+      <tr><td><code>filter_by_mean_score</code></td><td>Filtra chunks com score maior ou igual à média</td></tr>
+      <tr><td><code>generate_context</code></td><td>Gera string compacta de contexto estilo toon</td></tr>
+      <tr><td><code>get_files</code></td><td>Extrai e organiza metadados dos arquivos dos documentos</td></tr>
     </tbody>
   </table>
 
-  <h2>Observações</h2>
-  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
-  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div>
+  <h2>Pontos Importantes da Arquitetura e Insights</h2>
+  <ul>
+    <li><strong>Imutabilidade parcial:</strong> A classe altera sua lista interna de documentos somente se a filtragem automática for ativada, preservando o input inicial quando desejado.</li>
+    <li><strong>Tratamento robusto de exceções:</strong> Todos os métodos que fazem processamento crítico capturam exceções e levantam <code>RuntimeError</code> com mensagens claras para facilitar a depuração.</li>
+    <li><strong>Estrutura de documentos flexível:</strong> A classe assume que os documentos possuem um formato padrão com campos obrigatórios como 'text' e 'score', e campos opcionais 'metadata' com informações de arquivos — o que permite adaptação a diferentes fontes de dados.</li>
+    <li><strong>Sem dependências externas:</strong> Não usa outras classes auxiliares, o que torna o uso isolado e simples, apenas manipulando listas e dicionários.</li>
+    <li><strong>Filtros distintos:</strong> Com métodos distintos para filtragem por limiar fixo e filtragem por média, o gerenciamento fica mais flexível para diferentes critérios de relevância.</li>
+  </ul>
+
+  <h2>Descrição da Classe e Métodos</h2>
+
+  <h2>Classe <code>RetrievalManager</code></h2>
+  <h3>Descrição</h3>
+  <p>Gerencia uma coleção de documentos textuais com pontuações associadas (scores), permitindo múltiplas operações importantes:</p>
+  <ul>
+    <li>Filtrar documentos com base em scores (fixos ou relativos à média do grupo).</li>
+    <li>Criar uma representação textual compacta para integração com modelos de linguagem.</li>
+    <li>Extrair metadados refinados para associação dos documentos a arquivos.</li>
+  </ul>
+  <p>Serve para casos que envolvem recuperação e manipulação avançada de textos organizados por relevância.</p>
+  <h3>Argumentos do Construtor</h3>
+  <table>
+    <thead><tr><th>Argumento</th><th>Tipo</th><th>Descrição</th><th>Valor Padrão</th></tr></thead>
+    <tbody>
+      <tr><td><code>docs</code></td><td>List[Dict[str, Any]]</td><td>Lista de documentos com campos 'text', 'score' e opcional 'metadata'</td><td>-</td></tr>
+      <tr><td><code>score_min</code></td><td>float</td><td>Valor mínimo de score para filtro inicial de documentos</td><td>0.0</td></tr>
+      <tr><td><code>filter_by_score</code></td><td>bool</td><td>Define se documentos serão filtrados por score na inicialização</td><td>False</td></tr>
+    </tbody>
+  </table>
+  <h3>Métodos</h3>
+
+  <h3>1. <code>__init__</code></h3>
+  <h3>Descrição</h3>
+  <p>Constrói o objeto <code>RetrievalManager</code> com uma lista de documentos e configurações opcionais para filtragem inicial por score mínimo.</p>
+  <h3>Argumentos</h3>
+  <ul>
+    <li>docs (List[Dict[str, Any]]): documentos a gerenciar</li>
+    <li>score_min (float): score mínimo para filtro inicial</li>
+    <li>filter_by_score (bool): executa filtro automático se True</li>
+  </ul>
+  <h3>Retornos</h3>
+  <ul>
+    <li>Não retorna valor.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li>Não aplica.</li>
+  </ul>
+  <h3>Exemplos</h3>
+  <pre data-lang="python"><code>
+rm = RetrievalManager(docs=documents, score_min=0.3, filter_by_score=True)
+</code></pre>
+
+  <h3>2. <code>get_by_score</code></h3>
+  <h3>Descrição</h3>
+  <p>Filtra a lista de documentos para manter apenas aqueles cujo score seja maior ou igual ao score mínimo dado.</p>
+  <h3>Argumentos</h3>
+  <ul>
+    <li>docs (List[Dict[str, Any]]): Lista opcional de documentos para filtrar. Se omitida, usa a lista interna.</li>
+    <li>score_min (float): Score mínimo para filtragem.</li>
+  </ul>
+  <h3>Retornos</h3>
+  <ul>
+    <li>List[Dict[str, Any]]: lista filtrada de documentos.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li>RuntimeError: ao falhar filtro por score.</li>
+  </ul>
+  <h3>Exemplos</h3>
+  <pre data-lang="python"><code>
+filtered_docs = rm.get_by_score(score_min=0.35)
+</code></pre>
+
+  <h3>3. <code>filter_by_mean_score</code></h3>
+  <h3>Descrição</h3>
+  <p>Recebe uma lista de chunks (documentos), calcula a média dos scores e filtra para manter apenas os chunks com score maior ou igual a essa média.</p>
+  <h3>Argumentos</h3>
+  <ul>
+    <li>chunks (list[dict[str, Any]]): lista de chunks com campo 'score'.</li>
+  </ul>
+  <h3>Retornos</h3>
+  <ul>
+    <li>list[dict[str, Any]]: lista filtrada ou vazia se input vazio.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li>RuntimeError: se ocorrer erro no cálculo ou filtragem.</li>
+  </ul>
+  <h3>Exemplos</h3>
+  <pre data-lang="python"><code>
+chunks = [
+    {"text": "A", "score": 0.5},
+    {"text": "B", "score": 0.3},
+    {"text": "C", "score": 0.7},
+]
+filtered = rm.filter_by_mean_score(chunks)
+# filtered conterá chunks com score >= 0.5
+</code></pre>
+
+  <h3>4. <code>generate_context</code></h3>
+  <h3>Descrição</h3>
+  <p>Gera uma string compacta no formato "Score: X | Content: texto" para cada documento, substituindo quebras de linha no texto por espaços para melhor formatação.</p>
+  <h3>Argumentos</h3>
+  <ul>
+    <li>docs (List[Dict[str, Any]]): documentos a serem convertidos para contexto. Usa os internos da classe se omitido.</li>
+  </ul>
+  <h3>Retornos</h3>
+  <ul>
+    <li>str: string concatenada com documentos formatados linha a linha.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li>RuntimeError: em falha no processamento da string.</li>
+  </ul>
+  <h3>Exemplos</h3>
+  <pre data-lang="python"><code>
+context_string = rm.generate_context()
+print(context_string)
+# Exemplo saída:
+# Score: 0.38 | Content: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+# Score: 0.36 | Content: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+</code></pre>
+
+  <h3>5. <code>get_files</code></h3>
+  <h3>Descrição</h3>
+  <p>Extrai informações padronizadas de arquivos presentes nos metadados dos documentos, retornando uma lista de arquivos com id, nome, extensão e maior score associado.</p>
+  <h3>Argumentos</h3>
+  <ul>
+    <li>docs (List[Dict[str, Any]]): lista de documentos para extrair metadados. Usa lista interna se omitido.</li>
+  </ul>
+  <h3>Retornos</h3>
+  <ul>
+    <li>List[Dict[str, Any]]: lista de dicionários representando arquivos filtrados pelo id e ordenados conforme último processamento.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li>RuntimeError: em caso de erro ao extrair metadados.</li>
+  </ul>
+  <h3>Exemplos</h3>
+  <pre data-lang="python"><code>
+files_info = rm.get_files()
+print(files_info)
+# [
+#   {"id": "cucinare", "name": "LESSICO per CUCINARE.pdf", "ext": "pdf", "score": 0.38},
+#   {"id": "tenerezza", "name": "TENEREZZA.pdf", "ext": "pdf", "score": 0.36}
+# ]
+</code></pre>
+
+  <h2>Uso</h2>
+  <pre data-lang="python"><code>
+if __name__ == "__main__":
+    import json
+    documents = [
+        {
+            "id": "79258322-c06b-4e50-9a69-c8caa1136b3f",
+            "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "metadata": {
+                "Client": "1234",
+                "client_id": "0011",
+                "collection_id": "collection_01",
+                "collection_name": "BetterAI",
+                "created_at": "2026-03-25 18:58:43",
+                "file_extension": "pdf",
+                "file_id": "cucinare",
+                "file_name": "LESSICO per CUCINARE.pdf",
+                "user_id": "11"
+            },
+            "score": 0.382682741
+        },
+
+        {
+            "id": "f75b0f7c-36ab-48d4-8da0-ec21b9ce688a",
+            "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "metadata": {
+                "Client": "1234",
+                "client_id": "0011",
+                "collection_id": "collection_01",
+                "collection_name": "BetterAI",
+                "created_at": "2026-03-25 18:58:43",
+                "file_extension": "pdf",
+                "file_id": "tenerezza",
+                "file_name": "TENEREZZA.pdf",
+                "user_id": "11"
+            },
+            "score": 0.359430343
+        },
+
+        {
+            "id": "f75b0f7c-36ab-48d4-8da0-ec21b9ce688a",
+            "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "metadata": {
+                "Client": "1234",
+                "client_id": "0011",
+                "collection_id": "collection_01",
+                "collection_name": "BetterAI",
+                "created_at": "2026-03-25 18:58:43",
+                "file_extension": "pdf",
+                "file_id": "tenerezza",
+                "file_name": "TENEREZZA.pdf",
+                "user_id": "11"
+            },
+            "score": 0.329430343
+        },
+    ]
+
+    meneger = RetrievalManager(
+        docs=documents,
+        score_min=0.36,
+        #filter_by_score=True
+    )
+
+    print(json.dumps(meneger.get_files(), indent=2))
+
+# python -m src.vector_store.pinecone.utils.retrieval_manager
+</code></pre>
+
+  <p>Esta documentação detalha o funcionamento prático da classe <code>RetrievalManager</code>, servindo de guia para desenvolvedores que precisam manipular documentos com métricas de relevância e metadados associados.</p>
 </page>

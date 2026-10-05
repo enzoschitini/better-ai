@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Use | BetterAI Docs</title>
-<meta name="description" content="Pagina di esempio per Use, usata per validare il layout.">
+<meta name="description" content="Use ContentParsingAgent">
 <link rel="canonical" href="pages/it/modules/content-parse/content-parsing-agent/use.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,109 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copia pagina</span></button>
             </div>
           </div>
-          <p class="lead">Pagina di esempio per Use, usata per validare il layout.</p>
+          <p class="lead">Use ContentParsingAgent</p>
           <details class="toc-inline"><summary>In questa pagina</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Contenuto di esempio.</strong> Questo testo esiste solo per validare il layout. Nella versione finale la pagina è generata da <code>ipynb_contents/Modules/Content Parse/Content Parsing Agent/Use.md</code>.</p></div>
+        <div class="prose"><h2 id="imports"><a class="anchor" href="#imports" aria-label="Link para esta seção">#</a>Imports:</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">import</span> json
+<span class="t-k">from</span> src.content_parse.content_parsing_agent <span class="t-k">import</span> ContentParsingAgent</code></pre><button class="copy floating" type="button"></button></div></div>
 
-  <h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
-  <p>Use fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
+  <h2 id="testo-di-input"><a class="anchor" href="#testo-di-input" aria-label="Link para esta seção">#</a>Testo di input:</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>input_data = <span class="t-s">&quot;&quot;</span>&quot;
+Title: The Future of AI
+Author: John Doe
+Code:
 
-  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
-  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> Use
+Artificial Intelligence is evolving rapidly. Companies are investing heavily
+<span class="t-k">in</span> automation <span class="t-k">and</span> machine learning to improve efficiency <span class="t-k">and</span> decision-making.
 
-client = <span class="t-f">Use</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
+Enzo: Is a data scientist <span class="t-k">and</span> has <span class="t-n">5</span> years of experience
+Laura: Is a software engineer <span class="t-k">and</span> has <span class="t-n">3</span> years of experience
+Marico: Is a product manager <span class="t-k">and</span> has <span class="t-n">7</span> years of experience.
+<span class="t-s">&quot;&quot;</span>&quot;</code></pre><button class="copy floating" type="button"></button></div></div>
 
-  <h2 id="parametri"><a class="anchor" href="#parametri" aria-label="Link para esta seção">#</a>Parametri</h2>
-  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
-  <div class="table-wrap"><table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
-    <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
-    </tbody>
-  </table></div>
+  <h2 id="schema"><a class="anchor" href="#schema" aria-label="Link para esta seção">#</a>Schema:</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>output_data = {
+    <span class="t-s">&quot;title&quot;</span>: {
+        <span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>,
+        <span class="t-s">&quot;description&quot;</span>: <span class="t-s">&quot;Title of the content&quot;</span>,
+        <span class="t-s">&quot;example&quot;</span>: <span class="t-s">&quot;The Future of AI&quot;</span>
+    },
+    <span class="t-s">&quot;author&quot;</span>: {
+        <span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>,
+        <span class="t-s">&quot;description&quot;</span>: <span class="t-s">&quot;Author of the content&quot;</span>,
+        <span class="t-s">&quot;example&quot;</span>: <span class="t-s">&quot;John Doe&quot;</span>
+    },
+    <span class="t-s">&quot;summary&quot;</span>: {
+        <span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>,
+        <span class="t-s">&quot;required&quot;</span>: <span class="t-n">False</span>,
+        <span class="t-s">&quot;description&quot;</span>: <span class="t-s">&quot;Short summary of the text&quot;</span>,
+        <span class="t-s">&quot;example&quot;</span>: <span class="t-s">&quot;Artificial Intelligence is evolving rapidly. Companies are investing heavily in automation and machine learning to improve efficiency and decision-making.&quot;</span>
+    },
+    <span class="t-s">&quot;code&quot;</span>: {
+        <span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>,
+        <span class="t-s">&quot;description&quot;</span>: <span class="t-s">&quot;Code snippet extracted from the text&quot;</span>,
+        <span class="t-s">&quot;required&quot;</span>: <span class="t-n">True</span>
+    },
+    <span class="t-s">&quot;names&quot;</span>: {
+        <span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;list&quot;</span>,
+        <span class="t-s">&quot;description&quot;</span>: <span class="t-s">&quot;List of names mentioned in the text&quot;</span>,
+        <span class="t-s">&quot;items&quot;</span>: {
+            <span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>,
+            <span class="t-s">&quot;description&quot;</span>: <span class="t-s">&quot;A person's name mentioned in the text&quot;</span>
+        }
+    },
 
-  <h2 id="note"><a class="anchor" href="#note" aria-label="Link para esta seção">#</a>Note</h2>
-  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
-  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div></div>
+    <span class="t-s">&quot;peoples&quot;</span>: {
+        <span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;list&quot;</span>,
+        <span class="t-s">&quot;description&quot;</span>: <span class="t-s">&quot;List of people with structured details extracted from the text&quot;</span>,
+        <span class="t-s">&quot;max_length&quot;</span>: <span class="t-n">1</span>,
+        <span class="t-s">&quot;items&quot;</span>: {
+            <span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;object&quot;</span>,
+            <span class="t-s">&quot;description&quot;</span>: <span class="t-s">&quot;A person mentioned in the text&quot;</span>,
+            <span class="t-s">&quot;properties&quot;</span>: {
+                <span class="t-s">&quot;name&quot;</span>: {
+                    <span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>,
+                    <span class="t-s">&quot;description&quot;</span>: <span class="t-s">&quot;Full name of the person&quot;</span>
+                },
+                <span class="t-s">&quot;experience&quot;</span>: {
+                    <span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>,
+                    <span class="t-s">&quot;description&quot;</span>: <span class="t-s">&quot;Years of experience or expertise level&quot;</span>
+                },
+                <span class="t-s">&quot;profession&quot;</span>: {
+                    <span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>,
+                    <span class="t-s">&quot;description&quot;</span>: <span class="t-s">&quot;Profession or role of the person&quot;</span>
+                }
+            }
+        }
+    }
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="configurazione"><a class="anchor" href="#configurazione" aria-label="Link para esta seção">#</a>Configurazione:</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>config_data = {
+    <span class="t-s">&quot;model_provider&quot;</span>: <span class="t-s">&quot;OpenAI&quot;</span>,
+    <span class="t-s">&quot;model_id&quot;</span>: <span class="t-s">&quot;gpt-4.1-mini&quot;</span>,
+    <span class="t-s">&quot;max_input_tokens&quot;</span>: <span class="t-n">1000000</span>,
+    <span class="t-s">&quot;debug_mode&quot;</span>: <span class="t-n">True</span>,
+    <span class="t-s">&quot;instructions&quot;</span>: <span class="t-s">&quot;Extraia dados do texto&quot;</span>,
+    <span class="t-s">&quot;description&quot;</span>: <span class="t-s">&quot;Leia o texto e extraia as informações relevantes conforme o esquema definido. Retorne um JSON estruturado com os dados extraídos. Caso não encontre alguma informação, retorne null para aquele campo.&quot;</span>
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="esecuzione-del-parse"><a class="anchor" href="#esecuzione-del-parse" aria-label="Link para esta seção">#</a>Esecuzione del parse:</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">if</span> __name__ == <span class="t-s">&quot;__main__&quot;</span>:
+    agent_parser = <span class="t-f">ContentParsingAgent</span>(
+        input_data={
+            <span class="t-s">&quot;input_data&quot;</span>: input_data,
+            <span class="t-c">#&quot;task&quot;: &quot;Extraia dados do texto&quot;</span>
+        },
+        output_data=output_data,
+        config_data=config_data
+    )
+    content_parsed = agent_parser.<span class="t-f">run_agent</span>()
+    response = agent_parser.<span class="t-f">format_response</span>(content_parsed)
+    <span class="t-f">print</span>(json.<span class="t-f">dumps</span>(response, indent=<span class="t-n">4</span>, ensure_ascii=<span class="t-n">False</span>))
+
+<span class="t-c"># python -m src.content_parse.content_parsing_agent</span></code></pre><button class="copy floating" type="button"></button></div></div></div>
         <div class="feedback"></div>
         <p class="source">Fonte: <code>ipynb_contents/Modules/Content Parse/Content Parsing Agent/Use.md</code></p>
         <nav class="pager" aria-label="Pagine vicine"><a class="pager-link prev" href="../../../../../pages/it/modules/content-parse/content-parsing-agent/documentation.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Precedente</small><span>Documentation</span></div></a><a class="pager-link next" href="../../../../../pages/it/modules/content-parse/document-parse.html"><div><small>Successiva</small><span>Document Parse</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

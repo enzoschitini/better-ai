@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Documentation | BetterAI Docs</title>
-<meta name="description" content="Pagina di esempio per Documentation, usata per validare il layout.">
+<meta name="description" content="La classe ContentParsingAgent è un agente dedicato all'elaborazione di dati strutturati di input e output, che genera automaticamente schemi Pydantic per la validazione di tali dati, oltre a orchestrare l'esecuzione di modelli di linguaggio configurabili per elaborare il contenuto secondo le istruzioni fornite.">
 <link rel="canonical" href="pages/it/modules/content-parse/content-parsing-agent/documentation.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,150 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copia pagina</span></button>
             </div>
           </div>
-          <p class="lead">Pagina di esempio per Documentation, usata per validare il layout.</p>
+          <p class="lead">La classe ContentParsingAgent è un agente dedicato all'elaborazione di dati strutturati di input e output, che genera automaticamente schemi Pydantic per la validazione di tali dati, oltre a orchestrare l'esecuzione di modelli di linguaggio configurabili per elaborare il contenuto secondo le istruzioni fornite.</p>
           <details class="toc-inline"><summary>In questa pagina</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Contenuto di esempio.</strong> Questo testo esiste solo per validare il layout. Nella versione finale la pagina è generata da <code>ipynb_contents/Modules/Content Parse/Content Parsing Agent/Documentation.md</code>.</p></div>
+        <div class="prose"><h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
+  <p>La classe <code>ContentParsingAgent</code> è un agente dedicato all'elaborazione di dati strutturati di input e output, che genera automaticamente schemi Pydantic per la validazione di tali dati, oltre a orchestrare l'esecuzione di modelli di linguaggio configurabili per elaborare il contenuto secondo le istruzioni fornite. Questo consente un'integrazione fluida tra i dati utilizzati e i modelli di intelligenza artificiale, garantendo coerenza e una validazione rigorosa delle informazioni.</p>
+  <p>Risolve il problema di convertire dati grezzi in modelli tipizzati e validati, oltre a facilitare l'esecuzione e il controllo di modelli di linguaggio con diversi provider, come OpenAI o Groq, senza che l'utente debba gestire direttamente i dettagli interni di tali modelli. In pratica, la classe può essere usata per automatizzare pipeline di elaborazione di dati testuali e di generazione di contenuti basate su regole e configurazioni definite, garantendo sempre affidabilità e tracciabilità del flusso.</p>
 
-  <h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
-  <p>Documentation fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
+  <h2 id="flusso-di-esecuzione"><a class="anchor" href="#flusso-di-esecuzione" aria-label="Link para esta seção">#</a>Flusso di Esecuzione</h2>
+  <ol>
+    <li><strong>Inizializzazione</strong>: L'utente crea un'istanza di <code>ContentParsingAgent</code> passando i dati di input e output come dizionari, oltre a configurazioni opzionali.</li>
+    <li><strong>Generazione degli Schemi</strong>: Internamente, la classe genera schemi Pydantic dei dati di input, output e configurazione per garantire la validità e la tipizzazione di tali informazioni.</li>
+    <li><strong>Configurazione del Modello</strong>: In base alla configurazione, la classe seleziona un modello di linguaggio adeguato (es: OpenAI o Groq).</li>
+    <li><strong>Esecuzione dell'Agente</strong>: Con istruzioni, descrizione, configurazioni e schemi pronti, l'agente esegue il modello sui dati di input.</li>
+    <li><strong>Formattazione della Risposta</strong>: La risposta grezza del modello viene formattata in un dizionario strutturato contenente il contenuto elaborato, i metadati del modello e le metriche dell'esecuzione, facilitandone l'uso o la pubblicazione.</li>
+  </ol>
 
-  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
-  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> Documentation
-
-client = <span class="t-f">Documentation</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parametri"><a class="anchor" href="#parametri" aria-label="Link para esta seção">#</a>Parametri</h2>
-  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
+  <h2 id="tabella-dei-metodi-della-classe"><a class="anchor" href="#tabella-dei-metodi-della-classe" aria-label="Link para esta seção">#</a>Tabella dei Metodi della Classe</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <thead><tr><th>Metodo</th><th>Descrizione</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
+      <tr><td><code>__init__</code></td><td>Inizializza l'agente con dati di input, output e config.</td></tr>
+      <tr><td><code>get_schemas</code></td><td>Restituisce gli schemi Pydantic generati per input, output e configurazione.</td></tr>
+      <tr><td><code>run_agent</code></td><td>Esegue l'agente con il modello configurato e restituisce la risposta generata.</td></tr>
+      <tr><td><code>format_response</code></td><td>Formatta la risposta grezza dell'agente in un dizionario strutturato.</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="note"><a class="anchor" href="#note" aria-label="Link para esta seção">#</a>Note</h2>
-  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
-  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div></div>
+  <h2 id="variabili-d-ambiente"><a class="anchor" href="#variabili-d-ambiente" aria-label="Link para esta seção">#</a>Variabili d'Ambiente</h2>
+  <ul>
+    <li>Nessuna variabile d'ambiente specifica è menzionata direttamente, tuttavia la presenza di <code>load_dotenv()</code> suggerisce che le variabili possano essere caricate esternamente per le configurazioni (esempio: chiavi API).</li>
+  </ul>
+
+  <h2 id="punti-importanti-dell-architettura-e-insights"><a class="anchor" href="#punti-importanti-dell-architettura-e-insights" aria-label="Link para esta seção">#</a>Punti Importanti dell'Architettura e Insights</h2>
+  <ul>
+    <li><strong>Generazione Automatica di Schemi</strong>: Utilizza classi specifiche (<code>JsonToPydantic</code>, <code>GeneratePydanticSchema</code>) per convertire dati generici in modelli Pydantic, garantendo validazione e tipizzazione coerenti lungo tutto il flusso.</li>
+    <li><strong>Flessibilità nel Modello di Linguaggio</strong>: Adotta un semplice approccio factory per restituire diverse implementazioni di modello (OpenAI, Groq) in base alle configurazioni, il che facilita l'estensione ad altri provider.</li>
+    <li><strong>Incapsulamento e Gestione degli Errori</strong>: Centralizza le operazioni critiche (generazione degli schemi, esecuzione dell'agente, formattazione della risposta) con blocchi try-except che convertono errori vari in eccezioni specifiche, aumentando la robustezza.</li>
+    <li><strong>Dipendenze Esterne</strong>: Interagisce con classi esterne per i modelli (<code>Agent</code>, <code>OpenAIResponses</code>, <code>Groq</code>) e per il parsing (<code>Config</code>, <code>JsonToPydantic</code>, <code>GeneratePydanticSchema</code>), delegando le responsabilità e mantenendo la classe concentrata sul flusso principale.</li>
+  </ul>
+
+  <h2 id="descrizione-della-classe-e-dei-metodi"><a class="anchor" href="#descrizione-della-classe-e-dei-metodi" aria-label="Link para esta seção">#</a>Descrizione della Classe e dei Metodi</h2>
+
+  <h2 id="classe-contentparsingagent"><a class="anchor" href="#classe-contentparsingagent" aria-label="Link para esta seção">#</a>Classe <code>ContentParsingAgent</code></h2>
+
+  <h3 id="descrizione"><a class="anchor" href="#descrizione" aria-label="Link para esta seção">#</a>Descrizione</h3>
+  <p>Questa classe funziona come agente intermediario per elaborare dati strutturati, convertendoli in modelli Pydantic validati e utilizzando modelli di linguaggio configurati per elaborare dati testuali secondo istruzioni specifiche. Offre una pipeline integrata che copre tutto, dalla validazione all'esecuzione e alla formattazione della risposta, facilitando le integrazioni con sistemi di IA in modo sicuro e modulare.</p>
+
+  <h3 id="argomenti-del-costruttore"><a class="anchor" href="#argomenti-del-costruttore" aria-label="Link para esta seção">#</a>Argomenti del Costruttore</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argomento</th><th>Tipo</th><th>Descrizione</th><th>Valore Predefinito</th></tr></thead>
+    <tbody>
+      <tr><td>input_data</td><td>Dict[str, Any]</td><td>Dizionario con i dati di input da validare ed elaborare.</td><td>Nessuno</td></tr>
+      <tr><td>output_data</td><td>Dict[str, Any]</td><td>Dizionario con i dati di output attesi dopo l'elaborazione.</td><td>Nessuno</td></tr>
+      <tr><td>config_data</td><td>Optional[Dict[str,Any]]</td><td>Dizionario opzionale contenente le configurazioni dell'agente.</td><td>None</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Inizializza l'agente con i dati di input, output e le configurazioni opzionali, e genera immediatamente gli schemi Pydantic necessari per validare tali dati.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>input_data</code> (Dict[str, Any]): Dati di input da elaborare.</li>
+    <li><code>output_data</code> (Dict[str, Any]): Dati di output desiderati.</li>
+    <li><code>config_data</code> (Optional[Dict[str, Any]]): Configurazioni aggiuntive per l'agente (opzionale).</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nessuna in modo esplicito, ma può sollevare RuntimeError durante la generazione degli schemi.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>agent = <span class="t-f">ContentParsingAgent</span>(
+    input_data={<span class="t-s">&quot;nome&quot;</span>: <span class="t-s">&quot;João&quot;</span>, <span class="t-s">&quot;idade&quot;</span>: <span class="t-n">30</span>},
+    output_data={<span class="t-s">&quot;resultado&quot;</span>: <span class="t-s">&quot;string&quot;</span>},
+    config_data={<span class="t-s">&quot;model_provider&quot;</span>: <span class="t-s">&quot;openai&quot;</span>, <span class="t-s">&quot;model_id&quot;</span>: <span class="t-s">&quot;gpt-4&quot;</span>}
+)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-get-schemas"><a class="anchor" href="#2-get-schemas" aria-label="Link para esta seção">#</a>2. <code>get_schemas</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Restituisce gli schemi Pydantic corrispondenti ai dati di input, output e configurazione generati dall'agente.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>dict: Dizionario con le chiavi <code>"input"</code>, <code>"output"</code> e <code>"config"</code> contenenti i rispettivi schemi.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>schemas = agent.<span class="t-f">get_schemas</span>()
+<span class="t-f">print</span>(schemas[<span class="t-s">&quot;input&quot;</span>])
+<span class="t-f">print</span>(schemas[<span class="t-s">&quot;output&quot;</span>])
+<span class="t-f">print</span>(schemas[<span class="t-s">&quot;config&quot;</span>])</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-run-agent"><a class="anchor" href="#3-run-agent" aria-label="Link para esta seção">#</a>3. <code>run_agent</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Esegue l'agente utilizzando il modello configurato e le istruzioni definite per elaborare i dati di input, restituendo la risposta generata.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Oggetto della risposta generata dal modello, che di solito contiene contenuto e metriche.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>RuntimeError: Nel caso in cui si verifichi un errore durante l'esecuzione del modello.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>response = agent.<span class="t-f">run_agent</span>()
+<span class="t-f">print</span>(response)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-format-response"><a class="anchor" href="#4-format-response" aria-label="Link para esta seção">#</a>4. <code>format_response</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Formatta la risposta grezza ottenuta dall'esecuzione dell'agente in un dizionario strutturato, estraendo il contenuto utile, i metadati del modello e le statistiche dell'esecuzione per un facile utilizzo.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>raw_response</code>: Oggetto di risposta grezza restituito dall'agente.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>dict: Dizionario strutturato con le chiavi <code>"content"</code> (dati elaborati) e <code>"metadata"</code> (informazioni sul modello e metriche).</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>RuntimeError: Nel caso in cui si verifichi un errore durante la formattazione della risposta.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>formatted = agent.<span class="t-f">format_response</span>(response)
+<span class="t-f">print</span>(formatted[<span class="t-s">&quot;content&quot;</span>])
+<span class="t-f">print</span>(formatted[<span class="t-s">&quot;metadata&quot;</span>][<span class="t-s">&quot;model&quot;</span>])
+<span class="t-f">print</span>(formatted[<span class="t-s">&quot;metadata&quot;</span>][<span class="t-s">&quot;tokens&quot;</span>])
+
+<span class="t-c"># python -m src.content_parse.content_parsing_agent</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>Questa documentazione presenta <code>ContentParsingAgent</code> in modo didattico e strutturato per facilitarne la comprensione e l'uso da parte degli sviluppatori, mettendo in evidenza i punti chiave del suo funzionamento ed esempi pratici di applicazione.</p></div>
         <div class="feedback"></div>
         <p class="source">Fonte: <code>ipynb_contents/Modules/Content Parse/Content Parsing Agent/Documentation.md</code></p>
         <nav class="pager" aria-label="Pagine vicine"><a class="pager-link prev" href="../../../../../pages/it/modules/agents/utils/model-gateway.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Precedente</small><span>Model Gateway</span></div></a><a class="pager-link next" href="../../../../../pages/it/modules/content-parse/content-parsing-agent/use.html"><div><small>Successiva</small><span>Use</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

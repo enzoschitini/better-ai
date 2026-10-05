@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Embedding Module | BetterAI Docs</title>
-<meta name="description" content="Pagina di esempio per Embedding Module, usata per validare il layout.">
+<meta name="description" content="La classe TestPineconeVectorStore offre un insieme di metodi per interagire in modo pratico con un database vettoriale gestito dalla piattaforma Pinecone.">
 <link rel="canonical" href="pages/it/modules/embedding/embedding-module.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,173 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copia pagina</span></button>
             </div>
           </div>
-          <p class="lead">Pagina di esempio per Embedding Module, usata per validare il layout.</p>
+          <p class="lead">La classe TestPineconeVectorStore offre un insieme di metodi per interagire in modo pratico con un database vettoriale gestito dalla piattaforma Pinecone.</p>
           <details class="toc-inline"><summary>In questa pagina</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Contenuto di esempio.</strong> Questo testo esiste solo per validare il layout. Nella versione finale la pagina è generata da <code>ipynb_contents/Modules/Embedding/Embedding Module.ipynb</code>.</p></div>
+        <div class="prose"><h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
+  <p>La classe <code>TestPineconeVectorStore</code> offre un insieme di metodi per interagire in modo pratico con un database vettoriale gestito dalla piattaforma Pinecone. Incapsula operazioni comuni come l'inizializzazione del client, la generazione di embedding vettoriali a partire da testi, la ricerca per similarità e l'eliminazione di vettori basata su filtri sui metadati.</p>
+  <p>Questo insieme di funzionalità risolve il problema della complessità nella gestione diretta di Pinecone, fornendo un'interfaccia semplice e pronta per le operazioni tipiche in casi d'uso come la ricerca semantica nei documenti, l'organizzazione dei dati vettoriali e la manutenzione degli indici vettoriali.</p>
+  <p>In pratica, questa classe può essere usata per indicizzare documenti, eseguire ricerche intelligenti per testo e mantenere aggiornato il database vettoriale senza dover manipolare direttamente le risorse di più basso livello dell'API di Pinecone.</p>
 
-  <h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
-  <p>Embedding Module fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
+  <h2 id="flusso-di-esecuzione"><a class="anchor" href="#flusso-di-esecuzione" aria-label="Link para esta seção">#</a>Flusso di Esecuzione</h2>
+  <ol>
+    <li><strong>Inizializzazione del Client</strong><br>Si chiama <code>get_client()</code> per creare e configurare un client Pinecone con l'indice e i namespace definiti (o predefiniti). Questo client viene memorizzato internamente per l'uso nelle operazioni successive.</li>
+    <li><strong>Generare e Salvare gli Embedding</strong><br>Tramite il metodo <code>embedding()</code>, si inseriscono testi (o si legge un file di esempio) che verranno elaborati per generare vettori di embedding. Questi vettori vengono inviati per l'archiviazione in Pinecone insieme ai metadati associati per facilitare le ricerche future.</li>
+    <li><strong>Ricerca per Similarità</strong><br>Si esegue <code>retriever()</code> per effettuare ricerche in Pinecone basandosi su una query testuale e su filtri applicati ai metadati archiviati. Il metodo restituisce i vettori più rilevanti in base alla similarità calcolata.</li>
+    <li><strong>Rimozione dei Vettori</strong><br>Infine, con il metodo <code>delete()</code> è possibile cancellare vettori specifici filtrati da un metadato (come <code>source</code> o <code>file_id</code>), garantendo la manutenzione e la pulizia dell'indice secondo le necessità.</li>
+  </ol>
 
-  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
-  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> EmbeddingModule
-
-client = <span class="t-f">EmbeddingModule</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parametri"><a class="anchor" href="#parametri" aria-label="Link para esta seção">#</a>Parametri</h2>
-  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
+  <h2 id="tabella-dei-metodi-della-classe"><a class="anchor" href="#tabella-dei-metodi-della-classe" aria-label="Link para esta seção">#</a>Tabella dei Metodi della Classe</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <thead><tr><th>Metodo</th><th>Descrizione</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
+      <tr><td><code>__init__</code></td><td>Inizializza la classe con le configurazioni per Pinecone e gli embedding.</td></tr>
+      <tr><td><code>get_client</code></td><td>Inizializza e restituisce il client Pinecone configurato.</td></tr>
+      <tr><td><code>retriever</code></td><td>Esegue la ricerca per similarità nell'indice Pinecone con filtri.</td></tr>
+      <tr><td><code>embedding</code></td><td>Genera e salva embedding in Pinecone a partire da un dato testo.</td></tr>
+      <tr><td><code>delete</code></td><td>Elimina vettori in Pinecone in base a filtri sui metadati.</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="note"><a class="anchor" href="#note" aria-label="Link para esta seção">#</a>Note</h2>
-  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
-  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div></div>
+  <h2 id="punti-importanti-dell-architettura-e-insight"><a class="anchor" href="#punti-importanti-dell-architettura-e-insight" aria-label="Link para esta seção">#</a>Punti Importanti dell'Architettura e Insight</h2>
+  <ul>
+    <li>La classe utilizza la composizione istanziando oggetti di altre classi specializzate (<code>PineconeClient</code>, <code>PineconeRetriever</code> e <code>PineconeEmbedding</code>), separando chiaramente le responsabilità.</li>
+    <li>L'uso di namespace distinti (<code>main_namespace</code> e <code>global_namespace</code>) permette di organizzare i vettori in diversi "scope" all'interno dello stesso indice, facilitando la gestione.</li>
+    <li>La manipolazione dei metadati negli embedding e nei filtri rende possibili ricerche ed eliminazioni mirate, aumentando la precisione e il controllo sui dati.</li>
+    <li>I metodi implementano print con un ritorno JSON ben formattato per facilitare il debug e la verifica dei risultati, molto utile nei test.</li>
+    <li>C'è il supporto al fallback dei parametri usando valori predefiniti, il che riduce la necessità di configurazione iniziale.</li>
+  </ul>
+
+  <h2 id="descrizione-della-classe-e-dei-metodi"><a class="anchor" href="#descrizione-della-classe-e-dei-metodi" aria-label="Link para esta seção">#</a>Descrizione della Classe e dei Metodi</h2>
+
+  <h3 id="classe-testpineconevectorstore"><a class="anchor" href="#classe-testpineconevectorstore" aria-label="Link para esta seção">#</a>Classe <code>TestPineconeVectorStore</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Classe per facilitare l'integrazione e i test con il Pinecone vector store, fornendo metodi per connettersi al servizio, indicizzare vettori di testo, eseguire ricerche di similarità ed eliminare vettori in base ai metadati.</p>
+  <p><strong>Argomenti del Costruttore</strong></p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argomento</th><th>Tipo</th><th>Descrizione</th><th>Valore Predefinito</th></tr></thead>
+    <tbody>
+      <tr><td><code>index_name</code></td><td>str</td><td>Nome dell'indice Pinecone per la connessione.</td><td><code>"backai-vectorstore"</code></td></tr>
+      <tr><td><code>main_namespace</code></td><td>str</td><td>Namespace principale per l'archiviazione dei vettori.</td><td><code>"main_namespace"</code></td></tr>
+      <tr><td><code>global_namespace</code></td><td>str</td><td>Namespace globale per l'archiviazione dei vettori.</td><td><code>"global_namespace"</code></td></tr>
+      <tr><td><code>embedding_model_name</code></td><td>str</td><td>Nome del modello per la generazione degli embedding.</td><td><code>"text-embedding-3-large"</code></td></tr>
+      <tr><td><code>dimensions</code></td><td>int</td><td>Dimensionalità dei vettori di embedding.</td><td>3072</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Inizializza l'istanza della classe definendo i nomi dell'indice, i namespace, il modello di embedding e le dimensioni dei vettori, con valori predefiniti se non forniti.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>index_name</code> (str): nome dell'indice Pinecone.</li>
+    <li><code>main_namespace</code> (str): namespace principale.</li>
+    <li><code>global_namespace</code> (str): namespace globale.</li>
+    <li><code>embedding_model_name</code> (str): modello per gli embedding.</li>
+    <li><code>dimensions</code> (int): dimensione dei vettori.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <p>Non restituisce alcun valore.</p>
+  <p><strong>Raises</strong></p>
+  <p>Nessuno.</p>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-c"># Criar objeto com configurações padrão</span>
+tester = <span class="t-f">TestPineconeVectorStore</span>()
+
+<span class="t-c"># Criar objeto com parâmetros customizados</span>
+tester_custom = <span class="t-f">TestPineconeVectorStore</span>(
+    index_name=<span class="t-s">&quot;meu_indice&quot;</span>,
+    main_namespace=<span class="t-s">&quot;principal&quot;</span>,
+    embedding_model_name=<span class="t-s">&quot;modelo-custom&quot;</span>,
+    dimensions=<span class="t-n">1536</span>
+)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-get-client"><a class="anchor" href="#2-get-client" aria-label="Link para esta seção">#</a>2. <code>get_client</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Inizializza e restituisce un client Pinecone configurato con gli indici e i namespace interni. Conserva internamente il client per il riutilizzo.</p>
+  <p><strong>Argomenti</strong></p>
+  <p>Nessuno.</p>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>PineconeClient</code>: oggetto client configurato per le interazioni con Pinecone.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <p>Nessuno.</p>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>cliente = tester.<span class="t-f">get_client</span>()
+<span class="t-c"># cliente pode ser usado para operações avançadas se necessário</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-retriever"><a class="anchor" href="#3-retriever" aria-label="Link para esta seção">#</a>3. <code>retriever</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Esegue una ricerca per similarità nell'indice Pinecone per recuperare i vettori/documenti più rilevanti in base al testo della query e ai filtri sui metadati.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>query</code> (str): testo per la ricerca di similarità.</li>
+    <li><code>filter_search</code> (dict): filtri sui metadati per affinare la ricerca.</li>
+    <li><code>k</code> (int): numero massimo di risultati da restituire.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>list</code>: lista con i risultati più simili trovati.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <p>Nessuno.</p>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>resultados = tester.<span class="t-f">retriever</span>(
+    query=<span class="t-s">&quot;Quais arquivos existem na base?&quot;</span>,
+    filter_search={<span class="t-s">&quot;source&quot;</span>: [<span class="t-s">&quot;example_text.txt&quot;</span>]},
+    k=<span class="t-n">3</span>
+)
+<span class="t-k">for</span> r <span class="t-k">in</span> resultados:
+    <span class="t-f">print</span>(r[<span class="t-s">&quot;metadata&quot;</span>], r[<span class="t-s">&quot;score&quot;</span>])</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-embedding"><a class="anchor" href="#4-embedding" aria-label="Link para esta seção">#</a>4. <code>embedding</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Genera vettori di embedding per un testo fornito (o per un file di esempio se non viene indicato nulla) e salva questi vettori con i metadati in Pinecone.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>embedding_content</code> (str): testo di cui generare l'embedding.</li>
+    <li><code>embedding_metadata</code> (dict): metadati associati a questi vettori.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>dict</code>: risposta di Pinecone che conferma lo stato del salvataggio dei vettori.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <p>Nessuno.</p>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>response = tester.<span class="t-f">embedding</span>(
+    embedding_content=<span class="t-s">&quot;Este é um exemplo de texto para embedding.&quot;</span>,
+    embedding_metadata={<span class="t-s">&quot;file_id&quot;</span>: <span class="t-s">&quot;file_001&quot;</span>, <span class="t-s">&quot;user_id&quot;</span>: <span class="t-s">&quot;user_01&quot;</span>, <span class="t-s">&quot;source&quot;</span>: <span class="t-s">&quot;input.txt&quot;</span>}
+)
+<span class="t-f">print</span>(response[<span class="t-s">&quot;status&quot;</span>])</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="5-delete"><a class="anchor" href="#5-delete" aria-label="Link para esta seção">#</a>5. <code>delete</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Rimuove vettori da Pinecone filtrando per uno specifico campo di metadato e il suo valore, all'interno di un namespace.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>target_feature</code> (str): campo del metadato per il filtro nell'eliminazione.</li>
+    <li><code>target_id</code> (str): valore del campo usato per selezionare i vettori.</li>
+    <li><code>namespace</code> (str): namespace per l'azione di eliminazione, usa quello principale se vuoto.</li>
+    <li><code>features</code> (list): lista dei campi di metadati considerati nell'eliminazione.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>dict</code>: risposta di Pinecone che indica il risultato dell'operazione.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <p>Nessuno.</p>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>delete_response = tester.<span class="t-f">delete</span>(
+    target_feature=<span class="t-s">&quot;source&quot;</span>,
+    target_id=<span class="t-s">&quot;example_text.txt&quot;</span>,
+    namespace=<span class="t-s">&quot;main_namespace&quot;</span>,
+    features=[<span class="t-s">&quot;file_id&quot;</span>, <span class="t-s">&quot;source&quot;</span>]
+)
+<span class="t-f">print</span>(delete_response)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <p>Con questa documentazione, gli sviluppatori possono capire rapidamente come usare la classe <code>TestPineconeVectorStore</code> per manipolare vettori e metadati in Pinecone, facilitando la costruzione di sistemi con ricerca semantica.</p></div>
         <div class="feedback"></div>
         <p class="source">Fonte: <code>ipynb_contents/Modules/Embedding/Embedding Module.ipynb</code></p>
         <nav class="pager" aria-label="Pagine vicine"><a class="pager-link prev" href="../../../../pages/it/modules/embedding/delete-embeddings.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Precedente</small><span>Delete Embeddings</span></div></a><a class="pager-link next" href="../../../../pages/it/modules/embedding/local-dynamic-embedding/documentation.html"><div><small>Successiva</small><span>Documentation</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

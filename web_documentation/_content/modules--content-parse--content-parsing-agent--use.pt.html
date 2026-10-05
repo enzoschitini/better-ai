@@ -1,31 +1,112 @@
-<page data-lead="Página de exemplo para Use, usada para validar o layout.">
-  <div class="callout" data-kind="note"><p><strong>Conteúdo de exemplo.</strong> Este texto existe só para validar o layout. Na versão final, a página é gerada a partir de <code>ipynb_contents/Modules/Content Parse/Content Parsing Agent/Use.md</code>.</p></div>
-
-  <h2>Visão geral</h2>
-  <p>Use faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
-
-  <h2>Uso</h2>
-  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
+<page data-lead="Use ContentParsingAgent">
+  <h2>Imports:</h2>
   <pre data-lang="python"><code>
-from better_ai import Use
+import json
+from src.content_parse.content_parsing_agent import ContentParsingAgent
+</code></pre>
 
-client = Use()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
+  <h2>Input Text:</h2>
+  <pre data-lang="python"><code>
+input_data = """
+Title: The Future of AI
+Author: John Doe
+Code:
 
-  <h2>Parâmetros</h2>
-  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
-  <table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
-    <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
-    </tbody>
-  </table>
+Artificial Intelligence is evolving rapidly. Companies are investing heavily
+in automation and machine learning to improve efficiency and decision-making.
 
-  <h2>Observações</h2>
-  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
-  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div>
+Enzo: Is a data scientist and has 5 years of experience
+Laura: Is a software engineer and has 3 years of experience
+Marico: Is a product manager and has 7 years of experience.
+"""
+</code></pre>
+
+  <h2>Schema:</h2>
+  <pre data-lang="python"><code>
+output_data = {
+    "title": {
+        "type": "str",
+        "description": "Title of the content",
+        "example": "The Future of AI"
+    },
+    "author": {
+        "type": "str",
+        "description": "Author of the content",
+        "example": "John Doe"
+    },
+    "summary": {
+        "type": "str",
+        "required": False,
+        "description": "Short summary of the text",
+        "example": "Artificial Intelligence is evolving rapidly. Companies are investing heavily in automation and machine learning to improve efficiency and decision-making."
+    },
+    "code": {
+        "type": "str",
+        "description": "Code snippet extracted from the text",
+        "required": True
+    },
+    "names": {
+        "type": "list",
+        "description": "List of names mentioned in the text",
+        "items": {
+            "type": "str",
+            "description": "A person's name mentioned in the text"
+        }
+    },
+
+    "peoples": {
+        "type": "list",
+        "description": "List of people with structured details extracted from the text",
+        "max_length": 1,
+        "items": {
+            "type": "object",
+            "description": "A person mentioned in the text",
+            "properties": {
+                "name": {
+                    "type": "str",
+                    "description": "Full name of the person"
+                },
+                "experience": {
+                    "type": "str",
+                    "description": "Years of experience or expertise level"
+                },
+                "profession": {
+                    "type": "str",
+                    "description": "Profession or role of the person"
+                }
+            }
+        }
+    }
+}
+</code></pre>
+
+  <h2>Config:</h2>
+  <pre data-lang="python"><code>
+config_data = {
+    "model_provider": "OpenAI",
+    "model_id": "gpt-4.1-mini",
+    "max_input_tokens": 1000000,
+    "debug_mode": True,
+    "instructions": "Extraia dados do texto",
+    "description": "Leia o texto e extraia as informações relevantes conforme o esquema definido. Retorne um JSON estruturado com os dados extraídos. Caso não encontre alguma informação, retorne null para aquele campo."
+}
+</code></pre>
+
+  <h2>Run Parse:</h2>
+  <pre data-lang="python"><code>
+if __name__ == "__main__":
+    agent_parser = ContentParsingAgent(
+        input_data={
+            "input_data": input_data,
+            #"task": "Extraia dados do texto"
+        },
+        output_data=output_data,
+        config_data=config_data
+    )
+    content_parsed = agent_parser.run_agent()
+    response = agent_parser.format_response(content_parsed)
+    print(json.dumps(response, indent=4, ensure_ascii=False))
+
+# python -m src.content_parse.content_parsing_agent
+</code></pre>
 </page>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Web Service Network - API | BetterAI Docs</title>
-<meta name="description" content="Pagina di esempio per Web Service Network - API, usata per validare il layout.">
+<meta name="description" content="La BetterAI Web Service Network è un'API modulare ad alte prestazioni progettata per orchestrare servizi di intelligenza artificiale in produzione.">
 <link rel="canonical" href="pages/it/modules/web-service-network/web-service-network-api.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,253 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copia pagina</span></button>
             </div>
           </div>
-          <p class="lead">Pagina di esempio per Web Service Network - API, usata per validare il layout.</p>
+          <p class="lead">La BetterAI Web Service Network è un'API modulare ad alte prestazioni progettata per orchestrare servizi di intelligenza artificiale in produzione.</p>
           <details class="toc-inline"><summary>In questa pagina</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Contenuto di esempio.</strong> Questo testo esiste solo per validare il layout. Nella versione finale la pagina è generata da <code>ipynb_contents/Modules/Web Service Network/Web Service Network - API.ipynb</code>.</p></div>
+        <div class="prose"><p>La <strong>BetterAI Web Service Network</strong> è un'API modulare ad alte prestazioni progettata per orchestrare servizi di intelligenza artificiale in produzione. Espone un insieme di router specializzati — ricerca approfondita sul web, parsing di documenti, generazione di immagini e gestione di vector store — tutti accessibili via HTTP con autenticazione tramite chiave API.</p>
+  <p>L'API è costruita su <strong>FastAPI</strong> ed eseguita con <strong>Uvicorn</strong>, offrendo documentazione interattiva automatica tramite Swagger UI (<code>/docs</code>) e supporto nativo per le richieste asincrone. Ogni endpoint restituisce risposte standardizzate con <code>job_id</code>, <code>status</code>, payload (<code>result</code> o <code>content</code>) e metriche dei tempi di esecuzione, facilitando la tracciabilità e l'integrazione con le pipeline di dati.</p>
+  <p><strong>Base URL:</strong> <code>http://localhost:8000</code><br><strong>Autenticazione:</strong> <code>X-API-Key</code> nell'header di tutte le rotte protette<br><strong>Versione attuale:</strong> <code>1.0.0</code></p>
+  <p><a href="http://localhost:8000">🌐 Domain</a> · <a href="http://localhost:8000/health">🩺 Health</a> · <a href="http://localhost:8000/docs">📄 Documentation</a></p>
 
-  <h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
-  <p>Web Service Network - API fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
+  <h2 id="start-application"><a class="anchor" href="#start-application" aria-label="Link para esta seção">#</a>Start application</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-c"># uvicorn web_services:app --reload</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <div class="code plain"><div class="code-body"><pre data-lang=""><code>INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [8036] using StatReload
+INFO:     Router included: /davinci
+INFO:     Router included: /deep-research
+INFO:     Router included: /parse-content
+INFO:     Router included: /vector-store
+INFO:     Started server process [30416]
+INFO:     Waiting for application startup.
+INFO:
 
-  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
-  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> WebServiceNetworkApi
+    ╔═══════════════════════════════════════════════════════════════════════╗
 
-client = <span class="t-f">WebServiceNetworkApi</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
+        ██████╗ ███████╗████████╗████████╗███████╗██████╗      █████╗ ██╗ ✦
+        ██╔══██╗██╔════╝╚══██╔══╝╚══██╔══╝██╔════╝██╔══██╗    ██╔══██╗██║
+        ██████╔╝█████╗     ██║      ██║   █████╗  ██████╔╝    ███████║██║
+        ██╔══██╗██╔══╝     ██║      ██║   ██╔══╝  ██╔══██╗    ██╔══██║██║
+        ██████╔╝███████╗   ██║      ██║   ███████╗██║  ██║    ██║  ██║██║
+        ╚═════╝ ╚══════╝   ╚═╝      ╚═╝   ╚══════╝╚═╝  ╚═╝    ╚═╝  ╚═╝╚═╝
 
-  <h2 id="parametri"><a class="anchor" href="#parametri" aria-label="Link para esta seção">#</a>Parametri</h2>
-  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
+    ╚═══════════════════════════════════════════════════════════════════════╝
+
+                        ✦ Where intelligence finds purpose. ✦
+
+INFO:     BetterAI Web Service Network initialized successfully at 2026-05-21 16:19:25.
+INFO:     Version: 1.0.0
+INFO:     Domain: http://localhost:8000
+INFO:     Health check available at: http://localhost:8000/health
+INFO:     Documentation available at: http://localhost:8000/docs
+INFO:     Application startup complete.</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="routers"><a class="anchor" href="#routers" aria-label="Link para esta seção">#</a>Routers</h2>
+
+  <h2 id="1-healthy-healthy"><a class="anchor" href="#1-healthy-healthy" aria-label="Link para esta seção">#</a>1. Healthy - <code>/healthy</code></h2>
+  <div class="endpoint"><span class="method" data-m="GET">GET</span><span>/health</span></div>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">curl</span> <span class="t-n">-X</span> GET <span class="t-s">&quot;http://127.0.0.1:8000/health&quot;</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="2-healthy-with-authorization-health-authorization"><a class="anchor" href="#2-healthy-with-authorization-health-authorization" aria-label="Link para esta seção">#</a>2. Healthy With Authorization - <code>/health-authorization</code></h2>
+  <div class="endpoint"><span class="method" data-m="GET">GET</span><span>/health-authorization</span></div>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">curl</span> <span class="t-n">--location</span> <span class="t-s">'http://localhost:8000/health-authorization'</span> \
+<span class="t-n">--header</span> <span class="t-s">'X-API-Key: ******'</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="3-context-builder-deep-research-context-builder"><a class="anchor" href="#3-context-builder-deep-research-context-builder" aria-label="Link para esta seção">#</a>3. Context Builder - <code>/deep-research/context-builder</code></h2>
+  <div class="endpoint"><span class="method" data-m="POST">POST</span><span>/deep-research/context-builder</span></div>
+  <p>Costruisce un contesto ricco in markdown a partire da una ricerca approfondita sul web, usando <strong>TavilyDeepResearch</strong> come motore di ricerca. Ideale per alimentare pipeline RAG, generazione di report o arricchimento dei prompt.</p>
+
+  <h3 id="parametri"><a class="anchor" href="#parametri" aria-label="Link para esta seção">#</a>Parametri</h3>
   <div class="table-wrap"><table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <thead><tr><th>Parametro</th><th>Tipo</th><th>Descrizione</th><th>Esempio</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
+      <tr><td><code>query</code></td><td><code>string</code></td><td>Domanda o tema centrale della ricerca. Definisce cosa verrà cercato.</td><td><code>"Principais tendências de IA em 2026?"</code></td></tr>
+      <tr><td><code>search_depth</code></td><td><code>"basic"</code> | <code>"advanced"</code></td><td>Profondità della ricerca. <code>basic</code> per una visione rapida, <code>advanced</code> per una ricerca più ampia e dettagliata.</td><td><code>"advanced"</code></td></tr>
+      <tr><td><code>max_results</code></td><td><code>integer</code> (1–100)</td><td>Numero massimo di risultati da recuperare e includere nel contesto.</td><td><code>35</code></td></tr>
+      <tr><td><code>topic</code></td><td><code>string</code></td><td>Categoria o dominio della ricerca. Orienta il tipo di fonte privilegiata. Valori comuni: <code>general</code>, <code>news</code>, <code>finance</code>.</td><td><code>"news"</code></td></tr>
+      <tr><td><code>include_answer</code></td><td><code>boolean</code></td><td>Se <code>true</code>, include nel contesto una risposta generata automaticamente in base ai risultati trovati.</td><td><code>true</code></td></tr>
+      <tr><td><code>min_score</code></td><td><code>float</code> (0.0–1.0)</td><td>Punteggio minimo di rilevanza. I risultati al di sotto di questa soglia vengono scartati. Valori più alti = contesto più preciso, ma più piccolo.</td><td><code>0.5</code></td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="note"><a class="anchor" href="#note" aria-label="Link para esta seção">#</a>Note</h2>
-  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
-  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div></div>
+  <h3 id="request"><a class="anchor" href="#request" aria-label="Link para esta seção">#</a>Request</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">curl</span> <span class="t-n">--location</span> <span class="t-s">'http://localhost:8000/deep-research/context-builder'</span> \
+<span class="t-n">--header</span> <span class="t-s">'Content-Type: application/json'</span> \
+<span class="t-n">--header</span> <span class="t-s">'X-API-Key: ******'</span> \
+<span class="t-n">--data</span> '{
+    <span class="t-s">&quot;query&quot;</span>: <span class="t-s">&quot;Principais tendências de IA em 2026?&quot;</span>,
+    <span class="t-s">&quot;search_depth&quot;</span>: <span class="t-s">&quot;advanced&quot;</span>,
+    <span class="t-s">&quot;max_results&quot;</span>: 35,
+    <span class="t-s">&quot;topic&quot;</span>: <span class="t-s">&quot;general&quot;</span>,
+    <span class="t-s">&quot;include_answer&quot;</span>: true,
+    <span class="t-s">&quot;min_score&quot;</span>: 0.5
+}'</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="response"><a class="anchor" href="#response" aria-label="Link para esta seção">#</a>Response</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+    <span class="t-f">&quot;job_id&quot;</span>: <span class="t-s">&quot;job_1779392104064657200TsJh&quot;</span>,
+    <span class="t-f">&quot;status&quot;</span>: <span class="t-s">&quot;success&quot;</span>,
+    <span class="t-f">&quot;status_code&quot;</span>: <span class="t-n">200</span>,
+    <span class="t-f">&quot;result&quot;</span>: {
+        <span class="t-f">&quot;markdown&quot;</span>: <span class="t-s">&quot;...&quot;</span>,
+        <span class="t-f">&quot;urls&quot;</span>: [
+            <span class="t-s">&quot;https://example.com&quot;</span>
+        ]
+    },
+    <span class="t-f">&quot;time&quot;</span>: {
+        <span class="t-f">&quot;start&quot;</span>: <span class="t-s">&quot;2026-05-21 16:35:04&quot;</span>,
+        <span class="t-f">&quot;end&quot;</span>: <span class="t-s">&quot;2026-05-21 16:35:11&quot;</span>,
+        <span class="t-f">&quot;duration_seconds&quot;</span>: <span class="t-n">7.0</span>
+    }
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="4-document-parse-parse-content-document-parse"><a class="anchor" href="#4-document-parse-parse-content-document-parse" aria-label="Link para esta seção">#</a>4. Document Parse - <code>/parse-content/document-parse</code></h2>
+  <div class="endpoint"><span class="method" data-m="POST">POST</span><span>/parse-content/document-parse</span></div>
+  <p>Riceve un file e uno schema JSON per estrarre e strutturare il suo contenuto tramite LLM. Usalo quando hai bisogno di trasformare documenti non strutturati (PDF, Word, testo) in dati organizzati e pronti per l'uso.</p>
+
+  <h3 id="parametri-2"><a class="anchor" href="#parametri-2" aria-label="Link para esta seção">#</a>Parametri</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Parametro</th><th>Tipo</th><th>Descrizione</th><th>Esempio</th></tr></thead>
+    <tbody>
+      <tr><td><code>metadata</code></td><td><code>string</code> (JSON)</td><td>Metadati ausiliari del documento, di libero utilizzo da parte del client.</td><td><code>{"client": "Acme", "doc_type": "contract"}</code></td></tr>
+      <tr><td><code>document_schema</code></td><td><code>string</code> (JSON)</td><td>Schema che definisce i campi da estrarre. Ogni chiave riceve <code>type</code> e <code>description</code>.</td><td><code>{"summary": {"type": "str", "description": "Resumo do documento"}}</code></td></tr>
+      <tr><td><code>file</code></td><td><code>file</code> (upload)</td><td>File da elaborare. Formati accettati: <code>txt</code>, <code>md</code>, <code>pdf</code>, <code>docx</code>. Limite: 50MB.</td><td><code>contrato.pdf</code></td></tr>
+      <tr><td><code>config</code></td><td><code>string</code> (JSON) — opzionale</td><td>Configurazioni del parser: modello LLM, istruzioni personalizzate e modalità debug.</td><td><code>{"model_provider": "OpenAI", "model_id": "gpt-4.1-mini", "debug_mode": false}</code></td></tr>
+    </tbody>
+  </table></div>
+  <p>Nota: il <code>job_id</code> viene generato automaticamente dal server e restituito nella risposta.</p>
+  <p>Formati degli schemi: https://github.com/enzoschitini/better-ai/blob/production/doc/Modules/Content%20Parse/Json%20To%20Pydantic.md</p>
+
+  <h3 id="config-spiegazione-di-ogni-parametro"><a class="anchor" href="#config-spiegazione-di-ogni-parametro" aria-label="Link para esta seção">#</a>Config (spiegazione di ogni parametro)</h3>
+  <p>Il campo <code>config</code> è opzionale. Se non viene inviato, l'API usa il <code>default_config</code> interno del parser.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Campo</th><th>Tipo</th><th>Cosa fa</th><th>Default</th><th>Quando modificarlo</th></tr></thead>
+    <tbody>
+      <tr><td><code>model_provider</code></td><td><code>string</code></td><td>Definisce il provider del modello di linguaggio. Attualmente i flussi principali usano <code>OpenAI</code> e <code>Groq</code>.</td><td><code>"OpenAI"</code></td><td>Cambialo quando vuoi cambiare provider per costo, latenza o disponibilità.</td></tr>
+      <tr><td><code>model_id</code></td><td><code>string</code></td><td>Identifica il modello usato per l'estrazione (<code>gpt-4.1-mini</code>, ad esempio).</td><td><code>"gpt-4.1-mini"</code></td><td>Modificalo quando ti serve più qualità, un costo inferiore o una finestra di contesto diversa.</td></tr>
+      <tr><td><code>max_input_tokens</code></td><td><code>integer</code></td><td>Limite di token di input consentiti per validare la dimensione del contesto prima dell'esecuzione.</td><td><code>1000000</code></td><td>Riducilo per imporre un limite di costo o aumentalo in scenari con documenti molto lunghi.</td></tr>
+      <tr><td><code>debug_mode</code></td><td><code>boolean</code></td><td>Attiva log e informazioni di debug dell'agente di parsing.</td><td><code>false</code></td><td>Usa <code>true</code> per il troubleshooting e torna a <code>false</code> in produzione.</td></tr>
+      <tr><td><code>instructions</code></td><td><code>string</code></td><td>Istruzioni operative su come estrarre i dati (stile, regole, focus).</td><td><code>"Extraia dados do texto"</code></td><td>Personalizzalo per orientare il modello verso formati e criteri specifici del tuo dominio.</td></tr>
+      <tr><td><code>description</code></td><td><code>string</code></td><td>Ruolo/comportamento atteso dell'agente, che rafforza il formato della risposta e il fallback con <code>null</code>.</td><td><code>"Leia o texto e extraia as informações relevantes conforme o esquema definido..."</code></td><td>Modificalo per scenari di business con politiche proprie di compilazione e validazione.</td></tr>
+    </tbody>
+  </table></div>
+  <p>Esempio completo di <code>config</code>:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+  <span class="t-f">&quot;model_provider&quot;</span>: <span class="t-s">&quot;OpenAI&quot;</span>,
+  <span class="t-f">&quot;model_id&quot;</span>: <span class="t-s">&quot;gpt-4.1-mini&quot;</span>,
+  <span class="t-f">&quot;max_input_tokens&quot;</span>: <span class="t-n">1000000</span>,
+  <span class="t-f">&quot;debug_mode&quot;</span>: <span class="t-k">false</span>,
+  <span class="t-f">&quot;instructions&quot;</span>: <span class="t-s">&quot;Extraia dados do texto&quot;</span>,
+  <span class="t-f">&quot;description&quot;</span>: <span class="t-s">&quot;Leia o texto e extraia as informações relevantes conforme o esquema definido. Retorne um JSON estruturado com os dados extraídos. Caso não encontre alguma informação, retorne null para aquele campo.&quot;</span>
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="request-2"><a class="anchor" href="#request-2" aria-label="Link para esta seção">#</a>Request</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">curl</span> <span class="t-n">--location</span> <span class="t-s">'http://localhost:8000/parse-content/document-parse'</span> \
+<span class="t-n">--header</span> <span class="t-s">'X-API-Key: ******'</span> \
+<span class="t-n">--form</span> <span class="t-s">'metadata=&quot;{\&quot;value1\&quot;: \&quot;value3\&quot;}&quot;'</span> \
+<span class="t-n">--form</span> 'document_schema=&quot;{
+  \&quot;summary\&quot;: {
+    \&quot;type\&quot;: \&quot;str\&quot;,
+    \&quot;description\&quot;: \&quot;Resumo do conteúdo do arquivo\&quot;
+  }
+}&quot;' \
+<span class="t-n">--form</span> 'config=&quot;{
+  \&quot;model_provider\&quot;: \&quot;OpenAI\&quot;,
+  \&quot;model_id\&quot;: \&quot;gpt-4.1-mini\&quot;,
+  \&quot;debug_mode\&quot;: true,
+  \&quot;instructions\&quot;: \&quot;Extraia dados do texto\&quot;,
+  \&quot;description\&quot;: \&quot;Leia o texto e extraia as informações relevantes conforme o esquema definido. Retorne um JSON estruturado com os dados extraídos. Caso não encontre alguma informação, retorne null para aquele campo.\&quot;
+}&quot;' \
+<span class="t-n">--form</span> <span class="t-s">'file=@&quot;/path/to/file&quot;'</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="response-2"><a class="anchor" href="#response-2" aria-label="Link para esta seção">#</a>Response</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+    <span class="t-f">&quot;job_id&quot;</span>: <span class="t-s">&quot;job_1788198742619260200fKBY&quot;</span>,
+    <span class="t-f">&quot;status&quot;</span>: <span class="t-s">&quot;success&quot;</span>,
+    <span class="t-f">&quot;status_code&quot;</span>: <span class="t-n">200</span>,
+    <span class="t-f">&quot;content&quot;</span>: {
+        <span class="t-f">&quot;summary&quot;</span>: <span class="t-s">&quot;...&quot;</span>
+    },
+    <span class="t-f">&quot;time&quot;</span>: {
+        <span class="t-f">&quot;start&quot;</span>: <span class="t-s">&quot;2026-08-31 14:52:22&quot;</span>,
+        <span class="t-f">&quot;end&quot;</span>: <span class="t-s">&quot;2026-08-31 14:52:30&quot;</span>,
+        <span class="t-f">&quot;duration_seconds&quot;</span>: <span class="t-n">8.0</span>
+    }
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="5-image-generation-davinci-image-generation"><a class="anchor" href="#5-image-generation-davinci-image-generation" aria-label="Link para esta seção">#</a>5. Image Generation - <code>/davinci/image-generation</code></h2>
+  <div class="endpoint"><span class="method" data-m="POST">POST</span><span>/davinci/image-generation</span></div>
+  <p>Genera immagini a partire da un prompt testuale, con supporto per istruzioni di stile, configurazioni del modello e immagini di riferimento. Usalo quando hai bisogno di creare o trasformare immagini in modo programmatico tramite LLM multimodale.</p>
+
+  <h3 id="parametri-3"><a class="anchor" href="#parametri-3" aria-label="Link para esta seção">#</a>Parametri</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Parametro</th><th>Tipo</th><th>Descrizione</th><th>Esempio</th></tr></thead>
+    <tbody>
+      <tr><td><code>user_input</code></td><td><code>string</code></td><td>Prompt principale che descrive l'immagine da generare.</td><td><code>"Uma pizzaria napolitana à noite"</code></td></tr>
+      <tr><td><code>instructions</code></td><td><code>string</code> — opzionale</td><td>Istruzioni aggiuntive di stile o linee guida creative per la generazione.</td><td><code>"Estilo de animação 3D como as da Disney"</code></td></tr>
+      <tr><td><code>config</code></td><td><code>string</code> (JSON) — opzionale</td><td>Configurazioni del modello: <code>model</code>, <code>temperature</code>, <code>top_p</code>, <code>max_output_tokens</code>, <code>aspect_ratio</code>, <code>number_of_images</code>.</td><td><code>{"model": "gemini-2.5-flash-image", "aspect_ratio": "9:16"}</code></td></tr>
+      <tr><td><code>files</code></td><td><code>file[]</code> — opzionale</td><td>Immagini di riferimento per guidare la generazione. Accetta upload multipli.</td><td><code>reference.png</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="config-spiegazione-di-ogni-parametro-2"><a class="anchor" href="#config-spiegazione-di-ogni-parametro-2" aria-label="Link para esta seção">#</a>Config (spiegazione di ogni parametro)</h3>
+  <p>Il campo <code>config</code> è opzionale. Se non viene inviato, l'API usa il <code>DEFAULT_CONTENT_CONFIG</code> interno del modulo di generazione. I campi inviati sovrascrivono soltanto i valori corrispondenti.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Campo</th><th>Tipo</th><th>Cosa fa</th><th>Default</th><th>Quando modificarlo</th></tr></thead>
+    <tbody>
+      <tr><td><code>model</code></td><td><code>string</code></td><td>Modello multimodale usato nella generazione (<code>gemini-2.5-flash-image</code>, <code>gemini-3-pro-image-preview</code>).</td><td><code>"gemini-2.5-flash-image"</code></td><td>Passa al modello <code>pro</code> quando ti serve una qualità maggiore o più token di output.</td></tr>
+      <tr><td><code>temperature</code></td><td><code>float</code> (0.0–2.0)</td><td>Controlla la creatività della generazione. Valori bassi = risultati più prevedibili.</td><td><code>0.75</code></td><td>Riducilo per una maggiore fedeltà al prompt, aumentalo per più variazione creativa.</td></tr>
+      <tr><td><code>top_p</code></td><td><code>float</code> (0.0–1.0)</td><td>Nucleus sampling: limita l'insieme dei token considerati.</td><td><code>0.85</code></td><td>Riducilo per output più conservativi e coerenti.</td></tr>
+      <tr><td><code>max_output_tokens</code></td><td><code>integer</code></td><td>Limite di token di output. <code>gemini-2.5-flash-image</code>: <code>1024</code> o <code>2048</code>. <code>gemini-3-pro-image-preview</code>: <code>4096</code> o <code>8192</code>.</td><td><code>1024</code></td><td>Aumentalo quando usi modelli <code>pro</code> o quando la risposta testuale viene troncata.</td></tr>
+      <tr><td><code>aspect_ratio</code></td><td><code>string</code></td><td>Proporzione dell'immagine generata. Vedi i valori accettati qui sotto.</td><td><code>"1:1"</code></td><td>Modificalo in base alla destinazione dell'immagine (feed, stories, banner).</td></tr>
+      <tr><td><code>number_of_images</code></td><td><code>integer</code> (≥ 1)</td><td>Quantità di immagini generate. Ogni immagine è una chiamata indipendente al modello.</td><td><code>1</code></td><td>Aumentalo per ottenere variazioni, ricordando che costo e latenza crescono in proporzione.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="valori-accettati-per-aspect-ratio"><a class="anchor" href="#valori-accettati-per-aspect-ratio" aria-label="Link para esta seção">#</a>Valori accettati per <code>aspect_ratio</code></h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Valore</th><th>Formato</th><th>Uso tipico</th></tr></thead>
+    <tbody>
+      <tr><td><code>1:1</code></td><td>Quadrato</td><td>Post del feed, avatar, thumbnail</td></tr>
+      <tr><td><code>3:4</code></td><td>Ritratto</td><td>Ritratti, catalogo prodotti</td></tr>
+      <tr><td><code>4:3</code></td><td>Paesaggio</td><td>Immagini classiche, presentazioni</td></tr>
+      <tr><td><code>9:16</code></td><td>Ritratto a schermo intero</td><td>Stories, Reels, TikTok</td></tr>
+      <tr><td><code>16:9</code></td><td>Widescreen</td><td>Banner, copertine, video/hero</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="request-3"><a class="anchor" href="#request-3" aria-label="Link para esta seção">#</a>Request</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">curl</span> <span class="t-n">--location</span> <span class="t-s">'http://localhost:8000/davinci/image-generation'</span> \
+<span class="t-n">--form</span> <span class="t-s">'user_input=&quot;Crie a imagem de uma pizzaria napolitana&quot;'</span> \
+<span class="t-n">--form</span> <span class="t-s">'instructions=&quot;O estilo deve ser uma animação 3D como as da Disney&quot;'</span> \
+<span class="t-n">--form</span> 'config=&quot;{
+  \&quot;model\&quot;: \&quot;gemini-2.5-flash-image\&quot;,
+  \&quot;temperature\&quot;: 0.75,
+  \&quot;top_p\&quot;: 0.85,
+  \&quot;max_output_tokens\&quot;: 1024,
+  \&quot;aspect_ratio\&quot;: \&quot;9:16\&quot;,
+  \&quot;number_of_images\&quot;: 2
+}&quot;' \
+<span class="t-n">--form</span> <span class="t-s">'files=@&quot;/path/to/file&quot;'</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="response-3"><a class="anchor" href="#response-3" aria-label="Link para esta seção">#</a>Response</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+    <span class="t-f">&quot;job_id&quot;</span>: <span class="t-s">&quot;job_1788272755499472800EkNu&quot;</span>,
+    <span class="t-f">&quot;status&quot;</span>: <span class="t-s">&quot;success&quot;</span>,
+    <span class="t-f">&quot;status_code&quot;</span>: <span class="t-n">200</span>,
+    <span class="t-f">&quot;result&quot;</span>: {
+        <span class="t-f">&quot;text_response&quot;</span>: <span class="t-s">&quot;Com certeza! Aqui está uma pizzaria napolitana em estilo de animação 3D da Disney:\n\n \n&quot;</span>,
+        <span class="t-f">&quot;images&quot;</span>: [
+            <span class="t-s">&quot;https://hsenyunovbrmjejxqvjn.supabase.co/storage/v1/object/public/images/image_generations/img_1788272774157403200z8UW&quot;</span>,
+            <span class="t-s">&quot;https://hsenyunovbrmjejxqvjn.supabase.co/storage/v1/object/public/images/image_generations/img_17882727741574032007MBY&quot;</span>
+        ]
+    },
+    <span class="t-f">&quot;time&quot;</span>: {
+        <span class="t-f">&quot;start&quot;</span>: <span class="t-s">&quot;2026-09-01 11:25:55&quot;</span>,
+        <span class="t-f">&quot;end&quot;</span>: <span class="t-s">&quot;2026-09-01 11:26:19&quot;</span>,
+        <span class="t-f">&quot;duration_seconds&quot;</span>: <span class="t-n">24</span>
+    }
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+  <p><em>Author: Enzo Schitini</em></p></div>
         <div class="feedback"></div>
         <p class="source">Fonte: <code>ipynb_contents/Modules/Web Service Network/Web Service Network - API.ipynb</code></p>
         <nav class="pager" aria-label="Pagine vicine"><a class="pager-link prev" href="../../../../pages/it/modules/web-service-network/web-service-api.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Precedente</small><span>Web Service API</span></div></a><a class="pager-link next" href="../../../../pages/it/internal-source-code/index.html"><div><small>Successiva</small><span>Internal Source Code: panoramica</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

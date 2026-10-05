@@ -1,31 +1,211 @@
-<page data-lead="Sample page for Pinecone Vector Service, used to validate the layout.">
-  <div class="callout" data-kind="note"><p><strong>Placeholder content.</strong> This text exists only to validate the layout. In the final version the page is generated from <code>ipynb_contents/Modules/Pinecone Vector Store/Pinecone Vector Service.md</code>.</p></div>
-
+<page data-lead="">
   <h2>Overview</h2>
-  <p>Pinecone Vector Service is part of the BetterAI platform. This paragraph stands in for the text coming from the source, so that spacing, line measure and the side index can be checked.</p>
+  <p>The <code>PineconeVectorService</code> class is a service responsible for turning texts into high-dimensional vectors for efficient storage and search in vector databases, specifically using Pinecone's infrastructure. It solves the problem of handling, storing and searching large volumes of text processed as embeddings, enabling advanced natural language processing applications such as semantic search, recommendation and similarity analysis.</p>
+  <p>In practice, the class splits the text into smaller parts (chunks), generates embeddings for those parts using pre-trained models (for example, from OpenAI), and saves those vectors in organized namespaces for later searches or removals. It supports robust operations such as batch processing, rollback in case of failures and filters for conditional removal of documents. It is therefore ideal for developers who need to structure scalable and reliable vector databases with advanced contextual search features.</p>
 
-  <h2>Usage</h2>
-  <p>The block below shows the typical call, with syntax highlighting:</p>
-  <pre data-lang="python"><code>
-from better_ai import PineconeVectorService
+  <h2>Execution Flow</h2>
+  <ol>
+    <li><strong>Service Initialization:</strong> When creating an instance of the class, a connection with the Pinecone client is configured (or a default one is created), along with the embeddings model and chunking settings.</li>
+    <li><strong>Text Splitting:</strong> With the <code>split_text</code> method, a text is fragmented into smaller pieces using configurable size and overlap, so that each chunk makes sense for processing.</li>
+    <li><strong>Document Creation:</strong> The chunks are converted into <code>Document</code> objects enriched with metadata, ready for vector generation.</li>
+    <li><strong>Vector Generation and Storage:</strong> Using <code>generate_vectors</code>, the chunks are turned into embeddings, which are written to the main namespace, optionally replicated to the global namespace, with batch control and the possibility of rollback if any operation fails.</li>
+    <li><strong>Query for Similar Vectors:</strong> Through <code>document_search</code>, searches are made for vectors similar to a text query, returning relevant documents from the chosen namespace.</li>
+    <li><strong>Conditional Removal:</strong> The <code>delete_documents</code> method allows removing specific vectors filtered by metadata, ensuring fine control over the stored data.</li>
+  </ol>
 
-client = PineconeVectorService()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parameters</h2>
-  <p>The table below exists to validate horizontal scrolling on narrow screens:</p>
+  <h2>Class Methods Table</h2>
   <table>
-    <thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>
+    <thead><tr><th>Method</th><th>Description</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identifier of the model to use.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limit in seconds for the response.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Returns the response in chunks.</td></tr>
+      <tr><td><code>__init__</code></td><td>Initializes the instance, setting up client, model and parameters.</td></tr>
+      <tr><td><code>split_text</code></td><td>Splits text into smaller chunks with configurable size and overlap.</td></tr>
+      <tr><td><code>build_documents</code></td><td>Static, creates a list of Document objects from the chunks and metadata.</td></tr>
+      <tr><td><code>delete_documents</code></td><td>Removes documents from the vector filtering by metadata in the indicated namespace.</td></tr>
+      <tr><td><code>document_search</code></td><td>Vector search returning the documents most similar to a query.</td></tr>
+      <tr><td><code>generate_vectors</code></td><td>Generates embeddings for text, stores them in the vectors with batch control and rollback.</td></tr>
     </tbody>
   </table>
 
-  <h2>Notes</h2>
-  <p>A sample warning, to check the styling of the attention callout:</p>
-  <div class="callout" data-kind="warn"><p><strong>Development only.</strong> The values above are fictitious and must not be used in production.</p></div>
+  <h2>Important Architecture Points and Insights</h2>
+  <ul>
+    <li><strong>Integration with PineconeClient and LangChain:</strong> The class uses <code>PineconeClient</code> to abstract all communication with the vector service, and LangChain's <code>OpenAIEmbeddings</code> to generate the vectors, reinforcing modularity and reuse.</li>
+    <li><strong>Use of Decorators for Tracing:</strong> Applying a <code>trace</code> decorator to key methods makes it possible to instrument the code for structured logs, making monitoring and debugging in production easier.</li>
+    <li><strong>Customizable and Optimized Chunking:</strong> Uses dynamic configuration for chunk size and overlap, as well as custom separators, ensuring that the text is fragmented into semantically coherent pieces for efficient embeddings.</li>
+    <li><strong>Robustness with Batch Processing and Rollback:</strong> In the <code>generate_vectors</code> method, documents are added in controlled batches, and a rollback is executed when errors are detected, removing partially added documents to maintain consistency.</li>
+    <li><strong>Distinct Namespaces:</strong> The separation between main and global namespace allows organizing different levels of vector data, isolating usage contexts and making permission or sharing management easier.</li>
+  </ul>
+
+  <h2>Class and Methods Description</h2>
+
+  <h2><code>PineconeVectorService</code> Class</h2>
+  <h3>Description</h3>
+  <p>Class that provides integrated services for processing texts into vector data using Pinecone, including text splitting, embedding generation with a configurable model, storage in multiple namespaces and features for searching and removing documents by metadata. It makes working with vector databases in NLP projects easier by aggregating common operations into a single, extensible interface.</p>
+  <h3>Constructor Arguments</h3>
+  <table>
+    <thead><tr><th>Argument</th><th>Type</th><th>Description</th><th>Default Value</th></tr></thead>
+    <tbody>
+      <tr><td><code>vector_client</code></td><td>Optional[PineconeClient]</td><td>Custom client for communication with Pinecone.</td><td>None</td></tr>
+      <tr><td><code>embedding_model_name</code></td><td>str</td><td>Name of the embedding model for generating the vectors.</td><td>None</td></tr>
+      <tr><td><code>dimensions</code></td><td>int</td><td>Number of dimensions of the vectors in the embedding space.</td><td>None</td></tr>
+    </tbody>
+  </table>
+  <h3>Methods</h3>
+
+  <h3>1. <code>__init__</code></h3>
+  <h3>Description</h3>
+  <p>Initializes the service, setting up the Pinecone client, chunking parameters, embeddings model and creating the corresponding vectors for the main and global namespaces.</p>
+  <h3>Arguments</h3>
+  <ul>
+    <li><code>vector_client</code> (Optional[PineconeClient]): Optional Pinecone client to customize the connection.</li>
+    <li><code>embedding_model_name</code> (str): Name of the model to be used for embeddings.</li>
+    <li><code>dimensions</code> (int): Dimensionality of the final vectors.</li>
+  </ul>
+  <h3>Returns</h3>
+  <ul>
+    <li>Does not return a value.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li>May raise exceptions if the client initialization or vector store creation fails.</li>
+  </ul>
+  <h3>Examples</h3>
+  <pre data-lang="python"><code>
+service = PineconeVectorService(
+    embedding_model_name="text-embedding-ada-002",
+    dimensions=1536
+)
+</code></pre>
+
+  <h3>2. <code>split_text</code></h3>
+  <h3>Description</h3>
+  <p>Splits a long text into a list of smaller chunks, respecting the defined maximum size and overlap, using custom separators to maintain semantic coherence.</p>
+  <h3>Arguments</h3>
+  <ul>
+    <li><code>text</code> (str): Full text to be fragmented.</li>
+    <li><code>chunk_size</code> (int | None): Maximum size of each chunk, uses the default configuration if None.</li>
+    <li><code>chunk_overlap</code> (int | None): Amount of overlap between consecutive chunks, uses the default configuration if None.</li>
+  </ul>
+  <h3>Returns</h3>
+  <ul>
+    <li>List[str]: List with the pieces of the fragmented text.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li>None in particular.</li>
+  </ul>
+  <h3>Examples</h3>
+  <pre data-lang="python"><code>
+chunks = service.split_text(
+    "Um texto muito longo que precisa ser dividido em partes menores.",
+    chunk_size=500,
+    chunk_overlap=50
+)
+print(len(chunks))
+</code></pre>
+
+  <h3>3. <code>build_documents</code></h3>
+  <h3>Description</h3>
+  <p>Static method that receives chunks and metadata, building a list of <code>Document</code> objects for use in embedding generation.</p>
+  <h3>Arguments</h3>
+  <ul>
+    <li><code>chunks</code> (List[str]): List of fragmented texts.</li>
+    <li><code>metadata</code> (Dict[str, Any]): Metadata to be associated with each document.</li>
+  </ul>
+  <h3>Returns</h3>
+  <ul>
+    <li>List[Document]: List of Document objects ready for processing.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <h3>Examples</h3>
+  <pre data-lang="python"><code>
+docs = PineconeVectorService.build_documents(chunks, {"file_id": "1234"})
+print(docs[0].metadata["file_id"])  # Saída: "1234"
+</code></pre>
+
+  <h3>4. <code>delete_documents</code></h3>
+  <h3>Description</h3>
+  <p>Deletes documents stored in the vector within the specified namespace, filtering them by a metadata field (key and value), removing their associated vectors in batches.</p>
+  <h3>Arguments</h3>
+  <ul>
+    <li><code>target_feature</code> (str): Name of the metadata field to be filtered.</li>
+    <li><code>target_id</code> (str): Value of the field to identify the documents to remove.</li>
+    <li><code>namespace</code> (str): Namespace where the removal operation will take place.</li>
+  </ul>
+  <h3>Returns</h3>
+  <ul>
+    <li>dict: Information with the number of vectors deleted and the namespace used.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li>May raise exceptions if an error occurs in the query or deletion of the vectors.</li>
+  </ul>
+  <h3>Examples</h3>
+  <pre data-lang="python"><code>
+result = service.delete_documents(
+    target_feature="file_id",
+    target_id="1234",
+    namespace="main"
+)
+print(result["deleted_vectors"])
+</code></pre>
+
+  <h3>5. <code>document_search</code></h3>
+  <h3>Description</h3>
+  <p>Performs vector similarity search based on a text query, returning the most relevant documents from the indicated namespace, with the option of applying additional filters.</p>
+  <h3>Arguments</h3>
+  <ul>
+    <li><code>query</code> (str): Query text for semantic search.</li>
+    <li><code>k</code> (int): Limit of results to return. Default = 3.</li>
+    <li><code>namespace</code> (str): Namespace for the search. If None, uses the main one.</li>
+    <li><code>filter</code> (dict): Optional filters to restrict the results.</li>
+  </ul>
+  <h3>Returns</h3>
+  <ul>
+    <li>dict: Structure with the document IDs and their metadata and contents.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li>May raise RuntimeError in case of search failure.</li>
+  </ul>
+  <h3>Examples</h3>
+  <pre data-lang="python"><code>
+results = service.document_search(
+    query="Como funciona vector search?",
+    k=5
+)
+print(list(results.keys()))
+</code></pre>
+
+  <h3>6. <code>generate_vectors</code></h3>
+  <h3>Description</h3>
+  <p>Converts a full text into embeddings, splitting it into chunks, adding metadata and saving the vectors in Pinecone in batches. Supports saving to the global namespace and automatic rollback if any operation fails.</p>
+  <h3>Arguments</h3>
+  <ul>
+    <li><code>text</code> (str): Text for embedding generation.</li>
+    <li><code>metadata</code> (dict): Metadata associated with the vectors created.</li>
+    <li><code>save_global</code> (bool): Indicates whether to also save to the global namespace. Default False.</li>
+    <li><code>batch_size</code> (int | None): Maximum number of documents per batch. Uses the default configuration if None.</li>
+  </ul>
+  <h3>Returns</h3>
+  <ul>
+    <li>dict: State of the operation with status, message, batch count and IDs of the chunks saved.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li>Does not propagate exceptions directly, captures them and returns the error in the response dictionary.</li>
+  </ul>
+  <h3>Examples</h3>
+  <pre data-lang="python"><code>
+response = service.generate_vectors(
+    text="Conteúdo do documento a ser vetorizado.",
+    metadata={"file_id": "file123"},
+    save_global=True
+)
+print(response["status"])  # "success"
+</code></pre>
+
+  <p>This documentation covers the essential aspects of the <code>PineconeVectorService</code> class, with details that help developers understand how it works, its integrations, limitations and how to use it when building solutions with vectors and NLP.</p>
 </page>

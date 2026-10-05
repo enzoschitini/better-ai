@@ -1,31 +1,185 @@
-<page data-lead="Pagina di esempio per Database, usata per validare il layout.">
-  <div class="callout" data-kind="note"><p><strong>Contenuto di esempio.</strong> Questo testo esiste solo per validare il layout. Nella versione finale la pagina è generata da <code>ipynb_contents/Modules/Agents/Utils/Database.md</code>.</p></div>
-
+<page data-lead="">
   <h2>Panoramica</h2>
-  <p>Database fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
+  <p>La classe <code>Database</code> agisce come una <strong>fabbrica di connessioni</strong> ai database, fornendo un'interfaccia unificata per connettersi sia a un database SQLite locale sia a un database Postgres ospitato su Supabase. Astrae i dettagli di configurazione e le scelte di implementazione, permettendo allo sviluppatore di selezionare il tipo di database passando semplici parametri, senza dover gestire configurazioni complesse.</p>
+  <p>Questo design è utile quando si hanno ambienti diversi, come lo sviluppo locale e la produzione nel cloud, e si desidera un modo coerente ed elegante di inizializzare le connessioni a database diversi, mantenendo il resto dell'applicazione disaccoppiato dal livello di persistenza.</p>
 
-  <h2>Uso</h2>
-  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
-  <pre data-lang="python"><code>
-from better_ai import Database
+  <h2>Flusso di Esecuzione</h2>
+  <ol>
+    <li>Quando istanzi la classe <code>Database</code>, chiami il suo costruttore (in realtà usa il metodo <code>__new__</code> personalizzato).</li>
+    <li>Il parametro <code>local</code> decide se la connessione sarà con SQLite locale (<code>local=True</code>) o con Supabase Postgres (<code>local=False</code>).</li>
+    <li>Se è locale, viene chiamato il metodo <code>_local_database</code>, che costruisce la connessione di tipo <code>SqliteDb</code> usando il file <code>.db</code>.</li>
+    <li>Altrimenti, viene chiamato <code>_supabase</code>, che crea la connessione di tipo <code>PostgresDb</code>, costruendo l'URL del database usando le variabili d'ambiente o il parametro passato.</li>
+    <li>I metodi statici ausiliari generano nomi di schema, percorsi o URL in base ai parametri e agli standard interni.</li>
+    <li>Infine, viene restituito l'oggetto della rispettiva classe di database (<code>SqliteDb</code> o <code>PostgresDb</code>), pronto all'uso.</li>
+  </ol>
 
-client = Database()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parametri</h2>
-  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
+  <h2>Tabella dei Metodi della Classe</h2>
   <table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <thead><tr><th>Metodo</th><th>Descrizione</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
+      <tr><td><code>__new__</code></td><td>Controlla la creazione dell'oggetto, decide quale database usare</td></tr>
+      <tr><td><code>_get_schema_name</code></td><td>Restituisce il nome dello schema per Postgres</td></tr>
+      <tr><td><code>_get_database_local_storage</code></td><td>Costruzione del percorso del file SQLite</td></tr>
+      <tr><td><code>_get_database_url</code></td><td>Genera o restituisce l'URL del database Postgres</td></tr>
+      <tr><td><code>_supabase</code></td><td>Crea e configura l'oggetto di connessione Postgres</td></tr>
+      <tr><td><code>_local_database</code></td><td>Crea e configura l'oggetto SQLite</td></tr>
     </tbody>
   </table>
 
-  <h2>Note</h2>
-  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
-  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div>
+  <h2>Variabili d'Ambiente</h2>
+  <ul>
+    <li><code>SUPABASE_PROJECT_HOST</code>: Host del progetto Supabase per la costruzione dell'URL di connessione.</li>
+    <li><code>SUPABASE_DATABASE_PASSWORD</code>: Password del database Postgres di Supabase.</li>
+  </ul>
+
+  <h2>Punti Importanti dell'Architettura e Spunti</h2>
+  <ul>
+    <li>Usa il metodo magico <code>__new__</code> per implementare il pattern <strong>Factory</strong>, restituendo diversi tipi di oggetti in base ai parametri.</li>
+    <li>L'incapsulamento garantisce che i dettagli specifici del database (URL, nomi delle tabelle) restino centralizzati, facilitando la manutenzione.</li>
+    <li>I metodi statici sono usati per la logica di composizione delle stringhe, separando le responsabilità.</li>
+    <li>La classe dipende dalle classi <code>SqliteDb</code> e <code>PostgresDb</code>, che rappresentano le connessioni effettive ai database.</li>
+    <li>Le variabili d'ambiente sono usate per tenere i dati sensibili fuori dal codice, seguendo le buone pratiche.</li>
+    <li>Permette l'iniezione di parametri per maggiore flessibilità (es: nome del database, URL personalizzato).</li>
+  </ul>
+
+  <h2>Descrizione della Classe e dei Metodi</h2>
+
+  <h2>Classe <code>Database</code></h2>
+  <h3>Descrizione</h3>
+  <p>Classe fabbrica per facilitare la connessione a database SQLite locali o Supabase Postgres, astraendo la complessità di configurazione e connessione.</p>
+  <h3>Argomenti del Costruttore</h3>
+  <table>
+    <thead><tr><th>Argomento</th><th>Tipo</th><th>Descrizione</th><th>Valore Predefinito</th></tr></thead>
+    <tbody>
+      <tr><td><code>local</code></td><td><code>bool</code></td><td>Definisce se connettersi localmente (SQLite), altrimenti Supabase Postgres</td><td>False</td></tr>
+      <tr><td><code>database_name</code></td><td><code>str | None</code></td><td>Nome del database o dello schema, opzionale</td><td>None</td></tr>
+      <tr><td><code>database_url</code></td><td><code>str | None</code></td><td>URL completo per la connessione remota, opzionale</td><td>None</td></tr>
+    </tbody>
+  </table>
+  <h3>Metodi</h3>
+
+  <h3>1. <code>__new__</code></h3>
+  <h3>Descrizione</h3>
+  <p>Metodo speciale che controlla la creazione dell'istanza della classe. Decide, in base ai parametri, se creare un oggetto <code>SqliteDb</code> per il database locale o <code>PostgresDb</code> per Supabase.</p>
+  <h3>Argomenti</h3>
+  <ul>
+    <li><code>local</code> (bool): indica uso locale o remoto.</li>
+    <li><code>database_name</code> (str | None): nome del database/schema.</li>
+    <li><code>database_url</code> (str | None): URL del database remoto.</li>
+  </ul>
+  <h3>Valori di ritorno</h3>
+  <ul>
+    <li><code>SqliteDb</code> o <code>PostgresDb</code>: oggetto configurato per interagire con il database corrispondente.</li>
+  </ul>
+  <h3>Raises</h3>
+  <p>Nessuna.</p>
+  <h3>Esempi</h3>
+  <pre data-lang="python"><code>
+# Conecta a banco SQLite local padrão
+db_local = Database(local=True)
+
+# Conecta a banco Supabase com nome específico
+db_supabase = Database(local=False, database_name="test_schema")
+</code></pre>
+
+  <h3>2. <code>_get_schema_name</code></h3>
+  <h3>Descrizione</h3>
+  <p>Restituisce il nome dello schema per la connessione Postgres, usando il nome passato o il default "agent_db".</p>
+  <h3>Argomenti</h3>
+  <ul>
+    <li><code>database_name</code> (str | None): nome dello schema.</li>
+  </ul>
+  <h3>Valori di ritorno</h3>
+  <ul>
+    <li><code>str</code>: nome dello schema da usare.</li>
+  </ul>
+  <h3>Raises</h3>
+  <p>Nessuna.</p>
+  <h3>Esempi</h3>
+  <pre data-lang="python"><code>
+Database._get_schema_name("prod_schema")  # Retorna "prod_schema"
+Database._get_schema_name(None)           # Retorna "agent_db"
+</code></pre>
+
+  <h3>3. <code>_get_database_local_storage</code></h3>
+  <h3>Descrizione</h3>
+  <p>Costruisce il percorso del file <code>.db</code> per il database SQLite locale in base al nome fornito.</p>
+  <h3>Argomenti</h3>
+  <ul>
+    <li><code>database_name</code> (str | None): nome del file senza estensione.</li>
+  </ul>
+  <h3>Valori di ritorno</h3>
+  <ul>
+    <li><code>str</code>: percorso completo del file SQLite.</li>
+  </ul>
+  <h3>Raises</h3>
+  <p>Nessuna.</p>
+  <h3>Esempi</h3>
+  <pre data-lang="python"><code>
+Database._get_database_local_storage("testdb")  # "src/agents/database/testdb.db"
+Database._get_database_local_storage(None)      # "src/agents/database/agno.db"
+</code></pre>
+
+  <h3>4. <code>_get_database_url</code></h3>
+  <h3>Descrizione</h3>
+  <p>Restituisce l'URL di connessione per il database Postgres di Supabase. Usa l'URL passato, se fornito, oppure lo costruisce a partire dalle variabili d'ambiente.</p>
+  <h3>Argomenti</h3>
+  <ul>
+    <li><code>database_url</code> (str | None): URL completo opzionale.</li>
+  </ul>
+  <h3>Valori di ritorno</h3>
+  <ul>
+    <li><code>str</code>: URL di connessione al database.</li>
+  </ul>
+  <h3>Raises</h3>
+  <p>Nessuna.</p>
+  <h3>Esempi</h3>
+  <pre data-lang="python"><code>
+# Usando URL direta
+Database._get_database_url("postgresql://user:pass@host:5432/db")
+
+# Usando ENV-SUPABASE_PROJECT_HOST e SUPABASE_DATABASE_PASSWORD
+Database._get_database_url(None)  # Exemplo: "postgresql://postgres:password@db.projecthost:5432/postgres"
+</code></pre>
+
+  <h3>5. <code>_supabase</code></h3>
+  <h3>Descrizione</h3>
+  <p>Crea un'istanza di <code>PostgresDb</code> configurata per Supabase, con nome dello schema e URL definiti.</p>
+  <h3>Argomenti</h3>
+  <ul>
+    <li><code>database_url</code> (str | None): URL della connessione remota.</li>
+    <li><code>database_name</code> (str | None): nome dello schema.</li>
+  </ul>
+  <h3>Valori di ritorno</h3>
+  <ul>
+    <li><code>PostgresDb</code>: oggetto configurato per l'uso con Supabase.</li>
+  </ul>
+  <h3>Raises</h3>
+  <p>Nessuna.</p>
+  <h3>Esempi</h3>
+  <pre data-lang="python"><code>
+db = Database._supabase(database_url=None, database_name="my_schema")
+# db é uma instância de PostgresDb pronta para manipular o banco remoto
+</code></pre>
+
+  <h3>6. <code>_local_database</code></h3>
+  <h3>Descrizione</h3>
+  <p>Crea un'istanza di <code>SqliteDb</code> configurata per l'uso locale, definendo il percorso del file .db e le tabelle.</p>
+  <h3>Argomenti</h3>
+  <ul>
+    <li><code>database_name</code> (str | None): nome del file del database locale.</li>
+  </ul>
+  <h3>Valori di ritorno</h3>
+  <ul>
+    <li><code>SqliteDb</code>: oggetto configurato per il database SQLite locale.</li>
+  </ul>
+  <h3>Raises</h3>
+  <p>Nessuna.</p>
+  <h3>Esempi</h3>
+  <pre data-lang="python"><code>
+db = Database._local_database(database_name="localdb")
+# db é uma instância de SqliteDb pronta para manipulação local
+</code></pre>
+
+  <p>Questa documentazione fornisce una visione completa e didattica della classe <code>Database</code>, facilitandone la comprensione e l'uso pratico.</p>
 </page>

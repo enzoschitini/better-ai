@@ -1,31 +1,336 @@
-<page data-lead="Página de exemplo para Json To Pydantic, usada para validar o layout.">
-  <div class="callout" data-kind="note"><p><strong>Conteúdo de exemplo.</strong> Este texto existe só para validar o layout. Na versão final, a página é gerada a partir de <code>ipynb_contents/Modules/Content Parse/Json To Pydantic.md</code>.</p></div>
+<page data-lead="A classe JsonToPydantic foi desenvolvida para facilitar a conversão dinâmica de dicionários JSON em modelos Pydantic com tipagem automática dos campos.">
+  <h2>Visão Geral</h2>
+  <p>A classe <code>JsonToPydantic</code> foi desenvolvida para facilitar a conversão dinâmica de dicionários JSON em modelos Pydantic com tipagem automática dos campos. Esse processo é bastante útil quando se trabalha com dados JSON não estruturados ou variáveis, e há necessidade de validar e manipular esses dados utilizando a robustez que o Pydantic oferece.</p>
+  <p>Basicamente, a classe permite transformar um JSON arbitrário em uma classe Pydantic gerada em tempo de execução, inferindo os tipos básicos dos valores (como string, inteiro, float, booleano, listas e dicionários). Isso simplifica workflows que envolvem validação de dados, testes ou manipulação onde o esquema JSON não está previamente definido.</p>
+  <p>Na prática, basta criar uma instância de <code>JsonToPydantic</code>, passar o JSON como dicionário para os métodos da classe, e obter modelos e instâncias tipadas automaticamente, prontos para validação e acesso facilitado aos dados.</p>
 
-  <h2>Visão geral</h2>
-  <p>Json To Pydantic faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
+  <h2>Fluxo de Execução</h2>
+  <ol>
+    <li>Instancia a classe <code>JsonToPydantic</code>, opcionalmente passando um nome para o modelo Pydantic que será criado (<code>model_name</code>).</li>
+    <li>Chama o método <code>build_model</code> passando um dicionário JSON para criar um modelo Pydantic dinâmico. Este método infere os tipos dos campos baseando-se nos valores do dicionário.</li>
+    <li>Utiliza o método <code>parse</code> para criar uma instância do modelo Pydantic previamente gerado, preenchida com os dados do dicionário JSON.</li>
+    <li>Caso qualquer etapa falhe (inferência de tipos, construção do modelo, instanciamento), a classe lança exceções do tipo <code>RuntimeError</code> para indicar erros explicativos.</li>
+  </ol>
 
-  <h2>Uso</h2>
-  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
-  <pre data-lang="python"><code>
-from better_ai import JsonToPydantic
-
-client = JsonToPydantic()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parâmetros</h2>
-  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
+  <h2>Tabela de Métodos da Classe</h2>
   <table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <thead><tr><th>Método</th><th>Descrição</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
+      <tr><td><code>__init__</code></td><td>Inicializa a classe definindo o nome do modelo Pydantic.</td></tr>
+      <tr><td><code>_infer_type</code></td><td>Identifica o tipo Python de um valor para tipagem do campo.</td></tr>
+      <tr><td><code>build_model</code></td><td>Cria dinamicamente um modelo Pydantic com base no dicionário.</td></tr>
+      <tr><td><code>parse</code></td><td>Cria uma instância do modelo preenchida com os dados JSON.</td></tr>
     </tbody>
   </table>
 
-  <h2>Observações</h2>
-  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
-  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div>
+  <h2>Pontos Importantes da Arquitetura e Insights</h2>
+  <ul>
+    <li>A classe utiliza a biblioteca <code>pydantic</code> para criar modelos dinamicamente (<code>create_model</code>) e para validação robusta dos dados.</li>
+    <li>A inferência feita pelo método <code>_infer_type</code> cobre tipos comuns do Python e retorna <code>Any</code> quando o tipo não é claramente identificado.</li>
+    <li>O uso de exceções do tipo <code>RuntimeError</code> com mensagens específicas facilita o entendimento de possíveis falhas no fluxo.</li>
+    <li>A classe não depende de variáveis de ambiente externas para funcionar.</li>
+    <li>A abordagem adotada facilita a criação de esquemas dinâmicos, útil para sistemas que consomem JSONs com estrutura variável ou desconhecida na fase de desenvolvimento.</li>
+  </ul>
+
+  <h2>Descrição da Classe e Métodos</h2>
+
+  <h2>Classe <code>JsonToPydantic</code></h2>
+
+  <h3>Descrição</h3>
+  <p>Classe para criação dinâmica de modelos Pydantic a partir de dicionários JSON, permitindo validação e tipagem automática dos campos conforme os dados recebidos.</p>
+
+  <h3>Argumentos do Construtor</h3>
+  <table>
+    <thead><tr><th>Argumento</th><th>Tipo</th><th>Descrição</th><th>Valor Padrão</th></tr></thead>
+    <tbody>
+      <tr><td>model_name</td><td>str</td><td>Nome do modelo Pydantic criado</td><td>"DynamicModel"</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Métodos</h3>
+
+  <h3>1. <code>__init__</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Inicializa o objeto definindo o nome do modelo Pydantic que será criado dinamicamente.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>model_name (str): Nome do modelo Pydantic (opcional).</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>Não retorna valor.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+converter = JsonToPydantic()  # modelo padrão "DynamicModel"
+converter_custom = JsonToPydantic("MeuModelo")
+</code></pre>
+
+  <h3>2. <code>_infer_type</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Identifica o tipo Python correspondente ao valor fornecido para definir o tipo do campo no modelo.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>value (Any): Valor para ser analisado e tipado.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>Type: Tipo Python correspondente (str, int, float, bool, list, dict ou Any).</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>RuntimeError: Caso ocorra erro durante a inferência do tipo.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+tipo = converter._infer_type("texto")  # retorna &lt;class 'str'&gt;
+tipo = converter._infer_type(123)      # retorna &lt;class 'int'&gt;
+</code></pre>
+
+  <h3>3. <code>build_model</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Constrói e retorna um modelo Pydantic gerado dinamicamente com campos e tipos baseados no dicionário JSON fornecido.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>data (Dict[str, Any]): Dicionário com dados para inferência do modelo.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>Type[BaseModel]: Classe do modelo Pydantic criado.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>RuntimeError: Caso ocorra erro durante a criação do modelo.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+modelo = converter.build_model({"nome": "Ana", "idade": 30})
+# Retorna um modelo equivalente a:
+# class DynamicModel(BaseModel):
+#     nome: str
+#     idade: int
+</code></pre>
+
+  <h3>4. <code>parse</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Gera um modelo Pydantic a partir dos dados e retorna uma instância preenchida com esses dados.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>data (Dict[str, Any]): Dicionário JSON a ser convertido em instância do modelo.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>BaseModel: Instância do modelo Pydantic com os dados validados.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>RuntimeError: Caso ocorra falha na criação ou validação da instância.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+if __name__ == "__main__":
+    data = {
+        "text": "A empresa TechNova está crescendo rapidamente.",
+        "task": "Se o nome da empresa for TechNova, troque por BetterAI"
+    }
+    parser = JsonToPydantic("ResearchRequest")
+    request = parser.parse(data)
+
+    print(request)
+    print(type(request))
+
+# python -m src.content_parse.pydantic_shema
+</code></pre>
+
+  <h2>Mapeamento formas de schema</h2>
+
+  <h3>1. Entradas aceitas pela rota</h3>
+  <p>Formato do request: <code>multipart/form-data</code>.</p>
+  <p>Campos:</p>
+  <ul>
+    <li><code>job_id</code> (obrigatório): <code>str</code></li>
+    <li><code>metadata</code> (obrigatório): <code>str</code> contendo JSON válido</li>
+    <li><code>document_schema</code> (obrigatório): <code>str</code> contendo JSON válido</li>
+    <li><code>file</code> (obrigatório): arquivo</li>
+    <li><code>config</code> (opcional): <code>str</code> contendo JSON válido</li>
+  </ul>
+  <p>Regras de arquivo nesta rota:</p>
+  <ul>
+    <li>Extensões permitidas: <code>txt</code>, <code>md</code>, <code>pdf</code>, <code>docx</code></li>
+    <li>Tamanho máximo: <code>50 MB</code></li>
+  </ul>
+  <p>Erros comuns de entrada:</p>
+  <ul>
+    <li><code>Invalid JSON in metadata</code></li>
+    <li><code>Invalid JSON in schema</code></li>
+    <li><code>Invalid JSON in config</code></li>
+  </ul>
+
+  <h3>2. Importante: quem interpreta o <code>document_schema</code></h3>
+  <ul>
+    <li><code>document_schema</code> <strong>não</strong> é convertido por <code>JsonToPydantic</code>.</li>
+    <li>Na rota, ele é convertido por <code>GeneratePydanticSchema</code> + <code>FieldMetadataParser</code>.</li>
+    <li><code>JsonToPydantic</code> é usado no agente para <code>input_data</code> e <code>config_data</code>.</li>
+  </ul>
+
+  <h3>3. Todas as formas de <code>document_schema</code> aceitas na prática</h3>
+
+  <h3>3.1 Campo declarativo simples</h3>
+  <pre data-lang="json"><code>
+{
+    "summary": {
+        "type": "str",
+        "description": "Resumo do conteúdo do arquivo"
+    }
+}
+</code></pre>
+
+  <h3>3.2 Campo declarativo com <code>required</code>, <code>default</code>, <code>example</code></h3>
+  <pre data-lang="json"><code>
+{
+    "title": {
+        "type": "str",
+        "required": true,
+        "description": "Título principal",
+        "example": "Relatório de Q2"
+    },
+    "confidence": {
+        "type": "float",
+        "required": false,
+        "default": 0.0,
+        "description": "Confianca da extração"
+    }
+}
+</code></pre>
+
+  <h3>3.3 Campo declarativo com validação de tamanho</h3>
+  <pre data-lang="json"><code>
+{
+    "abstract": {
+        "type": "str",
+        "description": "Resumo detalhado",
+        "min_length": 20,
+        "max_length": 500
+    }
+}
+</code></pre>
+
+  <h3>3.4 Lista declarativa de primitivos</h3>
+  <pre data-lang="json"><code>
+{
+    "keywords": {
+        "type": "list",
+        "items": {
+            "type": "str"
+        },
+        "description": "Palavras-chave"
+    }
+}
+</code></pre>
+
+  <h3>3.5 Lista declarativa de objetos</h3>
+  <pre data-lang="json"><code>
+{
+    "entities": {
+        "type": "list",
+        "items": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "str",
+                    "description": "Nome"
+                },
+                "category": {
+                    "type": "str",
+                    "description": "Categoria"
+                },
+                "score": {
+                    "type": "float",
+                    "description": "Pontuação"
+                }
+            }
+        }
+    }
+}
+</code></pre>
+
+  <h3>3.6 Inferência automática por exemplo (sem <code>type</code>)</h3>
+  <pre data-lang="json"><code>
+{
+    "summary": "texto exemplo",
+    "score": 0.98,
+    "approved": true
+}
+</code></pre>
+
+  <h3>3.7 Inferência de objeto aninhado</h3>
+  <pre data-lang="json"><code>
+{
+    "invoice": {
+        "number": "INV-001",
+        "total": 199.9,
+        "paid": false
+    }
+}
+</code></pre>
+
+  <h3>3.8 Inferência de lista de objetos</h3>
+  <pre data-lang="json"><code>
+{
+    "items": [
+        {
+            "sku": "A-1",
+            "quantity": 2,
+            "unit_price": 49.9
+        }
+    ]
+}
+</code></pre>
+
+  <h3>3.9 Inferência com lista vazia</h3>
+  <pre data-lang="json"><code>
+{
+    "items": []
+}
+</code></pre>
+  <p>Nesse caso, o tipo vira lista genérica.</p>
+
+  <h3>3.10 Schema híbrido (declarativo + inferência no mesmo payload)</h3>
+  <pre data-lang="json"><code>
+{
+    "summary": {
+        "type": "str",
+        "description": "Resumo final"
+    },
+    "stats": {
+        "pages": 12,
+        "language": "pt-BR"
+    }
+}
+</code></pre>
+
+  <h3>4. Mapeamento de tipos no modo declarativo</h3>
+  <p>Valores reconhecidos em <code>type</code>:</p>
+  <ul>
+    <li><code>str</code></li>
+    <li><code>int</code></li>
+    <li><code>float</code></li>
+    <li><code>bool</code></li>
+    <li><code>list</code></li>
+    <li><code>dict</code></li>
+  </ul>
+  <p>Se o tipo não for reconhecido, cai em <code>Any</code>.</p>
+
+  <h3>5. Regras e limitações importantes</h3>
+  <ol>
+    <li>Se o campo é <code>dict</code> e possui chave <code>type</code>, ele é tratado como metadado declarativo.</li>
+    <li>Para <code>type = "list"</code>, <code>items</code> é obrigatório.</li>
+    <li>Lista de objetos declarativa exige <code>items.type = "object"</code> com <code>properties</code>.</li>
+    <li>Campos sem <code>required</code> são opcionais por padrão.</li>
+    <li>O parser aceita estrutura híbrida, misturando campos declarativos e inferidos.</li>
+  </ol>
 </page>

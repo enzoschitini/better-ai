@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Field Metadata Parser | BetterAI Docs</title>
-<meta name="description" content="Pagina di esempio per Field Metadata Parser, usata per validare il layout.">
+<meta name="description" content="La classe FieldMetadataParser è responsabile dell'interpretazione dei metadati definiti in dizionari per i campi di dati e della loro conversione in tipi e campi compatibili con la libreria Pydantic.">
 <link rel="canonical" href="pages/it/modules/content-parse/field-metadata-parser.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,169 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copia pagina</span></button>
             </div>
           </div>
-          <p class="lead">Pagina di esempio per Field Metadata Parser, usata per validare il layout.</p>
+          <p class="lead">La classe FieldMetadataParser è responsabile dell'interpretazione dei metadati definiti in dizionari per i campi di dati e della loro conversione in tipi e campi compatibili con la libreria Pydantic.</p>
           <details class="toc-inline"><summary>In questa pagina</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Contenuto di esempio.</strong> Questo testo esiste solo per validare il layout. Nella versione finale la pagina è generata da <code>ipynb_contents/Modules/Content Parse/Field Metadata Parser.md</code>.</p></div>
+        <div class="prose"><h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
+  <p>La classe <code>FieldMetadataParser</code> è responsabile dell'interpretazione dei metadati definiti in dizionari per i campi di dati e della loro conversione in tipi e campi compatibili con la libreria Pydantic. Analizza informazioni come tipo del campo, obbligatorietà, descrizione, esempi e vincoli, generando così una rappresentazione pronta per la validazione e l'uso nei modelli Pydantic.</p>
+  <p>Questo processo è fondamentale per i sistemi che ricevono schemi di dati dinamici o configurazioni esterne e devono costruire modelli di validazione in modo automatizzato e coerente. Con questa classe è possibile trasformare una specifica di tipo JSON direttamente in tipi Pydantic, garantendo validazione automatica e documentazione generata a partire dai metadati.</p>
+  <p>In pratica, può essere utilizzata in framework di dati, importazioni dinamiche di schemi o in qualsiasi applicazione che modelli dati a partire da definizioni flessibili.</p>
 
-  <h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
-  <p>Field Metadata Parser fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
+  <h2 id="flusso-di-esecuzione"><a class="anchor" href="#flusso-di-esecuzione" aria-label="Link para esta seção">#</a>Flusso di Esecuzione</h2>
+  <ol>
+    <li>Il metodo <code>parse</code> riceve un valore arbitrario che può essere o meno un metadato di campo.</li>
+    <li>Verifica se il valore è un dizionario contenente la chiave <code>"type"</code>, identificandolo come metadato valido per l'analisi.</li>
+    <li>Se è un metadato, delega al metodo privato <code>_parse_metadata</code> che esegue la trasformazione dettagliata.</li>
+    <li><code>_parse_metadata</code> estrae il tipo indicato e verifica se il campo è obbligatorio (<code>required</code>).</li>
+    <li>Se il tipo è <code>"list"</code>, cerca la definizione del tipo degli elementi (<code>items</code>), potendo generare un tipo generico o un modello annidato per oggetti complessi.</li>
+    <li>Mappa il tipo stringa nel corrispondente tipo Python, utilizzando il metodo <code>_map_type</code>.</li>
+    <li>Se il campo non è obbligatorio, il tipo viene incapsulato in <code>Optional</code> per supportare l'assenza di valore.</li>
+    <li>Crea un <code>Field</code> di Pydantic con parametri come valore predefinito, descrizione, esempi e vincoli di dimensione.</li>
+    <li>Restituisce una tupla formata dal tipo finale e dall'oggetto <code>Field</code> da usare direttamente nei modelli Pydantic.</li>
+    <li>Se il valore non è un metadato riconosciuto, restituisce <code>None</code>.</li>
+    <li>Se si verifica un errore nel parsing, solleva un'eccezione di tipo <code>RuntimeError</code> con i dettagli.</li>
+  </ol>
 
-  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
-  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> FieldMetadataParser
-
-client = <span class="t-f">FieldMetadataParser</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parametri"><a class="anchor" href="#parametri" aria-label="Link para esta seção">#</a>Parametri</h2>
-  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
+  <h2 id="tabella-dei-metodi-della-classe"><a class="anchor" href="#tabella-dei-metodi-della-classe" aria-label="Link para esta seção">#</a>Tabella dei Metodi della Classe</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <thead><tr><th>Metodo</th><th>Descrizione</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
+      <tr><td><code>__init__</code></td><td>Non implementato esplicitamente (costruttore predefinito)</td></tr>
+      <tr><td><code>parse</code></td><td>Analizza il valore e restituisce tipo e Field per i metadati oppure None</td></tr>
+      <tr><td><code>_parse_metadata</code></td><td>Converte un dizionario di metadati in un tipo Pydantic e un Field configurato</td></tr>
+      <tr><td><code>_map_type</code></td><td>Mappa il nome di un tipo stringa nel corrispondente tipo Python</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="note"><a class="anchor" href="#note" aria-label="Link para esta seção">#</a>Note</h2>
-  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
-  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div></div>
+  <h2 id="variabili-d-ambiente"><a class="anchor" href="#variabili-d-ambiente" aria-label="Link para esta seção">#</a>Variabili d'Ambiente</h2>
+  <p>Nessuna variabile d'ambiente è necessaria per il funzionamento di questa classe.</p>
+
+  <h2 id="punti-importanti-dell-architettura-e-insights"><a class="anchor" href="#punti-importanti-dell-architettura-e-insights" aria-label="Link para esta seção">#</a>Punti Importanti dell'Architettura e Insights</h2>
+  <ul>
+    <li>La classe utilizza l'incapsulamento, limitando le funzioni ausiliarie all'ambito privato (<code>_parse_metadata</code> e <code>_map_type</code>).</li>
+    <li>Utilizza la creazione dinamica di modelli Pydantic (<code>create_model</code>) per rappresentare tipi complessi annidati (oggetti all'interno di liste), consentendo flessibilità ed estensibilità.</li>
+    <li>Il parser interpreta una struttura di tipo JSON per produrre tipi annotati e informazioni complete per la validazione — facilitando l'integrazione con dati dinamici.</li>
+    <li>Supporta attributi opzionali, valori predefiniti, descrizioni ed esempi, promuovendo la documentazione automatica tramite Pydantic.</li>
+    <li>La gestione esplicita degli errori con messaggi chiari facilita il debug.</li>
+    <li>Il metodo <code>_map_type</code> è facilmente estensibile a nuovi tipi, bastando aggiungerli al dizionario.</li>
+  </ul>
+
+  <h2 id="descrizione-della-classe-e-dei-metodi"><a class="anchor" href="#descrizione-della-classe-e-dei-metodi" aria-label="Link para esta seção">#</a>Descrizione della Classe e dei Metodi</h2>
+
+  <h2 id="classe-fieldmetadataparser"><a class="anchor" href="#classe-fieldmetadataparser" aria-label="Link para esta seção">#</a>Classe <code>FieldMetadataParser</code></h2>
+
+  <h3 id="descrizione"><a class="anchor" href="#descrizione" aria-label="Link para esta seção">#</a>Descrizione</h3>
+  <p>Classe per analizzare i metadati forniti in dizionari e trasformarli in tipi e campi configurati per l'uso con Pydantic. Facilita la creazione dinamica di modelli di validazione a partire da specifiche esterne, interpretando tipi, obbligatorietà e metadati descrittivi.</p>
+
+  <h3 id="argomenti-del-costruttore"><a class="anchor" href="#argomenti-del-costruttore" aria-label="Link para esta seção">#</a>Argomenti del Costruttore</h3>
+  <p>Nessun parametro nel costruttore.</p>
+
+  <h3 id="metodi"><a class="anchor" href="#metodi" aria-label="Link para esta seção">#</a>Metodi</h3>
+
+  <h3 id="1-parse"><a class="anchor" href="#1-parse" aria-label="Link para esta seção">#</a>1. <code>parse</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Riceve un valore qualsiasi e, se si tratta di un dizionario che definisce metadati di campo (con la chiave <code>"type"</code>), restituisce una tupla contenente il tipo Pydantic risultante e un oggetto <code>Field</code> configurato con le proprietà. In caso contrario, restituisce <code>None</code>.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>value</code> (Any): Valore da analizzare come metadato di campo.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>Tuple[Any, Any] | None</code>: Tupla con il tipo del campo e l'oggetto Field, oppure <code>None</code> se non è un metadato.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: Se si verifica un qualsiasi errore durante l'analisi dei metadati, viene sollevata un'eccezione con un messaggio esplicativo.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-c"># Metadado válido para um campo inteiro obrigatório</span>
+result = parser.<span class="t-f">parse</span>({<span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;int&quot;</span>, <span class="t-s">&quot;required&quot;</span>: <span class="t-n">True</span>, <span class="t-s">&quot;description&quot;</span>: <span class="t-s">&quot;Idade do usuário&quot;</span>})
+<span class="t-c"># result será algo como (int, Field(..., description=&quot;Idade do usuário&quot;))</span>
+
+<span class="t-c"># Metadado inválido ou não seguindo o padrão retorna None</span>
+result = parser.<span class="t-f">parse</span>(<span class="t-s">&quot;apenas uma string&quot;</span>)
+<span class="t-c"># result será None</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-parse-metadata"><a class="anchor" href="#2-parse-metadata" aria-label="Link para esta seção">#</a>2. <code>_parse_metadata</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Metodo ausiliario privato che riceve un dizionario di metadati validato, ne estrae il tipo, configurando il tipo e le proprietà del campo, trattando in particolare liste e oggetti annidati, e restituendo la tupla con il tipo Pydantic e l'oggetto <code>Field</code>.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>value</code> (Dict[str, Any]): Dizionario contenente le proprietà del campo, come tipo, obbligatorietà, esempi, tra le altre.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>Tuple[Any, Any]</code>: Tupla con il tipo del campo e le informazioni di <code>Field</code>.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: Se il tipo è <code>"list"</code> e non contiene la definizione obbligatoria della chiave <code>"items"</code>.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-c"># Parse de um campo do tipo lista de inteiros não obrigatória</span>
+type_, field = parser.<span class="t-f">_parse_metadata</span>({
+    <span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;list&quot;</span>,
+    <span class="t-s">&quot;items&quot;</span>: {<span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;int&quot;</span>},
+    <span class="t-s">&quot;required&quot;</span>: <span class="t-n">False</span>,
+    <span class="t-s">&quot;description&quot;</span>: <span class="t-s">&quot;Lista de números&quot;</span>
+})
+<span class="t-c"># type_ será Optional[List[int]]</span>
+<span class="t-c"># field conterá description e configurações</span>
+
+<span class="t-c"># Parse de um campo objeto aninhado dentro da lista</span>
+type_, field = parser.<span class="t-f">_parse_metadata</span>({
+    <span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;list&quot;</span>,
+    <span class="t-s">&quot;items&quot;</span>: {
+        <span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;object&quot;</span>,
+        <span class="t-s">&quot;properties&quot;</span>: {
+            <span class="t-s">&quot;nome&quot;</span>: {<span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>, <span class="t-s">&quot;description&quot;</span>: <span class="t-s">&quot;Nome do item&quot;</span>}
+        }
+    }
+})
+<span class="t-c"># type_ será List[ModeloDinâmico]</span>
+<span class="t-c"># field configurado conforme descrito</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-map-type"><a class="anchor" href="#3-map-type" aria-label="Link para esta seção">#</a>3. <code>_map_type</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Mappa il nome di un tipo rappresentato da una stringa nel corrispondente tipo Python, utilizzato nella modellazione Pydantic. Se il tipo non viene riconosciuto, restituisce <code>Any</code> come fallback.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>type_name</code> (str): Stringa che rappresenta il tipo, ad esempio <code>"str"</code>, <code>"int"</code>, <code>"list"</code>.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>tipo</code>: Tipo Python corrispondente (es: <code>str</code>, <code>int</code>, <code>list</code>) oppure <code>Any</code> se non riconosciuto.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">if</span> __name__ == <span class="t-s">&quot;__main__&quot;</span>:
+    parser = <span class="t-f">FieldMetadataParser</span>()
+
+    test_cases = [
+        {
+            <span class="t-s">&quot;input&quot;</span>: {
+                <span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>,
+                <span class="t-s">&quot;description&quot;</span>: <span class="t-s">&quot;Nome do personagem&quot;</span>,
+                <span class="t-s">&quot;example&quot;</span>: <span class="t-s">&quot;John&quot;</span>
+            }
+        },
+        {
+            <span class="t-s">&quot;input&quot;</span>: {
+                <span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;int&quot;</span>,
+                <span class="t-s">&quot;default&quot;</span>: <span class="t-n">10</span>
+            }
+        },
+        {
+            <span class="t-s">&quot;input&quot;</span>: <span class="t-s">&quot;valor simples&quot;</span>
+        }
+    ]
+
+    <span class="t-k">for</span> i, case <span class="t-k">in</span> <span class="t-f">enumerate</span>(test_cases, <span class="t-n">1</span>):
+        result = parser.<span class="t-f">parse</span>(case[<span class="t-s">&quot;input&quot;</span>])
+        <span class="t-f">print</span>(f<span class="t-s">&quot;\nTeste {i}&quot;</span>)
+        <span class="t-f">print</span>(<span class="t-s">&quot;Input:&quot;</span>, case[<span class="t-s">&quot;input&quot;</span>])
+        <span class="t-f">print</span>(<span class="t-s">&quot;Output:&quot;</span>, result)
+
+<span class="t-c"># python -m src.content_parse.pydantic_shema</span></code></pre><button class="copy floating" type="button"></button></div></div></div>
         <div class="feedback"></div>
         <p class="source">Fonte: <code>ipynb_contents/Modules/Content Parse/Field Metadata Parser.md</code></p>
         <nav class="pager" aria-label="Pagine vicine"><a class="pager-link prev" href="../../../../pages/it/modules/content-parse/document-parse.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Precedente</small><span>Document Parse</span></div></a><a class="pager-link next" href="../../../../pages/it/modules/content-parse/generate-pydantic-schema.html"><div><small>Successiva</small><span>Generate Pydantic Schema</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
