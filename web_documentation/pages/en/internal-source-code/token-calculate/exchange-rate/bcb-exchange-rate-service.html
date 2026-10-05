@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BCB Exchange Rate Service | BetterAI Docs</title>
-<meta name="description" content="Sample page for BCB Exchange Rate Service, used to validate the layout.">
+<meta name="description" content="The BCBExchangeRateService class offers a service to query the dollar exchange rate against the real directly from the official API of the Central Bank of Brazil (BCB).">
 <link rel="canonical" href="pages/en/internal-source-code/token-calculate/exchange-rate/bcb-exchange-rate-service.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,158 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copy page</span></button>
             </div>
           </div>
-          <p class="lead">Sample page for BCB Exchange Rate Service, used to validate the layout.</p>
+          <p class="lead">The BCBExchangeRateService class offers a service to query the dollar exchange rate against the real directly from the official API of the Central Bank of Brazil (BCB).</p>
           <details class="toc-inline"><summary>On this page</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Placeholder content.</strong> This text exists only to validate the layout. In the final version the page is generated from <code>ipynb_contents/Internal Source Code/Token Calculate/Exchange Rate/BCB Exchange Rate Service.md</code>.</p></div>
+        <div class="prose"><h2 id="overview"><a class="anchor" href="#overview" aria-label="Link para esta seção">#</a>Overview</h2>
+  <p>The <code>BCBExchangeRateService</code> class offers a service to query the dollar exchange rate against the real directly from the official API of the Central Bank of Brazil (BCB). This service is useful for developing financial applications, currency exchange systems, economic analysis and situations where up-to-date exchange rates need to be obtained automatically and programmatically.</p>
+  <p>The main feature of the class is to allow looking up the dollar exchange rate for specific dates, as well as making it easier to retrieve the best available rate within a range of past days, starting from the current date. This provides flexibility to capture values even when there is no rate on recent days, for example weekends or holidays.</p>
+  <p>In practice, a developer can instantiate the class and call the <code>get_latest_rate</code> method, defining how many previous days to consider when searching for the rate. The method returns the best rate and the corresponding date, making quick integrations with official data easier.</p>
 
-  <h2 id="overview"><a class="anchor" href="#overview" aria-label="Link para esta seção">#</a>Overview</h2>
-  <p>BCB Exchange Rate Service is part of the BetterAI platform. This paragraph stands in for the text coming from the source, so that spacing, line measure and the side index can be checked.</p>
+  <h2 id="execution-flow"><a class="anchor" href="#execution-flow" aria-label="Link para esta seção">#</a>Execution Flow</h2>
+  <ol>
+    <li><strong>Initialization:</strong> The user creates an instance of <code>BCBExchangeRateService</code>, and can set a timeout for HTTP requests (default 10 seconds).</li>
+    <li><strong>Call to the <code>get_latest_rate</code> method:</strong> This method receives an optional <code>max_days_back</code> parameter that defines how many previous days to search for the rate.</li>
+    <li><strong>Iterative search:</strong> For each day, starting from the current one and going back up to <code>max_days_back</code>, the method makes a GET request to the BCB API using the URL format built for that date.</li>
+    <li><strong>Response processing:</strong> If the API returns valid data, the method extracts the selling rate and the date of that rate.</li>
+    <li><strong>Comparison and selection:</strong> For each rate obtained, it checks whether it is the best (most recent) found so far and stores that information.</li>
+    <li><strong>Delay between requests:</strong> There is a small delay of 0.2 seconds between attempts so as not to overload the API.</li>
+    <li><strong>Returning the result:</strong> After going through the days, it returns a dictionary with the value of the best rate found and its date. If an error occurs, it returns <code>None</code> values.</li>
+    <li><strong>Logs:</strong> The process prints details of attempts, successes, failures and the final result to the console.</li>
+  </ol>
 
-  <h2 id="usage"><a class="anchor" href="#usage" aria-label="Link para esta seção">#</a>Usage</h2>
-  <p>The block below shows the typical call, with syntax highlighting:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> BcbExchangeRateService
-
-client = <span class="t-f">BcbExchangeRateService</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parameters"><a class="anchor" href="#parameters" aria-label="Link para esta seção">#</a>Parameters</h2>
-  <p>The table below exists to validate horizontal scrolling on narrow screens:</p>
+  <h2 id="class-methods-table"><a class="anchor" href="#class-methods-table" aria-label="Link para esta seção">#</a>Class Methods Table</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>
+    <thead><tr><th>Method</th><th>Description</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identifier of the model to use.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limit in seconds for the response.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Returns the response in chunks.</td></tr>
+      <tr><td><code>__init__</code></td><td>Initializes the instance by setting the request timeout.</td></tr>
+      <tr><td><code>_build_url</code></td><td>Builds the API URL for a specific date.</td></tr>
+      <tr><td><code>_fetch_rate_for_date</code></td><td>Performs the HTTP request to obtain the rate for a date.</td></tr>
+      <tr><td><code>get_latest_rate</code></td><td>Searches for the best available rate within the defined range.</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="notes"><a class="anchor" href="#notes" aria-label="Link para esta seção">#</a>Notes</h2>
-  <p>A sample warning, to check the styling of the attention callout:</p>
-  <div class="callout" data-kind="warn"><p><strong>Development only.</strong> The values above are fictitious and must not be used in production.</p></div></div>
+  <h2 id="environment-variables"><a class="anchor" href="#environment-variables" aria-label="Link para esta seção">#</a>Environment Variables</h2>
+  <p>No environment variables are used for this class to work.</p>
+
+  <h2 id="key-architecture-points-and-insights"><a class="anchor" href="#key-architecture-points-and-insights" aria-label="Link para esta seção">#</a>Key Architecture Points and Insights</h2>
+  <ul>
+    <li><strong>Encapsulation:</strong> The class explicitly separates URL building (<code>_build_url</code>) and data retrieval (<code>_fetch_rate_for_date</code>) as private methods, keeping the public API clean.</li>
+    <li><strong>Robustness:</strong> The code handles exceptions at several points to prevent request failures from compromising the overall operation.</li>
+    <li><strong>Respect for the API:</strong> Using delays between requests avoids overloading the BCB service.</li>
+    <li><strong>External dependency:</strong> Uses the <code>requests</code> library for HTTP communication, ensuring ease and robustness in the calls.</li>
+    <li><strong>Good time practice:</strong> Uses UTC dates and formats the date to the standard expected by the API.</li>
+    <li><strong>Structured return value:</strong> Ensures consumability by returning a dictionary with <code>rate</code> and <code>date</code>, making integrations easier.</li>
+  </ul>
+
+  <h2 id="class-and-methods-description"><a class="anchor" href="#class-and-methods-description" aria-label="Link para esta seção">#</a>Class and Methods Description</h2>
+
+  <h2 id="bcbexchangerateservice-class"><a class="anchor" href="#bcbexchangerateservice-class" aria-label="Link para esta seção">#</a><code>BCBExchangeRateService</code> Class</h2>
+  <h3 id="description"><a class="anchor" href="#description" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>This class is responsible for querying US dollar exchange rates against the Brazilian real directly from the official API of the Central Bank of Brazil. It allows both querying values for specific dates and searching for the best rate within a period, supporting financial applications that need up-to-date and reliable data.</p>
+
+  <h3 id="constructor-arguments"><a class="anchor" href="#constructor-arguments" aria-label="Link para esta seção">#</a>Constructor Arguments</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argument</th><th>Type</th><th>Description</th><th>Default Value</th></tr></thead>
+    <tbody>
+      <tr><td><code>timeout</code></td><td>int</td><td>Maximum time in seconds for HTTP requests</td><td>10</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Initializes an instance of the service by setting the maximum time for responses to the HTTP requests made to the BCB API.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>timeout</code> (int): time limit in seconds for requests.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>Returns no value.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>service = <span class="t-f">BCBExchangeRateService</span>(timeout=<span class="t-n">5</span>)  <span class="t-c"># Timeout menor para conexões lentas</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-build-url"><a class="anchor" href="#2-build-url" aria-label="Link para esta seção">#</a>2. <code>_build_url</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Private method that builds the query URL of the Central Bank API for a specific date, formatting the date in the required standard.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>date</code> (datetime): date that will be queried in the API.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>str</code>: URL formatted to perform the query.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> datetime <span class="t-k">import</span> datetime
+service = <span class="t-f">BCBExchangeRateService</span>()
+url = service.<span class="t-f">_build_url</span>(<span class="t-f">datetime</span>(<span class="t-n">2024</span>, <span class="t-n">6</span>, <span class="t-n">10</span>))
+<span class="t-f">print</span>(url)
+<span class="t-c"># Exemplo de saída:</span>
+<span class="t-c"># https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarDia(dataCotacao=@dataCotacao)?@dataCotacao='06-10-2024'&amp;$top=1&amp;$format=json</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-fetch-rate-for-date"><a class="anchor" href="#3-fetch-rate-for-date" aria-label="Link para esta seção">#</a>3. <code>_fetch_rate_for_date</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Private method that tries to fetch the dollar rate for a specific date using the Central Bank API. It returns the selling rate and the date of the rate on success.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>date</code> (datetime): date for which the rate will be queried.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>(float, datetime)</code>: a tuple containing the rate value (float) and the date of the rate (datetime).</li>
+    <li><code>(None, None)</code>: if the rate cannot be obtained due to an error or lack of data.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>None explicitly, but possible exceptions are caught internally.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>service = <span class="t-f">BCBExchangeRateService</span>()
+rate, date = service.<span class="t-f">_fetch_rate_for_date</span>(<span class="t-f">datetime</span>(<span class="t-n">2024</span>, <span class="t-n">6</span>, <span class="t-n">10</span>))
+<span class="t-f">print</span>(rate, date)
+<span class="t-c"># Saída esperada (se houver cotação nessa data):</span>
+<span class="t-c"># 5.0892 2024-06-10 00:00:00</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-get-latest-rate"><a class="anchor" href="#4-get-latest-rate" aria-label="Link para esta seção">#</a>4. <code>get_latest_rate</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Searches for the best dollar rate against the real available in the last <code>max_days_back</code> days from the moment of the call, returning the value and the date of the most recent rate found.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>max_days_back</code> (int): number of previous days to search for the rate (default: 5).</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>dict</code>: with the keys:
+      <ul>
+        <li><code>rate</code> (float or None): best rate found.</li>
+        <li><code>date</code> (datetime or None): date of that rate.</li>
+      </ul>
+    </li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>None explicitly, errors are handled internally.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>service = <span class="t-f">BCBExchangeRateService</span>()
+result = service.<span class="t-f">get_latest_rate</span>(<span class="t-n">3</span>)
+<span class="t-f">print</span>(f<span class="t-s">&quot;Cotação: {result['rate']} em {result['date']}&quot;</span>)
+<span class="t-c"># Saída possível:</span>
+<span class="t-c"># Cotação: 5.0892 em 2024-06-10 00:00:00</span>
+
+<span class="t-c"># python -m src.tokens_calculate.bcb</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <p>Thus, the <code>BCBExchangeRateService</code> class is a practical and reliable solution for obtaining official commercial dollar rates, useful for any system that needs easy, programmatic access to this data.</p></div>
         <div class="feedback"></div>
         <p class="source">Source: <code>ipynb_contents/Internal Source Code/Token Calculate/Exchange Rate/BCB Exchange Rate Service.md</code></p>
         <nav class="pager" aria-label="Neighboring pages"><a class="pager-link prev" href="../../../../../pages/en/internal-source-code/storage/supabase/storage-menager.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Previous</small><span>Storage Menager</span></div></a><a class="pager-link next" href="../../../../../pages/en/internal-source-code/token-calculate/exchange-rate/exchange-rate-service.html"><div><small>Next</small><span>Exchange Rate Service</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

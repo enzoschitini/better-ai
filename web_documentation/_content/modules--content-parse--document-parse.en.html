@@ -1,31 +1,282 @@
-<page data-lead="Sample page for Document Parse, used to validate the layout.">
-  <div class="callout" data-kind="note"><p><strong>Placeholder content.</strong> This text exists only to validate the layout. In the final version the page is generated from <code>ipynb_contents/Modules/Content Parse/Document Parse.md</code>.</p></div>
-
+<page data-lead="The DocumentParse class aims to orchestrate the complete document processing pipeline, from extracting the raw content of the file to saving the processed data in a NoSQL database.">
   <h2>Overview</h2>
-  <p>Document Parse is part of the BetterAI platform. This paragraph stands in for the text coming from the source, so that spacing, line measure and the side index can be checked.</p>
+  <p>The <code>DocumentParse</code> class aims to orchestrate the complete document processing pipeline, from extracting the raw content of the file to saving the processed data in a NoSQL database. It is responsible for bringing together several fundamental steps to turn digital files into structured data ready for use, automating the parsing flow with validations, cost calculations and integration with storage systems.</p>
+  <p>This component is fundamental in systems that need to interpret electronic documents (such as PDFs, TXT, etc.) and extract specific information according to a predefined schema. In practice, it can be used in machine learning pipelines, document conversion APIs, and applications that depend on automated data extraction.</p>
+  <p>With this class, the developer can submit a job containing a file and its settings, and get back the document's structured data with computational costs calculated, as well as having the result stored for future queries.</p>
 
-  <h2>Usage</h2>
-  <p>The block below shows the typical call, with syntax highlighting:</p>
-  <pre data-lang="python"><code>
-from better_ai import DocumentParse
+  <h2>Execution Flow</h2>
+  <ol>
+    <li><strong>Creating the class instance:</strong> Initialization with the job_id, JSON metadata, JSON schema, file content (in bytes), file extension and optional parsing settings.</li>
+    <li><strong>Calling the <code>run()</code> method:</strong> This method runs the whole internal flow, and is responsible for coordinating the steps.</li>
+    <li><strong>Loading and validating the data:</strong> The private method <code>_load_schema_and_config()</code> deserializes the metadata and schema JSONs, and also merges the default and custom settings.</li>
+    <li><strong>Extracting the file content:</strong> <code>_extract_file_content()</code> uses the <code>FileContentExtractor</code> to obtain the raw text of the file according to its extension.</li>
+    <li><strong>Parsing the extracted content:</strong> <code>_parse_content()</code> invokes the <code>ContentParsingAgent</code>, which maps the extracted text to the structure defined by the schema.</li>
+    <li><strong>Calculating the costs:</strong> <code>_calculate_costs()</code> determines the processing cost based on the language model used and the tokens consumed, converting the values to local currency.</li>
+    <li><strong>Building the response:</strong> <code>_build_response()</code> creates the payload that will be sent by the API and the payload that will be saved in the database.</li>
+    <li><strong>Persisting the results:</strong> <code>_save()</code> saves the processed data in the configured NoSQL database.</li>
+    <li><strong>Return value:</strong> <code>run()</code> returns the API-ready response containing the extracted and structured content.</li>
+  </ol>
 
-client = DocumentParse()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parameters</h2>
-  <p>The table below exists to validate horizontal scrolling on narrow screens:</p>
+  <h2>Class Methods Table</h2>
   <table>
-    <thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>
+    <thead><tr><th>Method</th><th>Description</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identifier of the model to use.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limit in seconds for the response.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Returns the response in chunks.</td></tr>
+      <tr><td><code>__init__</code></td><td>Initializes the parsing job with the given data and settings</td></tr>
+      <tr><td><code>run</code></td><td>Runs the complete document parsing pipeline</td></tr>
+      <tr><td><code>_load_schema_and_config</code></td><td>Validates and loads the JSON metadata, schema and configuration</td></tr>
+      <tr><td><code>_extract_file_content</code></td><td>Extracts the raw text of the file using the extractor</td></tr>
+      <tr><td><code>_parse_content</code></td><td>Runs the agent that formats the content according to the schema</td></tr>
+      <tr><td><code>_calculate_costs</code></td><td>Calculates the costs of the tokens used and converts the values</td></tr>
+      <tr><td><code>_build_response</code></td><td>Builds the payloads for the API and the database</td></tr>
+      <tr><td><code>_save</code></td><td>Persists the processed result in the NoSQL database</td></tr>
     </tbody>
   </table>
 
-  <h2>Notes</h2>
-  <p>A sample warning, to check the styling of the attention callout:</p>
-  <div class="callout" data-kind="warn"><p><strong>Development only.</strong> The values above are fictitious and must not be used in production.</p></div>
+  <h2>Environment Variables</h2>
+  <p>No explicit environment variable is required directly by this class. The default configuration and database information are obtained through <code>DocumentParseConfig</code>, which may have its own ENV management (not shown here).</p>
+
+  <h2>Key Architecture Points and Insights</h2>
+  <ul>
+    <li><strong>Encapsulation and clear separation of responsibilities:</strong> The class organizes each step of the flow into private methods, making maintenance and testing easier.</li>
+    <li><strong>Use of composition:</strong> The class uses other classes for specific responsibilities, such as <code>FileContentExtractor</code> for extraction, <code>ContentParsingAgent</code> for parsing and <code>DocumentStore</code> for persistence, following the single responsibility principle.</li>
+    <li><strong>Robust error handling:</strong> Uses HTTP exceptions to validate the JSONs provided, ensuring that the flow only continues with valid data.</li>
+    <li><strong>Dynamic cost calculation:</strong> Integrates with external services to calculate the cost based on the tokens processed and the current exchange rate conversion, suitable for pay-per-use systems.</li>
+    <li><strong>Configuration flexibility:</strong> Allows custom configuration via JSON that is merged with the default configuration to adapt the parsing behavior.</li>
+  </ul>
+
+  <h2>Class and Methods Description</h2>
+
+  <h2><code>DocumentParse</code> Class</h2>
+
+  <h3>Description</h3>
+  <p>Class that manages the complete processing of documents to extract structured content. It receives the file content, metadata, schema and settings. It performs text extraction, parsing according to the schema, calculation of operational costs and storage of the processed result. It provides a response ready for use by APIs.</p>
+
+  <h3>Constructor Arguments</h3>
+  <table>
+    <thead><tr><th>Argument</th><th>Type</th><th>Description</th><th>Default Value</th></tr></thead>
+    <tbody>
+      <tr><td><code>job_id</code></td><td>str</td><td>Unique identifier of the processing job</td><td>-</td></tr>
+      <tr><td><code>metadata</code></td><td>dict/str JSON</td><td>Metadata associated with the document (JSON string expected)</td><td>-</td></tr>
+      <tr><td><code>schema</code></td><td>str</td><td>JSON string defining the schema of the expected data</td><td>-</td></tr>
+      <tr><td><code>file_bytes</code></td><td>BytesIO</td><td>Binary content of the file to be processed</td><td>-</td></tr>
+      <tr><td><code>file_extension</code></td><td>str</td><td>File extension (example: '.pdf', '.txt')</td><td>-</td></tr>
+      <tr><td><code>config</code></td><td>Optional[str]</td><td>JSON string containing custom configuration for parsing</td><td>None</td></tr>
+    </tbody>
+  </table>
+
+  <h3>1. <code>__init__</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Initializes the <code>DocumentParse</code> object with the essential information for processing the document, setting up parameters and loading the system's default settings.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>job_id (str): Identifier of the processing job.</li>
+    <li>metadata (dict/str): Metadata in JSON string format.</li>
+    <li>schema (str): JSON schema for structuring the data.</li>
+    <li>file_bytes (BytesIO): Bytes of the file.</li>
+    <li>file_extension (str): File extension.</li>
+    <li>config (Optional[str]): Custom configuration as a JSON string (optional).</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>Returns no value.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+document_parse = DocumentParse(
+    job_id="job123",
+    metadata='{"author": "John Doe"}',
+    schema='{"type": "object", "properties": {"title": {"type": "string"}}}',
+    file_bytes=BytesIO(b"conteudo do arquivo"),
+    file_extension=".txt",
+    config=None
+)
+</code></pre>
+
+  <h3>2. <code>run</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Runs the complete document processing pipeline, from data validation to extraction, parsing, calculations and storage, returning the final result ready for the API.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>dict: Response formatted for the API containing the job_id and the processed content.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>HTTPException: in case of invalid JSONs in the data provided.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+response = document_parse.run()
+print(response)
+# Exemplo de saída:
+# {
+#   "job_id": "job123",
+#   "content": {...dados extraídos e formatados...}
+# }
+</code></pre>
+
+  <h3>3. <code>_load_schema_and_config</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Parses and validates the metadata, schema and configuration JSONs, merging the default configuration with the custom one when provided.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>Returns no value.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>HTTPException: if the metadata, schema or config are invalid JSONs.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+document_parse._load_schema_and_config()
+# Inicializa self.metadata_data, self.schema_data e self.config_data com os valores carregados.
+</code></pre>
+
+  <h3>4. <code>_extract_file_content</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Uses the <code>FileContentExtractor</code> class to extract the raw text content of the file based on its extension.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>Returns no value.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+document_parse._extract_file_content()
+print(document_parse.result_extract)
+# Exemplo de saída:
+# {'response': 'Texto extraído do arquivo'}
+</code></pre>
+
+  <h3>5. <code>_parse_content</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Runs the parsing agent <code>ContentParsingAgent</code>, which processes the extracted text and structures it according to the expected schema, preparing a formatted response.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>Returns no value.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+document_parse._parse_content()
+print(document_parse.agent_response)
+# Exemplo:
+# {'content': {...dados estruturados...}, 'metadata': {...informações de processamento...}}
+</code></pre>
+
+  <h3>6. <code>_calculate_costs</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Calculates the processing cost based on the input and output tokens used by the model, using the current exchange rate to convert to local currency (BRL).</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>Returns no value.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+document_parse._calculate_costs()
+print(document_parse.input_cost, document_parse.output_cost, document_parse.rate)
+# Valores numéricos representando os custos
+</code></pre>
+
+  <h3>7. <code>_build_response</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Builds the payloads that will be returned by the API and saved in the database, consolidating the extracted content and the cost and process information.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>Returns no value.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+document_parse._build_response()
+print(document_parse.api_response)
+# {'job_id': 'job123', 'content': {...dados extraídos...}}
+</code></pre>
+
+  <h3>8. <code>_save</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Saves the processed data in the configured NoSQL database, using the <code>DocumentStore</code> class.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>Returns no value.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+document_parse._save()
+# Dados persistidos no banco conforme configuração automática da classe
+</code></pre>
+
+  <h2>Use</h2>
+  <pre data-lang="python"><code>
+if __name__ == "__main__":
+    # Exemplo de uso
+    job_id = "job_123"
+    metadata = """{"user_id": "user_456"}"""
+
+    schema = """
+    {
+    "summary": {
+        "type": "str",
+        "description": "Resumo do conteúdo do arquivo"
+    }
+    }
+    """
+    config = """
+    {
+    "model_provider": "OpenAI",
+    "model_id": "gpt-4.1-mini",
+    "max_input_tokens": 1000000,
+    "debug_mode": true,
+    "instructions": "Extraia dados do texto",
+    "description": "Leia o texto e extraia as informações relevantes conforme o esquema definido. Retorne um JSON estruturado com os dados extraídos. Caso não encontre alguma informação, retorne null para aquele campo."
+    }
+    """
+
+    with open("src\\content_parse\\module\\example.pdf", "rb") as f:
+        file_bytes = BytesIO(f.read())
+
+    parser = DocumentParse(
+        job_id=job_id,
+        metadata=metadata,
+        schema=schema,
+        config=config,
+        file_bytes=file_bytes,
+        file_extension="pdf"
+    )
+
+    response = parser.run()
+
+    print("\nResposta do parser:")
+    print(json.dumps(response, indent=2))
+
+# python -m src.content_parse.module.document_parse
+</code></pre>
 </page>

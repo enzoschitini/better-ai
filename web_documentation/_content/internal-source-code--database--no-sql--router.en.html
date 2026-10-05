@@ -1,31 +1,151 @@
-<page data-lead="Sample page for Router, used to validate the layout.">
-  <div class="callout" data-kind="note"><p><strong>Placeholder content.</strong> This text exists only to validate the layout. In the final version the page is generated from <code>ipynb_contents/Internal Source Code/Database/No SQL/Router.ipynb</code>.</p></div>
-
+<page data-lead="This documentation details the DocumentStore class, an essential component for data persistence in your architecture, designed to offer flexibility and decoupling.">
   <h2>Overview</h2>
-  <p>Router is part of the BetterAI platform. This paragraph stands in for the text coming from the source, so that spacing, line measure and the side index can be checked.</p>
+  <p>The <code>DocumentStore</code> class acts as a <strong>Router</strong> and <strong>Proxy</strong> for NoSQL database operations. Its main goal is to abstract away which database is being used (MongoDB or Local JSON).</p>
+  <p>This allows developers to write the business logic code only once, and switch the storage just by changing an environment variable or an initial parameter, which is ideal for switching between <strong>Production</strong> (MongoDB) and <strong>Development/Testing</strong> (Local) environments.</p>
 
-  <h2>Usage</h2>
-  <p>The block below shows the typical call, with syntax highlighting:</p>
-  <pre data-lang="python"><code>
-from better_ai import Router
+  <h2>Execution Flow</h2>
+  <p>The class follows a simple three-step logic:</p>
+  <ol>
+    <li><strong>Instantiation:</strong> When the object is created, the code checks the <code>backend</code> argument or the <code>NOSQL_BACKEND</code> environment variable.</li>
+    <li><strong>Factory:</strong> The internal method <code>_initialize_manager</code> decides which manager class to instantiate (<code>MongoDBManager</code> or <code>LocalManager</code>).</li>
+    <li><strong>Delegation (Proxy):</strong> When a method such as <code>save_payload</code> is called, <code>DocumentStore</code> does not process the data directly; it "passes the ball" to the manager instantiated in step 2.</li>
+  </ol>
 
-client = Router()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parameters</h2>
-  <p>The table below exists to validate horizontal scrolling on narrow screens:</p>
+  <h2>Methods Table</h2>
   <table>
-    <thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>
+    <thead><tr><th>Method</th><th>Type</th><th>Brief Description</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identifier of the model to use.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limit in seconds for the response.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Returns the response in chunks.</td></tr>
+      <tr><td><code>__init__</code></td><td>Constructor</td><td>Sets the backend and initializes the manager.</td></tr>
+      <tr><td><code>_initialize_manager</code></td><td>Private</td><td>Decision logic (Factory) to choose the backend.</td></tr>
+      <tr><td><code>save_payload</code></td><td>Proxy</td><td>Inserts new documents into the database.</td></tr>
+      <tr><td><code>fetch_documents</code></td><td>Proxy</td><td>Searches and retrieves filtered documents.</td></tr>
+      <tr><td><code>update_documents</code></td><td>Proxy</td><td>Updates data of existing documents.</td></tr>
+      <tr><td><code>delete_documents</code></td><td>Proxy</td><td>Removes documents from the database.</td></tr>
     </tbody>
   </table>
 
-  <h2>Notes</h2>
-  <p>A sample warning, to check the styling of the attention callout:</p>
-  <div class="callout" data-kind="warn"><p><strong>Development only.</strong> The values above are fictitious and must not be used in production.</p></div>
+  <h2>Architecture and Insights</h2>
+  <ul>
+    <li><strong>Proxy Pattern:</strong> The class serves as a unified interface. The code that calls <code>DocumentStore</code> does not need to know <em>how</em> MongoDB works, only <em>what</em> it wants to do.</li>
+    <li><strong>Factory Pattern:</strong> The logic for creating the database object is centralized in a single place, making it easier to add new backends in the future (such as Redis or DynamoDB).</li>
+    <li><strong>Decoupling:</strong> The use of <code>args</code> and <code>*kwargs</code> in the methods allows the interface to be generic enough to accept the different parameters required by distinct backends without breaking the method signatures.</li>
+  </ul>
+
+  <h2>Class Details</h2>
+
+  <h2>DocumentStore Class</h2>
+  <p><strong>Description</strong></p>
+  <p>A high-level abstraction class that manages the persistence of NoSQL documents. It centralizes CRUD (Create, Read, Update, Delete) operations and delegates execution to specific backends depending on the configuration.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>backend</code> (Optional[str]): A string indicating the desired backend. Accepted values: <code>"mongo"</code> or <code>"local"</code>. If <code>None</code>, it looks up the <code>NOSQL_BACKEND</code> environment variable.</li>
+  </ul>
+
+  <h2>Methods</h2>
+
+  <h2>1. _initialize_manager</h2>
+  <p><strong>Description</strong></p>
+  <p>Internal method that decides which database implementation will be loaded into memory.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>Has no direct arguments (uses the state of <code>self.backend</code>).</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>Union[MongoDBManager, LocalManager]</code>: An instance of the class responsible for the actual communication with the database.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: If the given backend is not "mongo" or "local".</li>
+  </ul>
+
+  <h2>2. save_payload</h2>
+  <p><strong>Description</strong></p>
+  <p>Inserts a document or data load into the selected backend.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>args</code> / <code>*kwargs</code>: Usually include the database name, the collection/table name and the data dictionary (payload).</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>dict</code>: Information about the success of the operation (e.g. ID of the inserted document).</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>Exception</code>: Propagates errors specific to the database connection driver.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+store = DocumentStore(backend="local")
+store.save_payload(db="app", collection="logs", data={"status": "sucesso"})
+</code></pre>
+
+  <h2>3. fetch_documents</h2>
+  <p><strong>Description</strong></p>
+  <p>Queries the database to return documents that match the given criteria.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>args</code> / <code>*kwargs</code>: Search filters (e.g. <code>{"id": 123}</code>).</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>list</code>: A list containing the documents found (dictionaries).</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+# Busca todos os usuários com nome Enzo
+users = store.fetch_documents("mydb", "users", {"name": "Enzo"})
+</code></pre>
+
+  <h2>4. update_documents</h2>
+  <p><strong>Description</strong></p>
+  <p>Modifies existing documents in the database based on a selection criterion.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>args</code> / <code>*kwargs</code>: Search filter and the new data to be applied.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>dict</code>: Summary of the operation (number of fields changed).</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+store.update_documents("mydb", "users", {"name": "Enzo"}, {"active": True})
+</code></pre>
+
+  <h2>5. delete_documents</h2>
+  <p><strong>Description</strong></p>
+  <p>Removes one or more documents from the database.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>args</code> / <code>*kwargs</code>: Filters to identify which documents must be deleted.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>dict</code>: Confirmation of the removal.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+store.delete_documents("mydb", "users", {"name": "Enzo"})
+</code></pre>
+
+  <h2>Use</h2>
+  <pre data-lang="python"><code>
+import json
+from src.database.no_relational_db.router import DocumentStore
+
+manager = DocumentStore(backend="local")
+
+manager.save_payload("mydb", "users", {"name": "Enzo"})
+
+docs = manager.fetch_documents("mydb", "users", {"name": "Enzo"})
+print(json.dumps(docs, indent=4))
+
+manager.update_documents("mydb", "users", {"name": "Enzo"}, {"age": 25})
+
+manager.delete_documents("mydb", "users", {"name": "Enzo"})
+
+response = manager.save_payload("mydb", "users", {"name": "Enzo"})
+print(response["inserted_id"])
+</code></pre>
 </page>

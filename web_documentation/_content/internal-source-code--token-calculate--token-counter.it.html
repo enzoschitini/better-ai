@@ -1,31 +1,95 @@
-<page data-lead="Pagina di esempio per Token Counter, usata per validare il layout.">
-  <div class="callout" data-kind="note"><p><strong>Contenuto di esempio.</strong> Questo testo esiste solo per validare il layout. Nella versione finale la pagina è generata da <code>ipynb_contents/Internal Source Code/Token Calculate/Token Counter.md</code>.</p></div>
-
+<page data-lead="La classe TokenCounter ha come obiettivo principale calcolare la quantità di token presenti in un testo, utilizzando codificatori basati sui modelli di linguaggio di OpenAI.">
   <h2>Panoramica</h2>
-  <p>Token Counter fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
+  <p>La classe <code>TokenCounter</code> ha come obiettivo principale calcolare la quantità di token presenti in un testo, utilizzando codificatori basati sui modelli di linguaggio di OpenAI. Questo è particolarmente utile per chi lavora con API che hanno limiti basati sulla quantità di token, come GPT-3 e GPT-4, permettendo di gestire meglio il costo e la dimensione delle richieste.</p>
+  <p>Risolve il problema di avere bisogno di un conteggio preciso dei token per gli input di testo, qualcosa di cruciale per i limiti e le ottimizzazioni nelle applicazioni NLP che dipendono dai modelli OpenAI. In pratica, puoi usare questa classe per, ad esempio, verificare se un testo rientra nel limite massimo di token consentito dal modello prima di inviare una richiesta.</p>
 
-  <h2>Uso</h2>
-  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
-  <pre data-lang="python"><code>
-from better_ai import TokenCounter
+  <h2>Flusso di Esecuzione</h2>
+  <ol>
+    <li>Istanzia la classe <code>TokenCounter</code>, passando il nome del modello che vuoi usare per la codifica dei token (es.: <code>"gpt-3.5-turbo"</code>). Questo definisce lo standard di tokenizzazione adatto al modello.</li>
+    <li>Se il nome del modello non viene riconosciuto, la classe usa automaticamente una codifica base predefinita (<code>cl100k_base</code>).</li>
+    <li>Chiama il metodo <code>count</code>, passando il testo che vuoi conteggiare.</li>
+    <li>Il metodo restituisce un numero intero che rappresenta la quantità di token nel testo.</li>
+  </ol>
 
-client = TokenCounter()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parametri</h2>
-  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
+  <h2>Tabella dei Metodi della Classe</h2>
   <table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <thead><tr><th>Metodo</th><th>Descrizione</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
+      <tr><td><code>__init__</code></td><td>Inizializza il codificatore per il modello desiderato</td></tr>
+      <tr><td><code>count</code></td><td>Conta la quantità di token in un testo</td></tr>
     </tbody>
   </table>
 
-  <h2>Note</h2>
-  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
-  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div>
+  <h2>Variabili d'Ambiente</h2>
+  <p>Non ci sono variabili d'ambiente utilizzate dalla classe.</p>
+
+  <h2>Punti Importanti dell'Architettura e Insights</h2>
+  <ul>
+    <li>La classe utilizza la libreria <code>tiktoken</code>, specifica per la tokenizzazione dei modelli OpenAI, garantendo alta compatibilità e precisione.</li>
+    <li>La scelta della codifica è dinamica, basata sul nome del modello indicato. Se il modello non è noto, viene usato uno standard sicuro per evitare errori.</li>
+    <li>Incapsula il funzionamento interno del codificatore, offrendo un'interfaccia semplice per contare i token, facilitando l'integrazione in progetti più grandi.</li>
+    <li>La classe non dipende da altre classi oltre al modulo esterno <code>tiktoken</code>.</li>
+    <li>Il suo design è minimalista, focalizzato su un unico scopo, seguendo il principio di responsabilità unica.</li>
+  </ul>
+
+  <h2>Descrizione della Classe e dei Metodi</h2>
+
+  <h2>Classe <code>TokenCounter</code></h2>
+  <h3>Descrizione</h3>
+  <p>Classe responsabile del conteggio della quantità di token nei testi, utilizzando i codificatori della libreria <code>tiktoken</code>, che riproducono il modo in cui i modelli OpenAI interpretano e segmentano le parole in token.</p>
+
+  <h3>Argomenti del Costruttore</h3>
+  <table>
+    <thead><tr><th>Argomento</th><th>Tipo</th><th>Descrizione</th><th>Valore Predefinito</th></tr></thead>
+    <tbody>
+      <tr><td>model</td><td>str</td><td>Nome del modello OpenAI per definire la codifica dei token (es.: <code>"gpt-3.5-turbo"</code>).</td><td>Nessuno</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Metodi</h3>
+
+  <h3>1. <code>__init__</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Inizializza un codificatore di token basato sul modello specificato. Se il modello non viene riconosciuto, usa una codifica predefinita.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>model (str): nome del modello per definire la codifica</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nessuna in modo esplicito, ma ignora <code>KeyError</code> durante la ricerca del codificatore per il modello.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+counter = TokenCounter("gpt-3.5-turbo")
+</code></pre>
+
+  <h3>2. <code>count</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Conta quanti token contiene il testo fornito, convertendo il testo con il codificatore associato al modello.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>text (str): Testo di cui verrà calcolata la quantità di token.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>int: numero totale di token trovati nel testo. Restituisce 0 se il testo è vuoto o <code>None</code>.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nessuna.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+counter = TokenCounter("gpt-3.5-turbo")
+num_tokens = counter.count("Hello, how are you?")
+print(num_tokens)  # Saída provável: 6
+
+# python -m src.tokens_calculate.token_counter
+</code></pre>
+  <p>Questo esempio mostra il conteggio approssimativo dei token per la frase "Hello, how are you?", che in generale contiene 6 token secondo la tokenizzazione del modello indicato.</p>
 </page>

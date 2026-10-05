@@ -22,7 +22,7 @@ is a bug — the TOC, the anchors and the search index diverge between languages
 
 | Kept verbatim | Example |
 |---|---|
-| Code, in every `<pre>` and every inline `<code>` | `uv sync`, `python -m venv .venv` |
+| Code, in every `<pre>` and every inline `<code>` (only the comments inside a `<pre>` are translated, see below) | `uv sync`, `python -m venv .venv` |
 | Identifiers: classes, methods, parameters, fields | `TracingCore`, `run()`, `log_id` |
 | Environment variable names | `BETTERAI_API_KEY`, `NOSQL_BACKEND` |
 | File and directory names, paths | `.python-version`, `web_services.py` |
@@ -32,6 +32,26 @@ is a bug — the TOC, the anchors and the search index diverge between languages
 
 The *description* of an identifier is translated; the identifier is not. In a two-column
 table of variables, the left column stays frozen and only the right column changes.
+
+## Code blocks: code in English, comments in three languages
+
+Every `<pre>` appears in all three files. The code itself stays identical (and in English:
+identifiers, keywords, strings, commands, output). **Only the comments are translated**, so
+the `pt`, `it` and `en` files each carry the comments in their own language:
+
+- Python / bash / env: text after `#` (`# Cria o cliente` -> it `# Crea il client` -> en `# Create the client`).
+- Python docstrings: translate the prose, keep the quotes and any `Args:`/`Returns:`-style
+  names of parameters.
+- JSON has no comments; leave it untouched.
+- Comment-only lines and trailing comments both follow this rule; keep them on the same line
+  and at the same column/indentation as in `pt`.
+- If the source comment is already in English, the `pt` file keeps it as is (rule 1) and the
+  `it`/`en` files still carry the comment in their language (`en` stays as the source).
+- String literals, `print()` messages, log text and variable names are code, not comments:
+  never translate them.
+- Do not add comments the source does not have, and do not drop any.
+
+A reviewer diffing the three files must see, inside every `<pre>`, only comment lines differ.
 
 ## Terms that have a settled translation
 

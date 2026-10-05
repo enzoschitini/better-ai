@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Quickstart | BetterAI Docs</title>
-<meta name="description" content="Sample page for Quickstart, used to validate the layout.">
+<meta name="description" content="Quick guide to set up the environment, install dependencies and run the BetterAI services for the first time.">
 <link rel="canonical" href="pages/en/getting-started/quickstart.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,220 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copy page</span></button>
             </div>
           </div>
-          <p class="lead">Sample page for Quickstart, used to validate the layout.</p>
+          <p class="lead">Quick guide to set up the environment, install dependencies and run the BetterAI services for the first time.</p>
           <details class="toc-inline"><summary>On this page</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Placeholder content.</strong> This text exists only to validate the layout. In the final version the page is generated from <code>ipynb_contents/Getting Started/1. Quickstart.ipynb</code>.</p></div>
+        <div class="prose"><h2 id="1-update-the-project"><a class="anchor" href="#1-update-the-project" aria-label="Link para esta seção">#</a>1. Update the Project</h2>
+  <p>First, make sure you are on the correct branch and that your code is up to date:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">git</span> checkout production
+<span class="t-f">git</span> pull
+<span class="t-f">git</span> checkout <span class="t-n">-b</span> nome-da-sua-branch</code></pre><button class="copy floating" type="button"></button></div></div>
 
-  <h2 id="overview"><a class="anchor" href="#overview" aria-label="Link para esta seção">#</a>Overview</h2>
-  <p>Quickstart is part of the BetterAI platform. This paragraph stands in for the text coming from the source, so that spacing, line measure and the side index can be checked.</p>
+  <h2 id="2-create-the-virtual-environment"><a class="anchor" href="#2-create-the-virtual-environment" aria-label="Link para esta seção">#</a>2. Create the Virtual Environment</h2>
+  <div class="callout" data-kind="info"><p><strong>Requirement:</strong> Python 3.14 or higher (version pinned in <code>.python-version</code>).</p></div>
+  <p>Create a virtual environment to isolate the project's dependencies:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">python</span> <span class="t-n">-m</span> venv .venv</code></pre><button class="copy floating" type="button"></button></div></div>
 
-  <h2 id="usage"><a class="anchor" href="#usage" aria-label="Link para esta seção">#</a>Usage</h2>
-  <p>The block below shows the typical call, with syntax highlighting:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> Quickstart
+  <h2 id="3-activate-the-virtual-environment"><a class="anchor" href="#3-activate-the-virtual-environment" aria-label="Link para esta seção">#</a>3. Activate the Virtual Environment</h2>
+  <div class="code" data-tabs><div class="code-head"><div class="code-tabs" role="tablist"><button class="code-tab" type="button" role="tab" aria-selected="true">PowerShell</button><button class="code-tab" type="button" role="tab" aria-selected="false">CMD</button></div><button class="copy" type="button"></button></div><div class="code-body"><pre data-lang="bash"><code><span class="t-f">.\.venv\Scripts\Activate.ps1</span></code></pre><pre data-lang="bash" hidden><code><span class="t-f">.venv\Scripts\activate.bat</span></code></pre></div></div>
+  <p>After activation, your terminal should look like this:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang=""><code>(.venv) PS C:\Users\nome_do_usuario\better-ai&gt;</code></pre><button class="copy floating" type="button"></button></div></div>
 
-client = <span class="t-f">Quickstart</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
+  <h2 id="4-install-the-dependencies"><a class="anchor" href="#4-install-the-dependencies" aria-label="Link para esta seção">#</a>4. Install the Dependencies</h2>
+  <p>You can install the dependencies in two ways:</p>
+  <h3 id="using-uv-recommended"><a class="anchor" href="#using-uv-recommended" aria-label="Link para esta seção">#</a>Using uv (recommended)</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">uv</span> sync</code></pre><button class="copy floating" type="button"></button></div></div>
 
-  <h2 id="parameters"><a class="anchor" href="#parameters" aria-label="Link para esta seção">#</a>Parameters</h2>
-  <p>The table below exists to validate horizontal scrolling on narrow screens:</p>
+  <h2 id="5-configure-the-environment-variables"><a class="anchor" href="#5-configure-the-environment-variables" aria-label="Link para esta seção">#</a>5. Configure the Environment Variables</h2>
+  <p>Create a <code>.env</code> file in the project root with the following variables:</p>
   <div class="table-wrap"><table>
-    <thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>
+    <thead><tr><th>Variable</th><th>Description</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identifier of the model to use.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limit in seconds for the response.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Returns the response in chunks.</td></tr>
+      <tr><td><code>BETTERAI_API_KEY</code></td><td>BetterAI internal API key</td></tr>
+      <tr><td><code>OPENAI_API_KEY</code></td><td>OpenAI API key</td></tr>
+      <tr><td><code>OPENAI_EMBEDDING_MODEL</code></td><td>OpenAI embeddings model in use</td></tr>
+      <tr><td><code>GEMINI_API_KEY</code></td><td>Google Gemini API key</td></tr>
+      <tr><td><code>GROQ_API_KEY</code></td><td>Groq API key</td></tr>
+      <tr><td><code>ANTHROPIC_API_KEY</code></td><td>Anthropic (Claude) API key</td></tr>
+      <tr><td><code>TAVILY_API_KEY</code></td><td>Tavily (web search) API key</td></tr>
+      <tr><td><code>FAL_API_KEY</code></td><td>Fal (media generation) API key</td></tr>
+      <tr><td><code>EXCHANGE_RATE_API_KEY</code></td><td>Exchange rate API key</td></tr>
+      <tr><td><code>HUGGINGFACEHUB_API_TOKEN</code></td><td>Hugging Face Hub access token</td></tr>
+      <tr><td><code>PINECONE_API_KEY</code></td><td>Pinecone (vector store) API key</td></tr>
+      <tr><td><code>PINECONE_ENVIRONMENT</code></td><td>Pinecone region/environment</td></tr>
+      <tr><td><code>PINECONE_INDEX_NAME</code></td><td>Name of the vector index in Pinecone</td></tr>
+      <tr><td><code>PINECONE_NAMESPACE</code></td><td>Knowledge base namespace</td></tr>
+      <tr><td><code>PINECONE_GLOBAL_NAMESPACE</code></td><td>Global knowledge base namespace</td></tr>
+      <tr><td><code>MONGO_URI</code></td><td>Full MongoDB connection string</td></tr>
+      <tr><td><code>MONGO_USER</code></td><td>MongoDB user</td></tr>
+      <tr><td><code>MONGO_PASSWORD</code></td><td>MongoDB password</td></tr>
+      <tr><td><code>MONGO_HOST</code></td><td>MongoDB host</td></tr>
+      <tr><td><code>MONGO_PORT</code></td><td>MongoDB port</td></tr>
+      <tr><td><code>NOSQL_BACKEND</code></td><td>NoSQL backend in use (<code>local</code> or remote)</td></tr>
+      <tr><td><code>SUPABASE_URL</code></td><td>Supabase project URL</td></tr>
+      <tr><td><code>SUPABASE_SECRET_KEY</code></td><td>Supabase service secret key</td></tr>
+      <tr><td><code>SUPABASE_DATABASE_URL</code></td><td>Supabase Postgres database connection string</td></tr>
+      <tr><td><code>SUPABASE_PROJECT_NAME</code></td><td>Supabase project name</td></tr>
+      <tr><td><code>SUPABASE_PROJECT_HOST</code></td><td>Supabase project host</td></tr>
+      <tr><td><code>SUPABASE_DATABASE_PASSWORD</code></td><td>Supabase database password</td></tr>
+      <tr><td><code>SHOW_INFO_LOGS</code></td><td>Shows informational logs (<code>true</code>/<code>false</code>)</td></tr>
+      <tr><td><code>SHOW_METADATA</code></td><td>Shows metadata in responses (<code>true</code>/<code>false</code>)</td></tr>
+      <tr><td><code>FORMAT_METADATA</code></td><td>Formats the displayed metadata (<code>true</code>/<code>false</code>)</td></tr>
+      <tr><td><code>SAVE_LOGS</code></td><td>Saves execution logs (<code>true</code>/<code>false</code>)</td></tr>
+      <tr><td><code>SAVE_MONGO</code></td><td>Saves execution data to MongoDB (<code>true</code>/<code>false</code>)</td></tr>
+      <tr><td><code>LOCAL</code></td><td>Flag for local execution (<code>true</code>/<code>false</code>)</td></tr>
+    </tbody>
+  </table></div>
+  <details>
+    <summary>See the full .env template</summary>
+    <div class="code"><div class="code-head"><span class="code-title">.env</span><button class="copy" type="button"></button></div><div class="code-body"><pre data-lang="env"><code><span class="t-c"># BetterAI</span>
+<span class="t-f">BETTERAI_API_KEY</span>=********************
+
+<span class="t-c"># LLM's</span>
+<span class="t-f">OPENAI_API_KEY</span>=********************
+<span class="t-f">OPENAI_EMBEDDING_MODEL</span>=text-embedding-3-large
+
+<span class="t-f">GEMINI_API_KEY</span>=********************
+<span class="t-f">GROQ_API_KEY</span>=********************
+<span class="t-f">ANTHROPIC_API_KEY</span>=********************
+
+<span class="t-c"># Tools</span>
+<span class="t-f">TAVILY_API_KEY</span>=********************
+<span class="t-f">FAL_API_KEY</span>=********************
+<span class="t-f">EXCHANGE_RATE_API_KEY</span>=********************
+<span class="t-f">HUGGINGFACEHUB_API_TOKEN</span>=********************
+
+<span class="t-c"># Database</span>
+
+<span class="t-c"># Pinecone</span>
+<span class="t-f">PINECONE_API_KEY</span>=********************
+<span class="t-f">PINECONE_ENVIRONMENT</span>=us-east-1
+<span class="t-f">PINECONE_INDEX_NAME</span>=backai-vectorstore
+<span class="t-f">PINECONE_NAMESPACE</span>=knowledge_base
+<span class="t-f">PINECONE_GLOBAL_NAMESPACE</span>=global_knowledge_base
+
+<span class="t-c"># MongoDB</span>
+<span class="t-f">MONGO_URI</span>=********************
+<span class="t-f">MONGO_USER</span>=********************
+<span class="t-f">MONGO_PASSWORD</span>=********************
+<span class="t-f">MONGO_HOST</span>=********************
+<span class="t-f">MONGO_PORT</span>=********************
+
+<span class="t-f">NOSQL_BACKEND</span>=local
+
+<span class="t-c"># Supabase</span>
+<span class="t-f">SUPABASE_URL</span>=********************
+<span class="t-f">SUPABASE_SECRET_KEY</span>=********************
+<span class="t-f">SUPABASE_DATABASE_URL</span>=********************
+<span class="t-f">SUPABASE_PROJECT_NAME</span>=better-ai-bucket-storage
+<span class="t-f">SUPABASE_PROJECT_HOST</span>=********************
+<span class="t-f">SUPABASE_DATABASE_PASSWORD</span>=********************
+
+<span class="t-c"># Application Tracing Rules</span>
+<span class="t-f">SHOW_INFO_LOGS</span>=false
+<span class="t-f">SHOW_METADATA</span>=false
+<span class="t-f">FORMAT_METADATA</span>=false
+<span class="t-f">SAVE_LOGS</span>=false
+<span class="t-f">SAVE_MONGO</span>=false
+
+<span class="t-f">LOCAL</span>=false</code></pre></div></div>
+  </details>
+
+  <h2 id="6-run-the-application"><a class="anchor" href="#6-run-the-application" aria-label="Link para esta seção">#</a>6. Run the application</h2>
+  <p>The project exposes <strong>two independent services</strong>, which can be run separately or in parallel (in separate terminals):</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Service</th><th>Command</th><th>Port</th><th>When to use</th></tr></thead>
+    <tbody>
+      <tr><td>API (FastAPI)</td><td><code>uvicorn web_services:app --reload</code></td><td><code>8000</code></td><td>Programmatic access to the AI modules over HTTP</td></tr>
+      <tr><td>Interface (Streamlit)</td><td><code>streamlit run web_app.py</code></td><td><code>8501</code></td><td>Visual use of the applications (Acquarello, Content Generator)</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout" data-kind="info"><p><strong>Prerequisites:</strong> virtual environment activated (step 3), dependencies installed (step 4) and <code>.env</code> file configured (step 5).</p></div>
+
+  <h3 id="6-1-api-fastapi-uvicorn"><a class="anchor" href="#6-1-api-fastapi-uvicorn" aria-label="Link para esta seção">#</a>6.1. API (FastAPI + Uvicorn)</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">uvicorn</span> web_services:app <span class="t-n">--reload</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>The <code>--reload</code> flag restarts the server automatically on every code change — recommended for development only.</p>
+  <div class="code plain"><div class="code-body"><pre data-lang=""><code>INFO:     Will watch for changes in these directories: ['C:\\Users\\user_name\\better-ai']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [24960] using StatReload
+INFO:     Router included: /agents
+INFO:     Router included: /davinci
+INFO:     Router included: /deep-research
+INFO:     Router included: /parse-content
+INFO:     Router included: /vector-store
+INFO:     Started server process [4748]
+INFO:     Waiting for application startup.
+INFO:
+
+    ╔═══════════════════════════════════════════════════════════════════════╗
+
+        ██████╗ ███████╗████████╗████████╗███████╗██████╗      █████╗ ██╗ ✦
+        ██╔══██╗██╔════╝╚══██╔══╝╚══██╔══╝██╔════╝██╔══██╗    ██╔══██╗██║
+        ██████╔╝█████╗     ██║      ██║   █████╗  ██████╔╝    ███████║██║
+        ██╔══██╗██╔══╝     ██║      ██║   ██╔══╝  ██╔══██╗    ██╔══██║██║
+        ██████╔╝███████╗   ██║      ██║   ███████╗██║  ██║    ██║  ██║██║
+        ╚═════╝ ╚══════╝   ╚═╝      ╚═╝   ╚══════╝╚═╝  ╚═╝    ╚═╝  ╚═╝╚═╝
+
+    ╚═══════════════════════════════════════════════════════════════════════╝
+
+                        ✦ Where intelligence finds purpose. ✦
+
+INFO:     BetterAI Web Service Network initialized successfully at 2026-08-17 08:55:20.
+INFO:     Version: 1.0.0
+INFO:     API_DOMAIN: http://localhost:8000
+INFO:     Health check available at: http://localhost:8000/health
+INFO:     Documentation available at: http://localhost:8000/docs
+INFO:     Application startup complete.</code></pre><button class="copy floating" type="button"></button></div></div>
+  <p><strong>Available addresses</strong></p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Resource</th><th>URL</th></tr></thead>
+    <tbody>
+      <tr><td>Base URL</td><td><a href="http://localhost:8000">http://localhost:8000</a></td></tr>
+      <tr><td>Health check</td><td><a href="http://localhost:8000/health">http://localhost:8000/health</a></td></tr>
+      <tr><td>Interactive documentation (Swagger UI)</td><td><a href="http://localhost:8000/docs">http://localhost:8000/docs</a></td></tr>
+    </tbody>
+  </table></div>
+  <p><strong>Validate the startup</strong></p>
+  <p>Confirm that the API responded correctly before moving on:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">curl</span> <span class="t-n">-X</span> GET <span class="t-s">&quot;http://127.0.0.1:8000/health&quot;</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <p><strong>Main endpoints</strong></p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Endpoint</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>GET /health</code></td><td>Service availability check</td></tr>
+      <tr><td><code>GET /health-authorization</code></td><td>Service availability check with authentication</td></tr>
+      <tr><td><code>POST /deep-research/context-builder</code></td><td>Context building from deep research</td></tr>
+      <tr><td><code>POST /parse-content/document-parse</code></td><td>Extraction and structuring of document content</td></tr>
+      <tr><td><code>POST /davinci/image-generation</code></td><td>Image generation</td></tr>
+    </tbody>
+  </table></div>
+  <p>Each response follows a standardized format with <code>job_id</code>, <code>status</code>, <code>result</code> and execution time metrics. The full parameters and request/response examples are in <a href="../modules/web-service-network/web-service-network-api.html">Web Service Network - API.ipynb</a>.</p>
+
+  <h3 id="6-2-streamlit-interface"><a class="anchor" href="#6-2-streamlit-interface" aria-label="Link para esta seção">#</a>6.2. Streamlit Interface</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">streamlit</span> run web_app.py</code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>The application will be available at <a href="http://localhost:8501">http://localhost:8501</a>, with the following pages:</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Application</th><th>URL</th><th>Documentation</th></tr></thead>
+    <tbody>
+      <tr><td>Acquarello</td><td><a href="http://localhost:8501/acquarello">http://localhost:8501/acquarello</a></td><td><a href="../streamlit-applications/acquarello.html">Acquarello.ipynb</a></td></tr>
+      <tr><td>Content Generator</td><td><a href="http://localhost:8501/content_generator">http://localhost:8501/content_generator</a></td><td><a href="../streamlit-applications/content-generator.html">Content Generator.ipynb</a></td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="notes"><a class="anchor" href="#notes" aria-label="Link para esta seção">#</a>Notes</h2>
-  <p>A sample warning, to check the styling of the attention callout:</p>
-  <div class="callout" data-kind="warn"><p><strong>Development only.</strong> The values above are fictitious and must not be used in production.</p></div></div>
+  <h3 id="6-3-troubleshooting"><a class="anchor" href="#6-3-troubleshooting" aria-label="Link para esta seção">#</a>6.3. Troubleshooting</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Symptom</th><th>Probable cause</th><th>What to do</th></tr></thead>
+    <tbody>
+      <tr><td><code>ModuleNotFoundError</code> on startup</td><td>Virtual environment not activated or dependencies missing</td><td>Reactivate the <code>.venv</code> (step 3) and run <code>uv sync</code> (step 4)</td></tr>
+      <tr><td>Authentication error with the AI providers</td><td>Missing or invalid keys in the <code>.env</code></td><td>Review step 5 and confirm the key values</td></tr>
+      <tr><td>Connection failure to MongoDB/Supabase/Pinecone</td><td>Wrong credentials or host in the <code>.env</code></td><td>Check the database variables and network connectivity</td></tr>
+      <tr><td>Port already in use</td><td>Another instance of the service is running</td><td>Stop the previous process or use another port (<code>--port</code>)</td></tr>
+    </tbody>
+  </table></div>
+  <p>If the virtual environment becomes inconsistent, recreate it from scratch:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">deactivate</span>
+<span class="t-f">Remove-Item</span> <span class="t-n">-Recurse</span> <span class="t-n">-Force</span> .\.venv
+<span class="t-f">python</span> <span class="t-n">-m</span> venv .venv</code></pre><button class="copy floating" type="button"></button></div></div></div>
         <div class="feedback"></div>
         <p class="source">Source: <code>ipynb_contents/Getting Started/1. Quickstart.ipynb</code></p>
         <nav class="pager" aria-label="Neighboring pages"><a class="pager-link prev" href="../../../pages/en/getting-started/index.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Previous</small><span>Getting Started: overview</span></div></a><a class="pager-link next" href="../../../pages/en/getting-started/dependences.html"><div><small>Next</small><span>Dependences</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

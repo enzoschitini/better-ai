@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Delete Embeddings | BetterAI Docs</title>
-<meta name="description" content="Pagina di esempio per Delete Embeddings, usata per validare il layout.">
+<meta name="description" content="La classe DeleteEmbeddings è stata sviluppata per gestire l'eliminazione degli embedding archiviati in un database vettoriale (vector database).">
 <link rel="canonical" href="pages/it/modules/embedding/delete-embeddings.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,258 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copia pagina</span></button>
             </div>
           </div>
-          <p class="lead">Pagina di esempio per Delete Embeddings, usata per validare il layout.</p>
+          <p class="lead">La classe DeleteEmbeddings è stata sviluppata per gestire l'eliminazione degli embedding archiviati in un database vettoriale (vector database).</p>
           <details class="toc-inline"><summary>In questa pagina</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Contenuto di esempio.</strong> Questo testo esiste solo per validare il layout. Nella versione finale la pagina è generata da <code>ipynb_contents/Modules/Embedding/Delete Embeddings.ipynb</code>.</p></div>
+        <div class="prose"><h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
+  <p>La classe <code>DeleteEmbeddings</code> è stata sviluppata per gestire l'eliminazione degli <em>embedding</em> archiviati in un database vettoriale (vector database). Permette di rimuovere voci specifiche in base a chiavi e valori target forniti, garantendo un controllo preciso sui dati da eliminare. Questa classe è particolarmente utile nei sistemi che archiviano rappresentazioni vettoriali per le ricerche semantiche, dove mantenere la base aggiornata è fondamentale.</p>
+  <p>Risolve il problema di ottimizzare la pulizia e la manutenzione dei dati vettoriali, rendendo possibile l'eliminazione selettiva in più namespace, incluso uno scope globale, con sicurezza e validazione dei target che possono essere interessati. In pratica, uno sviluppatore può usarla per cancellare dati relativi a specifiche basi di conoscenza, mantenendo l'integrità dei dati in altri contesti.</p>
 
-  <h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
-  <p>Delete Embeddings fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
+  <h2 id="flusso-di-esecuzione"><a class="anchor" href="#flusso-di-esecuzione" aria-label="Link para esta seção">#</a>Flusso di Esecuzione</h2>
+  <ol>
+    <li><strong>Inizializzazione</strong>: La classe viene istanziata con le configurazioni del database vettoriale (opzionale). Se non viene passata alcuna configurazione, i valori predefiniti vengono caricati dalla configurazione generale.</li>
+    <li><strong>Validazione dei Target</strong>: Prima di qualsiasi eliminazione, le chiavi target (target keys) vengono validate per garantire che rientrino nei limiti consentiti, evitando eliminazioni fuori dall'ambito desiderato.</li>
+    <li><strong>Stabilire la Connessione</strong>: Viene creata la connessione con il database vettoriale, inizializzando i client necessari per eseguire le operazioni.</li>
+    <li><strong>Esecuzione dell'Eliminazione</strong>: Per ogni coppia chiave-valore target, esegue l'eliminazione nei namespace configurati (principale e, opzionalmente, globale), raccogliendo eventi che dettagliano i vettori eliminati.</li>
+    <li><strong>Aggregazione dei Risultati</strong>: Gli eventi vengono aggregati per namespace, sommando le quantità di vettori eliminati e preparando un riepilogo.</li>
+    <li><strong>Valore di Ritorno</strong>: Al termine, viene restituito un dizionario con l'esito dell'operazione, il totale dei vettori eliminati e i dettagli per namespace.</li>
+  </ol>
 
-  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
-  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> DeleteEmbeddings
-
-client = <span class="t-f">DeleteEmbeddings</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parametri"><a class="anchor" href="#parametri" aria-label="Link para esta seção">#</a>Parametri</h2>
-  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
+  <h2 id="tabella-dei-metodi-della-classe"><a class="anchor" href="#tabella-dei-metodi-della-classe" aria-label="Link para esta seção">#</a>Tabella dei Metodi della Classe</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <thead><tr><th>Metodo</th><th>Descrizione</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
+      <tr><td><code>__init__</code></td><td>Inizializza la classe con le configurazioni del database vettoriale.</td></tr>
+      <tr><td><code>delete</code></td><td>Esegue l'intero processo di eliminazione in base a chiavi e valori.</td></tr>
+      <tr><td><code>_get_vector_db</code></td><td>Stabilisce la connessione con il database vettoriale.</td></tr>
+      <tr><td><code>_validate_targets</code></td><td>Valida che le chiavi target rientrino nei limiti consentiti.</td></tr>
+      <tr><td><code>_delete_from_namespaces</code></td><td>Esegue l'eliminazione nei namespace configurati.</td></tr>
+      <tr><td><code>_aggregate_events</code></td><td>Aggrega gli eventi di eliminazione per namespace.</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="note"><a class="anchor" href="#note" aria-label="Link para esta seção">#</a>Note</h2>
-  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
-  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div></div>
+  <h2 id="variabili-d-ambiente"><a class="anchor" href="#variabili-d-ambiente" aria-label="Link para esta seção">#</a>Variabili d'Ambiente</h2>
+  <p>Non ci sono variabili d'ambiente utilizzate direttamente da questa classe. Le configurazioni del database vettoriale vengono ottenute tramite l'oggetto di configurazione <code>GetConfig</code>.</p>
+
+  <h2 id="punti-importanti-dell-architettura-e-insight"><a class="anchor" href="#punti-importanti-dell-architettura-e-insight" aria-label="Link para esta seção">#</a>Punti Importanti dell'Architettura e Insight</h2>
+  <ul>
+    <li><strong>Design Modulare e Privato</strong>: La classe utilizza metodi privati per organizzare le fasi (validazione, connessione, eliminazione, aggregazione), garantendo coesione e chiarezza nel flusso.</li>
+    <li><strong>Iniezione della Configurazione</strong>: Permette di sovrascrivere le configurazioni predefinite, facilitando l'uso in più ambienti e nei test.</li>
+    <li><strong>Trace e Log</strong>: Integrazione con il sistema di <em>tracing</em> (<code>ApplicationTracing</code>) per la registrazione dettagliata delle azioni, utile per audit e debugging.</li>
+    <li><strong>Gestione di Più Namespace</strong>: La classe supporta l'eliminazione in namespace distinti, incluso uno scope globale opzionale, il che indica flessibilità per scenari di archiviazione più complessi.</li>
+    <li><strong>Gestione Robusta degli Errori</strong>: Le eccezioni vengono catturate e rilanciate con messaggi chiari, mantenendo il controllo del flusso e la trasparenza degli errori.</li>
+    <li><strong>Uso di Classi Esterne</strong>: Dipende dalle classi <code>GetConfig</code>, <code>VectorDBConnection</code> e <code>ApplicationTracing</code>, il che indica integrazione con moduli di configurazione, accesso al database e sistema di log/tracing.</li>
+  </ul>
+
+  <h2 id="descrizione-della-classe-e-dei-metodi"><a class="anchor" href="#descrizione-della-classe-e-dei-metodi" aria-label="Link para esta seção">#</a>Descrizione della Classe e dei Metodi</h2>
+
+  <h3 id="classe-deleteembeddings"><a class="anchor" href="#classe-deleteembeddings" aria-label="Link para esta seção">#</a>Classe <code>DeleteEmbeddings</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Classe responsabile della gestione dell'eliminazione selettiva di embedding in un database vettoriale, con supporto per più namespace e rigorosa validazione delle chiavi target per garantire eliminazioni sicure e controllate.</p>
+  <p><strong>Argomenti del Costruttore</strong></p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argomento</th><th>Tipo</th><th>Descrizione</th><th>Valore Predefinito</th></tr></thead>
+    <tbody>
+      <tr><td><code>vector_db_settings</code></td><td><code>dict</code></td><td>Configurazioni per la connessione al database vettoriale. Se non indicate, usa i valori predefiniti della configurazione globale.</td><td><code>None</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Inizializza l'istanza della classe definendo le configurazioni del database vettoriale a partire dai valori predefiniti e impostando le variabili interne per la connessione futura.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>vector_db_settings</code> (dict): Configurazioni personalizzate per il database vettoriale.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-c"># Instancia com configurações padrão</span>
+de = <span class="t-f">DeleteEmbeddings</span>()
+
+<span class="t-c"># Instancia com configuração personalizada</span>
+custom_settings = {<span class="t-s">&quot;index_name&quot;</span>: <span class="t-s">&quot;my_index&quot;</span>, <span class="t-s">&quot;main_namespace&quot;</span>: <span class="t-s">&quot;app_main&quot;</span>}
+de_custom = <span class="t-f">DeleteEmbeddings</span>(vector_db_settings=custom_settings)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-get-vector-db"><a class="anchor" href="#2-get-vector-db" aria-label="Link para esta seção">#</a>2. <code>_get_vector_db</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Stabilisce la connessione con il database vettoriale utilizzando le configurazioni correnti dell'istanza, impostando gli attributi interni di client e servizio per le operazioni future.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: se non è possibile stabilire la connessione con il database vettoriale.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-c"># Uso interno para garantir conexão antes das operações</span>
+delete_embeddings.<span class="t-f">_get_vector_db</span>()</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-validate-targets"><a class="anchor" href="#3-validate-targets" aria-label="Link para esta seção">#</a>3. <code>_validate_targets</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Verifica che le chiavi target per l'eliminazione rientrino tra le chiavi consentite per limitare l'ambito dell'operazione, generando un errore in caso contrario.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>target_keys</code> (list): Lista dei nomi delle chiavi target da validare.</li>
+    <li><code>targets_to_limit</code> (list o None): Lista delle chiavi consentite per l'eliminazione. Se None, non applica alcuna restrizione.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: se nessun valore di <code>target_keys</code> è contenuto in <code>targets_to_limit</code>.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-c"># Valida que &quot;knowledge_base_id&quot; está entre os alvos permitidos</span>
+_delete.<span class="t-f">_validate_targets</span>([<span class="t-s">&quot;knowledge_base_id&quot;</span>], [<span class="t-s">&quot;knowledge_base_id&quot;</span>])
+
+<span class="t-c"># Levanta erro se sem correspondência</span>
+<span class="t-c"># _delete._validate_targets([&quot;user_id&quot;], [&quot;knowledge_base_id&quot;])  # ValueError</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-delete-from-namespaces"><a class="anchor" href="#4-delete-from-namespaces" aria-label="Link para esta seção">#</a>4. <code>_delete_from_namespaces</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Esegue l'eliminazione dei documenti che possiedono una chiave e un valore target nel namespace principale e, opzionalmente, nel namespace globale, restituendo eventi dettagliati.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>target_name</code> (str): Nome della chiave target per l'eliminazione.</li>
+    <li><code>target_value</code> (str): Valore associato per filtrare i documenti da eliminare.</li>
+    <li><code>main_ns</code> (str): Namespace principale in cui verrà eseguita l'eliminazione.</li>
+    <li><code>global_ns</code> (str): Namespace globale per l'eliminazione opzionale.</li>
+    <li><code>save_global</code> (bool): Definisce se eliminare anche nel namespace globale.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>list</code>: Lista di eventi con i dettagli dell'eliminazione in ciascun namespace.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nessuno direttamente (le eccezioni interne verrebbero propagate).</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>events = delete_embeddings.<span class="t-f">_delete_from_namespaces</span>(
+    <span class="t-s">&quot;knowledge_base_id&quot;</span>, <span class="t-s">&quot;kb_001&quot;</span>, <span class="t-s">&quot;main_ns&quot;</span>, <span class="t-s">&quot;global_ns&quot;</span>, <span class="t-n">True</span>
+)
+<span class="t-c"># events contém detalhes de vetores deletados em cada namespace</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="5-aggregate-events"><a class="anchor" href="#5-aggregate-events" aria-label="Link para esta seção">#</a>5. <code>_aggregate_events</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Aggrega una lista di eventi di eliminazione, sommando le quantità e organizzandole per namespace per facilitare l'analisi e la strutturazione del risultato.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>events</code> (list): Lista dei singoli eventi di eliminazione.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>list</code>: Lista aggregata per namespace contenente totali ed elementi dettagliati.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>aggregated = delete_embeddings.<span class="t-f">_aggregate_events</span>(events)
+<span class="t-c"># aggregated terá estrutura resumida por namespaces</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="6-delete"><a class="anchor" href="#6-delete" aria-label="Link para esta seção">#</a>6. <code>delete</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Metodo pubblico principale che orchestra l'intera operazione di eliminazione: valida i target, si connette al database, esegue le eliminazioni su tutte le coppie chiave-valore, aggrega e restituisce i risultati consolidati.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>target_keys</code> (list): Lista dei nomi delle chiavi per l'eliminazione.</li>
+    <li><code>target_values</code> (list): Lista dei valori corrispondenti per filtrare le eliminazioni.</li>
+    <li><code>targets_to_limit</code> (list o None): Lista opzionale per restringere le chiavi utilizzabili per l'eliminazione.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>dict</code>: Dizionario contenente:
+      <ul>
+        <li><code>success</code> (bool): Indica il successo dell'operazione.</li>
+        <li><code>summary</code> (dict): Riepilogo con il totale dei vettori eliminati e il numero di namespace coinvolti.</li>
+        <li><code>deleted_by_namespace</code> (list): Elenco dettagliato per namespace.</li>
+      </ul>
+    </li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: Se le chiavi target non sono consentite.</li>
+    <li><code>RuntimeError</code>: Se la connessione o l'operazione sul database vettoriale fallisce.</li>
+  </ul>
+
+  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">if</span> __name__ == <span class="t-s">&quot;__main__&quot;</span>:
+    <span class="t-k">import</span> json
+
+    payload = {
+        <span class="t-s">&quot;vector_db_settings&quot;</span>: {
+            <span class="t-s">&quot;index_name&quot;</span>: <span class="t-s">&quot;my_index&quot;</span>,
+            <span class="t-s">&quot;embedding_model&quot;</span>: <span class="t-s">&quot;text-embedding-3-small&quot;</span>,
+            <span class="t-s">&quot;main_namespace&quot;</span>: <span class="t-s">&quot;main_ns&quot;</span>,
+            <span class="t-s">&quot;global_namespace&quot;</span>: <span class="t-s">&quot;global_ns&quot;</span>,
+        },
+        <span class="t-s">&quot;target_keys&quot;</span>: [<span class="t-s">&quot;knowledge_base_id&quot;</span>],
+        <span class="t-s">&quot;target_values&quot;</span>: [<span class="t-s">&quot;kb_12345&quot;</span>],
+        <span class="t-s">&quot;targets_to_limit&quot;</span>: [<span class="t-s">&quot;knowledge_base_id&quot;</span>]
+    }
+
+    delete_embeddings = <span class="t-f">DeleteEmbeddings</span>()
+    result = delete_embeddings.<span class="t-f">delete</span>(
+        target_keys=payload[<span class="t-s">&quot;target_keys&quot;</span>],
+        target_values=payload[<span class="t-s">&quot;target_values&quot;</span>],
+        targets_to_limit=payload[<span class="t-s">&quot;targets_to_limit&quot;</span>]
+    )
+
+    <span class="t-f">print</span>(json.<span class="t-f">dumps</span>(result, indent=<span class="t-n">2</span>))
+
+
+<span class="t-c"># python -m src.embedding.modules.delete_embeddings</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="output"><a class="anchor" href="#output" aria-label="Link para esta seção">#</a>Output:</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>{
+  <span class="t-s">&quot;success&quot;</span>: true,
+  <span class="t-s">&quot;summary&quot;</span>: {
+    <span class="t-s">&quot;total_deleted_vectors&quot;</span>: <span class="t-n">12</span>,
+    <span class="t-s">&quot;namespaces_count&quot;</span>: <span class="t-n">2</span>
+  },
+  <span class="t-s">&quot;deleted_by_namespace&quot;</span>: [
+    {
+      <span class="t-s">&quot;namespace&quot;</span>: <span class="t-s">&quot;main_ns&quot;</span>,
+      <span class="t-s">&quot;deleted_vectors&quot;</span>: <span class="t-n">6</span>,
+      <span class="t-s">&quot;items&quot;</span>: [
+        {
+          <span class="t-s">&quot;target_name&quot;</span>: <span class="t-s">&quot;knowledge_base_id&quot;</span>,
+          <span class="t-s">&quot;target_value&quot;</span>: <span class="t-s">&quot;kb_12345&quot;</span>,
+          <span class="t-s">&quot;deleted_vectors&quot;</span>: <span class="t-n">6</span>
+        }
+      ]
+    },
+    {
+      <span class="t-s">&quot;namespace&quot;</span>: <span class="t-s">&quot;global_ns&quot;</span>,
+      <span class="t-s">&quot;deleted_vectors&quot;</span>: <span class="t-n">6</span>,
+      <span class="t-s">&quot;items&quot;</span>: [
+        {
+          <span class="t-s">&quot;target_name&quot;</span>: <span class="t-s">&quot;knowledge_base_id&quot;</span>,
+          <span class="t-s">&quot;target_value&quot;</span>: <span class="t-s">&quot;kb_12345&quot;</span>,
+          <span class="t-s">&quot;deleted_vectors&quot;</span>: <span class="t-n">6</span>
+        }
+      ]
+    }
+  ]
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <p>Questo documento offre una guida strutturata e didattica per la comprensione e l'utilizzo della classe <code>DeleteEmbeddings</code>, facilitandone l'integrazione e il corretto impiego in progetti che lavorano con l'eliminazione selettiva di embedding in database vettoriali.</p></div>
         <div class="feedback"></div>
         <p class="source">Fonte: <code>ipynb_contents/Modules/Embedding/Delete Embeddings.ipynb</code></p>
         <nav class="pager" aria-label="Pagine vicine"><a class="pager-link prev" href="../../../../pages/it/modules/deep-research/tavily-research/tavily-core.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Precedente</small><span>Tavily Core</span></div></a><a class="pager-link next" href="../../../../pages/it/modules/embedding/embedding-module.html"><div><small>Successiva</small><span>Embedding Module</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

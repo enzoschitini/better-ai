@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Local Manage | BetterAI Docs</title>
-<meta name="description" content="Página de exemplo para Local Manage, usada para validar o layout.">
+<meta name="description" content="Esta é uma documentação detalhada e didática da classe LocalManager, projetada para servir como um guia tanto para usuários quanto para desenvolvedores que desejam entender a estrutura deste gerenciador de dados NoSQL local.">
 <link rel="canonical" href="pages/pt/internal-source-code/database/no-sql/local-manage.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,140 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copiar página</span></button>
             </div>
           </div>
-          <p class="lead">Página de exemplo para Local Manage, usada para validar o layout.</p>
+          <p class="lead">Esta é uma documentação detalhada e didática da classe LocalManager, projetada para servir como um guia tanto para usuários quanto para desenvolvedores que desejam entender a estrutura deste gerenciador de dados NoSQL local.</p>
           <details class="toc-inline"><summary>Nesta página</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Conteúdo de exemplo.</strong> Este texto existe só para validar o layout. Na versão final, a página é gerada a partir de <code>ipynb_contents/Internal Source Code/Database/No SQL/Local Manage.ipynb</code>.</p></div>
+        <div class="prose"><h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão Geral</h2>
+  <p>O <code>LocalManager</code> é uma solução leve e eficiente para persistência de dados em formato NoSQL, utilizando o sistema de arquivos local como armazenamento. Ele emula o comportamento de bancos de dados modernos (como o MongoDB), organizando as informações em uma hierarquia de <strong>Databases</strong> (diretórios) e <strong>Collections</strong> (arquivos JSON).</p>
+  <p>É a ferramenta ideal para:</p>
+  <ul>
+    <li>Prototipagem rápida de aplicações.</li>
+    <li>Armazenamento de configurações locais.</li>
+    <li>Ambientes de teste onde não se deseja configurar um servidor de banco de dados complexo.</li>
+  </ul>
 
-  <h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão geral</h2>
-  <p>Local Manage faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
+  <h2 id="fluxo-de-execucao"><a class="anchor" href="#fluxo-de-execucao" aria-label="Link para esta seção">#</a>Fluxo de Execução</h2>
+  <p>O funcionamento da classe segue um ciclo previsível de manipulação de I/O de arquivos:</p>
+  <ol>
+    <li><strong>Inicialização:</strong> O gerenciador verifica ou cria a pasta raiz (<code>data</code>).</li>
+    <li><strong>Mapeamento:</strong> Ao solicitar uma operação, ele resolve o caminho físico: <code>base/database/collection.json</code>.</li>
+    <li><strong>Carregamento:</strong> O arquivo JSON é lido e desserializado para uma lista de dicionários Python em memória.</li>
+    <li><strong>Processamento:</strong> Filtros, inserções ou atualizações são aplicados nesta lista.</li>
+    <li><strong>Persistência:</strong> A lista resultante é serializada de volta para o arquivo JSON, garantindo a integridade dos dados.</li>
+  </ol>
 
-  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
-  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> LocalManage
-
-client = <span class="t-f">LocalManage</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parametros"><a class="anchor" href="#parametros" aria-label="Link para esta seção">#</a>Parâmetros</h2>
-  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
+  <h2 id="resumo-dos-metodos"><a class="anchor" href="#resumo-dos-metodos" aria-label="Link para esta seção">#</a>Resumo dos Métodos</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <thead><tr><th>Método</th><th>Descrição Breve</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
+      <tr><td><code>save_payload</code></td><td>Insere um novo registro com ID único e timestamp.</td></tr>
+      <tr><td><code>fetch_documents</code></td><td>Filtra e retorna documentos da coleção.</td></tr>
+      <tr><td><code>update_documents</code></td><td>Modifica campos de documentos existentes com base em filtros.</td></tr>
+      <tr><td><code>delete_documents</code></td><td>Remove registros específicos ou múltiplos da coleção.</td></tr>
+      <tr><td><code>_get_collection_path</code></td><td>(Interno) Resolve e cria o caminho de diretórios para o banco.</td></tr>
+      <tr><td><code>_load_collection</code></td><td>(Interno) Lê os dados do arquivo JSON com tratamento de erro.</td></tr>
+      <tr><td><code>_save_collection</code></td><td>(Interno) Grava os dados no disco com indentação legível.</td></tr>
+      <tr><td><code>_match_filter</code></td><td>(Interno) Compara documentos com critérios de busca.</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="observacoes"><a class="anchor" href="#observacoes" aria-label="Link para esta seção">#</a>Observações</h2>
-  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
-  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div></div>
+  <h2 id="arquitetura-e-insights"><a class="anchor" href="#arquitetura-e-insights" aria-label="Link para esta seção">#</a>Arquitetura e Insights</h2>
+  <ul>
+    <li><strong>Abstração de ID e Tempo:</strong> O sistema remove a carga do desenvolvedor de gerar IDs únicos (<code>uuid4</code>) e registrar momentos de criação/atualização, injetando metadados automaticamente.</li>
+    <li><strong>Segurança de Escrita:</strong> Ao utilizar <code>os.makedirs(exist_ok=True)</code>, o código evita erros comuns de "diretório não encontrado" durante a execução.</li>
+    <li><strong>Simplicidade de Busca:</strong> A filtragem é baseada em igualdade simples, o que torna a curva de aprendizado baixíssima para novos usuários.</li>
+  </ul>
+
+  <h2 id="classe-localmanager"><a class="anchor" href="#classe-localmanager" aria-label="Link para esta seção">#</a>Classe LocalManager</h2>
+  <h3 id="descricao"><a class="anchor" href="#descricao" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Gerenciador de persistência local que utiliza arquivos JSON para simular um banco de dados NoSQL. Organiza os dados em estruturas de banco e coleção dentro do sistema de arquivos.</p>
+
+  <h3 id="argumentos"><a class="anchor" href="#argumentos" aria-label="Link para esta seção">#</a>Argumentos</h3>
+  <ul>
+    <li><strong>base_path</strong> (<em>str</em>): Nome do diretório raiz onde todos os dados serão salvos. Padrão: <code>"data"</code>.</li>
+  </ul>
+
+  <h3 id="metodos"><a class="anchor" href="#metodos" aria-label="Link para esta seção">#</a>Métodos</h3>
+
+  <h3 id="1-save-payload"><a class="anchor" href="#1-save-payload" aria-label="Link para esta seção">#</a>1. save_payload</h3>
+  <p><strong>Descrição:</strong> Adiciona um novo documento ao banco de dados. O método gera automaticamente um campo <code>_id</code> único e um campo <code>_created_at</code>.</p>
+  <p><strong>Argumentos:</strong></p>
+  <ul>
+    <li><code>database_name</code> (<em>str</em>): Nome da base de dados.</li>
+    <li><code>collection_name</code> (<em>str</em>): Nome da coleção.</li>
+    <li><code>payload</code> (<em>dict</em>): Os dados que você deseja salvar.</li>
+  </ul>
+  <p><strong>Retornos:</strong></p>
+  <ul>
+    <li><code>dict</code>: Um dicionário contendo o status da operação e o ID gerado.</li>
+  </ul>
+  <p><strong>Raises:</strong></p>
+  <ul>
+    <li><code>Exception</code>: Erros de permissão de escrita ou falha no sistema de arquivos.</li>
+  </ul>
+  <p><strong>Exemplo:</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>manager.<span class="t-f">save_payload</span>(<span class="t-s">&quot;loja&quot;</span>, <span class="t-s">&quot;produtos&quot;</span>, {<span class="t-s">&quot;nome&quot;</span>: <span class="t-s">&quot;Teclado&quot;</span>, <span class="t-s">&quot;preco&quot;</span>: <span class="t-n">150.0</span>})</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-fetch-documents"><a class="anchor" href="#2-fetch-documents" aria-label="Link para esta seção">#</a>2. fetch_documents</h3>
+  <p><strong>Descrição:</strong> Recupera uma lista de documentos que coincidem com os critérios informados.</p>
+  <p><strong>Argumentos:</strong></p>
+  <ul>
+    <li><code>database_name</code> (<em>str</em>): Nome da base de dados.</li>
+    <li><code>collection_name</code> (<em>str</em>): Nome da coleção.</li>
+    <li><code>filter</code> (<em>dict</em>, opcional): Filtro de igualdade (ex: <code>{"status": "ativo"}</code>).</li>
+    <li><code>limit</code> (<em>int</em>): Limite máximo de resultados (0 para ilimitado).</li>
+  </ul>
+  <p><strong>Retornos:</strong></p>
+  <ul>
+    <li><code>List[Dict]</code>: Lista de documentos encontrados.</li>
+  </ul>
+  <p><strong>Raises:</strong></p>
+  <ul>
+    <li><code>json.JSONDecodeError</code>: Se o arquivo estiver corrompido.</li>
+  </ul>
+  <p><strong>Exemplo:</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>manager.<span class="t-f">fetch_documents</span>(<span class="t-s">&quot;loja&quot;</span>, <span class="t-s">&quot;produtos&quot;</span>, filter={<span class="t-s">&quot;nome&quot;</span>: <span class="t-s">&quot;Teclado&quot;</span>})</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-update-documents"><a class="anchor" href="#3-update-documents" aria-label="Link para esta seção">#</a>3. update_documents</h3>
+  <p><strong>Descrição:</strong> Localiza documentos via filtro e atualiza seus valores com um novo conjunto de dados.</p>
+  <p><strong>Argumentos:</strong></p>
+  <ul>
+    <li><code>database_name</code> (<em>str</em>): Nome da base de dados.</li>
+    <li><code>collection_name</code> (<em>str</em>): Nome da coleção.</li>
+    <li><code>filter</code> (<em>dict</em>): Critério para encontrar os documentos a serem editados.</li>
+    <li><code>new_values</code> (<em>dict</em>): Novos campos e valores a serem inseridos/alterados.</li>
+    <li><code>multi</code> (<em>bool</em>): Se <code>True</code>, atualiza todos os encontrados; se <code>False</code>, apenas o primeiro.</li>
+  </ul>
+  <p><strong>Retornos:</strong></p>
+  <ul>
+    <li><code>dict</code>: Estatísticas contendo <code>matched_count</code> e <code>modified_count</code>.</li>
+  </ul>
+  <p><strong>Raises:</strong></p>
+  <ul>
+    <li><code>IOError</code>: Erro ao tentar salvar as alterações no disco.</li>
+  </ul>
+  <p><strong>Exemplo:</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>manager.<span class="t-f">update_documents</span>(<span class="t-s">&quot;loja&quot;</span>, <span class="t-s">&quot;produtos&quot;</span>, {<span class="t-s">&quot;nome&quot;</span>: <span class="t-s">&quot;Teclado&quot;</span>}, {<span class="t-s">&quot;preco&quot;</span>: <span class="t-n">130.0</span>})</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-delete-documents"><a class="anchor" href="#4-delete-documents" aria-label="Link para esta seção">#</a>4. delete_documents</h3>
+  <p><strong>Descrição:</strong> Remove documentos da coleção que correspondam ao filtro passado.</p>
+  <p><strong>Argumentos:</strong></p>
+  <ul>
+    <li><code>database_name</code> (<em>str</em>): Nome da base de dados.</li>
+    <li><code>collection_name</code> (<em>str</em>): Nome da coleção.</li>
+    <li><code>filter</code> (<em>dict</em>): Critério de seleção para remoção.</li>
+    <li><code>multi</code> (<em>bool</em>): Se deve remover todos os correspondentes ou apenas o primeiro.</li>
+  </ul>
+  <p><strong>Retornos:</strong></p>
+  <ul>
+    <li><code>dict</code>: Confirmação com o número de itens deletados (<code>deleted_count</code>).</li>
+  </ul>
+  <p><strong>Raises:</strong></p>
+  <ul>
+    <li><code>Exception</code>: Falhas genéricas de acesso ao arquivo.</li>
+  </ul>
+  <p><strong>Exemplo:</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>manager.<span class="t-f">delete_documents</span>(<span class="t-s">&quot;loja&quot;</span>, <span class="t-s">&quot;produtos&quot;</span>, {<span class="t-s">&quot;status&quot;</span>: <span class="t-s">&quot;esgotado&quot;</span>}, multi=<span class="t-n">True</span>)</code></pre><button class="copy floating" type="button"></button></div></div></div>
         <div class="feedback"></div>
         <p class="source">Fonte: <code>ipynb_contents/Internal Source Code/Database/No SQL/Local Manage.ipynb</code></p>
         <nav class="pager" aria-label="Páginas vizinhas"><a class="pager-link prev" href="../../../../../pages/pt/internal-source-code/application-tracing/use.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Anterior</small><span>Use</span></div></a><a class="pager-link next" href="../../../../../pages/pt/internal-source-code/database/no-sql/mongo-manager.html"><div><small>Próxima</small><span>Mongo Manager</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

@@ -1,31 +1,128 @@
-<page data-lead="Sample page for Unique ID Factory, used to validate the layout.">
-  <div class="callout" data-kind="note"><p><strong>Placeholder content.</strong> This text exists only to validate the layout. In the final version the page is generated from <code>ipynb_contents/Internal Source Code/Utils/Unique ID Factory.ipynb</code>.</p></div>
-
+<page data-lead="This is a detailed and didactic documentation of the IDGenerator class, designed to give a clear view of its capabilities and internal workings.">
   <h2>Overview</h2>
-  <p>Unique ID Factory is part of the BetterAI platform. This paragraph stands in for the text coming from the source, so that spacing, line measure and the side index can be checked.</p>
+  <p>The <code>IDGenerator</code> class is a robust utility tool developed in Python for creating unique identifiers. In software systems, choosing the right ID is crucial: some need to be sortable in time (like logs), others need to be impossible to guess (like password recovery tokens) and others need to follow specific business formats (like service protocols).</p>
+  <p>This class centralizes those needs in a simple interface, using standard Python libraries focused on security (<code>secrets</code>) and uniqueness (<code>uuid</code>).</p>
 
-  <h2>Usage</h2>
-  <p>The block below shows the typical call, with syntax highlighting:</p>
-  <pre data-lang="python"><code>
-from better_ai import UniqueIdFactory
+  <h2>Execution Flow</h2>
+  <p>The class's workflow is based on the <strong>Static Utility</strong> pattern. Since all methods are decorated with <code>@classmethod</code>, you do not need to instantiate the class (do <code>gen = IDGenerator()</code>) to use it.</p>
+  <ol>
+    <li><strong>Method Call:</strong> The user requests a type of ID (e.g. <code>IDGenerator.token()</code>).</li>
+    <li><strong>Input Validation:</strong> The method checks whether the parameters (such as length or version) are valid.</li>
+    <li><strong>Processing/Generation:</strong>
+      <ul>
+        <li>For <strong>UUIDs</strong>, it queries the <code>uuid</code> module.</li>
+        <li>For <strong>Timestamps</strong>, it captures the time in nanoseconds (<code>time.time_ns()</code>).</li>
+        <li>For <strong>Custom/Tokens</strong>, it uses <code>secrets</code> to pick random characters in a cryptographically secure way.</li>
+      </ul>
+    </li>
+    <li><strong>Return:</strong> The identifier is formatted as a <code>string</code> and returned to the caller.</li>
+  </ol>
 
-client = UniqueIdFactory()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parameters</h2>
-  <p>The table below exists to validate horizontal scrolling on narrow screens:</p>
+  <h2>Methods Table</h2>
   <table>
-    <thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>
+    <thead><tr><th>Method</th><th>Main Purpose</th><th>Key Feature</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identifier of the model to use.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limit in seconds for the response.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Returns the response in chunks.</td></tr>
+      <tr><td><code>uuid(version)</code></td><td>Universal unique identification.</td><td>RFC 4122 standard (128 bits).</td></tr>
+      <tr><td><code>timestamp(...)</code></td><td>IDs that follow a chronological order.</td><td>Based on nanoseconds + random suffix.</td></tr>
+      <tr><td><code>token(len, safe)</code></td><td>Security and authentication.</td><td>Cryptographically strong and URL-safe.</td></tr>
+      <tr><td><code>custom(pattern)</code></td><td>Identifiers with business rules.</td><td>Uses masks to define numbers and letters.</td></tr>
     </tbody>
   </table>
 
-  <h2>Notes</h2>
-  <p>A sample warning, to check the styling of the attention callout:</p>
-  <div class="callout" data-kind="warn"><p><strong>Development only.</strong> The values above are fictitious and must not be used in production.</p></div>
+  <h2>Architecture and Insights</h2>
+  <ul>
+    <li><strong>Cryptographic Security:</strong> Using <code>secrets</code> instead of <code>random</code> ensures that the IDs generated for tokens cannot be predicted by brute-force attacks or statistical analysis.</li>
+    <li><strong>High Granularity:</strong> By using <code>time.time_ns()</code> in the timestamp method, the chance of collision (two identical IDs generated at the same time) is drastically reduced, since the precision is billionths of a second.</li>
+    <li><strong>Flexibility through Masks:</strong> The <code>custom</code> method works as a "Mini-Template Engine", allowing developers to create formats such as <code>NF-2024-####</code> without having to rewrite random generation logic.</li>
+  </ul>
+
+  <h2>Technical Details</h2>
+
+  <h2>IDGenerator Class</h2>
+  <p><strong>Description</strong></p>
+  <p>A utility class of class methods aimed at generating identification strings. It requires no internal state and focuses on the purity of the generation functions.</p>
+  <p><strong>Arguments</strong></p>
+  <p>The class itself takes no initialization arguments (it is a static class).</p>
+  <p><strong>Methods</strong></p>
+
+  <h2>1. uuid</h2>
+  <p><strong>Description:</strong> Generates a Universally Unique Identifier (UUID). It is the best choice for primary keys in distributed databases.</p>
+  <p><strong>Arguments:</strong></p>
+  <ul>
+    <li><code>version</code> (int): The UUID version. Supports <code>1</code> (time + MAC address) or <code>4</code> (fully random). Default: <code>4</code>.</li>
+  </ul>
+  <p><strong>Returns:</strong></p>
+  <ul>
+    <li><code>str</code>: The formatted UUID (e.g. <code>8f3...</code>).</li>
+  </ul>
+  <p><strong>Raises:</strong></p>
+  <ul>
+    <li><code>ValueError</code>: If the given version is different from 1 or 4.</li>
+  </ul>
+  <p><strong>Examples:</strong></p>
+  <pre data-lang="python"><code>
+IDGenerator.uuid(version=4) # '784a0d9b-2b41-4c12-8877-6f8d92305381'
+</code></pre>
+
+  <h2>2. timestamp</h2>
+  <p><strong>Description:</strong> Creates an ID based on the exact moment of execution. Excellent for logs and systems where creation order matters.</p>
+  <p><strong>Arguments:</strong></p>
+  <ul>
+    <li><code>prefix</code> (str): Initial text.</li>
+    <li><code>separator</code> (str): Joining character.</li>
+    <li><code>as_hex</code> (bool): If <code>True</code>, converts the time to hexadecimal base (shorter).</li>
+    <li><code>suffix_len</code> (int): Number of extra random characters at the end to avoid collisions.</li>
+  </ul>
+  <p><strong>Returns:</strong></p>
+  <ul>
+    <li><code>str</code>: Formatted temporal string.</li>
+  </ul>
+  <p><strong>Raises:</strong></p>
+  <ul>
+    <li><code>ValueError</code>: If <code>suffix_len</code> is negative.</li>
+  </ul>
+  <p><strong>Examples:</strong></p>
+  <pre data-lang="python"><code>
+IDGenerator.timestamp(prefix="PEDIDO", separator="-", as_hex=True)
+# 'PEDIDO-18f74d0a2bc5f1a39aB3'
+</code></pre>
+
+  <h2>3. token</h2>
+  <p><strong>Description:</strong> Generates a secure random sequence. Recommended for temporary passwords, API keys and session tokens.</p>
+  <p><strong>Arguments:</strong></p>
+  <ul>
+    <li><code>length</code> (int): Length of the string.</li>
+    <li><code>url_safe</code> (bool): If <code>True</code>, removes characters that can cause errors in URLs (such as <code>+</code> or <code>/</code>).</li>
+  </ul>
+  <p><strong>Returns:</strong></p>
+  <ul>
+    <li><code>str</code>: Random token.</li>
+  </ul>
+  <p><strong>Raises:</strong></p>
+  <ul>
+    <li><code>ValueError</code>: If <code>length</code> is less than or equal to zero.</li>
+  </ul>
+  <p><strong>Examples:</strong></p>
+  <pre data-lang="python"><code>
+IDGenerator.token(length=12, url_safe=True) # 'kL9_zP2mNx8A'
+</code></pre>
+
+  <h2>4. custom</h2>
+  <p><strong>Description:</strong> Generates an ID following a visual template (mask) defined by the user.</p>
+  <p><strong>Arguments:</strong></p>
+  <ul>
+    <li><code>pattern</code> (str): String containing the markers <code>#</code> (number), <code>?</code> (letter) or  (both).</li>
+  </ul>
+  <p><strong>Returns:</strong></p>
+  <ul>
+    <li><code>str</code>: String formatted according to the pattern.</li>
+  </ul>
+  <p><strong>Raises:</strong></p>
+  <ul>
+    <li><code>ValueError</code>: If the pattern is empty.</li>
+  </ul>
+  <p><strong>Examples:</strong></p>
+  <pre data-lang="python"><code>
+IDGenerator.custom("PLA-####-??") # 'PLA-5521-XW'
+</code></pre>
 </page>

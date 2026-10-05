@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Storage Menage Repository | BetterAI Docs</title>
-<meta name="description" content="Sample page for Storage Menage Repository, used to validate the layout.">
+<meta name="description" content="This is the didactic documentation for the StorageRepository class, an essential component for hybrid file management in your application.">
 <link rel="canonical" href="pages/en/internal-source-code/storage/storage-menage-repository.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,113 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copy page</span></button>
             </div>
           </div>
-          <p class="lead">Sample page for Storage Menage Repository, used to validate the layout.</p>
+          <p class="lead">This is the didactic documentation for the StorageRepository class, an essential component for hybrid file management in your application.</p>
           <details class="toc-inline"><summary>On this page</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Placeholder content.</strong> This text exists only to validate the layout. In the final version the page is generated from <code>ipynb_contents/Internal Source Code/Storage/Storage Menage Repository.ipynb</code>.</p></div>
+        <div class="prose"><h2 id="1-overview"><a class="anchor" href="#1-overview" aria-label="Link para esta seção">#</a>1. Overview</h2>
+  <p>The <code>StorageRepository</code> class acts as an <strong>abstraction layer</strong> (or Repository) for image storage. Its main goal is to unify two worlds: <strong>local storage</strong> (the server's hard drive) and <strong>cloud storage</strong> (Supabase Storage).</p>
+  <p>When you use this class, the rest of your code does not need to worry about technical details such as file path handling or network protocols; it only asks for an image to be saved, and the repository decides how and where that should happen.</p>
 
-  <h2 id="overview"><a class="anchor" href="#overview" aria-label="Link para esta seção">#</a>Overview</h2>
-  <p>Storage Menage Repository is part of the BetterAI platform. This paragraph stands in for the text coming from the source, so that spacing, line measure and the side index can be checked.</p>
+  <h2 id="2-execution-flow"><a class="anchor" href="#2-execution-flow" aria-label="Link para esta seção">#</a>2. Execution Flow</h2>
+  <p>The lifecycle of a common operation in this class follows these steps:</p>
+  <ol>
+    <li><strong>Configuration</strong>: The object is created receiving a <code>base_path</code> (where to save locally) and a <code>bucket_name</code> (where to save in the cloud).</li>
+    <li><strong>Data Preparation</strong>: When it receives a list of <code>GeneratedImage</code> objects, the class extracts the bytes and identifies the format (MIME type).</li>
+    <li><strong>Local Persistence</strong>: If the <code>local_repository</code> method is called, the class generates unique names based on the current date and time to avoid file conflicts and writes the bytes to disk.</li>
+    <li><strong>Remote Synchronization</strong>: If the <code>upload_to_supabase</code> method is called, the class internally uses the <code>StorageManager</code> to send the data to the cloud and instantly retrieves the public access link.</li>
+  </ol>
 
-  <h2 id="usage"><a class="anchor" href="#usage" aria-label="Link para esta seção">#</a>Usage</h2>
-  <p>The block below shows the typical call, with syntax highlighting:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> StorageMenageRepository
-
-client = <span class="t-f">StorageMenageRepository</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parameters"><a class="anchor" href="#parameters" aria-label="Link para esta seção">#</a>Parameters</h2>
-  <p>The table below exists to validate horizontal scrolling on narrow screens:</p>
+  <h2 id="3-methods-table"><a class="anchor" href="#3-methods-table" aria-label="Link para esta seção">#</a>3. Methods Table</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>
+    <thead><tr><th>Method</th><th>Type</th><th>Short Description</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identifier of the model to use.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limit in seconds for the response.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Returns the response in chunks.</td></tr>
+      <tr><td><code>__init__</code></td><td>Constructor</td><td>Defines the base paths and the destination bucket.</td></tr>
+      <tr><td><code>local_repository</code></td><td>Public</td><td>Saves multiple images to the local file system.</td></tr>
+      <tr><td><code>_mime_to_extension</code></td><td>Private (Helper)</td><td>Converts types such as <code>image/png</code> to the <code>.png</code> extension.</td></tr>
+      <tr><td><code>upload_to_supabase</code></td><td>Public</td><td>Sends a file to Supabase and returns its URL.</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="notes"><a class="anchor" href="#notes" aria-label="Link para esta seção">#</a>Notes</h2>
-  <p>A sample warning, to check the styling of the attention callout:</p>
-  <div class="callout" data-kind="warn"><p><strong>Development only.</strong> The values above are fictitious and must not be used in production.</p></div></div>
+  <h2 id="4-architecture-and-insights"><a class="anchor" href="#4-architecture-and-insights" aria-label="Link para esta seção">#</a>4. Architecture and Insights</h2>
+  <ul>
+    <li><strong>Repository Pattern</strong>: This class isolates the infrastructure logic. If tomorrow you decide to replace Supabase with Amazon S3, you will only need to change this file, without breaking the rest of the system.</li>
+    <li><strong>Unique Name Generation</strong>: Using <code>datetime.utcnow()</code> when saving locally guarantees that, even if two images are generated in sequence, they have distinct names, preventing accidental data overwrites.</li>
+    <li><strong>Extension Handling</strong>: The <code>_mime_to_extension</code> method acts as an integrity guardian, ensuring that only supported image types (JPEG and PNG) are processed, avoiding corrupted or unknown files.</li>
+  </ul>
+
+  <h2 id="5-class-details"><a class="anchor" href="#5-class-details" aria-label="Link para esta seção">#</a>5. Class Details</h2>
+
+  <h3 id="class-storagerepository"><a class="anchor" href="#class-storagerepository" aria-label="Link para esta seção">#</a>Class StorageRepository</h3>
+  <p><strong>Description</strong></p>
+  <p>Manages image persistence in a hybrid way. It allows images generated by the application to be stored both in local directories and in the Supabase Storage service, standardizing file access.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>base_path</code> (str): Local base directory or folder prefix in the remote storage.</li>
+    <li><code>bucket_name</code> (str): Name of the bucket configured in the Supabase console.</li>
+  </ul>
+
+  <h3 id="methods"><a class="anchor" href="#methods" aria-label="Link para esta seção">#</a>Methods</h3>
+
+  <h3 id="1-local-repository"><a class="anchor" href="#1-local-repository" aria-label="Link para esta seção">#</a>1. local_repository</h3>
+  <p><strong>Description</strong></p>
+  <p>Iterates over a list of images, generates file names based on a date/time stamp (timestamp) and saves them to the local disk.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>images</code> (List[GeneratedImage]): List of objects containing the bytes and the MIME type.</li>
+    <li><code>prefix</code> (str): Initial file name (e.g. "avatar", "post"). Default is "image".</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>List[str]</code>: A list containing the full path of each successfully saved file.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: If an image has an unmapped MIME type.</li>
+    <li><code>IOError</code>: If a permission or disk space error occurs while writing.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>repo = <span class="t-f">StorageRepository</span>(base_path=<span class="t-s">&quot;./data/exports&quot;</span>)
+paths = repo.<span class="t-f">local_repository</span>(lista_de_imagens, prefix=<span class="t-s">&quot;geracao_ia&quot;</span>)
+<span class="t-c"># Retorno: [&quot;./data/exports/geracao_ia_20240101_120000_1.jpg&quot;, ...]</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-upload-to-supabase"><a class="anchor" href="#2-upload-to-supabase" aria-label="Link para esta seção">#</a>2. upload_to_supabase</h3>
+  <p><strong>Description</strong></p>
+  <p>Bridges the application and Supabase. It sends the raw bytes to the bucket and returns the direct link for viewing.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>file_name</code> (str): Name the file will have inside the bucket.</li>
+    <li><code>byte_data</code> (bytes): The binary content of the image.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>str</code>: The public (HTTP) URL to access the file in the cloud.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ConnectionError</code>: If there is a network failure or a problem with the Supabase credentials.</li>
+    <li><code>ValueError</code>: If the file name parameters are invalid.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>repo = <span class="t-f">StorageRepository</span>(base_path=<span class="t-s">&quot;galeria&quot;</span>, bucket_name=<span class="t-s">&quot;bucket_oficial&quot;</span>)
+url_publica = repo.<span class="t-f">upload_to_supabase</span>(<span class="t-s">&quot;foto_perfil.png&quot;</span>, dados_em_bytes)
+<span class="t-f">print</span>(url_publica)
+Saída: https://projeto.supabase.co/storage/v1/object/public/bucket_oficial/galeria/foto_perfil.png</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-mime-to-extension"><a class="anchor" href="#3-mime-to-extension" aria-label="Link para esta seção">#</a>3. _mime_to_extension</h3>
+  <p><strong>Description</strong></p>
+  <p>Internal support method that translates the image's MIME type into a file extension friendly to the operating system.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>mime_type</code> (str): The MIME type (e.g. "image/jpeg").</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>str</code>: The short extension (e.g. "jpg" or "png").</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: If the MIME type is not "image/jpeg" or "image/png".</li>
+  </ul></div>
         <div class="feedback"></div>
         <p class="source">Source: <code>ipynb_contents/Internal Source Code/Storage/Storage Menage Repository.ipynb</code></p>
         <nav class="pager" aria-label="Neighboring pages"><a class="pager-link prev" href="../../../../pages/en/internal-source-code/database/sql/supabase-database.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Previous</small><span>Supabase Database</span></div></a><a class="pager-link next" href="../../../../pages/en/internal-source-code/storage/supabase/storage-menager.html"><div><small>Next</small><span>Storage Menager</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

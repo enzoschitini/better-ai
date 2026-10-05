@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Use | BetterAI Docs</title>
-<meta name="description" content="Página de exemplo para Use, usada para validar o layout.">
+<meta name="description" content="BetterAI Docs">
 <link rel="canonical" href="pages/pt/internal-source-code/utils/load-request-file/use.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,43 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copiar página</span></button>
             </div>
           </div>
-          <p class="lead">Página de exemplo para Use, usada para validar o layout.</p>
+          
           <details class="toc-inline"><summary>Nesta página</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Conteúdo de exemplo.</strong> Este texto existe só para validar o layout. Na versão final, a página é gerada a partir de <code>ipynb_contents/Internal Source Code/Utils/Load Request File/Use.md</code>.</p></div>
+        <div class="prose"><h2 id="como-usar-o-loadrequestfile"><a class="anchor" href="#como-usar-o-loadrequestfile" aria-label="Link para esta seção">#</a>Como usar o LoadRequestFile</h2>
 
-  <h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão geral</h2>
-  <p>Use faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
+  <h3 id="codigo"><a class="anchor" href="#codigo" aria-label="Link para esta seção">#</a>Código</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> fastapi <span class="t-k">import</span> FastAPI, File, UploadFile
+<span class="t-k">from</span> src.utils.load_file.load_request_file <span class="t-k">import</span> LoadRequestFile
 
-  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
-  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> Use
+app = <span class="t-f">FastAPI</span>()
 
-client = <span class="t-f">Use</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
+@app.<span class="t-f">post</span>(<span class="t-s">&quot;/upload&quot;</span>)
+<span class="t-k">async</span> <span class="t-k">def</span> <span class="t-f">upload_file</span>(file: UploadFile = <span class="t-f">File</span>(...)):
+    loader = <span class="t-f">LoadRequestFile</span>(
+        file,
+        allowed_extensions=[<span class="t-s">&quot;txt&quot;</span>, <span class="t-s">&quot;pdf&quot;</span>],
+        allowed_mimetypes=[<span class="t-s">&quot;text/plain&quot;</span>, <span class="t-s">&quot;application/pdf&quot;</span>],
+        max_size_mb=<span class="t-n">5</span>,
+    )
+    result = <span class="t-k">await</span> loader.<span class="t-f">load</span>()
 
-  <h2 id="parametros"><a class="anchor" href="#parametros" aria-label="Link para esta seção">#</a>Parâmetros</h2>
-  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
-  <div class="table-wrap"><table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
-    <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
-    </tbody>
-  </table></div>
+    file_bytes = result.bytes
+    raw_bytes = file_bytes.<span class="t-f">getvalue</span>()
 
-  <h2 id="observacoes"><a class="anchor" href="#observacoes" aria-label="Link para esta seção">#</a>Observações</h2>
-  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
-  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div></div>
+    <span class="t-c"># Exemplo de análise</span>
+    <span class="t-f">print</span>(<span class="t-f">type</span>(file_bytes))  <span class="t-c"># BytesIO</span>
+    <span class="t-f">print</span>(<span class="t-f">len</span>(raw_bytes))    <span class="t-c"># tamanho em bytes</span>
+    <span class="t-f">print</span>(raw_bytes[:<span class="t-n">100</span>])   <span class="t-c"># primeiros 100 bytes do arquivo</span>
+
+    <span class="t-k">return</span> result.<span class="t-f">to_dict</span>()</code></pre><button class="copy floating" type="button"></button></div></div>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">uvicorn</span> src.dev_tools.launch_api:app <span class="t-n">--reload</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="curl"><a class="anchor" href="#curl" aria-label="Link para esta seção">#</a>CURL</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">curl</span> <span class="t-n">-X</span> POST <span class="t-s">&quot;http://127.0.0.1:8000/upload&quot;</span> \
+  <span class="t-n">-H</span> <span class="t-s">&quot;accept: application/json&quot;</span> \
+  <span class="t-n">-H</span> <span class="t-s">&quot;Content-Type: multipart/form-data&quot;</span> \
+  <span class="t-n">-F</span> <span class="t-s">&quot;file=@caminho/do/seu/arquivo.txt&quot;</span></code></pre><button class="copy floating" type="button"></button></div></div></div>
         <div class="feedback"></div>
         <p class="source">Fonte: <code>ipynb_contents/Internal Source Code/Utils/Load Request File/Use.md</code></p>
         <nav class="pager" aria-label="Páginas vizinhas"><a class="pager-link prev" href="../../../../../pages/pt/internal-source-code/utils/load-request-file/documentation.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Anterior</small><span>Documentation</span></div></a><a class="pager-link next" href="../../../../../pages/pt/internal-source-code/utils/loader-files.html"><div><small>Próxima</small><span>Loader Files</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

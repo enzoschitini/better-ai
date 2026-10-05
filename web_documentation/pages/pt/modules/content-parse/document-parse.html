@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Document Parse | BetterAI Docs</title>
-<meta name="description" content="Página de exemplo para Document Parse, usada para validar o layout.">
+<meta name="description" content="A classe DocumentParse tem como objetivo orquestrar o pipeline completo de processamento de documentos, desde a extração do conteúdo bruto do arquivo até o salvamento dos dados processados em um banco de dados NoSQL.">
 <link rel="canonical" href="pages/pt/modules/content-parse/document-parse.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,271 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copiar página</span></button>
             </div>
           </div>
-          <p class="lead">Página de exemplo para Document Parse, usada para validar o layout.</p>
+          <p class="lead">A classe DocumentParse tem como objetivo orquestrar o pipeline completo de processamento de documentos, desde a extração do conteúdo bruto do arquivo até o salvamento dos dados processados em um banco de dados NoSQL.</p>
           <details class="toc-inline"><summary>Nesta página</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Conteúdo de exemplo.</strong> Este texto existe só para validar o layout. Na versão final, a página é gerada a partir de <code>ipynb_contents/Modules/Content Parse/Document Parse.md</code>.</p></div>
+        <div class="prose"><h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão Geral</h2>
+  <p>A classe <code>DocumentParse</code> tem como objetivo orquestrar o pipeline completo de processamento de documentos, desde a extração do conteúdo bruto do arquivo até o salvamento dos dados processados em um banco de dados NoSQL. Ela é responsável por convergir diversas etapas fundamentais para transformar arquivos digitais em dados estruturados prontos para uso, automatizando o fluxo de parsing com validações, cálculos de custo e integração com sistemas de armazenamento.</p>
+  <p>Este componente é fundamental em sistemas que precisam interpretar documentos eletrônicos (como PDFs, TXT, etc.) e extrair informações específicas conforme um esquema pré-definido. Na prática, pode ser utilizada em pipelines de machine learning, APIs de conversão de documentos, e aplicações que dependem de extração automatizada de dados.</p>
+  <p>Com esta classe, o desenvolvedor pode enviar um job contendo um arquivo e suas configurações, e receber de volta os dados estruturados do documento com custos computacionais calculados, além de ter o resultado armazenado para futuras consultas.</p>
 
-  <h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão geral</h2>
-  <p>Document Parse faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
+  <h2 id="fluxo-de-execucao"><a class="anchor" href="#fluxo-de-execucao" aria-label="Link para esta seção">#</a>Fluxo de Execução</h2>
+  <ol>
+    <li><strong>Criação da instância da classe:</strong> Inicialização com o job_id, metadata JSON, schema JSON, conteúdo do arquivo (em bytes), extensão do arquivo e configurações opcionais para parsing.</li>
+    <li><strong>Chamada do método <code>run()</code>:</strong> Este método executa todo o fluxo interno, responsável por coordenar as etapas.</li>
+    <li><strong>Carregamento e validação dos dados:</strong> O método privado <code>_load_schema_and_config()</code> desserializa os JSONs de metadata e schema, além de mesclar configurações padrão e customizadas.</li>
+    <li><strong>Extração do conteúdo do arquivo:</strong> <code>_extract_file_content()</code> utiliza o <code>FileContentExtractor</code> para obter o texto bruto do arquivo conforme sua extensão.</li>
+    <li><strong>Parsing do conteúdo extraído:</strong> <code>_parse_content()</code> invoca o <code>ContentParsingAgent</code>, que mapeia o texto extraído para a estrutura definida pelo schema.</li>
+    <li><strong>Cálculo dos custos:</strong> <code>_calculate_costs()</code> determina o custo de processamento com base no modelo de linguagem usado e tokens consumidos, convertendo os valores para moeda local.</li>
+    <li><strong>Construção da resposta:</strong> <code>_build_response()</code> cria o payload que será enviado pela API e o payload que será salvo no banco.</li>
+    <li><strong>Persistência dos resultados:</strong> <code>_save()</code> salva os dados processados no banco NoSQL configurado.</li>
+    <li><strong>Retorno:</strong> O <code>run()</code> retorna a resposta pronta para API contendo o conteúdo extraído e estruturado.</li>
+  </ol>
 
-  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
-  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> DocumentParse
-
-client = <span class="t-f">DocumentParse</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parametros"><a class="anchor" href="#parametros" aria-label="Link para esta seção">#</a>Parâmetros</h2>
-  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
+  <h2 id="tabela-de-metodos-da-classe"><a class="anchor" href="#tabela-de-metodos-da-classe" aria-label="Link para esta seção">#</a>Tabela de Métodos da Classe</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <thead><tr><th>Método</th><th>Descrição</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
+      <tr><td><code>__init__</code></td><td>Inicializa o job de parsing com dados e configurações fornecidas</td></tr>
+      <tr><td><code>run</code></td><td>Executa o pipeline completo de parsing do documento</td></tr>
+      <tr><td><code>_load_schema_and_config</code></td><td>Valida e carrega metadata, schema e configuração JSON</td></tr>
+      <tr><td><code>_extract_file_content</code></td><td>Extrai o texto bruto do arquivo usando o extractor</td></tr>
+      <tr><td><code>_parse_content</code></td><td>Roda o agente que formata o conteúdo conforme schema</td></tr>
+      <tr><td><code>_calculate_costs</code></td><td>Calcula custos de tokens usados e converte valores</td></tr>
+      <tr><td><code>_build_response</code></td><td>Monta payloads para API e banco de dados</td></tr>
+      <tr><td><code>_save</code></td><td>Persiste resultado processado no banco NoSQL</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="observacoes"><a class="anchor" href="#observacoes" aria-label="Link para esta seção">#</a>Observações</h2>
-  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
-  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div></div>
+  <h2 id="variaveis-de-ambiente"><a class="anchor" href="#variaveis-de-ambiente" aria-label="Link para esta seção">#</a>Variáveis de Ambiente</h2>
+  <p>Nenhuma variável de ambiente explícita é requerida diretamente nesta classe. A configuração padrão e informações do banco são obtidas via <code>DocumentParseConfig</code>, que pode ter sua própria gestão de ENVs (não exibida aqui).</p>
+
+  <h2 id="pontos-importantes-da-arquitetura-e-insights"><a class="anchor" href="#pontos-importantes-da-arquitetura-e-insights" aria-label="Link para esta seção">#</a>Pontos Importantes da Arquitetura e Insights</h2>
+  <ul>
+    <li><strong>Encapsulamento e separação clara de responsabilidades:</strong> A classe organiza em métodos privados cada etapa do fluxo, facilitando manutenção e testes.</li>
+    <li><strong>Uso de composição:</strong> A classe utiliza outras classes para responsabilidades específicas, como <code>FileContentExtractor</code> para extração, <code>ContentParsingAgent</code> para parsing e <code>DocumentStore</code> para persistência, seguindo o princípio da responsabilidade única.</li>
+    <li><strong>Tratamento robusto de erros:</strong> Usa exceções HTTP para validar JSONs fornecidos, garantindo que o fluxo só segue com dados válidos.</li>
+    <li><strong>Cálculo dinâmico de custos:</strong> Integra com serviços externos para cálculo do custo baseado em tokens processados e conversão cambial atual, adequado para sistemas pagos por uso.</li>
+    <li><strong>Flexibilidade na configuração:</strong> Permite configuração customizada via JSON que é mesclada com a configuração padrão para adaptar o comportamento do parsing.</li>
+  </ul>
+
+  <h2 id="descricao-da-classe-e-metodos"><a class="anchor" href="#descricao-da-classe-e-metodos" aria-label="Link para esta seção">#</a>Descrição da Classe e Métodos</h2>
+
+  <h2 id="classe-documentparse"><a class="anchor" href="#classe-documentparse" aria-label="Link para esta seção">#</a>Classe <code>DocumentParse</code></h2>
+
+  <h3 id="descricao"><a class="anchor" href="#descricao" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Classe que gerencia o processamento completo de documentos para extração de conteúdo estruturado. Recebe o conteúdo do arquivo, metadados, esquema e configurações. Executa a extração de texto, parsing segundo o schema, cálculo de custos operacionais e armazenamento do resultado processado. Fornece uma resposta pronta para uso por APIs.</p>
+
+  <h3 id="argumentos-do-construtor"><a class="anchor" href="#argumentos-do-construtor" aria-label="Link para esta seção">#</a>Argumentos do Construtor</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argumento</th><th>Tipo</th><th>Descrição</th><th>Valor Padrão</th></tr></thead>
+    <tbody>
+      <tr><td><code>job_id</code></td><td>str</td><td>Identificador único do job de processamento</td><td>-</td></tr>
+      <tr><td><code>metadata</code></td><td>dict/str JSON</td><td>Metadados associados ao documento (JSON string esperada)</td><td>-</td></tr>
+      <tr><td><code>schema</code></td><td>str</td><td>JSON string definindo o esquema dos dados esperados</td><td>-</td></tr>
+      <tr><td><code>file_bytes</code></td><td>BytesIO</td><td>Conteúdo binário do arquivo a ser processado</td><td>-</td></tr>
+      <tr><td><code>file_extension</code></td><td>str</td><td>Extensão do arquivo (exemplo: '.pdf', '.txt')</td><td>-</td></tr>
+      <tr><td><code>config</code></td><td>Optional[str]</td><td>JSON string contendo configuração customizada para parsing</td><td>None</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Inicializa o objeto <code>DocumentParse</code> com as informações essenciais para o processamento do documento, configurando parâmetros e carregando configurações padrão do sistema.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>job_id (str): Identificador do job de processamento.</li>
+    <li>metadata (dict/str): Metadados no formato JSON string.</li>
+    <li>schema (str): Schema JSON para estruturação dos dados.</li>
+    <li>file_bytes (BytesIO): Bytes do arquivo.</li>
+    <li>file_extension (str): Extensão do arquivo.</li>
+    <li>config (Optional[str]): Configuração customizada em JSON string (opcional).</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>Não retorna valor.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>document_parse = <span class="t-f">DocumentParse</span>(
+    job_id=<span class="t-s">&quot;job123&quot;</span>,
+    metadata=<span class="t-s">'{&quot;author&quot;: &quot;John Doe&quot;}'</span>,
+    schema=<span class="t-s">'{&quot;type&quot;: &quot;object&quot;, &quot;properties&quot;: {&quot;title&quot;: {&quot;type&quot;: &quot;string&quot;}}}'</span>,
+    file_bytes=<span class="t-f">BytesIO</span>(b<span class="t-s">&quot;conteudo do arquivo&quot;</span>),
+    file_extension=<span class="t-s">&quot;.txt&quot;</span>,
+    config=<span class="t-n">None</span>
+)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-run"><a class="anchor" href="#2-run" aria-label="Link para esta seção">#</a>2. <code>run</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Executa o pipeline completo de processamento do documento, da validação dos dados à extração, parsing, cálculos e armazenamento, retornando o resultado final pronto para API.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>dict: Resposta formatada para a API contendo o job_id e o conteúdo processado.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>HTTPException: em caso de JSONs inválidos nos dados fornecidos.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>response = document_parse.<span class="t-f">run</span>()
+<span class="t-f">print</span>(response)
+<span class="t-c"># Exemplo de saída:</span>
+<span class="t-c"># {</span>
+<span class="t-c">#   &quot;job_id&quot;: &quot;job123&quot;,</span>
+<span class="t-c">#   &quot;content&quot;: {...dados extraídos e formatados...}</span>
+<span class="t-c"># }</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-load-schema-and-config"><a class="anchor" href="#3-load-schema-and-config" aria-label="Link para esta seção">#</a>3. <code>_load_schema_and_config</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Realiza o parsing e validação dos JSONs de metadata, schema e configuração, fundindo configuração padrão com a customizada quando fornecida.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>Não retorna valor.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>HTTPException: se a metadata, schema ou config forem JSONs inválidos.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>document_parse.<span class="t-f">_load_schema_and_config</span>()
+<span class="t-c"># Inicializa self.metadata_data, self.schema_data e self.config_data com os valores carregados.</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-extract-file-content"><a class="anchor" href="#4-extract-file-content" aria-label="Link para esta seção">#</a>4. <code>_extract_file_content</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Usa a classe <code>FileContentExtractor</code> para extrair o conteúdo textual bruto do arquivo com base em sua extensão.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>Não retorna valor.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>document_parse.<span class="t-f">_extract_file_content</span>()
+<span class="t-f">print</span>(document_parse.result_extract)
+<span class="t-c"># Exemplo de saída:</span>
+<span class="t-c"># {'response': 'Texto extraído do arquivo'}</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="5-parse-content"><a class="anchor" href="#5-parse-content" aria-label="Link para esta seção">#</a>5. <code>_parse_content</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Executa o agente de parsing <code>ContentParsingAgent</code>, que processa o texto extraído e o estrutura conforme o schema esperado, preparando uma resposta formatada.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>Não retorna valor.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>document_parse.<span class="t-f">_parse_content</span>()
+<span class="t-f">print</span>(document_parse.agent_response)
+<span class="t-c"># Exemplo:</span>
+<span class="t-c"># {'content': {...dados estruturados...}, 'metadata': {...informações de processamento...}}</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="6-calculate-costs"><a class="anchor" href="#6-calculate-costs" aria-label="Link para esta seção">#</a>6. <code>_calculate_costs</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Calcula o custo do processamento baseado nos tokens de entrada e saída usados pelo modelo, utilizando a taxa de câmbio atual para conversão em moeda local (BRL).</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>Não retorna valor.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>document_parse.<span class="t-f">_calculate_costs</span>()
+<span class="t-f">print</span>(document_parse.input_cost, document_parse.output_cost, document_parse.rate)
+<span class="t-c"># Valores numéricos representando os custos</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="7-build-response"><a class="anchor" href="#7-build-response" aria-label="Link para esta seção">#</a>7. <code>_build_response</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Monta os payloads que serão retornados pela API e salvos no banco, consolidando conteúdo extraído e informações de custo e processo.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>Não retorna valor.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>document_parse.<span class="t-f">_build_response</span>()
+<span class="t-f">print</span>(document_parse.api_response)
+<span class="t-c"># {'job_id': 'job123', 'content': {...dados extraídos...}}</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="8-save"><a class="anchor" href="#8-save" aria-label="Link para esta seção">#</a>8. <code>_save</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Salva os dados processados no banco de dados NoSQL configurado, usando a classe <code>DocumentStore</code>.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>Não retorna valor.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>document_parse.<span class="t-f">_save</span>()
+<span class="t-c"># Dados persistidos no banco conforme configuração automática da classe</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="use"><a class="anchor" href="#use" aria-label="Link para esta seção">#</a>Use</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">if</span> __name__ == <span class="t-s">&quot;__main__&quot;</span>:
+    <span class="t-c"># Exemplo de uso</span>
+    job_id = <span class="t-s">&quot;job_123&quot;</span>
+    metadata = <span class="t-s">&quot;&quot;</span><span class="t-s">&quot;{&quot;</span>user_id<span class="t-s">&quot;: &quot;</span>user_456<span class="t-s">&quot;}&quot;</span><span class="t-s">&quot;&quot;</span>
+
+    schema = <span class="t-s">&quot;&quot;</span>&quot;
+    {
+    <span class="t-s">&quot;summary&quot;</span>: {
+        <span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>,
+        <span class="t-s">&quot;description&quot;</span>: <span class="t-s">&quot;Resumo do conteúdo do arquivo&quot;</span>
+    }
+    }
+    <span class="t-s">&quot;&quot;</span>&quot;
+    config = <span class="t-s">&quot;&quot;</span>&quot;
+    {
+    <span class="t-s">&quot;model_provider&quot;</span>: <span class="t-s">&quot;OpenAI&quot;</span>,
+    <span class="t-s">&quot;model_id&quot;</span>: <span class="t-s">&quot;gpt-4.1-mini&quot;</span>,
+    <span class="t-s">&quot;max_input_tokens&quot;</span>: <span class="t-n">1000000</span>,
+    <span class="t-s">&quot;debug_mode&quot;</span>: true,
+    <span class="t-s">&quot;instructions&quot;</span>: <span class="t-s">&quot;Extraia dados do texto&quot;</span>,
+    <span class="t-s">&quot;description&quot;</span>: <span class="t-s">&quot;Leia o texto e extraia as informações relevantes conforme o esquema definido. Retorne um JSON estruturado com os dados extraídos. Caso não encontre alguma informação, retorne null para aquele campo.&quot;</span>
+    }
+    <span class="t-s">&quot;&quot;</span>&quot;
+
+    <span class="t-k">with</span> <span class="t-f">open</span>(<span class="t-s">&quot;src\\content_parse\\module\\example.pdf&quot;</span>, <span class="t-s">&quot;rb&quot;</span>) <span class="t-k">as</span> f:
+        file_bytes = <span class="t-f">BytesIO</span>(f.<span class="t-f">read</span>())
+
+    parser = <span class="t-f">DocumentParse</span>(
+        job_id=job_id,
+        metadata=metadata,
+        schema=schema,
+        config=config,
+        file_bytes=file_bytes,
+        file_extension=<span class="t-s">&quot;pdf&quot;</span>
+    )
+
+    response = parser.<span class="t-f">run</span>()
+
+    <span class="t-f">print</span>(<span class="t-s">&quot;\nResposta do parser:&quot;</span>)
+    <span class="t-f">print</span>(json.<span class="t-f">dumps</span>(response, indent=<span class="t-n">2</span>))
+
+<span class="t-c"># python -m src.content_parse.module.document_parse</span></code></pre><button class="copy floating" type="button"></button></div></div></div>
         <div class="feedback"></div>
         <p class="source">Fonte: <code>ipynb_contents/Modules/Content Parse/Document Parse.md</code></p>
         <nav class="pager" aria-label="Páginas vizinhas"><a class="pager-link prev" href="../../../../pages/pt/modules/content-parse/content-parsing-agent/use.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Anterior</small><span>Use</span></div></a><a class="pager-link next" href="../../../../pages/pt/modules/content-parse/field-metadata-parser.html"><div><small>Próxima</small><span>Field Metadata Parser</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

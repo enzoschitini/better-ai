@@ -1,31 +1,118 @@
-<page data-lead="Pagina di esempio per Dependences, usata per validare il layout.">
-  <div class="callout" data-kind="note"><p><strong>Contenuto di esempio.</strong> Questo testo esiste solo per validare il layout. Nella versione finale la pagina è generata da <code>ipynb_contents/Getting Started/2. Dependences.ipynb</code>.</p></div>
+<page data-lead="Questo progetto utilizza un solido insieme di librerie per la costruzione di API, l'orchestrazione di agenti di IA, l'elaborazione dei dati, l'archiviazione e l'integrazione con servizi esterni.">
+  <p>Le dipendenze sono organizzate per responsabilità per facilitare manutenzione, scalabilità e comprensione dell'architettura.</p>
+  <p><strong>Progetto:</strong> <code>better-ai</code> · <strong>Versione:</strong> <code>0.1.0</code> · <strong>Python richiesto:</strong> <code>&gt;=3.12</code></p>
+  <div class="callout" data-kind="note"><p><strong>Fonte di verità:</strong> <code>pyproject.toml</code>. Installazione consigliata con <code>uv sync</code> (oppure <code>uv pip install -e .</code>).</p></div>
 
-  <h2>Panoramica</h2>
-  <p>Dependences fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
-
-  <h2>Uso</h2>
-  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
-  <pre data-lang="python"><code>
-from better_ai import Dependences
-
-client = Dependences()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parametri</h2>
-  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
+  <h2>1. Core &amp; API Infrastructure</h2>
+  <p>Responsabili della struttura dell'applicazione backend e della comunicazione HTTP.</p>
   <table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <thead><tr><th>Libreria</th><th>Versione</th><th>Descrizione</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
+      <tr><td><code>dotenv</code></td><td><code>~0.9.9</code></td><td>Gestione delle variabili d'ambiente tramite <code>.env</code></td></tr>
+      <tr><td><code>fastapi</code></td><td><code>~0.120.4</code></td><td>Framework moderno per creare API veloci in Python</td></tr>
+      <tr><td><code>uvicorn</code></td><td><code>~0.23.2</code></td><td>Server ASGI per eseguire applicazioni FastAPI</td></tr>
+      <tr><td><code>python-multipart</code></td><td><code>~0.0.20</code></td><td>Supporto al caricamento di file nelle API</td></tr>
+      <tr><td><code>requests</code></td><td><code>~2.32.5</code></td><td>Client HTTP per consumare API esterne</td></tr>
     </tbody>
   </table>
 
-  <h2>Note</h2>
-  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
-  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div>
+  <h2>2. Orchestration (LangChain Stack)</h2>
+  <p>Livello principale di intelligenza e orchestrazione degli agenti.</p>
+  <table>
+    <thead><tr><th>Libreria</th><th>Versione</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>langchain</code></td><td><code>~0.3.27</code></td><td>Framework per costruire applicazioni con LLM</td></tr>
+      <tr><td><code>langchain-community</code></td><td><code>~0.3.31</code></td><td>Integrazioni aggiuntive della community</td></tr>
+      <tr><td><code>langchain-experimental</code></td><td><code>~0.3.4</code></td><td>Funzionalità sperimentali</td></tr>
+      <tr><td><code>langchain-openai</code></td><td><code>~0.3.35</code></td><td>Integrazione con i modelli di OpenAI</td></tr>
+      <tr><td><code>langchain-google-genai</code></td><td><code>~2.1.12</code></td><td>Integrazione con i modelli Google Gemini</td></tr>
+      <tr><td><code>langchain-groq</code></td><td><code>~0.3.8</code></td><td>Integrazione con i modelli Groq (alte prestazioni)</td></tr>
+      <tr><td><code>langchain-pinecone</code></td><td><code>~0.2.13</code></td><td>Integrazione con il database vettoriale Pinecone</td></tr>
+      <tr><td><code>langchain-text-splitters</code></td><td><code>&gt;=0.3.11</code></td><td>Strategie di chunking del testo per pipeline RAG</td></tr>
+      <tr><td><code>agno</code></td><td><code>~2.5.8</code></td><td>Framework di agenti (memoria, tool, team di agenti)</td></tr>
+    </tbody>
+  </table>
+
+  <h2>3. AI Models &amp; SDKs</h2>
+  <p>SDK nativi per l'uso diretto dei modelli, utili quando una funzionalità non è coperta da LangChain.</p>
+  <table>
+    <thead><tr><th>Libreria</th><th>Versione</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>google-genai</code></td><td><code>~1.52.0</code></td><td>SDK ufficiale per l'uso dei modelli Gemini</td></tr>
+      <tr><td><code>anthropic</code></td><td><code>&gt;=0.105.2</code></td><td>SDK ufficiale di Anthropic (modelli Claude)</td></tr>
+      <tr><td><code>groq</code></td><td><code>~0.37.1</code></td><td>SDK ufficiale di Groq per inferenza a bassa latenza</td></tr>
+    </tbody>
+  </table>
+
+  <h2>4. Data Persistence &amp; Memory</h2>
+  <p>Livello di archiviazione dei dati strutturati e vettoriali.</p>
+  <table>
+    <thead><tr><th>Libreria</th><th>Versione</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>pinecone</code></td><td><code>~7.3.0</code></td><td>Database vettoriale per embedding</td></tr>
+      <tr><td><code>faiss-cpu</code></td><td><code>&gt;=1.14.3</code></td><td>Indice vettoriale locale (in-process), senza dipendenza da servizi esterni</td></tr>
+      <tr><td><code>pymongo</code></td><td><code>~4.15.3</code></td><td>Client MongoDB (NoSQL)</td></tr>
+      <tr><td><code>supabase</code></td><td><code>~2.27.3</code></td><td>Backend as a Service con Postgres + Auth</td></tr>
+      <tr><td><code>psycopg2</code></td><td><code>&gt;=2.9.11</code></td><td>Driver PostgreSQL (compilato dal codice sorgente)</td></tr>
+      <tr><td><code>psycopg2-binary</code></td><td><code>&gt;=2.9.11</code></td><td>Versione binaria precompilata del driver PostgreSQL</td></tr>
+    </tbody>
+  </table>
+
+  <h2>5. Document Processing &amp; RAG</h2>
+  <p>Estrazione e gestione di documenti per alimentare la base di conoscenza.</p>
+  <table>
+    <thead><tr><th>Libreria</th><th>Versione</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>pymupdf</code></td><td><code>~1.26.7</code></td><td>Lettura ed estrazione di PDF (alte prestazioni)</td></tr>
+      <tr><td><code>pypdf</code></td><td><code>~6.2.0</code></td><td>Gestione di file PDF</td></tr>
+      <tr><td><code>python-docx</code></td><td><code>~1.2.0</code></td><td>Lettura e scrittura di file Word</td></tr>
+      <tr><td><code>python-pptx</code></td><td><code>~1.0.2</code></td><td>Gestione di file PowerPoint</td></tr>
+    </tbody>
+  </table>
+
+  <h2>6. Data Analysis &amp; Formatting</h2>
+  <p>Analisi, trasformazione e visualizzazione dei dati.</p>
+  <table>
+    <thead><tr><th>Libreria</th><th>Versione</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>pandas</code></td><td><code>~2.3.3</code></td><td>Manipolazione e analisi dei dati</td></tr>
+      <tr><td><code>pandasai</code></td><td><code>&gt;=2.0.24</code></td><td>Interrogazione di DataFrame in linguaggio naturale tramite LLM</td></tr>
+      <tr><td><code>openpyxl</code></td><td><code>~3.1.5</code></td><td>Lettura/scrittura di file Excel</td></tr>
+      <tr><td><code>tabulate</code></td><td><code>~0.9.0</code></td><td>Formattazione di tabelle in testo</td></tr>
+      <tr><td><code>matplotlib</code></td><td><code>~3.10.8</code></td><td>Visualizzazione dei dati</td></tr>
+      <tr><td><code>seaborn</code></td><td><code>~0.13.2</code></td><td>Visualizzazioni statistiche basate su matplotlib</td></tr>
+    </tbody>
+  </table>
+
+  <h2>7. External Tools &amp; Integrations</h2>
+  <p>Strumenti di ricerca e API di terze parti utilizzati dagli agenti.</p>
+  <table>
+    <thead><tr><th>Libreria</th><th>Versione</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>wikipedia</code></td><td><code>~1.4.0</code></td><td>Accesso ai dati di Wikipedia</td></tr>
+      <tr><td><code>tavily</code></td><td><code>&gt;=1.1.0</code></td><td>API di ricerca ottimizzata per LLM</td></tr>
+      <tr><td><code>yfinance</code></td><td><code>&gt;=1.2.0</code></td><td>Dati finanziari di Yahoo Finance</td></tr>
+    </tbody>
+  </table>
+
+  <h2>8. Internal Services &amp; Utilities</h2>
+  <p>Interfaccia, test e utility di supporto allo sviluppo.</p>
+  <table>
+    <thead><tr><th>Libreria</th><th>Versione</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>streamlit</code></td><td><code>&gt;=1.56.0</code></td><td>Interfaccia web per le demo e i pannelli della piattaforma</td></tr>
+      <tr><td><code>pytest</code></td><td><code>&gt;=9.0.2</code></td><td>Framework per test automatizzati</td></tr>
+      <tr><td><code>inflect</code></td><td><code>~7.5.0</code></td><td>Pluralizzazione e normalizzazione di termini in inglese</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Convenzioni di versionamento</h2>
+  <table>
+    <thead><tr><th>Operatore</th><th>Significato</th><th>Esempio</th></tr></thead>
+    <tbody>
+      <tr><td><code>~=X.Y.Z</code></td><td>Consente aggiornamenti di patch, fissa major e minor</td><td><code>~=0.3.27</code> → <code>&gt;=0.3.27, &lt;0.4.0</code></td></tr>
+      <tr><td><code>&gt;=X.Y.Z</code></td><td>Accetta qualsiasi versione uguale o superiore</td><td><code>&gt;=1.56.0</code></td></tr>
+    </tbody>
+  </table>
+  <p>Le librerie con <code>~=</code> sono quelle che incidono direttamente sul comportamento degli agenti e delle pipeline RAG — mantenerle fissate per minor evita rotture silenziose delle API. Quelle contrassegnate con <code>&gt;=</code> sono periferiche o abbastanza stabili da seguire le versioni più recenti.</p>
 </page>

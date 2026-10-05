@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Supabase Database | BetterAI Docs</title>
-<meta name="description" content="Sample page for Supabase Database, used to validate the layout.">
+<meta name="description" content="This documentation details the architecture and operation of the data persistence engine built to interact with Supabase, using a hybrid approach between the REST API (via the official client) and direct PostgreSQL access (via psycopg2).">
 <link rel="canonical" href="pages/en/internal-source-code/database/sql/supabase-database.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,112 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copy page</span></button>
             </div>
           </div>
-          <p class="lead">Sample page for Supabase Database, used to validate the layout.</p>
+          <p class="lead">This documentation details the architecture and operation of the data persistence engine built to interact with Supabase, using a hybrid approach between the REST API (via the official client) and direct PostgreSQL access (via psycopg2).</p>
           <details class="toc-inline"><summary>On this page</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Placeholder content.</strong> This text exists only to validate the layout. In the final version the page is generated from <code>ipynb_contents/Internal Source Code/Database/SQL/Supabase Database.ipynb</code>.</p></div>
+        <div class="prose"><h2 id="overview"><a class="anchor" href="#overview" aria-label="Link para esta seção">#</a>Overview</h2>
+  <p>The code implements a database abstraction layer split into two main responsibilities: <strong>Connection Management</strong> and the <strong>Query Engine</strong>.</p>
+  <p>Unlike approaches that rely only on high-level libraries, this project focuses on performance and robust transactional control, allowing pure SQL executions, JSONB handling and bulk operations to be performed safely.</p>
 
-  <h2 id="overview"><a class="anchor" href="#overview" aria-label="Link para esta seção">#</a>Overview</h2>
-  <p>Supabase Database is part of the BetterAI platform. This paragraph stands in for the text coming from the source, so that spacing, line measure and the side index can be checked.</p>
+  <h2 id="execution-flow"><a class="anchor" href="#execution-flow" aria-label="Link para esta seção">#</a>Execution Flow</h2>
+  <p>The flow of a common operation follows these steps:</p>
+  <ol>
+    <li><strong>Initialization:</strong> <code>SupabaseConnection</code> loads the environment variables and validates the credentials.</li>
+    <li><strong>Lazy Loading:</strong> The connection to the PostgreSQL database is only opened at the moment the first query is requested.</li>
+    <li><strong>Dependency Injection:</strong> <code>SupabaseQueryEngineer</code> receives the connection method.</li>
+    <li><strong>Execution &amp; Context:</strong> The query engine opens a cursor, runs the SQL and, on success, performs the <code>commit</code>.</li>
+    <li><strong>Error Handling:</strong> If something fails, an automatic <code>rollback</code> is triggered to preserve data integrity.</li>
+  </ol>
 
-  <h2 id="usage"><a class="anchor" href="#usage" aria-label="Link para esta seção">#</a>Usage</h2>
-  <p>The block below shows the typical call, with syntax highlighting:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> SupabaseDatabase
-
-client = <span class="t-f">SupabaseDatabase</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parameters"><a class="anchor" href="#parameters" aria-label="Link para esta seção">#</a>Parameters</h2>
-  <p>The table below exists to validate horizontal scrolling on narrow screens:</p>
+  <h2 id="methods-table"><a class="anchor" href="#methods-table" aria-label="Link para esta seção">#</a>Methods Table</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>
+    <thead><tr><th>Class</th><th>Method</th><th>Brief Description</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identifier of the model to use.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limit in seconds for the response.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Returns the response in chunks.</td></tr>
+      <tr><td><strong>SupabaseConnection</strong></td><td><code>get_connection()</code></td><td>Returns an active connection, reconnecting if necessary.</td></tr>
+      <tr><td><strong>SupabaseConnection</strong></td><td><code>close()</code></td><td>Closes the physical connection to the database.</td></tr>
+      <tr><td><strong>SupabaseQueryEngineer</strong></td><td><code>select()</code></td><td>Runs read queries and returns a list of dictionaries.</td></tr>
+      <tr><td><strong>SupabaseQueryEngineer</strong></td><td><code>execute()</code></td><td>Runs write commands (Insert, Update, Delete).</td></tr>
+      <tr><td><strong>SupabaseQueryEngineer</strong></td><td><code>execute_many()</code></td><td>Runs the same SQL command for a list of multiple parameters.</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="notes"><a class="anchor" href="#notes" aria-label="Link para esta seção">#</a>Notes</h2>
-  <p>A sample warning, to check the styling of the attention callout:</p>
-  <div class="callout" data-kind="warn"><p><strong>Development only.</strong> The values above are fictitious and must not be used in production.</p></div></div>
+  <h2 id="architecture-and-insights"><a class="anchor" href="#architecture-and-insights" aria-label="Link para esta seção">#</a>Architecture and Insights</h2>
+  <ul>
+    <li><strong>Resilience (Auto-reconnect):</strong> The <code>get_connection</code> method sends a "ping" (<code>SELECT 1</code>) to the database. This avoids common "broken pipe" errors in serverless environments or when the connection stays idle for too long.</li>
+    <li><strong>Typed Results:</strong> The use of <code>RealDictCursor</code> turns database rows into native Python dictionaries, making them easier to use in APIs and data handling.</li>
+    <li><strong>Security (SQL Injection):</strong> The system uses parameterization (<code>%s</code>), delegating data sanitization to the driver, which prevents SQL injection attacks.</li>
+  </ul>
+
+  <h2 id="detailed-class-documentation"><a class="anchor" href="#detailed-class-documentation" aria-label="Link para esta seção">#</a>Detailed Class Documentation</h2>
+
+  <h2 id="supabaseconnection-class"><a class="anchor" href="#supabaseconnection-class" aria-label="Link para esta seção">#</a>SupabaseConnection Class</h2>
+  <p><strong>Description</strong></p>
+  <p>Manages the lifecycle of the connection to the Supabase ecosystem. It validates that the environment is configured correctly and provides an interface to obtain stable PostgreSQL connections over the TCP protocol.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>Has no initialization arguments (reads directly from <code>.env</code>).</li>
+  </ul>
+
+  <h2 id="methods"><a class="anchor" href="#methods" aria-label="Link para esta seção">#</a>Methods</h2>
+  <p><strong>1. get_connection</strong></p>
+  <ul>
+    <li><strong>Description:</strong> Provides a <code>psycopg2</code> connection instance. Implements the Lazy Initialization pattern.</li>
+    <li><strong>Arguments:</strong> None.</li>
+    <li><strong>Returns:</strong> <code>psycopg2.extensions.connection</code></li>
+    <li><strong>Raises:</strong> <code>Exception</code> if the credentials are incorrect or the database is unreachable.</li>
+    <li><strong>Examples:</strong> <code>conn = connection.get_connection()</code></li>
+  </ul>
+
+  <h2 id="supabasequeryengineer-class"><a class="anchor" href="#supabasequeryengineer-class" aria-label="Link para esta seção">#</a>SupabaseQueryEngineer Class</h2>
+  <p><strong>Description</strong></p>
+  <p>The "brain" of the database operations. This class isolates the complexity of SQL, managing cursors and transactions (Commit/Rollback) transparently for the developer.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>get_connection</code> (Callable): A function or method that returns an active connection.</li>
+  </ul>
+
+  <h2 id="methods-2"><a class="anchor" href="#methods-2" aria-label="Link para esta seção">#</a>Methods</h2>
+  <p><strong>1. select</strong></p>
+  <ul>
+    <li><strong>Description:</strong> Runs data search queries.</li>
+    <li><strong>Arguments:</strong>
+      <ul>
+        <li><code>query</code> (str): SQL SELECT command.</li>
+        <li><code>params</code> (tuple, optional): Values to replace the <code>%s</code> placeholders.</li>
+      </ul>
+    </li>
+    <li><strong>Returns:</strong> <code>List[Dict[str, Any]]</code> - A list where each item is a table row.</li>
+    <li><strong>Raises:</strong> <code>Exception</code> in case of an SQL syntax error or connection failure.</li>
+    <li><strong>Examples:</strong> <code>engine.select("SELECT * FROM users WHERE name = %s", ("Enzo",))</code></li>
+  </ul>
+
+  <p><strong>2. execute</strong></p>
+  <ul>
+    <li><strong>Description:</strong> Runs commands that change the state of the database (DDL or DML).</li>
+    <li><strong>Arguments:</strong>
+      <ul>
+        <li><code>query</code> (str): SQL command (INSERT, UPDATE, DELETE, CREATE, etc).</li>
+        <li><code>params</code> (tuple, optional): Query parameters.</li>
+      </ul>
+    </li>
+    <li><strong>Returns:</strong> <code>None</code></li>
+    <li><strong>Raises:</strong> <code>Exception</code> with automatic rollback in case of failure.</li>
+    <li><strong>Examples:</strong> <code>engine.execute("UPDATE users SET name = %s", ("Novo Nome",))</code></li>
+  </ul>
+
+  <p><strong>3. execute_many</strong></p>
+  <ul>
+    <li><strong>Description:</strong> Optimizes the insertion or update of large volumes of data.</li>
+    <li><strong>Arguments:</strong>
+      <ul>
+        <li><code>query</code> (str): Parameterized SQL command.</li>
+        <li><code>params_list</code> (List[tuple]): List containing the parameter tuples for each repetition.</li>
+      </ul>
+    </li>
+    <li><strong>Returns:</strong> <code>None</code></li>
+    <li><strong>Raises:</strong> <code>Exception</code> if any of the operations fails (cancels the entire batch).</li>
+    <li><strong>Examples:</strong> <code>engine.execute_many("INSERT INTO logs (msg) VALUES (%s)", [("Erro 1",), ("Erro 2",)])</code></li>
+  </ul></div>
         <div class="feedback"></div>
         <p class="source">Source: <code>ipynb_contents/Internal Source Code/Database/SQL/Supabase Database.ipynb</code></p>
         <nav class="pager" aria-label="Neighboring pages"><a class="pager-link prev" href="../../../../../pages/en/internal-source-code/database/no-sql/router.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Previous</small><span>Router</span></div></a><a class="pager-link next" href="../../../../../pages/en/internal-source-code/storage/storage-menage-repository.html"><div><small>Next</small><span>Storage Menage Repository</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

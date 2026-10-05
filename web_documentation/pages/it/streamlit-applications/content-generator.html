@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Content Generator | BetterAI Docs</title>
-<meta name="description" content="Pagina di esempio per Content Generator, usata per validare il layout.">
+<meta name="description" content="Contenuti con la voce del brand, in pochi secondi. Un'IA addestrata con i cataloghi di OBoticário che scrive post allineati all'identità — senza uscire dal tono, senza inventare.">
 <link rel="canonical" href="pages/it/streamlit-applications/content-generator.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,183 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copia pagina</span></button>
             </div>
           </div>
-          <p class="lead">Pagina di esempio per Content Generator, usata per validare il layout.</p>
+          <p class="lead">Contenuti con la voce del brand, in pochi secondi. Un'IA addestrata con i cataloghi di OBoticário che scrive post allineati all'identità — senza uscire dal tono, senza inventare.</p>
           <details class="toc-inline"><summary>In questa pagina</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Contenuto di esempio.</strong> Questo testo esiste solo per validare il layout. Nella versione finale la pagina è generata da <code>ipynb_contents/Streamlit Applications/Content Generator.ipynb</code>.</p></div>
+        <div class="prose"><p>Il <strong>Generatore di Contenuti</strong> è un'applicazione di IA, costruita in <strong>Streamlit</strong>, che produce contenuti testuali allineati al brand con agilità e coerenza. A differenza di una chat generica, è collegato a una <strong>knowledge base su Pinecone</strong>, dove sono stati inseriti come embeddings diversi documenti e cataloghi del <strong>Gruppo O Boticário</strong>. In questo modo, ogni testo generato è <strong>fondato sull'identità reale del brand</strong> — l'IA comprende lo standard e lo mantiene in ogni post che scrive.</p>
+  <p>Descrivi l'<strong>obiettivo</strong>, aggiungi i <strong>requisiti</strong>, regola le <strong>configurazioni</strong> e fai una <strong>richiesta</strong>. In pochi secondi, ricevi più post pronti da pubblicare.</p>
+  <figure class="frame"><video controls preload="metadata" src="../../../assets/video/content_agent.mp4"></video><div class="frame-missing" hidden><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg><span>@assets/video/content_agent.mp4</span></div></figure>
 
-  <h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
-  <p>Content Generator fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
+  <h2 id="in-evidenza"><a class="anchor" href="#in-evidenza" aria-label="Link para esta seção">#</a>✨ In Evidenza</h2>
+  <ul>
+    <li>🧠 <strong>Fondato sul brand (RAG + Pinecone)</strong> — cerca brani reali dai cataloghi prima di scrivere, riducendo le allucinazioni e mantenendo l'identità.</li>
+    <li>🎛️ <strong>Personalizzazione profonda</strong> — obiettivo, requisiti extra, quantità, profondità del contesto, dimensione, modello LLM e lingua.</li>
+    <li>📦 <strong>Più post per richiesta</strong> — genera un lotto di varianti in una sola volta.</li>
+    <li>⚡ <strong>Veloce e senza codice</strong> — dal briefing al contenuto in pochi clic.</li>
+  </ul>
 
-  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
-  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> ContentGenerator
-
-client = <span class="t-f">ContentGenerator</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parametri"><a class="anchor" href="#parametri" aria-label="Link para esta seção">#</a>Parametri</h2>
-  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
+  <h2 id="link-utili"><a class="anchor" href="#link-utili" aria-label="Link para esta seção">#</a>Link utili</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <thead><tr><th>Titolo</th><th>Link</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
+      <tr><td>💻 <strong>Codice sorgente (GitHub)</strong></td><td><a href="https://github.com/enzoschitini/better-ai/blob/production/src/web_applications/applications/content_generator.py">Vai al repository</a></td></tr>
+      <tr><td>▶️ <strong>Come eseguire il progetto</strong></td><td><a href="../getting-started/quickstart.html">Guida all'installazione</a></td></tr>
+      <tr><td>⌨️ <strong>Comando del terminale</strong></td><td><code>streamlit run web_app.py</code></td></tr>
+      <tr><td>🌐 <strong>Prova subito (Streamlit)</strong></td><td><a href="http://localhost:8501/content_generator">http://localhost:8501/content_generator</a></td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="note"><a class="anchor" href="#note" aria-label="Link para esta seção">#</a>Note</h2>
-  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
-  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div></div>
+  <h2 id="contesto"><a class="anchor" href="#contesto" aria-label="Link para esta seção">#</a>Contesto</h2>
+  <p>I team di marketing devono produrre molti contenuti, in fretta — ma <strong>con la voce giusta del brand</strong>. Gli strumenti di IA generici risolvono la velocità, ma scivolano sull'essenziale: escono dal tono, ignorano il portfolio reale e a volte inventano informazioni.</p>
+  <p>Il <strong>Generatore di Contenuti</strong> nasce per colmare questa lacuna. Ancorando la generazione a una <strong>base vettoriale (Pinecone)</strong> alimentata con i cataloghi di OBoticário, unisce il meglio dei due mondi: l'<strong>agilità</strong> di un LLM con la <strong>coerenza</strong> di chi conosce davvero il brand. Il risultato è un contenuto scalabile, coerente e pronto da pubblicare.</p>
+
+  <h2 id="come-funziona"><a class="anchor" href="#come-funziona" aria-label="Link para esta seção">#</a>Come funziona</h2>
+  <p>Il progetto segue un'architettura <strong>RAG (Retrieval-Augmented Generation)</strong>:</p>
+  <figure class="frame"><img src="../../../assets/img/content_generator_schema.png" alt=""><div class="frame-missing" hidden><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg><span>@assets/img/content_generator_schema.png</span></div></figure>
+  <ol>
+    <li><strong>Indicizzazione</strong> — i documenti di OBoticário vengono trasformati in embeddings e archiviati in Pinecone.</li>
+    <li><strong>Recupero</strong> — a ogni richiesta, il sistema cerca i brani più rilevanti della base (controllato da <em>Massimo di risultati</em>).</li>
+    <li><strong>Generazione</strong> — l'LLM scrive i post usando questo contesto + le tue configurazioni, rispettando tono, dimensione e lingua.</li>
+  </ol>
+
+  <h2 id="risorse-e-personalizzazione"><a class="anchor" href="#risorse-e-personalizzazione" aria-label="Link para esta seção">#</a>🎚️ Risorse e personalizzazione</h2>
+  <p>Tutto è controllabile direttamente dalla barra laterale:</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Configurazione</th><th>Cosa fa</th></tr></thead>
+    <tbody>
+      <tr><td>🗂️ <strong>Base di Dati</strong></td><td>Sceglie la knowledge base usata come contesto (es.: <em>Oboticário</em>).</td></tr>
+      <tr><td>🎯 <strong>Obiettivo del Contenuto</strong></td><td>Definisce lo scopo del testo (es.: <em>articoli di blog per attrarre lead in cima al funnel, con tono informativo</em>).</td></tr>
+      <tr><td>➕ <strong>Requisiti Extra</strong></td><td>Istruzioni e vincoli specifici (es.: <em>evitare il gergo, includere una CTA, usare sottotitoli, non citare i concorrenti</em>).</td></tr>
+      <tr><td>🔢 <strong>Quantità di contenuti</strong></td><td>Numero di post generati per richiesta (1–5).</td></tr>
+      <tr><td>📚 <strong>Massimo di risultati (contesto)</strong></td><td>Quanti brani della base alimentano la generazione (profondità del RAG).</td></tr>
+      <tr><td>📏 <strong>Fascia di lunghezza</strong></td><td>Intervallo di lunghezza del testo (es.: 700–1200).</td></tr>
+      <tr><td>🤖 <strong>Modello di Linguaggio (LLM)</strong></td><td>Selezione del modello (es.: <code>gpt-4.1-mini</code>).</td></tr>
+      <tr><td>🌐 <strong>Lingua</strong></td><td>Lingua di output del contenuto.</td></tr>
+    </tbody>
+  </table></div>
+  <p>È questa combinazione di controlli che dà ai post un'<strong>elevata personalizzazione</strong> — dal pubblico di riferimento alla lunghezza, dal tono al modello usato.</p>
+
+  <h2 id="casi-d-uso"><a class="anchor" href="#casi-d-uso" aria-label="Link para esta seção">#</a>Casi d'uso</h2>
+
+  <h2 id="1-campagne-stagionali"><a class="anchor" href="#1-campagne-stagionali" aria-label="Link para esta seção">#</a>1. Campagne stagionali</h2>
+
+  <h2 id="quero-uma-campanha-divulgando-o-kit-de-maquiagem-para-dia-das-maes-2-post-generati-in-pochi-secondi"><a class="anchor" href="#quero-uma-campanha-divulgando-o-kit-de-maquiagem-para-dia-das-maes-2-post-generati-in-pochi-secondi" aria-label="Link para esta seção">#</a>"Quero uma campanha divulgando o kit de maquiagem para dia das mães" → 2 post generati in pochi secondi.</h2>
+  <h3 id="surpreenda-no-dia-das-maes-com-kits-de-maquiagem-especiais"><a class="anchor" href="#surpreenda-no-dia-das-maes-com-kits-de-maquiagem-especiais" aria-label="Link para esta seção">#</a>Surpreenda no Dia das Mães com Kits de Maquiagem Especiais</h3>
+  <p>Conheça os kits de maquiagem ideais para presentear suas clientes no Dia das Mães e valorize beleza, cuidado e exclusividade em uma data tão especial.</p>
+  <p>O Dia das Mães é a ocasião perfeita para oferecer presentes que transmitam carinho e cuidado, valorizando a beleza única de cada mulher. Pensando nisso, apresentamos nossos kits exclusivos de maquiagem, desenvolvidos especialmente para esse momento. Entre as opções, destacam-se a Maleta de Maquiagem e o Kit de Pincéis Silver Essentials, criando combinações práticas e sofisticadas que facilitam o dia a dia. Além disso, toda a linha SOY Vegan e de edição limitada traz alta pigmentação, textura aveludada e acabamento luxuoso, evidenciando a personalidade e o estilo de cada mãe. A embalagem exclusiva, com detalhes sofisticados e necessaire prática, torna o presente ainda mais especial. Invista em kits que unem qualidade, beleza e cuidado, proporcionando uma experiência única para as pequenas e médias empreendedoras que desejam presentear com significado e estilo nesta data tão marcante.</p>
+  <p><strong>Call to Action:</strong> Descubra os kits de maquiagem perfeitos para o Dia das Mães e encante suas clientes com presentes que fazem a diferença. Acesse nosso site e aproveite condições especiais!</p>
+  <h3 id="hashtags"><a class="anchor" href="#hashtags" aria-label="Link para esta seção">#</a>Hashtags</h3>
+  <div class="callout" data-kind="note"><p>#DiaDasMães #Maquiagem #PresentesEspeciais #CuidadosComAMãe #BelezaVegana #KitsDeMaquiagem #MakeB #Empreendedoras #BelezaComCarinho</p></div>
+  <h3 id="sources-used"><a class="anchor" href="#sources-used" aria-label="Link para esta seção">#</a>Sources Used</h3>
+  <ul>
+    <li>Kit de pincéis Silver Essentials com pincéis variados e necessaire por R$159,90.</li>
+    <li>Maleta de Maquiagem, edição limitada vegana com alta pigmentação e acabamento sofisticado.</li>
+    <li>Kits com embalagem exclusiva e necessaire, com detalhes em alto relevo.</li>
+    <li>Produtos veganos, com textura confortável e acabamento natural e aveludado.</li>
+    <li>Foco no cuidado e na valorização personalizadas para o Dia das Mães.</li>
+  </ul>
+  <h3 id="kit-de-maquiagem-para-o-dia-das-maes-como-escolher-o-presente-ideal"><a class="anchor" href="#kit-de-maquiagem-para-o-dia-das-maes-como-escolher-o-presente-ideal" aria-label="Link para esta seção">#</a>Kit de Maquiagem para o Dia das Mães: Como Escolher o Presente Ideal</h3>
+  <p>Descubra dicas práticas para escolher um kit de maquiagem perfeito para o Dia das Mães, garantindo um presente que une beleza e cuidado.</p>
+  <p>Imagine que você quer presentear sua mãe com algo especial e útil neste Dia das Mães, mas não sabe por onde começar. Um kit de maquiagem pode ser a resposta ideal! Kits como o da linha Make B. oferecem produtos essenciais como máscara para cílios e delineadores, perfeitos para quem ama realçar a beleza natural de forma prática. Alguns kits acompanham necessaires charmosas, facilitando o armazenamento e o transporte dos produtos. Além disso, vários itens são veganos e trazem embalagens elegantes, mostrando cuidado com o meio ambiente e sofisticação. Para quem quer opções mais completas, existem paletas de sombras com diversas cores ou maletas que organizam tudo em um só lugar, facilitando a rotina de beleza. Aproveite as promoções que oferecem economia significativa e escolha o kit que mais combina com o estilo da sua mãe. Assim, você presenteia com carinho, qualidade e praticidade, tornando o dia dela ainda mais especial.</p>
+  <p><strong>Call to Action:</strong> Explore agora os kits de maquiagem especiais para o Dia das Mães e escolha o presente perfeito!</p>
+  <h3 id="hashtags-2"><a class="anchor" href="#hashtags-2" aria-label="Link para esta seção">#</a>Hashtags</h3>
+  <div class="callout" data-kind="note"><p>#DiaDasMães #KitDeMaquiagem #PresentesCriativos #MakeB #CuidadosDeBeleza #BelezaVegana #MaquiagemPrática #Promoção #Presentes2024 #DicasDePresente</p></div>
+  <h3 id="sources-used-2"><a class="anchor" href="#sources-used-2" aria-label="Link para esta seção">#</a>Sources Used</h3>
+  <ul>
+    <li>Kit Make B. com máscara de cílios e delineador, embalagem com nécessaire, valor e detalhes do produto.</li>
+    <li>Paletas de sombras veganas com acabamento natural e iluminado, embalagem sofisticada com espelho.</li>
+    <li>Maleta de maquiagem com descontos especiais e tamanho compacto.</li>
+    <li>Informações sobre kits de maquiagem com ingredientes veganos e acabamento aveludado.</li>
+    <li>Detalhes sobre promoções e embalagens exclusivas para presentes de Dia das Mães.</li>
+  </ul>
+
+  <h2 id="vale-sobre-as-maquiagens-veganas-da-oboticario-2-post-generati-in-pochi-secondi"><a class="anchor" href="#vale-sobre-as-maquiagens-veganas-da-oboticario-2-post-generati-in-pochi-secondi" aria-label="Link para esta seção">#</a>"Vale sobre as maquiagens veganas da OBoticário" → 2 post generati in pochi secondi.</h2>
+  <h3 id="maquiagem-que-faz-bem-para-voce-e-para-o-planeta-descubra-as-linhas-veganas-do-boticario"><a class="anchor" href="#maquiagem-que-faz-bem-para-voce-e-para-o-planeta-descubra-as-linhas-veganas-do-boticario" aria-label="Link para esta seção">#</a>Maquiagem que faz bem para você e para o planeta: descubra as linhas veganas do Boticário!</h3>
+  <p>As linhas 100% veganas do Boticário provam que é possível se maquiar com consciência sem abrir mão de cor, cobertura e durabilidade. Vem ver o que eu tenho amado!</p>
+  <p>Beleza com propósito é o que eu mais busco nos produtos que uso no dia a dia — e foi exatamente isso que encontrei nas linhas 100% veganas do Boticário. Desde que comecei a testar, não consigo mais imaginar minha nécessaire sem eles!</p>
+  <p>A linha Intense é simplesmente completa: a Base Líquida Efeito Mate controla o brilho, protege da luz azul e ainda tem acabamento HD impecável. O Corretivo Líquido disfarça olheiras e imperfeições com alta cobertura, e o melhor: é 100% vegano! Para os olhos, a Máscara para Cílios Bye Bye Panda promete não borrar e garante um volume absurdo. Já o Lápis para Olhos tem traço fino, vitamina E e é à prova d'água.</p>
+  <p>Para as sobrancelhas, a linha Make B. traz a Caneta Microblading e a Máscara Gel Brow Lamination, ambas veganas e com resultado profissional em casa. O Blush em Pó e a Palette de Blush completam o look com cor e sofisticação.</p>
+  <p>E nos lábios? O Batom Cremoso Intense tem até 4 horas de duração, FPS 25 e ultrapigmentação. Existe combinação melhor? Produtos que cuidam de você, respeitam os animais e ainda entregam resultado de verdade. Isso é o Boticário vegano para mim!</p>
+  <p><strong>Call to Action:</strong> Corre para o site ou loja mais próxima do Boticário e garanta os seus produtos veganos favoritos! Conta aqui nos comentários qual você quer testar primeiro. 💚</p>
+  <h3 id="hashtags-3"><a class="anchor" href="#hashtags-3" aria-label="Link para esta seção">#</a>Hashtags</h3>
+  <div class="callout" data-kind="note"><p>#Boticário #MaquiagemVegana #VeganoBoticário #Intense #MakeB #BelezaComPropósito #MaquiagemConsciente #CrueltyFree #LinhaVegana #BelezaSustentável</p></div>
+  <h3 id="sources-used-3"><a class="anchor" href="#sources-used-3" aria-label="Link para esta seção">#</a>Sources Used</h3>
+  <ul>
+    <li>LINHA 100% VEGANA - Intense: Base Líquida Efeito Mate, Corretivo Líquido, Máscara para Cílios Bye Bye Panda, Lápis para Olhos com Vitamina E e à prova d'água</li>
+    <li>LINHA 100% VEGANA - Make B.: Up Brow Caneta Microblading, Máscara Gel para Sobrancelhas Brow Lamination, Blush em Pó, Palette de Blush, Corretivo Líquido Effect</li>
+    <li>Batom Cremoso Intense: cor intensa, durabilidade de até 4 horas, FPS 25, ultrapigmentação</li>
+    <li>Máscara para Cílios Bye Bye Panda: não borra, volume e definição</li>
+    <li>Base Líquida Efeito Mate Intense: controla brilho e oleosidade, protege da luz azul, anti-imperfeições, acabamento HD</li>
+  </ul>
+  <h3 id="maquiagem-vegana-do-boticario-tudo-que-voce-precisa-saber-antes-de-comprar"><a class="anchor" href="#maquiagem-vegana-do-boticario-tudo-que-voce-precisa-saber-antes-de-comprar" aria-label="Link para esta seção">#</a>Maquiagem Vegana do Boticário: Tudo que Você Precisa Saber Antes de Comprar</h3>
+  <p>Se você quer se maquiar sem abrir mão dos seus valores, o Boticário tem uma linha 100% vegana completa e acessível. Vem ver o que eu descobri!</p>
+  <p>Você sabia que dá pra montar um nécessaire completo só com produtos veganos do Boticário? Eu fiz isso e vou te contar como.</p>
+  <p>Primeiro, a base. A Base em Pó Mineral da Make B. (R$ 119,90) é vegana, hipoalergênica, tem FPS 25 e ainda cabe na bolsa. Perfeita para retoques!</p>
+  <p>Para os olhos, o Lápis para Olhos da Intense (R$ 44,90) tem vitamina E, traço fino e não borra. Já a Máscara para Cílios Bye Bye Panda garante volume sem transferir. Resultado impecável!</p>
+  <p>Nos lábios, o Batom Cremoso Intense tem ultrapigmentação, FPS 25 e dura até 4 horas. Existe em vários tons, do nude ao vermelho.</p>
+  <p>Para sobrancelhas, a Caneta Microblading Up Brow da Make B. (R$ 74,90) entrega um efeito natural incrível. E é vegana!</p>
+  <p>E o acabamento? O Blush em Pó Make B. (R$ 79,90) vem em cores como berry, coral e rose — todas veganas e cheias de cor.</p>
+  <p>O melhor: muitos produtos estão com descontos de até 40%. Então não tem desculpa pra não testar!</p>
+  <p><strong>Call to Action:</strong> Acesse o site do Boticário agora, monte seu nécessaire vegano e aproveite os descontos especiais. Compartilhe nos comentários qual produto você quer testar primeiro! 💚</p>
+  <h3 id="hashtags-4"><a class="anchor" href="#hashtags-4" aria-label="Link para esta seção">#</a>Hashtags</h3>
+  <div class="callout" data-kind="note"><p>#MaquiagemVegana #OBoticario #MakeB #Intense #VeganoEBonito #BelezaConsciente #MaquiagemNatural #CrueltyFree #DicasDeBeleza</p></div>
+  <h3 id="sources-used-4"><a class="anchor" href="#sources-used-4" aria-label="Link para esta seção">#</a>Sources Used</h3>
+  <ul>
+    <li>LINHA 100% VEGANA - Base em Pó Mineral Make B., R$ 119,90, hipoalergênico, FPS 25</li>
+    <li>Lápis para Olhos Intense, R$ 44,90, Vitamina E, traço fino, não borra</li>
+    <li>Máscara para Cílios Bye Bye Panda, 11g, R$ 62,90</li>
+    <li>Batom Cremoso Intense, R$ 34,90, ultrapigmentação, FPS 25, cor intensa, durabilidade de até 4 horas</li>
+    <li>Up Brow Caneta Microblading Make B., R$ 74,90, VEGANO</li>
+    <li>Blush em Pó Make B., R$ 79,90, cores berry, coral, rose, brown - VEGANO</li>
+    <li>EM ITENS SELECIONADOS DE INTENSE ATÉ 40% de desconto</li>
+  </ul>
+
+  <h2 id="crie-um-post-apresentando-os-perfumes-da-linha-malbec-2-post-generati-in-pochi-secondi"><a class="anchor" href="#crie-um-post-apresentando-os-perfumes-da-linha-malbec-2-post-generati-in-pochi-secondi" aria-label="Link para esta seção">#</a>"Crie um post apresentando os perfumes da linha Malbec" → 2 post generati in pochi secondi.</h2>
+  <h3 id="malbec-a-linha-de-perfumes-que-transforma-sua-presenca-em-algo-inesquecivel"><a class="anchor" href="#malbec-a-linha-de-perfumes-que-transforma-sua-presenca-em-algo-inesquecivel" aria-label="Link para esta seção">#</a>Malbec: a linha de perfumes que transforma sua presença em algo inesquecível</h3>
+  <p>Descubra como a linha Malbec une sofisticação, elegância e personalidade em fragrâncias que conquistam pelo cheiro e pela história que contam.</p>
+  <p>Um bom perfume não apenas perfuma — ele comunica quem você é antes mesmo de você falar. E é exatamente isso que a linha Malbec foi criada para fazer.</p>
+  <p>Cada fragrância da linha carrega uma identidade própria. O <strong>Malbec Noir</strong> é inspirado no ritual de colheita das uvas Pinot Noir, combinando notas frutadas com pimentas e a intensidade amadeirada do sândalo. Para quem busca algo mais elegante e envolvente, o <strong>Malbec Black</strong> traz nuances de whisky, baunilha e notas de couro em uma fragrância amadeirada oriental. Já o <strong>Malbec Signature Eau de Parfum</strong> eleva a experiência com a preciosa madeira oud, ingrediente clássico da perfumaria fina.</p>
+  <p>Para quem prefere algo mais puro e fresco, o <strong>Malbec Icon</strong> resgata o aspecto natural e jovem do vinho combinado às madeiras inconfundíveis da linha. E o clássico <strong>Malbec Desodorante Colônia</strong> é produzido com exclusivo álcool vínico envelhecido em barris de carvalho — um detalhe que faz toda a diferença.</p>
+  <p>Além dos perfumes, a linha oferece kits presenteáveis, body spray, loção hidratante corporal e sabonetes, todos veganos. Uma experiência completa de bem-estar e sofisticação para o dia a dia.</p>
+  <p><strong>Call to Action:</strong> Encontre a fragrância Malbec que combina com a sua personalidade e eleve sua presença a outro nível. Explore a linha completa agora!</p>
+  <h3 id="hashtags-5"><a class="anchor" href="#hashtags-5" aria-label="Link para esta seção">#</a>Hashtags</h3>
+  <div class="callout" data-kind="note"><p>#Malbec #PerfumeMasculino #FragrânciasQueConquistam #SofisticaçãoEmCadaGota #MalbecNoir #MalbecBlack #MalbecSignature #PerfumariaFina #EstiloMasculino #BelezaMasculina</p></div>
+  <h3 id="sources-used-5"><a class="anchor" href="#sources-used-5" aria-label="Link para esta seção">#</a>Sources Used</h3>
+  <ul>
+    <li>Malbec Noir é uma fragrância inspirada no ritual de colheita das uvas Pinot Noir que traz o contraste das notas frutadas com as pimentas e a intensidade amadeirada do sândalo.</li>
+    <li>Malbec Black é uma fragrância amadeirada elegante com nuances de whisky, baunilha e notas de couro.</li>
+    <li>Malbec Signature Eau de Parfum: A combinação única do coração de Malbec com a madeira oud, ingrediente precioso na perfumaria fina.</li>
+    <li>Malbec Icon traz o aspecto mais puro, natural e jovem do vinho, combinado às madeiras inconfundíveis de Malbec.</li>
+    <li>Malbec Fragrância amadeirada produzida com exclusivo álcool vínico envelhecido em barris de carvalho.</li>
+    <li>Produtos veganos da linha Malbec incluindo kits presenteáveis, body spray, loção desodorante hidratante corporal e sabonetes.</li>
+  </ul>
+  <h3 id="qual-perfume-malbec-combina-com-voce-um-guia-pratico-para-escolher-sua-fragrancia"><a class="anchor" href="#qual-perfume-malbec-combina-com-voce-um-guia-pratico-para-escolher-sua-fragrancia" aria-label="Link para esta seção">#</a>Qual perfume Malbec combina com você? Um guia prático para escolher sua fragrância</h3>
+  <p>Escolher um perfume pode parecer difícil, mas com o guia certo fica fácil. Descubra qual opção da linha Malbec combina com seu estilo e ocasião.</p>
+  <p>Você está se preparando para uma reunião importante e quer causar uma boa impressão sem exagerar. Ou talvez queira um perfume para o dia a dia que dure horas. A linha Malbec tem uma opção para cada momento.</p>
+  <p><strong>Para quem busca elegância clássica:</strong><br>O Malbec Desodorante Colônia é produzido com álcool vínico envelhecido em barris de carvalho. Fragrância amadeirada com notas de bergamota, cedro e lavanda. Sofisticação sem complicação.</p>
+  <p><strong>Para ocasiões especiais:</strong><br>O Malbec Signature Eau de Parfum combina o coração de Malbec com madeira oud, ingrediente precioso na perfumaria fina. Fragrância amadeirada e ambarada, perfeita para destacar sua presença.</p>
+  <p><strong>Para quem prefere algo mais intenso:</strong><br>O Malbec Black traz nuances de whisky, baunilha e notas de couro. Amadeirado oriental para quem quer ser inesquecível.</p>
+  <p><strong>Para explorar sem compromisso:</strong><br>Experimente o Kit Malbec com 7 miniaturas de 4 ml cada, incluindo Malbec, Vert, Gold, Magnetic, Black, Bleu e Flame. Ideal para descobrir sua favorita antes de investir.</p>
+  <p>Todos os produtos da linha são veganos e estão disponíveis em versões refil, unindo sofisticação e consciência ambiental.</p>
+  <p><strong>Call to Action:</strong> Acesse agora o catálogo completo da linha Malbec e encontre a fragrância que vai definir a sua marca pessoal!</p>
+  <h3 id="hashtags-6"><a class="anchor" href="#hashtags-6" aria-label="Link para esta seção">#</a>Hashtags</h3>
+  <div class="callout" data-kind="note"><p>#Malbec #PerfumeMasculino #FragrânciaAmadeirada #MalbecBlack #MalbecSignature #DicaDePerfume #EstiloMasculino #PerfumariaBoticário #EscolhaComEstilo #VidaSofisticada</p></div>
+  <h3 id="sources-used-6"><a class="anchor" href="#sources-used-6" aria-label="Link para esta seção">#</a>Sources Used</h3>
+  <ul>
+    <li>Malbec Desodorante Colônia - fragrância amadeirada produzida com exclusivo álcool vínico envelhecido em barris de carvalho.</li>
+    <li>Malbec Signature Eau de Parfum - combinação única do coração de Malbec com a madeira oud, ingrediente precioso na perfumaria fina. Fragrância amadeirada ambarada.</li>
+    <li>Malbec Black - fragrância amadeirada elegante com nuances de whisky, baunilha e notas de couro.</li>
+    <li>Kit Malbec 7 unidades com 4 ml cada - inclui Malbec, Vert, Gold, Magnetic, Black, Bleu e Flame.</li>
+    <li>Todos os produtos da linha Malbec são veganos e possuem versões refil disponíveis.</li>
+  </ul>
+
+  <h2 id="stack"><a class="anchor" href="#stack" aria-label="Link para esta seção">#</a>Stack</h2>
+  <ul>
+    <li><strong>Streamlit</strong> — interfaccia dell'applicazione</li>
+    <li><strong>Pinecone</strong> — database vettoriale (ricerca semantica)</li>
+    <li><strong>Embeddings + LLM (GPT)</strong> — recupero del contesto e generazione del testo</li>
+    <li><strong>Python</strong></li>
+  </ul></div>
         <div class="feedback"></div>
         <p class="source">Fonte: <code>ipynb_contents/Streamlit Applications/Content Generator.ipynb</code></p>
         <nav class="pager" aria-label="Pagine vicine"><a class="pager-link prev" href="../../../pages/it/streamlit-applications/acquarello.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Precedente</small><span>Acquarello</span></div></a></nav>

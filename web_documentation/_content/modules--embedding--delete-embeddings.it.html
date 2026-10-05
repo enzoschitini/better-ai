@@ -1,31 +1,265 @@
-<page data-lead="Pagina di esempio per Delete Embeddings, usata per validare il layout.">
-  <div class="callout" data-kind="note"><p><strong>Contenuto di esempio.</strong> Questo testo esiste solo per validare il layout. Nella versione finale la pagina è generata da <code>ipynb_contents/Modules/Embedding/Delete Embeddings.ipynb</code>.</p></div>
-
+<page data-lead="La classe DeleteEmbeddings è stata sviluppata per gestire l'eliminazione degli embedding archiviati in un database vettoriale (vector database).">
   <h2>Panoramica</h2>
-  <p>Delete Embeddings fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
+  <p>La classe <code>DeleteEmbeddings</code> è stata sviluppata per gestire l'eliminazione degli <em>embedding</em> archiviati in un database vettoriale (vector database). Permette di rimuovere voci specifiche in base a chiavi e valori target forniti, garantendo un controllo preciso sui dati da eliminare. Questa classe è particolarmente utile nei sistemi che archiviano rappresentazioni vettoriali per le ricerche semantiche, dove mantenere la base aggiornata è fondamentale.</p>
+  <p>Risolve il problema di ottimizzare la pulizia e la manutenzione dei dati vettoriali, rendendo possibile l'eliminazione selettiva in più namespace, incluso uno scope globale, con sicurezza e validazione dei target che possono essere interessati. In pratica, uno sviluppatore può usarla per cancellare dati relativi a specifiche basi di conoscenza, mantenendo l'integrità dei dati in altri contesti.</p>
 
-  <h2>Uso</h2>
-  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
-  <pre data-lang="python"><code>
-from better_ai import DeleteEmbeddings
+  <h2>Flusso di Esecuzione</h2>
+  <ol>
+    <li><strong>Inizializzazione</strong>: La classe viene istanziata con le configurazioni del database vettoriale (opzionale). Se non viene passata alcuna configurazione, i valori predefiniti vengono caricati dalla configurazione generale.</li>
+    <li><strong>Validazione dei Target</strong>: Prima di qualsiasi eliminazione, le chiavi target (target keys) vengono validate per garantire che rientrino nei limiti consentiti, evitando eliminazioni fuori dall'ambito desiderato.</li>
+    <li><strong>Stabilire la Connessione</strong>: Viene creata la connessione con il database vettoriale, inizializzando i client necessari per eseguire le operazioni.</li>
+    <li><strong>Esecuzione dell'Eliminazione</strong>: Per ogni coppia chiave-valore target, esegue l'eliminazione nei namespace configurati (principale e, opzionalmente, globale), raccogliendo eventi che dettagliano i vettori eliminati.</li>
+    <li><strong>Aggregazione dei Risultati</strong>: Gli eventi vengono aggregati per namespace, sommando le quantità di vettori eliminati e preparando un riepilogo.</li>
+    <li><strong>Valore di Ritorno</strong>: Al termine, viene restituito un dizionario con l'esito dell'operazione, il totale dei vettori eliminati e i dettagli per namespace.</li>
+  </ol>
 
-client = DeleteEmbeddings()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parametri</h2>
-  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
+  <h2>Tabella dei Metodi della Classe</h2>
   <table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <thead><tr><th>Metodo</th><th>Descrizione</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
+      <tr><td><code>__init__</code></td><td>Inizializza la classe con le configurazioni del database vettoriale.</td></tr>
+      <tr><td><code>delete</code></td><td>Esegue l'intero processo di eliminazione in base a chiavi e valori.</td></tr>
+      <tr><td><code>_get_vector_db</code></td><td>Stabilisce la connessione con il database vettoriale.</td></tr>
+      <tr><td><code>_validate_targets</code></td><td>Valida che le chiavi target rientrino nei limiti consentiti.</td></tr>
+      <tr><td><code>_delete_from_namespaces</code></td><td>Esegue l'eliminazione nei namespace configurati.</td></tr>
+      <tr><td><code>_aggregate_events</code></td><td>Aggrega gli eventi di eliminazione per namespace.</td></tr>
     </tbody>
   </table>
 
-  <h2>Note</h2>
-  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
-  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div>
+  <h2>Variabili d'Ambiente</h2>
+  <p>Non ci sono variabili d'ambiente utilizzate direttamente da questa classe. Le configurazioni del database vettoriale vengono ottenute tramite l'oggetto di configurazione <code>GetConfig</code>.</p>
+
+  <h2>Punti Importanti dell'Architettura e Insight</h2>
+  <ul>
+    <li><strong>Design Modulare e Privato</strong>: La classe utilizza metodi privati per organizzare le fasi (validazione, connessione, eliminazione, aggregazione), garantendo coesione e chiarezza nel flusso.</li>
+    <li><strong>Iniezione della Configurazione</strong>: Permette di sovrascrivere le configurazioni predefinite, facilitando l'uso in più ambienti e nei test.</li>
+    <li><strong>Trace e Log</strong>: Integrazione con il sistema di <em>tracing</em> (<code>ApplicationTracing</code>) per la registrazione dettagliata delle azioni, utile per audit e debugging.</li>
+    <li><strong>Gestione di Più Namespace</strong>: La classe supporta l'eliminazione in namespace distinti, incluso uno scope globale opzionale, il che indica flessibilità per scenari di archiviazione più complessi.</li>
+    <li><strong>Gestione Robusta degli Errori</strong>: Le eccezioni vengono catturate e rilanciate con messaggi chiari, mantenendo il controllo del flusso e la trasparenza degli errori.</li>
+    <li><strong>Uso di Classi Esterne</strong>: Dipende dalle classi <code>GetConfig</code>, <code>VectorDBConnection</code> e <code>ApplicationTracing</code>, il che indica integrazione con moduli di configurazione, accesso al database e sistema di log/tracing.</li>
+  </ul>
+
+  <h2>Descrizione della Classe e dei Metodi</h2>
+
+  <h3>Classe <code>DeleteEmbeddings</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Classe responsabile della gestione dell'eliminazione selettiva di embedding in un database vettoriale, con supporto per più namespace e rigorosa validazione delle chiavi target per garantire eliminazioni sicure e controllate.</p>
+  <p><strong>Argomenti del Costruttore</strong></p>
+  <table>
+    <thead><tr><th>Argomento</th><th>Tipo</th><th>Descrizione</th><th>Valore Predefinito</th></tr></thead>
+    <tbody>
+      <tr><td><code>vector_db_settings</code></td><td><code>dict</code></td><td>Configurazioni per la connessione al database vettoriale. Se non indicate, usa i valori predefiniti della configurazione globale.</td><td><code>None</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>1. <code>__init__</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Inizializza l'istanza della classe definendo le configurazioni del database vettoriale a partire dai valori predefiniti e impostando le variabili interne per la connessione futura.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>vector_db_settings</code> (dict): Configurazioni personalizzate per il database vettoriale.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+# Instancia com configurações padrão
+de = DeleteEmbeddings()
+
+# Instancia com configuração personalizada
+custom_settings = {"index_name": "my_index", "main_namespace": "app_main"}
+de_custom = DeleteEmbeddings(vector_db_settings=custom_settings)
+</code></pre>
+
+  <h3>2. <code>_get_vector_db</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Stabilisce la connessione con il database vettoriale utilizzando le configurazioni correnti dell'istanza, impostando gli attributi interni di client e servizio per le operazioni future.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: se non è possibile stabilire la connessione con il database vettoriale.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+# Uso interno para garantir conexão antes das operações
+delete_embeddings._get_vector_db()
+</code></pre>
+
+  <h3>3. <code>_validate_targets</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Verifica che le chiavi target per l'eliminazione rientrino tra le chiavi consentite per limitare l'ambito dell'operazione, generando un errore in caso contrario.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>target_keys</code> (list): Lista dei nomi delle chiavi target da validare.</li>
+    <li><code>targets_to_limit</code> (list o None): Lista delle chiavi consentite per l'eliminazione. Se None, non applica alcuna restrizione.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: se nessun valore di <code>target_keys</code> è contenuto in <code>targets_to_limit</code>.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+# Valida que "knowledge_base_id" está entre os alvos permitidos
+_delete._validate_targets(["knowledge_base_id"], ["knowledge_base_id"])
+
+# Levanta erro se sem correspondência
+# _delete._validate_targets(["user_id"], ["knowledge_base_id"])  # ValueError
+</code></pre>
+
+  <h3>4. <code>_delete_from_namespaces</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Esegue l'eliminazione dei documenti che possiedono una chiave e un valore target nel namespace principale e, opzionalmente, nel namespace globale, restituendo eventi dettagliati.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>target_name</code> (str): Nome della chiave target per l'eliminazione.</li>
+    <li><code>target_value</code> (str): Valore associato per filtrare i documenti da eliminare.</li>
+    <li><code>main_ns</code> (str): Namespace principale in cui verrà eseguita l'eliminazione.</li>
+    <li><code>global_ns</code> (str): Namespace globale per l'eliminazione opzionale.</li>
+    <li><code>save_global</code> (bool): Definisce se eliminare anche nel namespace globale.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>list</code>: Lista di eventi con i dettagli dell'eliminazione in ciascun namespace.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nessuno direttamente (le eccezioni interne verrebbero propagate).</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+events = delete_embeddings._delete_from_namespaces(
+    "knowledge_base_id", "kb_001", "main_ns", "global_ns", True
+)
+# events contém detalhes de vetores deletados em cada namespace
+</code></pre>
+
+  <h3>5. <code>_aggregate_events</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Aggrega una lista di eventi di eliminazione, sommando le quantità e organizzandole per namespace per facilitare l'analisi e la strutturazione del risultato.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>events</code> (list): Lista dei singoli eventi di eliminazione.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>list</code>: Lista aggregata per namespace contenente totali ed elementi dettagliati.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+aggregated = delete_embeddings._aggregate_events(events)
+# aggregated terá estrutura resumida por namespaces
+</code></pre>
+
+  <h3>6. <code>delete</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Metodo pubblico principale che orchestra l'intera operazione di eliminazione: valida i target, si connette al database, esegue le eliminazioni su tutte le coppie chiave-valore, aggrega e restituisce i risultati consolidati.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>target_keys</code> (list): Lista dei nomi delle chiavi per l'eliminazione.</li>
+    <li><code>target_values</code> (list): Lista dei valori corrispondenti per filtrare le eliminazioni.</li>
+    <li><code>targets_to_limit</code> (list o None): Lista opzionale per restringere le chiavi utilizzabili per l'eliminazione.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>dict</code>: Dizionario contenente:
+      <ul>
+        <li><code>success</code> (bool): Indica il successo dell'operazione.</li>
+        <li><code>summary</code> (dict): Riepilogo con il totale dei vettori eliminati e il numero di namespace coinvolti.</li>
+        <li><code>deleted_by_namespace</code> (list): Elenco dettagliato per namespace.</li>
+      </ul>
+    </li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: Se le chiavi target non sono consentite.</li>
+    <li><code>RuntimeError</code>: Se la connessione o l'operazione sul database vettoriale fallisce.</li>
+  </ul>
+
+  <h2>Uso</h2>
+  <pre data-lang="python"><code>
+if __name__ == "__main__":
+    import json
+
+    payload = {
+        "vector_db_settings": {
+            "index_name": "my_index",
+            "embedding_model": "text-embedding-3-small",
+            "main_namespace": "main_ns",
+            "global_namespace": "global_ns",
+        },
+        "target_keys": ["knowledge_base_id"],
+        "target_values": ["kb_12345"],
+        "targets_to_limit": ["knowledge_base_id"]
+    }
+
+    delete_embeddings = DeleteEmbeddings()
+    result = delete_embeddings.delete(
+        target_keys=payload["target_keys"],
+        target_values=payload["target_values"],
+        targets_to_limit=payload["targets_to_limit"]
+    )
+
+    print(json.dumps(result, indent=2))
+
+
+# python -m src.embedding.modules.delete_embeddings
+</code></pre>
+
+  <h3>Output:</h3>
+  <pre data-lang="python"><code>
+{
+  "success": true,
+  "summary": {
+    "total_deleted_vectors": 12,
+    "namespaces_count": 2
+  },
+  "deleted_by_namespace": [
+    {
+      "namespace": "main_ns",
+      "deleted_vectors": 6,
+      "items": [
+        {
+          "target_name": "knowledge_base_id",
+          "target_value": "kb_12345",
+          "deleted_vectors": 6
+        }
+      ]
+    },
+    {
+      "namespace": "global_ns",
+      "deleted_vectors": 6,
+      "items": [
+        {
+          "target_name": "knowledge_base_id",
+          "target_value": "kb_12345",
+          "deleted_vectors": 6
+        }
+      ]
+    }
+  ]
+}
+</code></pre>
+
+  <p>Questo documento offre una guida strutturata e didattica per la comprensione e l'utilizzo della classe <code>DeleteEmbeddings</code>, facilitandone l'integrazione e il corretto impiego in progetti che lavorano con l'eliminazione selettiva di embedding in database vettoriali.</p>
 </page>

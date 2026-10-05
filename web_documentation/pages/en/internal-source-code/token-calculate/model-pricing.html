@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Model Pricing | BetterAI Docs</title>
-<meta name="description" content="Sample page for Model Pricing, used to validate the layout.">
+<meta name="description" content="The ModelPricing class was created to represent a pricing model for token-based natural language models, allowing the cost associated with processing inputs and outputs in different language models to be calculated.">
 <link rel="canonical" href="pages/en/internal-source-code/token-calculate/model-pricing.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,128 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copy page</span></button>
             </div>
           </div>
-          <p class="lead">Sample page for Model Pricing, used to validate the layout.</p>
+          <p class="lead">The ModelPricing class was created to represent a pricing model for token-based natural language models, allowing the cost associated with processing inputs and outputs in different language models to be calculated.</p>
           <details class="toc-inline"><summary>On this page</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Placeholder content.</strong> This text exists only to validate the layout. In the final version the page is generated from <code>ipynb_contents/Internal Source Code/Token Calculate/Model Pricing.md</code>.</p></div>
+        <div class="prose"><h2 id="overview"><a class="anchor" href="#overview" aria-label="Link para esta seção">#</a>Overview</h2>
+  <p>The <code>ModelPricing</code> class was created to represent a pricing model for token-based natural language models, allowing the cost associated with processing inputs and outputs in different language models to be calculated. It solves the problem of pricing the use of language models, converting costs per million tokens into unit costs, making financial estimation easier for API calls or model usage.</p>
+  <p>In practice, this class can be used to get the cost of a request involving a certain number of input and output tokens quickly and directly, just by providing the desired model. This is useful for anyone working with language processing APIs, allowing them to estimate spending and control token-based usage.</p>
 
-  <h2 id="overview"><a class="anchor" href="#overview" aria-label="Link para esta seção">#</a>Overview</h2>
-  <p>Model Pricing is part of the BetterAI platform. This paragraph stands in for the text coming from the source, so that spacing, line measure and the side index can be checked.</p>
+  <h2 id="execution-flow"><a class="anchor" href="#execution-flow" aria-label="Link para esta seção">#</a>Execution Flow</h2>
+  <ol>
+    <li>An instance of the <code>ModelPricing</code> class is initialized by passing the model name as a parameter. If the model is not supported, an exception is raised.</li>
+    <li>Through the <code>input_rate_per_token</code> and <code>output_rate_per_token</code> methods, the unit cost per input and output token is obtained, respectively, converting the values that are originally defined per million tokens.</li>
+    <li>These values are multiplied by the actual number of tokens processed to calculate the total input and output cost.</li>
+    <li>The final result is the estimated cost in dollars for using the model for the given number of tokens.</li>
+  </ol>
 
-  <h2 id="usage"><a class="anchor" href="#usage" aria-label="Link para esta seção">#</a>Usage</h2>
-  <p>The block below shows the typical call, with syntax highlighting:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> ModelPricing
-
-client = <span class="t-f">ModelPricing</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parameters"><a class="anchor" href="#parameters" aria-label="Link para esta seção">#</a>Parameters</h2>
-  <p>The table below exists to validate horizontal scrolling on narrow screens:</p>
+  <h2 id="class-methods-table"><a class="anchor" href="#class-methods-table" aria-label="Link para esta seção">#</a>Class Methods Table</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>
+    <thead><tr><th>Method</th><th>Description</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identifier of the model to use.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limit in seconds for the response.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Returns the response in chunks.</td></tr>
+      <tr><td><code>__init__</code></td><td>Initializes the object with the chosen model, validating it.</td></tr>
+      <tr><td><code>input_rate_per_token</code></td><td>Returns the unit cost per input token.</td></tr>
+      <tr><td><code>output_rate_per_token</code></td><td>Returns the unit cost per output token.</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="notes"><a class="anchor" href="#notes" aria-label="Link para esta seção">#</a>Notes</h2>
-  <p>A sample warning, to check the styling of the attention callout:</p>
-  <div class="callout" data-kind="warn"><p><strong>Development only.</strong> The values above are fictitious and must not be used in production.</p></div></div>
+  <h2 id="key-architecture-points-and-insights"><a class="anchor" href="#key-architecture-points-and-insights" aria-label="Link para esta seção">#</a>Key Architecture Points and Insights</h2>
+  <ul>
+    <li>Pricing is stored in <code>COST_MODELS</code>, a dictionary that maps the model name to the costs per million tokens for input and output.</li>
+    <li>The calculation method converts the cost per million to a cost per token by dividing the value by 1,000,000, ensuring flexibility for different scales.</li>
+    <li>This approach encapsulates pricing in a class, making maintenance and extension to new models easier, just by adding entries to the dictionary.</li>
+    <li>By validating the model at initialization, later errors during calculation are avoided, ensuring safe use of the class.</li>
+  </ul>
+
+  <h2 id="class-and-methods-description"><a class="anchor" href="#class-and-methods-description" aria-label="Link para esta seção">#</a>Class and Methods Description</h2>
+
+  <h2 id="modelpricing-class"><a class="anchor" href="#modelpricing-class" aria-label="Link para esta seção">#</a><code>ModelPricing</code> Class</h2>
+  <h3 id="description"><a class="anchor" href="#description" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>Class for calculating the cost of using language models, based on the number of input and output tokens and on the prices defined per model. It provides a simple interface to convert prices per million tokens into unit prices.</p>
+
+  <h3 id="constructor-arguments"><a class="anchor" href="#constructor-arguments" aria-label="Link para esta seção">#</a>Constructor Arguments</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argument</th><th>Type</th><th>Description</th><th>Default Value</th></tr></thead>
+    <tbody>
+      <tr><td>model</td><td>str</td><td>The name of the model to calculate costs for.</td><td>None</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="methods"><a class="anchor" href="#methods" aria-label="Link para esta seção">#</a>Methods</h3>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Initializes the class instance by checking that the given model exists in the base of supported prices, and assigns the corresponding prices.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>model (str): name of the language model used to look up prices.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>Returns no value.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>ValueError: If the given model is not listed among the supported models.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>model_pricing = <span class="t-f">ModelPricing</span>(<span class="t-s">&quot;gpt-4.1-mini&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-input-rate-per-token"><a class="anchor" href="#2-input-rate-per-token" aria-label="Link para esta seção">#</a>2. <code>input_rate_per_token</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Calculates and returns the cost per input token, based on the configured price per million tokens.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>float: cost in dollars per input token.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>input_cost_per_token = model_pricing.<span class="t-f">input_rate_per_token</span>()
+<span class="t-c"># Retorna algo como 0.0000004 para &quot;gpt-4.1-mini&quot;</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-output-rate-per-token"><a class="anchor" href="#3-output-rate-per-token" aria-label="Link para esta seção">#</a>3. <code>output_rate_per_token</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Calculates and returns the cost per output token, based on the configured price per million tokens.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>float: cost in dollars per output token.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>output_cost_per_token = model_pricing.<span class="t-f">output_rate_per_token</span>()
+<span class="t-c"># Retorna algo como 0.0000016 para &quot;gpt-4.1-mini&quot;</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="complete-usage-example"><a class="anchor" href="#complete-usage-example" aria-label="Link para esta seção">#</a>Complete Usage Example</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>model = <span class="t-s">&quot;gpt-4.1-mini&quot;</span>
+input_token_count = <span class="t-n">946</span>
+output_token_count = <span class="t-n">255</span>
+
+model_pricing = <span class="t-f">ModelPricing</span>(model)
+input_cost = model_pricing.<span class="t-f">input_rate_per_token</span>() * input_token_count
+output_cost = model_pricing.<span class="t-f">output_rate_per_token</span>() * output_token_count
+
+<span class="t-f">print</span>(f<span class="t-s">&quot;Custo de entrada (USD): {input_cost:.6f}&quot;</span>)
+<span class="t-f">print</span>(f<span class="t-s">&quot;Custo de saída (USD): {output_cost:.6f}&quot;</span>)
+
+<span class="t-c"># python -m src.tokens_calculate.model_pricing</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>Expected output:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang=""><code>Custo de entrada (USD): 0.000378
+Custo de saída (USD): 0.000408</code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>This example illustrates how to calculate the total cost based on real token counts for a specific model, making financial control and cost analysis easier for calls to language models.</p></div>
         <div class="feedback"></div>
         <p class="source">Source: <code>ipynb_contents/Internal Source Code/Token Calculate/Model Pricing.md</code></p>
         <nav class="pager" aria-label="Neighboring pages"><a class="pager-link prev" href="../../../../pages/en/internal-source-code/token-calculate/exchange-rate/exchange-rate-service.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Previous</small><span>Exchange Rate Service</span></div></a><a class="pager-link next" href="../../../../pages/en/internal-source-code/token-calculate/token-counter.html"><div><small>Next</small><span>Token Counter</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

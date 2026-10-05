@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Storage Menager | BetterAI Docs</title>
-<meta name="description" content="Página de exemplo para Storage Menager, usada para validar o layout.">
+<meta name="description" content="Esta é uma documentação detalhada e didática para o módulo de integração com o Supabase Storage. O código foi projetado seguindo princípios de Programação Orientada a Objetos (POO) para facilitar a manutenção e o reuso de conexões.">
 <link rel="canonical" href="pages/pt/internal-source-code/storage/supabase/storage-menager.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,120 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copiar página</span></button>
             </div>
           </div>
-          <p class="lead">Página de exemplo para Storage Menager, usada para validar o layout.</p>
+          <p class="lead">Esta é uma documentação detalhada e didática para o módulo de integração com o Supabase Storage. O código foi projetado seguindo princípios de Programação Orientada a Objetos (POO) para facilitar a manutenção e o reuso de conexões.</p>
           <details class="toc-inline"><summary>Nesta página</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Conteúdo de exemplo.</strong> Este texto existe só para validar o layout. Na versão final, a página é gerada a partir de <code>ipynb_contents/Internal Source Code/Storage/Supabase/Storage Menager.ipynb</code>.</p></div>
+        <div class="prose"><h2 id="1-visao-geral"><a class="anchor" href="#1-visao-geral" aria-label="Link para esta seção">#</a>1. Visão Geral</h2>
+  <p>O módulo é composto por duas classes principais que trabalham em conjunto para abstrair a complexidade da API do Supabase. A ideia central é separar a <strong>configuração da conexão</strong> (infraestrutura) da <strong>manipulação de arquivos</strong> (lógica de negócio).</p>
+  <ul>
+    <li><strong>SupabaseConnection</strong>: Garante que a conexão com o servidor seja estabelecida corretamente usando variáveis de ambiente.</li>
+    <li><strong>StorageManager</strong>: Oferece uma interface simplificada para enviar, deletar e recuperar links de arquivos dentro de um "bucket" (balde/repositório) específico.</li>
+  </ul>
 
-  <h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão geral</h2>
-  <p>Storage Menager faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
+  <h2 id="2-fluxo-de-execucao"><a class="anchor" href="#2-fluxo-de-execucao" aria-label="Link para esta seção">#</a>2. Fluxo de Execução</h2>
+  <p>Para entender como as classes interagem, imagine o seguinte fluxo:</p>
+  <ol>
+    <li><strong>Carregamento de Ambiente</strong>: O script lê o arquivo <code>.env</code> para capturar a URL e a Chave do projeto.</li>
+    <li><strong>Instanciação</strong>: Ao criar um <code>StorageManager</code>, ele verifica se você já possui uma conexão. Se não, ele chama a <code>SupabaseConnection</code> automaticamente.</li>
+    <li><strong>Acesso ao Bucket</strong>: O cliente se conecta ao bucket específico informado no início.</li>
+    <li><strong>Operação</strong>: Você chama métodos simples (como <code>upload_bytes</code>), e a classe lida com a lógica interna da biblioteca oficial do Supabase.</li>
+  </ol>
 
-  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
-  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> StorageMenager
-
-client = <span class="t-f">StorageMenager</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parametros"><a class="anchor" href="#parametros" aria-label="Link para esta seção">#</a>Parâmetros</h2>
-  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
+  <h2 id="3-resumo-de-metodos"><a class="anchor" href="#3-resumo-de-metodos" aria-label="Link para esta seção">#</a>3. Resumo de Métodos</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <thead><tr><th>Método</th><th>Classe</th><th>Descrição Breve</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
+      <tr><td><code>__init__</code></td><td><code>SupabaseConnection</code></td><td>Valida credenciais e cria o cliente <code>Client</code>.</td></tr>
+      <tr><td><code>__init__</code></td><td><code>StorageManager</code></td><td>Define o bucket alvo e garante a existência de um cliente ativo.</td></tr>
+      <tr><td><code>upload_bytes</code></td><td><code>StorageManager</code></td><td>Faz o upload de arquivos binários (bytes) para o storage.</td></tr>
+      <tr><td><code>delete_files</code></td><td><code>StorageManager</code></td><td>Remove uma lista de arquivos de uma só vez.</td></tr>
+      <tr><td><code>get_url</code></td><td><code>StorageManager</code></td><td>Gera o link público para visualizar o arquivo.</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="observacoes"><a class="anchor" href="#observacoes" aria-label="Link para esta seção">#</a>Observações</h2>
-  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
-  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div></div>
+  <h2 id="4-arquitetura-e-insights"><a class="anchor" href="#4-arquitetura-e-insights" aria-label="Link para esta seção">#</a>4. Arquitetura e Insights</h2>
+  <ul>
+    <li><strong>Singleton Implícito vs Injeção de Dependência</strong>: A classe <code>StorageManager</code> aceita um <code>supabase_client</code> opcional. Isso é excelente para testes unitários ou para reaproveitar uma conexão já aberta em outra parte do sistema, evitando múltiplas conexões desnecessárias.</li>
+    <li><strong>Tratamento de Erros</strong>: O uso de blocos <code>try/except</code> nos métodos de escrita (upload/delete) evita que a aplicação trave caso ocorra uma falha de rede ou permissão.</li>
+    <li><strong>Segurança</strong>: O uso de <code>dotenv</code> e <code>os.getenv</code> garante que chaves sensíveis nunca fiquem expostas diretamente no código-fonte.</li>
+  </ul>
+
+  <h2 id="5-documentacao-detalhada"><a class="anchor" href="#5-documentacao-detalhada" aria-label="Link para esta seção">#</a>5. Documentação Detalhada</h2>
+
+  <h3 id="classe-supabaseconnection"><a class="anchor" href="#classe-supabaseconnection" aria-label="Link para esta seção">#</a>Classe SupabaseConnection</h3>
+  <p><strong>Descrição</strong></p>
+  <p>Responsável por centralizar a autenticação. Ela serve como uma "fábrica" de conexões, garantindo que o cliente do Supabase esteja devidamente configurado antes de qualquer operação.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>Não possui argumentos diretos (utiliza variáveis de ambiente <code>.env</code>).</li>
+  </ul>
+  <p><strong>Métodos</strong></p>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <ul>
+    <li><strong>Descrição</strong>: Localiza as variáveis <code>SUPABASE_URL</code> e <code>SUPABASE_SECRET_KEY</code>, validando-as antes de instanciar o cliente oficial.</li>
+    <li><strong>Argumentos</strong>: Nenhum.</li>
+    <li><strong>Retornos</strong>: Nenhum (inicializa o atributo <code>self.client</code>).</li>
+    <li><strong>Raises</strong>: <code>ValueError</code> se as chaves não forem encontradas no ambiente.</li>
+    <li><strong>Exemplos</strong>:</li>
+  </ul>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>conn = <span class="t-f">SupabaseConnection</span>()
+client = conn.client <span class="t-c"># Cliente pronto para uso</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="classe-storagemanager"><a class="anchor" href="#classe-storagemanager" aria-label="Link para esta seção">#</a>Classe StorageManager</h3>
+  <p><strong>Descrição</strong></p>
+  <p>Encapsula a lógica de manipulação de buckets. É a classe "front-end" que o desenvolvedor usará na maior parte do tempo para gerenciar arquivos.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>bucket_name</code> (str): O nome da pasta/repositório no Supabase.</li>
+    <li><code>supabase_client</code> (Optional[Client]): Uma instância existente do cliente Supabase.</li>
+  </ul>
+  <p><strong>Métodos</strong></p>
+
+  <h3 id="1-upload-bytes"><a class="anchor" href="#1-upload-bytes" aria-label="Link para esta seção">#</a>1. <code>upload_bytes</code></h3>
+  <ul>
+    <li><strong>Descrição</strong>: Envia um arquivo para o storage a partir de dados em memória (bytes).</li>
+    <li><strong>Argumentos</strong>:
+      <ul>
+        <li><code>path_on_storage</code> (str): Caminho/nome do arquivo no destino.</li>
+        <li><code>file_bytes</code> (bytes): O conteúdo binário do arquivo.</li>
+        <li><code>content_type</code> (str): Tipo de arquivo (ex: <code>image/png</code>).</li>
+      </ul>
+    </li>
+    <li><strong>Retornos</strong>: <code>dict</code> com metadados do upload ou <code>None</code> em caso de erro.</li>
+    <li><strong>Raises</strong>: Captura exceções genéricas e as imprime no console.</li>
+    <li><strong>Exemplos</strong>:</li>
+  </ul>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>manager.<span class="t-f">upload_bytes</span>(<span class="t-s">&quot;docs/perfil.jpg&quot;</span>, foto_bytes, <span class="t-s">&quot;image/jpeg&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-delete-files"><a class="anchor" href="#2-delete-files" aria-label="Link para esta seção">#</a>2. <code>delete_files</code></h3>
+  <ul>
+    <li><strong>Descrição</strong>: Exclui um ou mais arquivos simultaneamente.</li>
+    <li><strong>Argumentos</strong>:
+      <ul>
+        <li><code>paths</code> (List[str]): Lista de caminhos (ex: <code>["img1.jpg", "img2.jpg"]</code>).</li>
+      </ul>
+    </li>
+    <li><strong>Retornos</strong>: <code>dict</code> com o status da remoção ou <code>None</code>.</li>
+    <li><strong>Raises</strong>: Captura exceções de rede ou permissão.</li>
+    <li><strong>Exemplos</strong>:</li>
+  </ul>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>manager.<span class="t-f">delete_files</span>([<span class="t-s">&quot;velho/foto1.png&quot;</span>, <span class="t-s">&quot;velho/foto2.png&quot;</span>])</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-get-url"><a class="anchor" href="#3-get-url" aria-label="Link para esta seção">#</a>3. <code>get_url</code></h3>
+  <ul>
+    <li><strong>Descrição</strong>: Obtém o endereço web público para acessar um arquivo.</li>
+    <li><strong>Argumentos</strong>:
+      <ul>
+        <li><code>path</code> (str): Caminho do arquivo dentro do bucket.</li>
+      </ul>
+    </li>
+    <li><strong>Retornos</strong>: <code>str</code> contendo a URL completa.</li>
+    <li><strong>Raises</strong>: <code>ValueError</code> se o caminho estiver vazio.</li>
+    <li><strong>Exemplos</strong>:</li>
+  </ul>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>link = manager.<span class="t-f">get_url</span>(<span class="t-s">&quot;produtos/celular.png&quot;</span>)
+<span class="t-f">print</span>(link) <span class="t-c"># https://xyz.supabase.co/storage/v1/object/public/...</span></code></pre><button class="copy floating" type="button"></button></div></div></div>
         <div class="feedback"></div>
         <p class="source">Fonte: <code>ipynb_contents/Internal Source Code/Storage/Supabase/Storage Menager.ipynb</code></p>
         <nav class="pager" aria-label="Páginas vizinhas"><a class="pager-link prev" href="../../../../../pages/pt/internal-source-code/storage/storage-menage-repository.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Anterior</small><span>Storage Menage Repository</span></div></a><a class="pager-link next" href="../../../../../pages/pt/internal-source-code/token-calculate/exchange-rate/bcb-exchange-rate-service.html"><div><small>Próxima</small><span>BCB Exchange Rate Service</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

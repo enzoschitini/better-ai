@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Token Counter | BetterAI Docs</title>
-<meta name="description" content="Sample page for Token Counter, used to validate the layout.">
+<meta name="description" content="The TokenCounter class has as its main goal to calculate the number of tokens present in a text, using encoders based on OpenAI's language models.">
 <link rel="canonical" href="pages/en/internal-source-code/token-calculate/token-counter.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,98 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copy page</span></button>
             </div>
           </div>
-          <p class="lead">Sample page for Token Counter, used to validate the layout.</p>
+          <p class="lead">The TokenCounter class has as its main goal to calculate the number of tokens present in a text, using encoders based on OpenAI's language models.</p>
           <details class="toc-inline"><summary>On this page</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Placeholder content.</strong> This text exists only to validate the layout. In the final version the page is generated from <code>ipynb_contents/Internal Source Code/Token Calculate/Token Counter.md</code>.</p></div>
+        <div class="prose"><h2 id="overview"><a class="anchor" href="#overview" aria-label="Link para esta seção">#</a>Overview</h2>
+  <p>The <code>TokenCounter</code> class has as its main goal to calculate the number of tokens present in a text, using encoders based on OpenAI's language models. This is especially useful for anyone working with APIs that have limits based on the number of tokens, such as GPT-3 and GPT-4, allowing better management of the cost and size of requests.</p>
+  <p>It solves the problem of needing an accurate token count for text inputs, something crucial for limits and optimizations in NLP applications that depend on OpenAI models. In practice, you can use this class to, for example, check whether a text is within the maximum token limit allowed by the model before sending a request.</p>
 
-  <h2 id="overview"><a class="anchor" href="#overview" aria-label="Link para esta seção">#</a>Overview</h2>
-  <p>Token Counter is part of the BetterAI platform. This paragraph stands in for the text coming from the source, so that spacing, line measure and the side index can be checked.</p>
+  <h2 id="execution-flow"><a class="anchor" href="#execution-flow" aria-label="Link para esta seção">#</a>Execution Flow</h2>
+  <ol>
+    <li>Instantiate the <code>TokenCounter</code> class, passing the name of the model you want to use for token encoding (e.g. <code>"gpt-3.5-turbo"</code>). This sets the tokenization standard appropriate for the model.</li>
+    <li>If the model name is not recognized, the class automatically uses a default base encoding (<code>cl100k_base</code>).</li>
+    <li>Call the <code>count</code> method, passing the text you want to count.</li>
+    <li>The method returns an integer that represents the number of tokens in the text.</li>
+  </ol>
 
-  <h2 id="usage"><a class="anchor" href="#usage" aria-label="Link para esta seção">#</a>Usage</h2>
-  <p>The block below shows the typical call, with syntax highlighting:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> TokenCounter
-
-client = <span class="t-f">TokenCounter</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parameters"><a class="anchor" href="#parameters" aria-label="Link para esta seção">#</a>Parameters</h2>
-  <p>The table below exists to validate horizontal scrolling on narrow screens:</p>
+  <h2 id="class-methods-table"><a class="anchor" href="#class-methods-table" aria-label="Link para esta seção">#</a>Class Methods Table</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>
+    <thead><tr><th>Method</th><th>Description</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identifier of the model to use.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limit in seconds for the response.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Returns the response in chunks.</td></tr>
+      <tr><td><code>__init__</code></td><td>Initializes the encoder for the desired model</td></tr>
+      <tr><td><code>count</code></td><td>Counts the number of tokens in a text</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="notes"><a class="anchor" href="#notes" aria-label="Link para esta seção">#</a>Notes</h2>
-  <p>A sample warning, to check the styling of the attention callout:</p>
-  <div class="callout" data-kind="warn"><p><strong>Development only.</strong> The values above are fictitious and must not be used in production.</p></div></div>
+  <h2 id="environment-variables"><a class="anchor" href="#environment-variables" aria-label="Link para esta seção">#</a>Environment Variables</h2>
+  <p>No environment variables are used by the class.</p>
+
+  <h2 id="key-architecture-points-and-insights"><a class="anchor" href="#key-architecture-points-and-insights" aria-label="Link para esta seção">#</a>Key Architecture Points and Insights</h2>
+  <ul>
+    <li>The class uses the <code>tiktoken</code> library, which is specific to tokenization of OpenAI models, ensuring high compatibility and accuracy.</li>
+    <li>The choice of encoding is dynamic, based on the given model name. If the model is not known, a safe default is used to avoid errors.</li>
+    <li>It encapsulates the internal workings of the encoder, offering a simple interface to count tokens, making integration into larger projects easier.</li>
+    <li>The class does not depend on other classes besides the external module <code>tiktoken</code>.</li>
+    <li>Its design is minimalist, focused on a single purpose, following the single responsibility principle.</li>
+  </ul>
+
+  <h2 id="class-and-methods-description"><a class="anchor" href="#class-and-methods-description" aria-label="Link para esta seção">#</a>Class and Methods Description</h2>
+
+  <h2 id="tokencounter-class"><a class="anchor" href="#tokencounter-class" aria-label="Link para esta seção">#</a><code>TokenCounter</code> Class</h2>
+  <h3 id="description"><a class="anchor" href="#description" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>Class responsible for counting the number of tokens in texts, using encoders from the <code>tiktoken</code> library, which reproduce how OpenAI models interpret and split words into tokens.</p>
+
+  <h3 id="constructor-arguments"><a class="anchor" href="#constructor-arguments" aria-label="Link para esta seção">#</a>Constructor Arguments</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argument</th><th>Type</th><th>Description</th><th>Default Value</th></tr></thead>
+    <tbody>
+      <tr><td>model</td><td>str</td><td>Name of the OpenAI model to define the token encoding (e.g. <code>"gpt-3.5-turbo"</code>).</td><td>None</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="methods"><a class="anchor" href="#methods" aria-label="Link para esta seção">#</a>Methods</h3>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Initializes a token encoder based on the specified model. If the model is not recognized, it uses a default encoding.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>model (str): name of the model to define the encoding</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>Returns no value.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>None explicitly, but it ignores <code>KeyError</code> when looking up the encoder for the model.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>counter = <span class="t-f">TokenCounter</span>(<span class="t-s">&quot;gpt-3.5-turbo&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-count"><a class="anchor" href="#2-count" aria-label="Link para esta seção">#</a>2. <code>count</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Counts how many tokens the given text has, converting the text using the encoder associated with the model.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>text (str): Text whose number of tokens will be computed.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>int: total number of tokens found in the text. Returns 0 if the text is empty or <code>None</code>.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>counter = <span class="t-f">TokenCounter</span>(<span class="t-s">&quot;gpt-3.5-turbo&quot;</span>)
+num_tokens = counter.<span class="t-f">count</span>(<span class="t-s">&quot;Hello, how are you?&quot;</span>)
+<span class="t-f">print</span>(num_tokens)  <span class="t-c"># Saída provável: 6</span>
+
+<span class="t-c"># python -m src.tokens_calculate.token_counter</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>This example shows the approximate token count for the sentence "Hello, how are you?", which in general has 6 tokens according to the tokenization of the indicated model.</p></div>
         <div class="feedback"></div>
         <p class="source">Source: <code>ipynb_contents/Internal Source Code/Token Calculate/Token Counter.md</code></p>
         <nav class="pager" aria-label="Neighboring pages"><a class="pager-link prev" href="../../../../pages/en/internal-source-code/token-calculate/model-pricing.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Previous</small><span>Model Pricing</span></div></a><a class="pager-link next" href="../../../../pages/en/internal-source-code/utils/load-request-file/documentation.html"><div><small>Next</small><span>Documentation</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

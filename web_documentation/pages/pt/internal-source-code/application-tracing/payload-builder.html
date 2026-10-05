@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Payload Builder | BetterAI Docs</title>
-<meta name="description" content="Página de exemplo para Payload Builder, usada para validar o layout.">
+<meta name="description" content="Esta é uma documentação detalhada e didática da classe PayloadBuilder, projetada para padronizar a telemetria e o logging de aplicações Python.">
 <link rel="canonical" href="pages/pt/internal-source-code/application-tracing/payload-builder.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,119 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copiar página</span></button>
             </div>
           </div>
-          <p class="lead">Página de exemplo para Payload Builder, usada para validar o layout.</p>
+          <p class="lead">Esta é uma documentação detalhada e didática da classe PayloadBuilder, projetada para padronizar a telemetria e o logging de aplicações Python.</p>
           <details class="toc-inline"><summary>Nesta página</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Conteúdo de exemplo.</strong> Este texto existe só para validar o layout. Na versão final, a página é gerada a partir de <code>ipynb_contents/Internal Source Code/Application Tracing/Payload Builder.ipynb</code>.</p></div>
+        <div class="prose"><h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão Geral</h2>
+  <p>A classe <code>PayloadBuilder</code> atua como uma <strong>fábrica de mensagens e estruturas de dados</strong>. Seu objetivo principal é garantir que, independentemente de onde um log seja gerado no sistema, ele possua uma estrutura consistente.</p>
+  <p>Ela resolve o problema comum de logs desorganizados, permitindo que o desenvolvedor gere tanto uma <strong>string amigável para leitura humana</strong> (console) quanto um <strong>objeto JSON estruturado</strong> para bancos de dados NoSQL (como MongoDB), mantendo o rastreio através de IDs e metadados.</p>
 
-  <h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão geral</h2>
-  <p>Payload Builder faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
+  <h2 id="fluxo-de-execucao"><a class="anchor" href="#fluxo-de-execucao" aria-label="Link para esta seção">#</a>Fluxo de Execução</h2>
+  <p>O fluxo típico de utilização da classe segue estes passos:</p>
+  <ol>
+    <li><strong>Instanciação</strong>: O objeto é criado, geralmente recebendo o contexto global (ID do log, nome do arquivo ou flags de categoria).</li>
+    <li><strong>Processamento de Metadados</strong>: Ao registrar um evento, a classe avalia se existem dados extras (<code>metadata</code>) e como eles devem ser exibidos (se formatados como JSON identado ou string simples).</li>
+    <li><strong>Composição da Mensagem</strong>: O método <code>build_message</code> concatena as partes (função, mensagem, contexto) usando um delimitador (<code>|</code>).</li>
+    <li><strong>Estruturação para Persistência</strong>: Caso o log precise ser salvo em banco, o método <code>build_mongo_payload</code> organiza as mesmas informações em um dicionário Python com timestamps precisos.</li>
+  </ol>
 
-  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
-  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> PayloadBuilder
-
-client = <span class="t-f">PayloadBuilder</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parametros"><a class="anchor" href="#parametros" aria-label="Link para esta seção">#</a>Parâmetros</h2>
-  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
+  <h2 id="resumo-dos-metodos"><a class="anchor" href="#resumo-dos-metodos" aria-label="Link para esta seção">#</a>Resumo dos Métodos</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <thead><tr><th>Método</th><th>Responsabilidade</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
+      <tr><td><code>__init__</code></td><td>Configura o contexto do builder (ID, arquivo, flags e preferências de formato).</td></tr>
+      <tr><td><code>format_metadata_payload</code></td><td>Trata a visualização de dicionários extras, convertendo-os em strings ou JSON identado.</td></tr>
+      <tr><td><code>build_message</code></td><td>Gera a string final formatada para exibição em logs de console ou arquivos de texto.</td></tr>
+      <tr><td><code>build_mongo_payload</code></td><td>Cria um dicionário estruturado com data/hora para inserção em bancos de dados.</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="observacoes"><a class="anchor" href="#observacoes" aria-label="Link para esta seção">#</a>Observações</h2>
-  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
-  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div></div>
+  <h2 id="arquitetura-e-insights"><a class="anchor" href="#arquitetura-e-insights" aria-label="Link para esta seção">#</a>Arquitetura e Insights</h2>
+  <ul>
+    <li><strong>Separação de Preocupações</strong>: A classe separa a <em>lógica de formatação</em> da <em>lógica de transporte</em> (envio para o banco). Ela não "loga" nada, ela apenas "constrói o payload".</li>
+    <li><strong>Rastreabilidade (Observabilidade)</strong>: O uso do <code>log_id</code> permite correlacionar diferentes entradas de log que pertencem à mesma requisição ou processo.</li>
+    <li><strong>Resiliência</strong>: O método de formatação possui um bloco <code>try/except</code> para garantir que, mesmo se a serialização JSON falhar, o log não quebre a aplicação, fazendo fallback para uma string simples.</li>
+  </ul>
+
+  <h2 id="detalhamento-da-classe"><a class="anchor" href="#detalhamento-da-classe" aria-label="Link para esta seção">#</a>Detalhamento da Classe</h2>
+
+  <h2 id="classe-payloadbuilder"><a class="anchor" href="#classe-payloadbuilder" aria-label="Link para esta seção">#</a>Classe <code>PayloadBuilder</code></h2>
+  <p><strong>Descrição</strong></p>
+  <p>Responsável por centralizar a composição de mensagens de log, tratamento de metadados e organização de informações contextuais para garantir padronização em diferentes saídas (console e banco de dados).</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>log_id</code> (str, opcional): Identificador único da transação ou processo.</li>
+    <li><code>flag</code> (str, opcional): Tag para categorização (ex: "SISTEMA_PAGAMENTO").</li>
+    <li><code>file_name</code> (str, opcional): Nome do arquivo Python onde o log ocorreu.</li>
+    <li><code>format_metadata</code> (bool): Se <code>True</code>, formata dicionários de metadados com identação JSON.</li>
+  </ul>
+
+  <h2 id="metodos"><a class="anchor" href="#metodos" aria-label="Link para esta seção">#</a>Métodos</h2>
+
+  <h2 id="1-format-metadata-payload"><a class="anchor" href="#1-format-metadata-payload" aria-label="Link para esta seção">#</a>1. format_metadata_payload()</h2>
+  <p><strong>Descrição</strong></p>
+  <p>Formata o dicionário de metadados para uma representação em string.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>metadata</code> (Dict[str, Any]): Dados adicionais para incluir no log.</li>
+    <li><code>show_metadata</code> (bool): Flag que autoriza ou não a inclusão dos dados na saída.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>Optional[str]</code>: String formatada ou <code>None</code> se os dados não devem ser exibidos.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><strong>Nenhum</strong>: Captura exceções internamente e retorna a representação em string bruta (<code>str(metadata)</code>) em caso de erro.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-c"># Com format_metadata=True na classe</span>
+builder.<span class="t-f">format_metadata_payload</span>({<span class="t-s">&quot;status&quot;</span>: <span class="t-n">200</span>}, <span class="t-n">True</span>)
+<span class="t-c"># Retorna: &quot;\n{\n    &quot;status&quot;: 200\n}\n&quot;`</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="2-build-message"><a class="anchor" href="#2-build-message" aria-label="Link para esta seção">#</a>2. build_message()</h2>
+  <p><strong>Descrição</strong></p>
+  <p>Monta a string de log final, unindo os componentes por um separador vertical (<code>|</code>).</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>func_name</code> (str): Nome da função de origem.</li>
+    <li><code>message</code> (str): Texto explicativo do log.</li>
+    <li><code>metadata</code> (Dict): Dados extras.</li>
+    <li><code>show_metadata</code> (bool): Se os dados extras devem aparecer nesta mensagem.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>str</code>: Linha de log completa e formatada.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: Se nenhum parâmetro for fornecido (mensagem vazia).</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>builder.<span class="t-f">build_message</span>(<span class="t-s">&quot;process_data&quot;</span>, <span class="t-s">&quot;Sucesso&quot;</span>, {<span class="t-s">&quot;items&quot;</span>: <span class="t-n">5</span>}, <span class="t-n">True</span>)
+<span class="t-c"># Retorna: 'process_data() | Sucesso | metadata={'items': 5} | log_id=...'</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="3-build-mongo-payload"><a class="anchor" href="#3-build-mongo-payload" aria-label="Link para esta seção">#</a>3. build_mongo_payload()</h2>
+  <p><strong>Descrição</strong></p>
+  <p>Prepara um objeto pronto para ser inserido em coleções do MongoDB ou bancos similares.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>level</code> (str): Nível do log (DEBUG, INFO, ERROR, etc).</li>
+    <li><code>func_name</code> (str): Função de origem.</li>
+    <li><code>message</code> (str): Conteúdo do log.</li>
+    <li><code>metadata</code> (Dict): Dados estruturados.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>Dict[str, Any]</code>: Dicionário contendo campos padronizados e timestamp.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: Se o nível (level) não for informado.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>builder.<span class="t-f">build_mongo_payload</span>(<span class="t-s">&quot;error&quot;</span>, <span class="t-s">&quot;save_user&quot;</span>, <span class="t-s">&quot;Falha de conexão&quot;</span>, {<span class="t-s">&quot;db&quot;</span>: <span class="t-s">&quot;prod&quot;</span>})
+<span class="t-c"># Retorna: {'log_id': '...', 'level': 'ERROR', 'time': '2026-03-18...', ...}</span></code></pre><button class="copy floating" type="button"></button></div></div></div>
         <div class="feedback"></div>
         <p class="source">Fonte: <code>ipynb_contents/Internal Source Code/Application Tracing/Payload Builder.ipynb</code></p>
         <nav class="pager" aria-label="Páginas vizinhas"><a class="pager-link prev" href="../../../../pages/pt/internal-source-code/application-tracing/logger-engine.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Anterior</small><span>Logger Engine</span></div></a><a class="pager-link next" href="../../../../pages/pt/internal-source-code/application-tracing/tracing-core.html"><div><small>Próxima</small><span>Tracing Core</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

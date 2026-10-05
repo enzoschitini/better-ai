@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Retrieval Manager | BetterAI Docs</title>
-<meta name="description" content="Pagina di esempio per Retrieval Manager, usata per validare il layout.">
+<meta name="description" content="BetterAI Docs">
 <link rel="canonical" href="pages/it/modules/pinecone-vector-store/retrieval-manager.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,240 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copia pagina</span></button>
             </div>
           </div>
-          <p class="lead">Pagina di esempio per Retrieval Manager, usata per validare il layout.</p>
+          
           <details class="toc-inline"><summary>In questa pagina</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Contenuto di esempio.</strong> Questo testo esiste solo per validare il layout. Nella versione finale la pagina è generata da <code>ipynb_contents/Modules/Pinecone Vector Store/Retrieval Manager.md</code>.</p></div>
+        <div class="prose"><h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
+  <p>La classe <code>RetrievalManager</code> è uno strumento di gestione dei documenti recuperati, pensato per scenari di ricerca e analisi di dati testuali. Facilita il filtraggio dei documenti basato sugli score (punteggi), la generazione di contesti testuali compatti da usare nei modelli di linguaggio e l'estrazione organizzata dei metadati dei file.</p>
+  <p>Nelle applicazioni pratiche, questa classe può essere usata per controllare grandi volumi di documenti restituiti dai sistemi di recupero delle informazioni, garantendo che vengano considerati solo i più rilevanti (con score sopra una certa soglia o sopra la media). Inoltre, con la generazione di contesti formattati, diventa più efficiente la federazione di questi contenuti verso gli LLM o altre analisi testuali.</p>
 
-  <h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
-  <p>Retrieval Manager fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
+  <h2 id="flusso-di-esecuzione"><a class="anchor" href="#flusso-di-esecuzione" aria-label="Link para esta seção">#</a>Flusso di Esecuzione</h2>
+  <ol>
+    <li><strong>Inizializzazione:</strong> Quando crei un'istanza di <code>RetrievalManager</code>, fornisci un elenco di documenti, opzionalmente uno score minimo e se desideri che il filtraggio per score venga eseguito automaticamente. Se il filtraggio automatico è attivato, l'elenco interno dei documenti sarà già pre-filtrato.</li>
+    <li><strong>Filtraggio per Score:</strong> È possibile filtrare i documenti per mantenere solo quelli il cui score sia maggiore o uguale allo score minimo desiderato, usando <code>get_by_score</code>.</li>
+    <li><strong>Filtraggio per Media:</strong> Per un'ulteriore raffinazione, <code>filter_by_mean_score</code> permette di filtrare un insieme di chunk, mantenendo solo quelli con score maggiore o uguale alla media dell'insieme.</li>
+    <li><strong>Generazione di Contesto Compatto:</strong> <code>generate_context</code> trasforma i documenti in una stringa formattata riga per riga, mostrando score e testo in forma compatta per facilitarne l'uso.</li>
+    <li><strong>Estrazione dei Metadati dei File:</strong> Tramite il metodo <code>get_files</code>, i file associati ai documenti vengono identificati e organizzati per facilitare l'accesso a identificazione, nome, estensione e score massimo ottenuto.</li>
+  </ol>
 
-  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
-  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> RetrievalManager
-
-client = <span class="t-f">RetrievalManager</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parametri"><a class="anchor" href="#parametri" aria-label="Link para esta seção">#</a>Parametri</h2>
-  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
+  <h2 id="tabella-dei-metodi-della-classe"><a class="anchor" href="#tabella-dei-metodi-della-classe" aria-label="Link para esta seção">#</a>Tabella dei Metodi della Classe</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <thead><tr><th>Metodo</th><th>Descrizione</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
+      <tr><td><code>__init__</code></td><td>Inizializza l'istanza con documenti e configurazioni</td></tr>
+      <tr><td><code>get_by_score</code></td><td>Filtra i documenti con score maggiore o uguale al minimo</td></tr>
+      <tr><td><code>filter_by_mean_score</code></td><td>Filtra i chunk con score maggiore o uguale alla media</td></tr>
+      <tr><td><code>generate_context</code></td><td>Genera una stringa di contesto compatta in stile toon</td></tr>
+      <tr><td><code>get_files</code></td><td>Estrae e organizza i metadati dei file dei documenti</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="note"><a class="anchor" href="#note" aria-label="Link para esta seção">#</a>Note</h2>
-  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
-  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div></div>
+  <h2 id="punti-importanti-dell-architettura-e-spunti"><a class="anchor" href="#punti-importanti-dell-architettura-e-spunti" aria-label="Link para esta seção">#</a>Punti Importanti dell'Architettura e Spunti</h2>
+  <ul>
+    <li><strong>Immutabilità parziale:</strong> La classe modifica il proprio elenco interno di documenti solo se il filtraggio automatico è attivato, preservando l'input iniziale quando desiderato.</li>
+    <li><strong>Gestione robusta delle eccezioni:</strong> Tutti i metodi che eseguono elaborazioni critiche catturano le eccezioni e sollevano <code>RuntimeError</code> con messaggi chiari per facilitare il debug.</li>
+    <li><strong>Struttura flessibile dei documenti:</strong> La classe presuppone che i documenti abbiano un formato standard con campi obbligatori come 'text' e 'score', e campi opzionali 'metadata' con informazioni sui file — il che permette l'adattamento a diverse fonti di dati.</li>
+    <li><strong>Nessuna dipendenza esterna:</strong> Non usa altre classi ausiliarie, il che rende l'uso isolato e semplice, manipolando soltanto liste e dizionari.</li>
+    <li><strong>Filtri distinti:</strong> Con metodi distinti per il filtraggio a soglia fissa e per il filtraggio per media, la gestione diventa più flessibile per diversi criteri di rilevanza.</li>
+  </ul>
+
+  <h2 id="descrizione-della-classe-e-dei-metodi"><a class="anchor" href="#descrizione-della-classe-e-dei-metodi" aria-label="Link para esta seção">#</a>Descrizione della Classe e dei Metodi</h2>
+
+  <h2 id="classe-retrievalmanager"><a class="anchor" href="#classe-retrievalmanager" aria-label="Link para esta seção">#</a>Classe <code>RetrievalManager</code></h2>
+  <h3 id="descrizione"><a class="anchor" href="#descrizione" aria-label="Link para esta seção">#</a>Descrizione</h3>
+  <p>Gestisce una collezione di documenti testuali con punteggi associati (score), permettendo molteplici operazioni importanti:</p>
+  <ul>
+    <li>Filtrare i documenti in base agli score (fissi o relativi alla media del gruppo).</li>
+    <li>Creare una rappresentazione testuale compatta per l'integrazione con i modelli di linguaggio.</li>
+    <li>Estrarre metadati raffinati per l'associazione dei documenti ai file.</li>
+  </ul>
+  <p>Serve per i casi che comportano recupero e manipolazione avanzata di testi organizzati per rilevanza.</p>
+  <h3 id="argomenti-del-costruttore"><a class="anchor" href="#argomenti-del-costruttore" aria-label="Link para esta seção">#</a>Argomenti del Costruttore</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argomento</th><th>Tipo</th><th>Descrizione</th><th>Valore Predefinito</th></tr></thead>
+    <tbody>
+      <tr><td><code>docs</code></td><td>List[Dict[str, Any]]</td><td>Elenco di documenti con i campi 'text', 'score' e opzionale 'metadata'</td><td>-</td></tr>
+      <tr><td><code>score_min</code></td><td>float</td><td>Valore minimo di score per il filtro iniziale dei documenti</td><td>0.0</td></tr>
+      <tr><td><code>filter_by_score</code></td><td>bool</td><td>Definisce se i documenti verranno filtrati per score all'inizializzazione</td><td>False</td></tr>
+    </tbody>
+  </table></div>
+  <h3 id="metodi"><a class="anchor" href="#metodi" aria-label="Link para esta seção">#</a>Metodi</h3>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <h3 id="descrizione-2"><a class="anchor" href="#descrizione-2" aria-label="Link para esta seção">#</a>Descrizione</h3>
+  <p>Costruisce l'oggetto <code>RetrievalManager</code> con un elenco di documenti e configurazioni opzionali per il filtraggio iniziale per score minimo.</p>
+  <h3 id="argomenti"><a class="anchor" href="#argomenti" aria-label="Link para esta seção">#</a>Argomenti</h3>
+  <ul>
+    <li>docs (List[Dict[str, Any]]): documenti da gestire</li>
+    <li>score_min (float): score minimo per il filtro iniziale</li>
+    <li>filter_by_score (bool): esegue il filtro automatico se True</li>
+  </ul>
+  <h3 id="valori-di-ritorno"><a class="anchor" href="#valori-di-ritorno" aria-label="Link para esta seção">#</a>Valori di ritorno</h3>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <h3 id="raises"><a class="anchor" href="#raises" aria-label="Link para esta seção">#</a>Raises</h3>
+  <ul>
+    <li>Non applicabile.</li>
+  </ul>
+  <h3 id="esempi"><a class="anchor" href="#esempi" aria-label="Link para esta seção">#</a>Esempi</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>rm = <span class="t-f">RetrievalManager</span>(docs=documents, score_min=<span class="t-n">0.3</span>, filter_by_score=<span class="t-n">True</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-get-by-score"><a class="anchor" href="#2-get-by-score" aria-label="Link para esta seção">#</a>2. <code>get_by_score</code></h3>
+  <h3 id="descrizione-3"><a class="anchor" href="#descrizione-3" aria-label="Link para esta seção">#</a>Descrizione</h3>
+  <p>Filtra l'elenco dei documenti per mantenere solo quelli il cui score sia maggiore o uguale allo score minimo dato.</p>
+  <h3 id="argomenti-2"><a class="anchor" href="#argomenti-2" aria-label="Link para esta seção">#</a>Argomenti</h3>
+  <ul>
+    <li>docs (List[Dict[str, Any]]): Elenco opzionale di documenti da filtrare. Se omesso, usa l'elenco interno.</li>
+    <li>score_min (float): Score minimo per il filtraggio.</li>
+  </ul>
+  <h3 id="valori-di-ritorno-2"><a class="anchor" href="#valori-di-ritorno-2" aria-label="Link para esta seção">#</a>Valori di ritorno</h3>
+  <ul>
+    <li>List[Dict[str, Any]]: elenco filtrato di documenti.</li>
+  </ul>
+  <h3 id="raises-2"><a class="anchor" href="#raises-2" aria-label="Link para esta seção">#</a>Raises</h3>
+  <ul>
+    <li>RuntimeError: quando il filtro per score fallisce.</li>
+  </ul>
+  <h3 id="esempi-2"><a class="anchor" href="#esempi-2" aria-label="Link para esta seção">#</a>Esempi</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>filtered_docs = rm.<span class="t-f">get_by_score</span>(score_min=<span class="t-n">0.35</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-filter-by-mean-score"><a class="anchor" href="#3-filter-by-mean-score" aria-label="Link para esta seção">#</a>3. <code>filter_by_mean_score</code></h3>
+  <h3 id="descrizione-4"><a class="anchor" href="#descrizione-4" aria-label="Link para esta seção">#</a>Descrizione</h3>
+  <p>Riceve un elenco di chunk (documenti), calcola la media degli score e filtra per mantenere solo i chunk con score maggiore o uguale a tale media.</p>
+  <h3 id="argomenti-3"><a class="anchor" href="#argomenti-3" aria-label="Link para esta seção">#</a>Argomenti</h3>
+  <ul>
+    <li>chunks (list[dict[str, Any]]): elenco di chunk con il campo 'score'.</li>
+  </ul>
+  <h3 id="valori-di-ritorno-3"><a class="anchor" href="#valori-di-ritorno-3" aria-label="Link para esta seção">#</a>Valori di ritorno</h3>
+  <ul>
+    <li>list[dict[str, Any]]: elenco filtrato oppure vuoto se l'input è vuoto.</li>
+  </ul>
+  <h3 id="raises-3"><a class="anchor" href="#raises-3" aria-label="Link para esta seção">#</a>Raises</h3>
+  <ul>
+    <li>RuntimeError: se si verifica un errore nel calcolo o nel filtraggio.</li>
+  </ul>
+  <h3 id="esempi-3"><a class="anchor" href="#esempi-3" aria-label="Link para esta seção">#</a>Esempi</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>chunks = [
+    {<span class="t-s">&quot;text&quot;</span>: <span class="t-s">&quot;A&quot;</span>, <span class="t-s">&quot;score&quot;</span>: <span class="t-n">0.5</span>},
+    {<span class="t-s">&quot;text&quot;</span>: <span class="t-s">&quot;B&quot;</span>, <span class="t-s">&quot;score&quot;</span>: <span class="t-n">0.3</span>},
+    {<span class="t-s">&quot;text&quot;</span>: <span class="t-s">&quot;C&quot;</span>, <span class="t-s">&quot;score&quot;</span>: <span class="t-n">0.7</span>},
+]
+filtered = rm.<span class="t-f">filter_by_mean_score</span>(chunks)
+<span class="t-c"># filtered conterá chunks com score &gt;= 0.5</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-generate-context"><a class="anchor" href="#4-generate-context" aria-label="Link para esta seção">#</a>4. <code>generate_context</code></h3>
+  <h3 id="descrizione-5"><a class="anchor" href="#descrizione-5" aria-label="Link para esta seção">#</a>Descrizione</h3>
+  <p>Genera una stringa compatta nel formato "Score: X | Content: testo" per ogni documento, sostituendo con spazi gli a capo nel testo per una migliore formattazione.</p>
+  <h3 id="argomenti-4"><a class="anchor" href="#argomenti-4" aria-label="Link para esta seção">#</a>Argomenti</h3>
+  <ul>
+    <li>docs (List[Dict[str, Any]]): documenti da convertire in contesto. Usa quelli interni della classe se omesso.</li>
+  </ul>
+  <h3 id="valori-di-ritorno-4"><a class="anchor" href="#valori-di-ritorno-4" aria-label="Link para esta seção">#</a>Valori di ritorno</h3>
+  <ul>
+    <li>str: stringa concatenata con i documenti formattati riga per riga.</li>
+  </ul>
+  <h3 id="raises-4"><a class="anchor" href="#raises-4" aria-label="Link para esta seção">#</a>Raises</h3>
+  <ul>
+    <li>RuntimeError: in caso di errore nell'elaborazione della stringa.</li>
+  </ul>
+  <h3 id="esempi-4"><a class="anchor" href="#esempi-4" aria-label="Link para esta seção">#</a>Esempi</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>context_string = rm.<span class="t-f">generate_context</span>()
+<span class="t-f">print</span>(context_string)
+<span class="t-c"># Exemplo saída:</span>
+<span class="t-c"># Score: 0.38 | Content: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
+<span class="t-c"># Score: 0.36 | Content: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="5-get-files"><a class="anchor" href="#5-get-files" aria-label="Link para esta seção">#</a>5. <code>get_files</code></h3>
+  <h3 id="descrizione-6"><a class="anchor" href="#descrizione-6" aria-label="Link para esta seção">#</a>Descrizione</h3>
+  <p>Estrae informazioni standardizzate sui file presenti nei metadati dei documenti, restituendo un elenco di file con id, nome, estensione e score massimo associato.</p>
+  <h3 id="argomenti-5"><a class="anchor" href="#argomenti-5" aria-label="Link para esta seção">#</a>Argomenti</h3>
+  <ul>
+    <li>docs (List[Dict[str, Any]]): elenco di documenti da cui estrarre i metadati. Usa l'elenco interno se omesso.</li>
+  </ul>
+  <h3 id="valori-di-ritorno-5"><a class="anchor" href="#valori-di-ritorno-5" aria-label="Link para esta seção">#</a>Valori di ritorno</h3>
+  <ul>
+    <li>List[Dict[str, Any]]: elenco di dizionari che rappresentano i file filtrati per id e ordinati secondo l'ultima elaborazione.</li>
+  </ul>
+  <h3 id="raises-5"><a class="anchor" href="#raises-5" aria-label="Link para esta seção">#</a>Raises</h3>
+  <ul>
+    <li>RuntimeError: in caso di errore nell'estrazione dei metadati.</li>
+  </ul>
+  <h3 id="esempi-5"><a class="anchor" href="#esempi-5" aria-label="Link para esta seção">#</a>Esempi</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>files_info = rm.<span class="t-f">get_files</span>()
+<span class="t-f">print</span>(files_info)
+<span class="t-c"># [</span>
+<span class="t-c">#   {&quot;id&quot;: &quot;cucinare&quot;, &quot;name&quot;: &quot;LESSICO per CUCINARE.pdf&quot;, &quot;ext&quot;: &quot;pdf&quot;, &quot;score&quot;: 0.38},</span>
+<span class="t-c">#   {&quot;id&quot;: &quot;tenerezza&quot;, &quot;name&quot;: &quot;TENEREZZA.pdf&quot;, &quot;ext&quot;: &quot;pdf&quot;, &quot;score&quot;: 0.36}</span>
+<span class="t-c"># ]</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="utilizzo"><a class="anchor" href="#utilizzo" aria-label="Link para esta seção">#</a>Utilizzo</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">if</span> __name__ == <span class="t-s">&quot;__main__&quot;</span>:
+    <span class="t-k">import</span> json
+    documents = [
+        {
+            <span class="t-s">&quot;id&quot;</span>: <span class="t-s">&quot;79258322-c06b-4e50-9a69-c8caa1136b3f&quot;</span>,
+            <span class="t-s">&quot;text&quot;</span>: <span class="t-s">&quot;xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx&quot;</span>,
+            <span class="t-s">&quot;metadata&quot;</span>: {
+                <span class="t-s">&quot;Client&quot;</span>: <span class="t-s">&quot;1234&quot;</span>,
+                <span class="t-s">&quot;client_id&quot;</span>: <span class="t-s">&quot;0011&quot;</span>,
+                <span class="t-s">&quot;collection_id&quot;</span>: <span class="t-s">&quot;collection_01&quot;</span>,
+                <span class="t-s">&quot;collection_name&quot;</span>: <span class="t-s">&quot;BetterAI&quot;</span>,
+                <span class="t-s">&quot;created_at&quot;</span>: <span class="t-s">&quot;2026-03-25 18:58:43&quot;</span>,
+                <span class="t-s">&quot;file_extension&quot;</span>: <span class="t-s">&quot;pdf&quot;</span>,
+                <span class="t-s">&quot;file_id&quot;</span>: <span class="t-s">&quot;cucinare&quot;</span>,
+                <span class="t-s">&quot;file_name&quot;</span>: <span class="t-s">&quot;LESSICO per CUCINARE.pdf&quot;</span>,
+                <span class="t-s">&quot;user_id&quot;</span>: <span class="t-s">&quot;11&quot;</span>
+            },
+            <span class="t-s">&quot;score&quot;</span>: <span class="t-n">0.382682741</span>
+        },
+
+        {
+            <span class="t-s">&quot;id&quot;</span>: <span class="t-s">&quot;f75b0f7c-36ab-48d4-8da0-ec21b9ce688a&quot;</span>,
+            <span class="t-s">&quot;text&quot;</span>: <span class="t-s">&quot;xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx&quot;</span>,
+            <span class="t-s">&quot;metadata&quot;</span>: {
+                <span class="t-s">&quot;Client&quot;</span>: <span class="t-s">&quot;1234&quot;</span>,
+                <span class="t-s">&quot;client_id&quot;</span>: <span class="t-s">&quot;0011&quot;</span>,
+                <span class="t-s">&quot;collection_id&quot;</span>: <span class="t-s">&quot;collection_01&quot;</span>,
+                <span class="t-s">&quot;collection_name&quot;</span>: <span class="t-s">&quot;BetterAI&quot;</span>,
+                <span class="t-s">&quot;created_at&quot;</span>: <span class="t-s">&quot;2026-03-25 18:58:43&quot;</span>,
+                <span class="t-s">&quot;file_extension&quot;</span>: <span class="t-s">&quot;pdf&quot;</span>,
+                <span class="t-s">&quot;file_id&quot;</span>: <span class="t-s">&quot;tenerezza&quot;</span>,
+                <span class="t-s">&quot;file_name&quot;</span>: <span class="t-s">&quot;TENEREZZA.pdf&quot;</span>,
+                <span class="t-s">&quot;user_id&quot;</span>: <span class="t-s">&quot;11&quot;</span>
+            },
+            <span class="t-s">&quot;score&quot;</span>: <span class="t-n">0.359430343</span>
+        },
+
+        {
+            <span class="t-s">&quot;id&quot;</span>: <span class="t-s">&quot;f75b0f7c-36ab-48d4-8da0-ec21b9ce688a&quot;</span>,
+            <span class="t-s">&quot;text&quot;</span>: <span class="t-s">&quot;xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx&quot;</span>,
+            <span class="t-s">&quot;metadata&quot;</span>: {
+                <span class="t-s">&quot;Client&quot;</span>: <span class="t-s">&quot;1234&quot;</span>,
+                <span class="t-s">&quot;client_id&quot;</span>: <span class="t-s">&quot;0011&quot;</span>,
+                <span class="t-s">&quot;collection_id&quot;</span>: <span class="t-s">&quot;collection_01&quot;</span>,
+                <span class="t-s">&quot;collection_name&quot;</span>: <span class="t-s">&quot;BetterAI&quot;</span>,
+                <span class="t-s">&quot;created_at&quot;</span>: <span class="t-s">&quot;2026-03-25 18:58:43&quot;</span>,
+                <span class="t-s">&quot;file_extension&quot;</span>: <span class="t-s">&quot;pdf&quot;</span>,
+                <span class="t-s">&quot;file_id&quot;</span>: <span class="t-s">&quot;tenerezza&quot;</span>,
+                <span class="t-s">&quot;file_name&quot;</span>: <span class="t-s">&quot;TENEREZZA.pdf&quot;</span>,
+                <span class="t-s">&quot;user_id&quot;</span>: <span class="t-s">&quot;11&quot;</span>
+            },
+            <span class="t-s">&quot;score&quot;</span>: <span class="t-n">0.329430343</span>
+        },
+    ]
+
+    meneger = <span class="t-f">RetrievalManager</span>(
+        docs=documents,
+        score_min=<span class="t-n">0.36</span>,
+        <span class="t-c">#filter_by_score=True</span>
+    )
+
+    <span class="t-f">print</span>(json.<span class="t-f">dumps</span>(meneger.<span class="t-f">get_files</span>(), indent=<span class="t-n">2</span>))
+
+<span class="t-c"># python -m src.vector_store.pinecone.utils.retrieval_manager</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <p>Questa documentazione descrive il funzionamento pratico della classe <code>RetrievalManager</code>, fungendo da guida per gli sviluppatori che devono manipolare documenti con metriche di rilevanza e metadati associati.</p></div>
         <div class="feedback"></div>
         <p class="source">Fonte: <code>ipynb_contents/Modules/Pinecone Vector Store/Retrieval Manager.md</code></p>
         <nav class="pager" aria-label="Pagine vicine"><a class="pager-link prev" href="../../../../pages/it/modules/pinecone-vector-store/pinecone-vector-service.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Precedente</small><span>Pinecone Vector Service</span></div></a><a class="pager-link next" href="../../../../pages/it/modules/web-service-network/curl-compiler.html"><div><small>Successiva</small><span>Curl Compiler</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

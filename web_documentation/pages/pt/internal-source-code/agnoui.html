@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AgnoUI | BetterAI Docs</title>
-<meta name="description" content="Página de exemplo para AgnoUI, usada para validar o layout.">
+<meta name="description" content="Uma bela interface de código aberto para interagir com agentes de IA">
 <link rel="canonical" href="pages/pt/internal-source-code/agnoui.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,70 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copiar página</span></button>
             </div>
           </div>
-          <p class="lead">Página de exemplo para AgnoUI, usada para validar o layout.</p>
+          <p class="lead">Uma bela interface de código aberto para interagir com agentes de IA</p>
           <details class="toc-inline"><summary>Nesta página</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Conteúdo de exemplo.</strong> Este texto existe só para validar o layout. Na versão final, a página é gerada a partir de <code>ipynb_contents/Internal Source Code/AgnoUI.ipynb</code>.</p></div>
+        <div class="prose"><figure class="frame"><img src="https://cdn.prod.website-files.com/6796d350b8c706e4533e7e32/689baa0854831df3725ec8b7_6416750e7ab3f27d87d33cde5869f7af_Without%20Agno.avif" alt=""><div class="frame-missing" hidden><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg><span>https://cdn.prod.website-files.com/6796d350b8c706e4533e7e32/689baa0854831df3725ec8b7_6416750e7ab3f27d87d33cde5869f7af_Without%20Agno.avif</span></div></figure>
 
-  <h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão geral</h2>
-  <p>AgnoUI faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
+  <h2 id="instale-o-node-js"><a class="anchor" href="#instale-o-node-js" aria-label="Link para esta seção">#</a>Instale o Node.JS</h2>
+  <p><a href="https://nodejs.org/pt-br">Node.JS</a></p>
+  <p><a href="https://nodejs.org/pt-br/download">Download</a></p>
+  <div class="callout" data-kind="note"><p><code>node --version</code></p></div>
+  <div class="callout" data-kind="note"><p><code>local: "C:\Program Files\nodejs"</code></p></div>
 
-  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
-  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> Agnoui
+  <h2 id="primeiros-passos-com-o-agent-ui"><a class="anchor" href="#primeiros-passos-com-o-agent-ui" aria-label="Link para esta seção">#</a>Primeiros passos com o Agent UI</h2>
+  <p>Para clonar o Agent UI, execute o seguinte comando no seu terminal:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">npx</span> create-agent-ui@latest</code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>Digite y para criar um novo projeto, instalar as dependências e, em seguida, execute o agent-ui usando:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">C</span>:\Users\schit&gt;cd agent-ui</code></pre><button class="copy floating" type="button"></button></div></div>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">C</span>:\Users\schit\agent-ui&gt;npm run dev</code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>Abra <a href="http://localhost:3000">http://localhost:3000</a> para ver o Agent UI, mas lembre-se de conectar aos seus agentes locais.</p>
+  <div class="callout" data-kind="note"><p>Local: <a href="http://localhost:3000">http://localhost:3000</a><br>Rede: <a href="http://10.5.0.2:3000">http://10.5.0.2:3000</a></p></div>
 
-client = <span class="t-f">Agnoui</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
+  <h2 id="configuracao-minima"><a class="anchor" href="#configuracao-minima" aria-label="Link para esta seção">#</a>Configuração mínima</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">import</span> os
+<span class="t-k">from</span> dotenv <span class="t-k">import</span> load_dotenv
 
-  <h2 id="parametros"><a class="anchor" href="#parametros" aria-label="Link para esta seção">#</a>Parâmetros</h2>
-  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
-  <div class="table-wrap"><table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
-    <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
-    </tbody>
-  </table></div>
+<span class="t-c">#os.environ[&quot;AGNO_TELEMETRY&quot;] = &quot;false&quot;</span>
+<span class="t-c">#AGNO_TELEMETRY = os.getenv(&quot;AGNO_TELEMETRY&quot;)</span>
 
-  <h2 id="observacoes"><a class="anchor" href="#observacoes" aria-label="Link para esta seção">#</a>Observações</h2>
-  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
-  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div></div>
+<span class="t-k">from</span> agno.agent <span class="t-k">import</span> Agent
+<span class="t-k">from</span> agno.models.openai <span class="t-k">import</span> OpenAIChat
+<span class="t-k">from</span> agno.os <span class="t-k">import</span> AgentOS
+
+<span class="t-f">load_dotenv</span>()
+
+assistant = <span class="t-f">Agent</span>(
+    name=<span class="t-s">&quot;Assistant&quot;</span>,
+    model=<span class="t-f">OpenAIChat</span>(id=<span class="t-s">&quot;gpt-4.1-mini&quot;</span>),
+    instructions=[<span class="t-s">&quot;You are a helpful AI assistant.&quot;</span>],
+    markdown=<span class="t-n">True</span>,
+)
+
+agent_os = <span class="t-f">AgentOS</span>(
+    id=<span class="t-s">&quot;my-first-os&quot;</span>,
+    description=<span class="t-s">&quot;My first AgentOS&quot;</span>,
+    agents=[assistant],
+)
+
+app = agent_os.<span class="t-f">get_app</span>()
+
+<span class="t-k">if</span> __name__ == <span class="t-s">&quot;__main__&quot;</span>:
+    <span class="t-c"># Default port is 7777, change with port=...</span>
+    agent_os.<span class="t-f">serve</span>(app=<span class="t-s">&quot;minimal_setup:app&quot;</span>, reload=<span class="t-n">True</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="agnoui-bat"><a class="anchor" href="#agnoui-bat" aria-label="Link para esta seção">#</a>AgnoUI.bat</h2>
+  <div class="code"><div class="code-head"><span class="code-title">AgnoUI.bat</span><button class="copy" type="button"></button></div><div class="code-body"><pre data-lang=""><code>@echo off
+cd C:\Users\schit\agent-ui
+npm run dev
+pause</code></pre></div></div>
+
+  <h2 id="outros-links"><a class="anchor" href="#outros-links" aria-label="Link para esta seção">#</a>Outros links:</h2>
+  <p><a href="https://docs-v1.agno.com/agent-ui/introduction#get-started-with-agent-ui">Agent UI</a></p>
+  <p><a href="https://docs.agno.com/examples/agent-os/overview">Agent OS</a></p>
+  <p><a href="https://docs.agno.com/agent-os/interfaces/ag-ui/introduction">AG-UI</a></p>
+  <p><a href="https://github.com/agno-agi/agno">GitHub</a></p>
+  <p>Autor: Enzo Schitini</p></div>
         <div class="feedback"></div>
         <p class="source">Fonte: <code>ipynb_contents/Internal Source Code/AgnoUI.ipynb</code></p>
         <nav class="pager" aria-label="Páginas vizinhas"><a class="pager-link prev" href="../../../pages/pt/internal-source-code/index.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Anterior</small><span>Internal Source Code: visão geral</span></div></a><a class="pager-link next" href="../../../pages/pt/internal-source-code/application-tracing/logger-engine.html"><div><small>Próxima</small><span>Logger Engine</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

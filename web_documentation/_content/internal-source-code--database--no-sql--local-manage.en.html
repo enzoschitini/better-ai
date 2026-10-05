@@ -1,31 +1,141 @@
-<page data-lead="Sample page for Local Manage, used to validate the layout.">
-  <div class="callout" data-kind="note"><p><strong>Placeholder content.</strong> This text exists only to validate the layout. In the final version the page is generated from <code>ipynb_contents/Internal Source Code/Database/No SQL/Local Manage.ipynb</code>.</p></div>
-
+<page data-lead="This is a detailed and didactic documentation of the LocalManager class, designed to serve as a guide for both users and developers who want to understand the structure of this local NoSQL data manager.">
   <h2>Overview</h2>
-  <p>Local Manage is part of the BetterAI platform. This paragraph stands in for the text coming from the source, so that spacing, line measure and the side index can be checked.</p>
+  <p><code>LocalManager</code> is a lightweight and efficient solution for persisting data in NoSQL format, using the local file system as storage. It emulates the behavior of modern databases (such as MongoDB), organizing information in a hierarchy of <strong>Databases</strong> (directories) and <strong>Collections</strong> (JSON files).</p>
+  <p>It is the ideal tool for:</p>
+  <ul>
+    <li>Rapid prototyping of applications.</li>
+    <li>Storing local configuration.</li>
+    <li>Test environments where you do not want to set up a complex database server.</li>
+  </ul>
 
-  <h2>Usage</h2>
-  <p>The block below shows the typical call, with syntax highlighting:</p>
-  <pre data-lang="python"><code>
-from better_ai import LocalManage
+  <h2>Execution Flow</h2>
+  <p>The class follows a predictable cycle of file I/O handling:</p>
+  <ol>
+    <li><strong>Initialization:</strong> The manager checks or creates the root folder (<code>data</code>).</li>
+    <li><strong>Mapping:</strong> When an operation is requested, it resolves the physical path: <code>base/database/collection.json</code>.</li>
+    <li><strong>Loading:</strong> The JSON file is read and deserialized into a list of Python dictionaries in memory.</li>
+    <li><strong>Processing:</strong> Filters, inserts or updates are applied to this list.</li>
+    <li><strong>Persistence:</strong> The resulting list is serialized back to the JSON file, ensuring data integrity.</li>
+  </ol>
 
-client = LocalManage()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parameters</h2>
-  <p>The table below exists to validate horizontal scrolling on narrow screens:</p>
+  <h2>Methods Summary</h2>
   <table>
-    <thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>
+    <thead><tr><th>Method</th><th>Brief Description</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identifier of the model to use.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limit in seconds for the response.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Returns the response in chunks.</td></tr>
+      <tr><td><code>save_payload</code></td><td>Inserts a new record with a unique ID and timestamp.</td></tr>
+      <tr><td><code>fetch_documents</code></td><td>Filters and returns documents from the collection.</td></tr>
+      <tr><td><code>update_documents</code></td><td>Modifies fields of existing documents based on filters.</td></tr>
+      <tr><td><code>delete_documents</code></td><td>Removes specific or multiple records from the collection.</td></tr>
+      <tr><td><code>_get_collection_path</code></td><td>(Internal) Resolves and creates the directory path for the database.</td></tr>
+      <tr><td><code>_load_collection</code></td><td>(Internal) Reads data from the JSON file with error handling.</td></tr>
+      <tr><td><code>_save_collection</code></td><td>(Internal) Writes data to disk with readable indentation.</td></tr>
+      <tr><td><code>_match_filter</code></td><td>(Internal) Compares documents with search criteria.</td></tr>
     </tbody>
   </table>
 
-  <h2>Notes</h2>
-  <p>A sample warning, to check the styling of the attention callout:</p>
-  <div class="callout" data-kind="warn"><p><strong>Development only.</strong> The values above are fictitious and must not be used in production.</p></div>
+  <h2>Architecture and Insights</h2>
+  <ul>
+    <li><strong>ID and Time Abstraction:</strong> The system relieves the developer of generating unique IDs (<code>uuid4</code>) and recording creation/update times, injecting metadata automatically.</li>
+    <li><strong>Write Safety:</strong> By using <code>os.makedirs(exist_ok=True)</code>, the code avoids common "directory not found" errors during execution.</li>
+    <li><strong>Search Simplicity:</strong> Filtering is based on simple equality, which makes the learning curve very low for new users.</li>
+  </ul>
+
+  <h2>LocalManager Class</h2>
+  <h3>Description</h3>
+  <p>Local persistence manager that uses JSON files to simulate a NoSQL database. It organizes data in database and collection structures inside the file system.</p>
+
+  <h3>Arguments</h3>
+  <ul>
+    <li><strong>base_path</strong> (<em>str</em>): Name of the root directory where all data will be saved. Default: <code>"data"</code>.</li>
+  </ul>
+
+  <h3>Methods</h3>
+
+  <h3>1. save_payload</h3>
+  <p><strong>Description:</strong> Adds a new document to the database. The method automatically generates a unique <code>_id</code> field and a <code>_created_at</code> field.</p>
+  <p><strong>Arguments:</strong></p>
+  <ul>
+    <li><code>database_name</code> (<em>str</em>): Name of the database.</li>
+    <li><code>collection_name</code> (<em>str</em>): Name of the collection.</li>
+    <li><code>payload</code> (<em>dict</em>): The data you want to save.</li>
+  </ul>
+  <p><strong>Returns:</strong></p>
+  <ul>
+    <li><code>dict</code>: A dictionary containing the operation status and the generated ID.</li>
+  </ul>
+  <p><strong>Raises:</strong></p>
+  <ul>
+    <li><code>Exception</code>: Write permission errors or file system failure.</li>
+  </ul>
+  <p><strong>Example:</strong></p>
+  <pre data-lang="python"><code>
+manager.save_payload("loja", "produtos", {"nome": "Teclado", "preco": 150.0})
+</code></pre>
+
+  <h3>2. fetch_documents</h3>
+  <p><strong>Description:</strong> Retrieves a list of documents that match the given criteria.</p>
+  <p><strong>Arguments:</strong></p>
+  <ul>
+    <li><code>database_name</code> (<em>str</em>): Name of the database.</li>
+    <li><code>collection_name</code> (<em>str</em>): Name of the collection.</li>
+    <li><code>filter</code> (<em>dict</em>, optional): Equality filter (e.g. <code>{"status": "ativo"}</code>).</li>
+    <li><code>limit</code> (<em>int</em>): Maximum number of results (0 for unlimited).</li>
+  </ul>
+  <p><strong>Returns:</strong></p>
+  <ul>
+    <li><code>List[Dict]</code>: List of documents found.</li>
+  </ul>
+  <p><strong>Raises:</strong></p>
+  <ul>
+    <li><code>json.JSONDecodeError</code>: If the file is corrupted.</li>
+  </ul>
+  <p><strong>Example:</strong></p>
+  <pre data-lang="python"><code>
+manager.fetch_documents("loja", "produtos", filter={"nome": "Teclado"})
+</code></pre>
+
+  <h3>3. update_documents</h3>
+  <p><strong>Description:</strong> Locates documents via a filter and updates their values with a new set of data.</p>
+  <p><strong>Arguments:</strong></p>
+  <ul>
+    <li><code>database_name</code> (<em>str</em>): Name of the database.</li>
+    <li><code>collection_name</code> (<em>str</em>): Name of the collection.</li>
+    <li><code>filter</code> (<em>dict</em>): Criterion to find the documents to be edited.</li>
+    <li><code>new_values</code> (<em>dict</em>): New fields and values to be inserted/changed.</li>
+    <li><code>multi</code> (<em>bool</em>): If <code>True</code>, updates all documents found; if <code>False</code>, only the first.</li>
+  </ul>
+  <p><strong>Returns:</strong></p>
+  <ul>
+    <li><code>dict</code>: Statistics containing <code>matched_count</code> and <code>modified_count</code>.</li>
+  </ul>
+  <p><strong>Raises:</strong></p>
+  <ul>
+    <li><code>IOError</code>: Error when trying to save the changes to disk.</li>
+  </ul>
+  <p><strong>Example:</strong></p>
+  <pre data-lang="python"><code>
+manager.update_documents("loja", "produtos", {"nome": "Teclado"}, {"preco": 130.0})
+</code></pre>
+
+  <h3>4. delete_documents</h3>
+  <p><strong>Description:</strong> Removes documents from the collection that match the given filter.</p>
+  <p><strong>Arguments:</strong></p>
+  <ul>
+    <li><code>database_name</code> (<em>str</em>): Name of the database.</li>
+    <li><code>collection_name</code> (<em>str</em>): Name of the collection.</li>
+    <li><code>filter</code> (<em>dict</em>): Selection criterion for removal.</li>
+    <li><code>multi</code> (<em>bool</em>): Whether to remove all matches or only the first.</li>
+  </ul>
+  <p><strong>Returns:</strong></p>
+  <ul>
+    <li><code>dict</code>: Confirmation with the number of deleted items (<code>deleted_count</code>).</li>
+  </ul>
+  <p><strong>Raises:</strong></p>
+  <ul>
+    <li><code>Exception</code>: Generic file access failures.</li>
+  </ul>
+  <p><strong>Example:</strong></p>
+  <pre data-lang="python"><code>
+manager.delete_documents("loja", "produtos", {"status": "esgotado"}, multi=True)
+</code></pre>
 </page>

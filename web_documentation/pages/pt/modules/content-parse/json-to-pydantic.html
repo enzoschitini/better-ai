@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Json To Pydantic | BetterAI Docs</title>
-<meta name="description" content="Página de exemplo para Json To Pydantic, usada para validar o layout.">
+<meta name="description" content="A classe JsonToPydantic foi desenvolvida para facilitar a conversão dinâmica de dicionários JSON em modelos Pydantic com tipagem automática dos campos.">
 <link rel="canonical" href="pages/pt/modules/content-parse/json-to-pydantic.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,315 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copiar página</span></button>
             </div>
           </div>
-          <p class="lead">Página de exemplo para Json To Pydantic, usada para validar o layout.</p>
+          <p class="lead">A classe JsonToPydantic foi desenvolvida para facilitar a conversão dinâmica de dicionários JSON em modelos Pydantic com tipagem automática dos campos.</p>
           <details class="toc-inline"><summary>Nesta página</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Conteúdo de exemplo.</strong> Este texto existe só para validar o layout. Na versão final, a página é gerada a partir de <code>ipynb_contents/Modules/Content Parse/Json To Pydantic.md</code>.</p></div>
+        <div class="prose"><h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão Geral</h2>
+  <p>A classe <code>JsonToPydantic</code> foi desenvolvida para facilitar a conversão dinâmica de dicionários JSON em modelos Pydantic com tipagem automática dos campos. Esse processo é bastante útil quando se trabalha com dados JSON não estruturados ou variáveis, e há necessidade de validar e manipular esses dados utilizando a robustez que o Pydantic oferece.</p>
+  <p>Basicamente, a classe permite transformar um JSON arbitrário em uma classe Pydantic gerada em tempo de execução, inferindo os tipos básicos dos valores (como string, inteiro, float, booleano, listas e dicionários). Isso simplifica workflows que envolvem validação de dados, testes ou manipulação onde o esquema JSON não está previamente definido.</p>
+  <p>Na prática, basta criar uma instância de <code>JsonToPydantic</code>, passar o JSON como dicionário para os métodos da classe, e obter modelos e instâncias tipadas automaticamente, prontos para validação e acesso facilitado aos dados.</p>
 
-  <h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão geral</h2>
-  <p>Json To Pydantic faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
+  <h2 id="fluxo-de-execucao"><a class="anchor" href="#fluxo-de-execucao" aria-label="Link para esta seção">#</a>Fluxo de Execução</h2>
+  <ol>
+    <li>Instancia a classe <code>JsonToPydantic</code>, opcionalmente passando um nome para o modelo Pydantic que será criado (<code>model_name</code>).</li>
+    <li>Chama o método <code>build_model</code> passando um dicionário JSON para criar um modelo Pydantic dinâmico. Este método infere os tipos dos campos baseando-se nos valores do dicionário.</li>
+    <li>Utiliza o método <code>parse</code> para criar uma instância do modelo Pydantic previamente gerado, preenchida com os dados do dicionário JSON.</li>
+    <li>Caso qualquer etapa falhe (inferência de tipos, construção do modelo, instanciamento), a classe lança exceções do tipo <code>RuntimeError</code> para indicar erros explicativos.</li>
+  </ol>
 
-  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
-  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> JsonToPydantic
-
-client = <span class="t-f">JsonToPydantic</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parametros"><a class="anchor" href="#parametros" aria-label="Link para esta seção">#</a>Parâmetros</h2>
-  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
+  <h2 id="tabela-de-metodos-da-classe"><a class="anchor" href="#tabela-de-metodos-da-classe" aria-label="Link para esta seção">#</a>Tabela de Métodos da Classe</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <thead><tr><th>Método</th><th>Descrição</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
+      <tr><td><code>__init__</code></td><td>Inicializa a classe definindo o nome do modelo Pydantic.</td></tr>
+      <tr><td><code>_infer_type</code></td><td>Identifica o tipo Python de um valor para tipagem do campo.</td></tr>
+      <tr><td><code>build_model</code></td><td>Cria dinamicamente um modelo Pydantic com base no dicionário.</td></tr>
+      <tr><td><code>parse</code></td><td>Cria uma instância do modelo preenchida com os dados JSON.</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="observacoes"><a class="anchor" href="#observacoes" aria-label="Link para esta seção">#</a>Observações</h2>
-  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
-  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div></div>
+  <h2 id="pontos-importantes-da-arquitetura-e-insights"><a class="anchor" href="#pontos-importantes-da-arquitetura-e-insights" aria-label="Link para esta seção">#</a>Pontos Importantes da Arquitetura e Insights</h2>
+  <ul>
+    <li>A classe utiliza a biblioteca <code>pydantic</code> para criar modelos dinamicamente (<code>create_model</code>) e para validação robusta dos dados.</li>
+    <li>A inferência feita pelo método <code>_infer_type</code> cobre tipos comuns do Python e retorna <code>Any</code> quando o tipo não é claramente identificado.</li>
+    <li>O uso de exceções do tipo <code>RuntimeError</code> com mensagens específicas facilita o entendimento de possíveis falhas no fluxo.</li>
+    <li>A classe não depende de variáveis de ambiente externas para funcionar.</li>
+    <li>A abordagem adotada facilita a criação de esquemas dinâmicos, útil para sistemas que consomem JSONs com estrutura variável ou desconhecida na fase de desenvolvimento.</li>
+  </ul>
+
+  <h2 id="descricao-da-classe-e-metodos"><a class="anchor" href="#descricao-da-classe-e-metodos" aria-label="Link para esta seção">#</a>Descrição da Classe e Métodos</h2>
+
+  <h2 id="classe-jsontopydantic"><a class="anchor" href="#classe-jsontopydantic" aria-label="Link para esta seção">#</a>Classe <code>JsonToPydantic</code></h2>
+
+  <h3 id="descricao"><a class="anchor" href="#descricao" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Classe para criação dinâmica de modelos Pydantic a partir de dicionários JSON, permitindo validação e tipagem automática dos campos conforme os dados recebidos.</p>
+
+  <h3 id="argumentos-do-construtor"><a class="anchor" href="#argumentos-do-construtor" aria-label="Link para esta seção">#</a>Argumentos do Construtor</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argumento</th><th>Tipo</th><th>Descrição</th><th>Valor Padrão</th></tr></thead>
+    <tbody>
+      <tr><td>model_name</td><td>str</td><td>Nome do modelo Pydantic criado</td><td>"DynamicModel"</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="metodos"><a class="anchor" href="#metodos" aria-label="Link para esta seção">#</a>Métodos</h3>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Inicializa o objeto definindo o nome do modelo Pydantic que será criado dinamicamente.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>model_name (str): Nome do modelo Pydantic (opcional).</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>Não retorna valor.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>converter = <span class="t-f">JsonToPydantic</span>()  <span class="t-c"># modelo padrão &quot;DynamicModel&quot;</span>
+converter_custom = <span class="t-f">JsonToPydantic</span>(<span class="t-s">&quot;MeuModelo&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-infer-type"><a class="anchor" href="#2-infer-type" aria-label="Link para esta seção">#</a>2. <code>_infer_type</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Identifica o tipo Python correspondente ao valor fornecido para definir o tipo do campo no modelo.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>value (Any): Valor para ser analisado e tipado.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>Type: Tipo Python correspondente (str, int, float, bool, list, dict ou Any).</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>RuntimeError: Caso ocorra erro durante a inferência do tipo.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>tipo = converter.<span class="t-f">_infer_type</span>(<span class="t-s">&quot;texto&quot;</span>)  <span class="t-c"># retorna &lt;class 'str'&gt;</span>
+tipo = converter.<span class="t-f">_infer_type</span>(<span class="t-n">123</span>)      <span class="t-c"># retorna &lt;class 'int'&gt;</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-build-model"><a class="anchor" href="#3-build-model" aria-label="Link para esta seção">#</a>3. <code>build_model</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Constrói e retorna um modelo Pydantic gerado dinamicamente com campos e tipos baseados no dicionário JSON fornecido.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>data (Dict[str, Any]): Dicionário com dados para inferência do modelo.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>Type[BaseModel]: Classe do modelo Pydantic criado.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>RuntimeError: Caso ocorra erro durante a criação do modelo.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>modelo = converter.<span class="t-f">build_model</span>({<span class="t-s">&quot;nome&quot;</span>: <span class="t-s">&quot;Ana&quot;</span>, <span class="t-s">&quot;idade&quot;</span>: <span class="t-n">30</span>})
+<span class="t-c"># Retorna um modelo equivalente a:</span>
+<span class="t-c"># class DynamicModel(BaseModel):</span>
+<span class="t-c">#     nome: str</span>
+<span class="t-c">#     idade: int</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-parse"><a class="anchor" href="#4-parse" aria-label="Link para esta seção">#</a>4. <code>parse</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Gera um modelo Pydantic a partir dos dados e retorna uma instância preenchida com esses dados.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>data (Dict[str, Any]): Dicionário JSON a ser convertido em instância do modelo.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>BaseModel: Instância do modelo Pydantic com os dados validados.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>RuntimeError: Caso ocorra falha na criação ou validação da instância.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">if</span> __name__ == <span class="t-s">&quot;__main__&quot;</span>:
+    data = {
+        <span class="t-s">&quot;text&quot;</span>: <span class="t-s">&quot;A empresa TechNova está crescendo rapidamente.&quot;</span>,
+        <span class="t-s">&quot;task&quot;</span>: <span class="t-s">&quot;Se o nome da empresa for TechNova, troque por BetterAI&quot;</span>
+    }
+    parser = <span class="t-f">JsonToPydantic</span>(<span class="t-s">&quot;ResearchRequest&quot;</span>)
+    request = parser.<span class="t-f">parse</span>(data)
+
+    <span class="t-f">print</span>(request)
+    <span class="t-f">print</span>(<span class="t-f">type</span>(request))
+
+<span class="t-c"># python -m src.content_parse.pydantic_shema</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="mapeamento-formas-de-schema"><a class="anchor" href="#mapeamento-formas-de-schema" aria-label="Link para esta seção">#</a>Mapeamento formas de schema</h2>
+
+  <h3 id="1-entradas-aceitas-pela-rota"><a class="anchor" href="#1-entradas-aceitas-pela-rota" aria-label="Link para esta seção">#</a>1. Entradas aceitas pela rota</h3>
+  <p>Formato do request: <code>multipart/form-data</code>.</p>
+  <p>Campos:</p>
+  <ul>
+    <li><code>job_id</code> (obrigatório): <code>str</code></li>
+    <li><code>metadata</code> (obrigatório): <code>str</code> contendo JSON válido</li>
+    <li><code>document_schema</code> (obrigatório): <code>str</code> contendo JSON válido</li>
+    <li><code>file</code> (obrigatório): arquivo</li>
+    <li><code>config</code> (opcional): <code>str</code> contendo JSON válido</li>
+  </ul>
+  <p>Regras de arquivo nesta rota:</p>
+  <ul>
+    <li>Extensões permitidas: <code>txt</code>, <code>md</code>, <code>pdf</code>, <code>docx</code></li>
+    <li>Tamanho máximo: <code>50 MB</code></li>
+  </ul>
+  <p>Erros comuns de entrada:</p>
+  <ul>
+    <li><code>Invalid JSON in metadata</code></li>
+    <li><code>Invalid JSON in schema</code></li>
+    <li><code>Invalid JSON in config</code></li>
+  </ul>
+
+  <h3 id="2-importante-quem-interpreta-o-document-schema"><a class="anchor" href="#2-importante-quem-interpreta-o-document-schema" aria-label="Link para esta seção">#</a>2. Importante: quem interpreta o <code>document_schema</code></h3>
+  <ul>
+    <li><code>document_schema</code> <strong>não</strong> é convertido por <code>JsonToPydantic</code>.</li>
+    <li>Na rota, ele é convertido por <code>GeneratePydanticSchema</code> + <code>FieldMetadataParser</code>.</li>
+    <li><code>JsonToPydantic</code> é usado no agente para <code>input_data</code> e <code>config_data</code>.</li>
+  </ul>
+
+  <h3 id="3-todas-as-formas-de-document-schema-aceitas-na-pratica"><a class="anchor" href="#3-todas-as-formas-de-document-schema-aceitas-na-pratica" aria-label="Link para esta seção">#</a>3. Todas as formas de <code>document_schema</code> aceitas na prática</h3>
+
+  <h3 id="3-1-campo-declarativo-simples"><a class="anchor" href="#3-1-campo-declarativo-simples" aria-label="Link para esta seção">#</a>3.1 Campo declarativo simples</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+    <span class="t-f">&quot;summary&quot;</span>: {
+        <span class="t-f">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>,
+        <span class="t-f">&quot;description&quot;</span>: <span class="t-s">&quot;Resumo do conteúdo do arquivo&quot;</span>
+    }
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-2-campo-declarativo-com-required-default-example"><a class="anchor" href="#3-2-campo-declarativo-com-required-default-example" aria-label="Link para esta seção">#</a>3.2 Campo declarativo com <code>required</code>, <code>default</code>, <code>example</code></h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+    <span class="t-f">&quot;title&quot;</span>: {
+        <span class="t-f">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>,
+        <span class="t-f">&quot;required&quot;</span>: <span class="t-k">true</span>,
+        <span class="t-f">&quot;description&quot;</span>: <span class="t-s">&quot;Título principal&quot;</span>,
+        <span class="t-f">&quot;example&quot;</span>: <span class="t-s">&quot;Relatório de Q2&quot;</span>
+    },
+    <span class="t-f">&quot;confidence&quot;</span>: {
+        <span class="t-f">&quot;type&quot;</span>: <span class="t-s">&quot;float&quot;</span>,
+        <span class="t-f">&quot;required&quot;</span>: <span class="t-k">false</span>,
+        <span class="t-f">&quot;default&quot;</span>: <span class="t-n">0.0</span>,
+        <span class="t-f">&quot;description&quot;</span>: <span class="t-s">&quot;Confianca da extração&quot;</span>
+    }
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-3-campo-declarativo-com-validacao-de-tamanho"><a class="anchor" href="#3-3-campo-declarativo-com-validacao-de-tamanho" aria-label="Link para esta seção">#</a>3.3 Campo declarativo com validação de tamanho</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+    <span class="t-f">&quot;abstract&quot;</span>: {
+        <span class="t-f">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>,
+        <span class="t-f">&quot;description&quot;</span>: <span class="t-s">&quot;Resumo detalhado&quot;</span>,
+        <span class="t-f">&quot;min_length&quot;</span>: <span class="t-n">20</span>,
+        <span class="t-f">&quot;max_length&quot;</span>: <span class="t-n">500</span>
+    }
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-4-lista-declarativa-de-primitivos"><a class="anchor" href="#3-4-lista-declarativa-de-primitivos" aria-label="Link para esta seção">#</a>3.4 Lista declarativa de primitivos</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+    <span class="t-f">&quot;keywords&quot;</span>: {
+        <span class="t-f">&quot;type&quot;</span>: <span class="t-s">&quot;list&quot;</span>,
+        <span class="t-f">&quot;items&quot;</span>: {
+            <span class="t-f">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>
+        },
+        <span class="t-f">&quot;description&quot;</span>: <span class="t-s">&quot;Palavras-chave&quot;</span>
+    }
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-5-lista-declarativa-de-objetos"><a class="anchor" href="#3-5-lista-declarativa-de-objetos" aria-label="Link para esta seção">#</a>3.5 Lista declarativa de objetos</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+    <span class="t-f">&quot;entities&quot;</span>: {
+        <span class="t-f">&quot;type&quot;</span>: <span class="t-s">&quot;list&quot;</span>,
+        <span class="t-f">&quot;items&quot;</span>: {
+            <span class="t-f">&quot;type&quot;</span>: <span class="t-s">&quot;object&quot;</span>,
+            <span class="t-f">&quot;properties&quot;</span>: {
+                <span class="t-f">&quot;name&quot;</span>: {
+                    <span class="t-f">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>,
+                    <span class="t-f">&quot;description&quot;</span>: <span class="t-s">&quot;Nome&quot;</span>
+                },
+                <span class="t-f">&quot;category&quot;</span>: {
+                    <span class="t-f">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>,
+                    <span class="t-f">&quot;description&quot;</span>: <span class="t-s">&quot;Categoria&quot;</span>
+                },
+                <span class="t-f">&quot;score&quot;</span>: {
+                    <span class="t-f">&quot;type&quot;</span>: <span class="t-s">&quot;float&quot;</span>,
+                    <span class="t-f">&quot;description&quot;</span>: <span class="t-s">&quot;Pontuação&quot;</span>
+                }
+            }
+        }
+    }
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-6-inferencia-automatica-por-exemplo-sem-type"><a class="anchor" href="#3-6-inferencia-automatica-por-exemplo-sem-type" aria-label="Link para esta seção">#</a>3.6 Inferência automática por exemplo (sem <code>type</code>)</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+    <span class="t-f">&quot;summary&quot;</span>: <span class="t-s">&quot;texto exemplo&quot;</span>,
+    <span class="t-f">&quot;score&quot;</span>: <span class="t-n">0.98</span>,
+    <span class="t-f">&quot;approved&quot;</span>: <span class="t-k">true</span>
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-7-inferencia-de-objeto-aninhado"><a class="anchor" href="#3-7-inferencia-de-objeto-aninhado" aria-label="Link para esta seção">#</a>3.7 Inferência de objeto aninhado</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+    <span class="t-f">&quot;invoice&quot;</span>: {
+        <span class="t-f">&quot;number&quot;</span>: <span class="t-s">&quot;INV-001&quot;</span>,
+        <span class="t-f">&quot;total&quot;</span>: <span class="t-n">199.9</span>,
+        <span class="t-f">&quot;paid&quot;</span>: <span class="t-k">false</span>
+    }
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-8-inferencia-de-lista-de-objetos"><a class="anchor" href="#3-8-inferencia-de-lista-de-objetos" aria-label="Link para esta seção">#</a>3.8 Inferência de lista de objetos</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+    <span class="t-f">&quot;items&quot;</span>: [
+        {
+            <span class="t-f">&quot;sku&quot;</span>: <span class="t-s">&quot;A-1&quot;</span>,
+            <span class="t-f">&quot;quantity&quot;</span>: <span class="t-n">2</span>,
+            <span class="t-f">&quot;unit_price&quot;</span>: <span class="t-n">49.9</span>
+        }
+    ]
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-9-inferencia-com-lista-vazia"><a class="anchor" href="#3-9-inferencia-com-lista-vazia" aria-label="Link para esta seção">#</a>3.9 Inferência com lista vazia</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+    <span class="t-f">&quot;items&quot;</span>: []
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>Nesse caso, o tipo vira lista genérica.</p>
+
+  <h3 id="3-10-schema-hibrido-declarativo-inferencia-no-mesmo-payload"><a class="anchor" href="#3-10-schema-hibrido-declarativo-inferencia-no-mesmo-payload" aria-label="Link para esta seção">#</a>3.10 Schema híbrido (declarativo + inferência no mesmo payload)</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+    <span class="t-f">&quot;summary&quot;</span>: {
+        <span class="t-f">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>,
+        <span class="t-f">&quot;description&quot;</span>: <span class="t-s">&quot;Resumo final&quot;</span>
+    },
+    <span class="t-f">&quot;stats&quot;</span>: {
+        <span class="t-f">&quot;pages&quot;</span>: <span class="t-n">12</span>,
+        <span class="t-f">&quot;language&quot;</span>: <span class="t-s">&quot;pt-BR&quot;</span>
+    }
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-mapeamento-de-tipos-no-modo-declarativo"><a class="anchor" href="#4-mapeamento-de-tipos-no-modo-declarativo" aria-label="Link para esta seção">#</a>4. Mapeamento de tipos no modo declarativo</h3>
+  <p>Valores reconhecidos em <code>type</code>:</p>
+  <ul>
+    <li><code>str</code></li>
+    <li><code>int</code></li>
+    <li><code>float</code></li>
+    <li><code>bool</code></li>
+    <li><code>list</code></li>
+    <li><code>dict</code></li>
+  </ul>
+  <p>Se o tipo não for reconhecido, cai em <code>Any</code>.</p>
+
+  <h3 id="5-regras-e-limitacoes-importantes"><a class="anchor" href="#5-regras-e-limitacoes-importantes" aria-label="Link para esta seção">#</a>5. Regras e limitações importantes</h3>
+  <ol>
+    <li>Se o campo é <code>dict</code> e possui chave <code>type</code>, ele é tratado como metadado declarativo.</li>
+    <li>Para <code>type = "list"</code>, <code>items</code> é obrigatório.</li>
+    <li>Lista de objetos declarativa exige <code>items.type = "object"</code> com <code>properties</code>.</li>
+    <li>Campos sem <code>required</code> são opcionais por padrão.</li>
+    <li>O parser aceita estrutura híbrida, misturando campos declarativos e inferidos.</li>
+  </ol></div>
         <div class="feedback"></div>
         <p class="source">Fonte: <code>ipynb_contents/Modules/Content Parse/Json To Pydantic.md</code></p>
         <nav class="pager" aria-label="Páginas vizinhas"><a class="pager-link prev" href="../../../../pages/pt/modules/content-parse/generate-pydantic-schema.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Anterior</small><span>Generate Pydantic Schema</span></div></a><a class="pager-link next" href="../../../../pages/pt/modules/deep-research/tavily-research/context-builder.html"><div><small>Próxima</small><span>Context Builder</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

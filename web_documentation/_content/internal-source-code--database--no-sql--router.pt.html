@@ -1,31 +1,151 @@
-<page data-lead="Página de exemplo para Router, usada para validar o layout.">
-  <div class="callout" data-kind="note"><p><strong>Conteúdo de exemplo.</strong> Este texto existe só para validar o layout. Na versão final, a página é gerada a partir de <code>ipynb_contents/Internal Source Code/Database/No SQL/Router.ipynb</code>.</p></div>
+<page data-lead="Esta documentação detalha a classe DocumentStore, um componente essencial para a persistência de dados em sua arquitetura, projetado para oferecer flexibilidade e desacoplamento.">
+  <h2>Visão Geral</h2>
+  <p>A classe <code>DocumentStore</code> atua como um <strong>Roteador (Router)</strong> e <strong>Proxy</strong> para operações em bancos de dados NoSQL. Seu principal objetivo é abstrair a complexidade de qual banco de dados está sendo utilizado (MongoDB ou JSON Local).</p>
+  <p>Isso permite que os desenvolvedores escrevam o código de lógica de negócio uma única vez, podendo alternar o armazenamento apenas alterando uma variável de ambiente ou um parâmetro inicial, o que é ideal para alternar entre ambientes de <strong>Produção</strong> (MongoDB) e <strong>Desenvolvimento/Testes</strong> (Local).</p>
 
-  <h2>Visão geral</h2>
-  <p>Router faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
+  <h2>Fluxo de Execução</h2>
+  <p>O funcionamento da classe segue uma lógica de três etapas simples:</p>
+  <ol>
+    <li><strong>Instanciação:</strong> Ao criar o objeto, o código verifica o argumento <code>backend</code> ou a variável de ambiente <code>NOSQL_BACKEND</code>.</li>
+    <li><strong>Fábrica (Factory):</strong> O método interno <code>_initialize_manager</code> decide qual classe gerenciadora instanciar (<code>MongoDBManager</code> ou <code>LocalManager</code>).</li>
+    <li><strong>Delegação (Proxy):</strong> Quando um método como <code>save_payload</code> é chamado, a <code>DocumentStore</code> não processa o dado diretamente; ela "passa a bola" para o gerenciador instanciado na etapa 2.</li>
+  </ol>
 
-  <h2>Uso</h2>
-  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
-  <pre data-lang="python"><code>
-from better_ai import Router
-
-client = Router()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parâmetros</h2>
-  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
+  <h2>Tabela de Métodos</h2>
   <table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <thead><tr><th>Método</th><th>Tipo</th><th>Descrição Breve</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
+      <tr><td><code>__init__</code></td><td>Construtor</td><td>Define o backend e inicializa o gerenciador.</td></tr>
+      <tr><td><code>_initialize_manager</code></td><td>Privado</td><td>Lógica de decisão (Factory) para escolher o backend.</td></tr>
+      <tr><td><code>save_payload</code></td><td>Proxy</td><td>Insere novos documentos no banco.</td></tr>
+      <tr><td><code>fetch_documents</code></td><td>Proxy</td><td>Busca e recupera documentos filtrados.</td></tr>
+      <tr><td><code>update_documents</code></td><td>Proxy</td><td>Atualiza dados de documentos existentes.</td></tr>
+      <tr><td><code>delete_documents</code></td><td>Proxy</td><td>Remove documentos da base de dados.</td></tr>
     </tbody>
   </table>
 
-  <h2>Observações</h2>
-  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
-  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div>
+  <h2>Arquitetura e Insights</h2>
+  <ul>
+    <li><strong>Padrão Proxy:</strong> A classe serve como uma interface unificada. O código que chama a <code>DocumentStore</code> não precisa saber <em>como</em> o MongoDB funciona, apenas <em>o que</em> quer fazer.</li>
+    <li><strong>Padrão Factory:</strong> A lógica de criação do objeto de banco de dados está centralizada em um único ponto, facilitando a adição de novos backends no futuro (como um Redis ou DynamoDB).</li>
+    <li><strong>Desacoplamento:</strong> O uso de <code>args</code> e <code>*kwargs</code> nos métodos permite que a interface seja genérica o suficiente para aceitar diferentes parâmetros exigidos por backends distintos sem quebrar a assinatura dos métodos.</li>
+  </ul>
+
+  <h2>Detalhamento da Classe</h2>
+
+  <h2>Classe DocumentStore</h2>
+  <p><strong>Descrição</strong></p>
+  <p>Uma classe de abstração de alto nível que gerencia a persistência de documentos NoSQL. Ela centraliza as operações de CRUD (Create, Read, Update, Delete) e delega a execução para backends específicos dependendo da configuração.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>backend</code> (Optional[str]): Uma string indicando o backend desejado. Valores aceitos: <code>"mongo"</code> ou <code>"local"</code>. Se <code>None</code>, busca na variável de ambiente <code>NOSQL_BACKEND</code>.</li>
+  </ul>
+
+  <h2>Métodos</h2>
+
+  <h2>1. _initialize_manager</h2>
+  <p><strong>Descrição</strong></p>
+  <p>Método interno que decide qual implementação de banco de dados será carregada na memória.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>Não possui argumentos diretos (utiliza o estado de <code>self.backend</code>).</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>Union[MongoDBManager, LocalManager]</code>: Uma instância da classe responsável pela comunicação real com o banco.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: Se o backend informado não for "mongo" ou "local".</li>
+  </ul>
+
+  <h2>2. save_payload</h2>
+  <p><strong>Descrição</strong></p>
+  <p>Realiza a inserção de um documento ou carga de dados no backend selecionado.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>args</code> / <code>*kwargs</code>: Geralmente incluem o nome do banco, nome da coleção/tabela e o dicionário de dados (payload).</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>dict</code>: Informações sobre o sucesso da operação (ex: ID do documento inserido).</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>Exception</code>: Propaga erros específicos do driver de conexão do banco.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+store = DocumentStore(backend="local")
+store.save_payload(db="app", collection="logs", data={"status": "sucesso"})
+</code></pre>
+
+  <h2>3. fetch_documents</h2>
+  <p><strong>Descrição</strong></p>
+  <p>Consulta a base de dados para retornar documentos que correspondam aos critérios informados.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>args</code> / <code>*kwargs</code>: Filtros de busca (ex: <code>{"id": 123}</code>).</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>list</code>: Uma lista contendo os documentos encontrados (dicionários).</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+# Busca todos os usuários com nome Enzo
+users = store.fetch_documents("mydb", "users", {"name": "Enzo"})
+</code></pre>
+
+  <h2>4. update_documents</h2>
+  <p><strong>Descrição</strong></p>
+  <p>Modifica documentos existentes na base de dados com base em um critério de seleção.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>args</code> / <code>*kwargs</code>: Filtro de busca e os novos dados a serem aplicados.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>dict</code>: Resumo da operação (quantidade de campos alterados).</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+store.update_documents("mydb", "users", {"name": "Enzo"}, {"active": True})
+</code></pre>
+
+  <h2>5. delete_documents</h2>
+  <p><strong>Descrição</strong></p>
+  <p>Remove um ou mais documentos da base de dados.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>args</code> / <code>*kwargs</code>: Filtros para identificar quais documentos devem ser excluídos.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>dict</code>: Confirmação da remoção.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+store.delete_documents("mydb", "users", {"name": "Enzo"})
+</code></pre>
+
+  <h2>Use</h2>
+  <pre data-lang="python"><code>
+import json
+from src.database.no_relational_db.router import DocumentStore
+
+manager = DocumentStore(backend="local")
+
+manager.save_payload("mydb", "users", {"name": "Enzo"})
+
+docs = manager.fetch_documents("mydb", "users", {"name": "Enzo"})
+print(json.dumps(docs, indent=4))
+
+manager.update_documents("mydb", "users", {"name": "Enzo"}, {"age": 25})
+
+manager.delete_documents("mydb", "users", {"name": "Enzo"})
+
+response = manager.save_payload("mydb", "users", {"name": "Enzo"})
+print(response["inserted_id"])
+</code></pre>
 </page>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Loader Files | BetterAI Docs</title>
-<meta name="description" content="Pagina di esempio per Loader Files, usata per validare il layout.">
+<meta name="description" content="Ecco la documentazione didattica della classe FilesPayloadBuilder, strutturata per facilitare la comprensione di sviluppatori e integratori.">
 <link rel="canonical" href="pages/it/internal-source-code/utils/loader-files.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,81 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copia pagina</span></button>
             </div>
           </div>
-          <p class="lead">Pagina di esempio per Loader Files, usata per validare il layout.</p>
+          <p class="lead">Ecco la documentazione didattica della classe FilesPayloadBuilder, strutturata per facilitare la comprensione di sviluppatori e integratori.</p>
           <details class="toc-inline"><summary>In questa pagina</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Contenuto di esempio.</strong> Questo testo esiste solo per validare il layout. Nella versione finale la pagina è generata da <code>ipynb_contents/Internal Source Code/Utils/Loader Files.ipynb</code>.</p></div>
+        <div class="prose"><h2 id="1-panoramica"><a class="anchor" href="#1-panoramica" aria-label="Link para esta seção">#</a>1. Panoramica</h2>
+  <p>La classe <code>FilesPayloadBuilder</code> agisce come un <strong>filtro di sicurezza e trasformatore di dati</strong> nel livello di ingresso della tua API. Quando un utente invia file tramite FastAPI, questi arrivano come oggetti <code>UploadFile</code>.</p>
+  <p>Questa classe garantisce che i file non "rompano" il server perché troppo grandi o perché hanno formati malevoli o non supportati. Dopo la validazione, trasforma i dati grezzi in un dizionario Python (payload) facile da manipolare da altre parti del sistema, come servizi di elaborazione delle immagini o database.</p>
 
-  <h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
-  <p>Loader Files fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
+  <h2 id="2-flusso-di-esecuzione"><a class="anchor" href="#2-flusso-di-esecuzione" aria-label="Link para esta seção">#</a>2. Flusso di Esecuzione</h2>
+  <p>Il flusso di elaborazione di un file segue questo percorso logico:</p>
+  <ol>
+    <li><strong>Ricezione</strong>: L'API riceve un elenco di file tramite modulo (Multipart).</li>
+    <li><strong>Lettura Asincrona</strong>: Il contenuto del file viene letto dalla memoria o dal disco temporaneo in modo non bloccante (<code>await f.read()</code>).</li>
+    <li><strong>Verifica del Tipo</strong>: Il sistema controlla che il <code>content_type</code> (es: image/png) sia nell'elenco dei tipi consentiti.</li>
+    <li><strong>Verifica del Peso</strong>: La dimensione totale dei byte letti viene confrontata con il limite configurato (es: 10MB).</li>
+    <li><strong>Strutturazione</strong>: Se tutto è corretto, i dati vengono organizzati in un dizionario. Se qualcosa fallisce, viene sollevata immediatamente un'eccezione HTTP, interrompendo il processo per proteggere il server.</li>
+  </ol>
 
-  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
-  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> LoaderFiles
-
-client = <span class="t-f">LoaderFiles</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parametri"><a class="anchor" href="#parametri" aria-label="Link para esta seção">#</a>Parametri</h2>
-  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
+  <h2 id="3-riepilogo-dei-metodi"><a class="anchor" href="#3-riepilogo-dei-metodi" aria-label="Link para esta seção">#</a>3. Riepilogo dei Metodi</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <thead><tr><th>Metodo</th><th>Tipo</th><th>Breve Descrizione</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
+      <tr><td><code>__init__</code></td><td>Costruttore</td><td>Configura le regole di business (dimensione massima e tipi accettati).</td></tr>
+      <tr><td><code>build_images_payload</code></td><td>Coroutine (async)</td><td>Valida l'elenco dei file e genera la struttura dati finale.</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="note"><a class="anchor" href="#note" aria-label="Link para esta seção">#</a>Note</h2>
-  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
-  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div></div>
+  <h2 id="4-architettura-e-spunti"><a class="anchor" href="#4-architettura-e-spunti" aria-label="Link para esta seção">#</a>4. Architettura e Spunti</h2>
+  <ul>
+    <li><strong>Sicurezza Reattiva</strong>: Validando dimensione e tipo MIME subito all'ingresso, eviti attacchi di "Denial of Service" (DoS) tramite upload di file giganti.</li>
+    <li><strong>Uso di Set per le Prestazioni</strong>: La variabile <code>allowed_types</code> viene convertita in un <code>set</code>. In Python, verificare se un elemento esiste in un <code>set</code> è molto più veloce che in una <code>list</code> o <code>tuple</code>, soprattutto se l'elenco dei formati cresce.</li>
+    <li><strong>Integrazione con FastAPI</strong>: L'uso di <code>HTTPException</code> permette di restituire gli errori di validazione direttamente all'utente finale con i codici di stato appropriati (400 Bad Request), senza bisogno di blocchi try/except aggiuntivi nella rotta dell'API.</li>
+  </ul>
+
+  <h2 id="5-dettaglio-della-classe"><a class="anchor" href="#5-dettaglio-della-classe" aria-label="Link para esta seção">#</a>5. Dettaglio della Classe</h2>
+
+  <h3 id="classe-filespayloadbuilder"><a class="anchor" href="#classe-filespayloadbuilder" aria-label="Link para esta seção">#</a>Classe FilesPayloadBuilder</h3>
+  <p><strong>Descrizione</strong><br>Responsabile di validare l'integrità dei file inviati tramite upload e di prepararli per l'elaborazione interna. Centralizza le regole su "cosa può entrare" nel sistema in termini di file multimediali.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>max_mb</code> (int): La dimensione massima consentita per ogni singolo file in Megabyte.</li>
+    <li><code>allowed_types</code> (Iterable[str]): Una collezione di stringhe che rappresentano i tipi MIME accettati (es: <code>["image/jpeg", "application/pdf"]</code>).</li>
+  </ul>
+
+  <h3 id="metodi"><a class="anchor" href="#metodi" aria-label="Link para esta seção">#</a>Metodi</h3>
+
+  <h3 id="1-build-images-payload"><a class="anchor" href="#1-build-images-payload" aria-label="Link para esta seção">#</a>1. build_images_payload</h3>
+  <p><strong>Descrizione</strong><br>Questo è il cuore della classe. Scorre ogni file inviato, ne legge il contenuto binario e verifica che soddisfi i requisiti di sicurezza definiti nel costruttore.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>files</code> (List[UploadFile]): Un elenco di oggetti file provenienti da un endpoint FastAPI.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>list[dict]</code>: Un elenco di dizionari, dove ogni dizionario contiene:
+      <ul>
+        <li><code>filename</code>: Nome originale del file.</li>
+        <li><code>content_type</code>: Formato del file.</li>
+        <li><code>size_bytes</code>: Dimensione reale in byte.</li>
+        <li><code>bytes</code>: Il contenuto binario grezzo.</li>
+      </ul>
+    </li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>HTTPException (400)</code>: Sollevata se il formato del file non è consentito.</li>
+    <li><code>HTTPException (400)</code>: Sollevata se il file supera il limite di Megabyte configurato.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>builder = <span class="t-f">FilesPayloadBuilder</span>(max_mb=<span class="t-n">2</span>, allowed_types=[<span class="t-s">&quot;image/png&quot;</span>])
+
+<span class="t-c"># Em uma rota FastAPI</span>
+@app.<span class="t-f">post</span>(<span class="t-s">&quot;/upload&quot;</span>)
+<span class="t-k">async</span> <span class="t-k">def</span> <span class="t-f">upload_image</span>(files: List[UploadFile]):
+    payload = <span class="t-k">await</span> builder.<span class="t-f">build_images_payload</span>(files)
+    <span class="t-k">return</span> {<span class="t-s">&quot;status&quot;</span>: <span class="t-s">&quot;sucesso&quot;</span>, <span class="t-s">&quot;arquivos_processados&quot;</span>: <span class="t-f">len</span>(payload)}</code></pre><button class="copy floating" type="button"></button></div></div></div>
         <div class="feedback"></div>
         <p class="source">Fonte: <code>ipynb_contents/Internal Source Code/Utils/Loader Files.ipynb</code></p>
         <nav class="pager" aria-label="Pagine vicine"><a class="pager-link prev" href="../../../../pages/it/internal-source-code/utils/load-request-file/use.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Precedente</small><span>Use</span></div></a><a class="pager-link next" href="../../../../pages/it/internal-source-code/utils/unique-id-factory.html"><div><small>Successiva</small><span>Unique ID Factory</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

@@ -1,31 +1,131 @@
-<page data-lead="Pagina di esempio per Model Pricing, usata per validare il layout.">
-  <div class="callout" data-kind="note"><p><strong>Contenuto di esempio.</strong> Questo testo esiste solo per validare il layout. Nella versione finale la pagina è generata da <code>ipynb_contents/Internal Source Code/Token Calculate/Model Pricing.md</code>.</p></div>
-
+<page data-lead="La classe ModelPricing è stata creata per rappresentare un modello di prezzi dei linguaggi naturali basati su token, permettendo di calcolare il costo associato all'elaborazione di input e output in diversi modelli di linguaggio.">
   <h2>Panoramica</h2>
-  <p>Model Pricing fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
+  <p>La classe <code>ModelPricing</code> è stata creata per rappresentare un modello di prezzi dei linguaggi naturali basati su token, permettendo di calcolare il costo associato all'elaborazione di input e output in diversi modelli di linguaggio. Risolve il problema di determinare il prezzo dell'uso dei modelli di linguaggio, convertendo i costi per milione di token in costi unitari, facilitando la stima finanziaria per le chiamate alle API o l'uso dei modelli.</p>
+  <p>In pratica, questa classe può essere usata per ottenere in modo rapido e diretto il costo di una richiesta che coinvolge una certa quantità di token di input e output, bastando indicare il modello desiderato. Questo è utile per chi lavora con API di elaborazione del linguaggio, permettendo di stimare le spese e controllare l'uso basato sui token.</p>
 
-  <h2>Uso</h2>
-  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
-  <pre data-lang="python"><code>
-from better_ai import ModelPricing
+  <h2>Flusso di Esecuzione</h2>
+  <ol>
+    <li>Si inizializza un'istanza della classe <code>ModelPricing</code> passando il nome del modello come parametro. Se il modello non è supportato, viene sollevata un'eccezione.</li>
+    <li>Tramite i metodi <code>input_rate_per_token</code> e <code>output_rate_per_token</code>, si ottiene il costo unitario per token di input e di output, rispettivamente, convertendo i valori che sono originariamente definiti per milione di token.</li>
+    <li>Questi valori vengono moltiplicati per il numero reale di token elaborati per calcolare il costo totale di input e output.</li>
+    <li>Il risultato finale è il costo stimato in dollari per l'uso del modello in relazione alla quantità di token indicata.</li>
+  </ol>
 
-client = ModelPricing()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parametri</h2>
-  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
+  <h2>Tabella dei Metodi della Classe</h2>
   <table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <thead><tr><th>Metodo</th><th>Descrizione</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
+      <tr><td><code>__init__</code></td><td>Inizializza l'oggetto con il modello scelto, validandolo.</td></tr>
+      <tr><td><code>input_rate_per_token</code></td><td>Restituisce il costo unitario per token di input.</td></tr>
+      <tr><td><code>output_rate_per_token</code></td><td>Restituisce il costo unitario per token di output.</td></tr>
     </tbody>
   </table>
 
-  <h2>Note</h2>
-  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
-  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div>
+  <h2>Punti Importanti dell'Architettura e Insights</h2>
+  <ul>
+    <li>I prezzi sono memorizzati in <code>COST_MODELS</code>, un dizionario che associa il nome del modello ai costi per milione di token per input e output.</li>
+    <li>Il metodo di calcolo converte il costo per milione in costo per token dividendo il valore per 1.000.000, garantendo flessibilità per diverse scale.</li>
+    <li>Questo approccio incapsula la definizione dei prezzi in una classe, facilitando la manutenzione e l'estensione a nuovi modelli, bastando aggiungere voci al dizionario.</li>
+    <li>Validando il modello all'inizializzazione, si evitano errori successivi durante il calcolo, garantendo sicurezza nell'uso della classe.</li>
+  </ul>
+
+  <h2>Descrizione della Classe e dei Metodi</h2>
+
+  <h2>Classe <code>ModelPricing</code></h2>
+  <h3>Descrizione</h3>
+  <p>Classe per il calcolo del costo di utilizzo dei modelli di linguaggio, basato sulla quantità di token di input e output e sui prezzi definiti per modello. Offre un'interfaccia semplice per convertire i prezzi per milione di token in prezzi unitari.</p>
+
+  <h3>Argomenti del Costruttore</h3>
+  <table>
+    <thead><tr><th>Argomento</th><th>Tipo</th><th>Descrizione</th><th>Valore Predefinito</th></tr></thead>
+    <tbody>
+      <tr><td>model</td><td>str</td><td>Il nome del modello per il quale calcolare i costi.</td><td>Nessuno</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Metodi</h3>
+
+  <h3>1. <code>__init__</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Inizializza l'istanza della classe verificando se il modello indicato esiste nella base dei prezzi supportati, e assegna i prezzi corrispondenti.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>model (str): nome del modello di linguaggio utilizzato per consultare i prezzi.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>ValueError: Se il modello indicato non è presente tra i modelli supportati.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+model_pricing = ModelPricing("gpt-4.1-mini")
+</code></pre>
+
+  <h3>2. <code>input_rate_per_token</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Calcola e restituisce il costo per token di input, basato sul prezzo per milione di token configurato.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>float: costo in dollari per token di input.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nessuna.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+input_cost_per_token = model_pricing.input_rate_per_token()
+# Retorna algo como 0.0000004 para "gpt-4.1-mini"
+</code></pre>
+
+  <h3>3. <code>output_rate_per_token</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Calcola e restituisce il costo per token di output, basato sul prezzo per milione di token configurato.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>float: costo in dollari per token di output.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nessuna.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+output_cost_per_token = model_pricing.output_rate_per_token()
+# Retorna algo como 0.0000016 para "gpt-4.1-mini"
+</code></pre>
+
+  <h2>Esempio Completo di Utilizzo</h2>
+  <pre data-lang="python"><code>
+model = "gpt-4.1-mini"
+input_token_count = 946
+output_token_count = 255
+
+model_pricing = ModelPricing(model)
+input_cost = model_pricing.input_rate_per_token() * input_token_count
+output_cost = model_pricing.output_rate_per_token() * output_token_count
+
+print(f"Custo de entrada (USD): {input_cost:.6f}")
+print(f"Custo de saída (USD): {output_cost:.6f}")
+
+# python -m src.tokens_calculate.model_pricing
+</code></pre>
+  <p>Output atteso:</p>
+  <pre><code>
+Custo de entrada (USD): 0.000378
+Custo de saída (USD): 0.000408
+</code></pre>
+  <p>Questo esempio illustra come calcolare il costo totale in base a conteggi di token reali per un modello specifico, facilitando il controllo finanziario e l'analisi dei costi per le chiamate ai modelli di linguaggio.</p>
 </page>

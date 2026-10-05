@@ -1,31 +1,277 @@
-<page data-lead="Página de exemplo para Generate Pydantic Schema, usada para validar o layout.">
-  <div class="callout" data-kind="note"><p><strong>Conteúdo de exemplo.</strong> Este texto existe só para validar o layout. Na versão final, a página é gerada a partir de <code>ipynb_contents/Modules/Content Parse/Generate Pydantic Schema.md</code>.</p></div>
+<page data-lead="A classe GeneratePydanticSchema foi desenvolvida para facilitar a criação dinâmica de modelos Pydantic a partir de dicionários Python aninhados.">
+  <h2>Visão Geral</h2>
+  <p>A classe <code>GeneratePydanticSchema</code> foi desenvolvida para facilitar a criação dinâmica de modelos Pydantic a partir de dicionários Python aninhados. Em cenários onde dados complexos e estruturados são recebidos, como em APIs ou sistemas que lidam com diversas estruturas JSON, essa classe automatiza a geração de schemas Pydantic, usados para validação, conversão e documentação dessas estruturas.</p>
+  <p>O problema que a classe resolve é a necessidade manual e repetitiva de criar modelos Pydantic para cada estrutura de dado complexa, que muitas vezes varia em profundidade e formato. Ao utilizar esta classe, o desenvolvedor passa um dicionário de dados e recebe um modelo Pydantic que reflete exatamente a estrutura e tipos desses dados, incluindo schemas aninhados para objetos internos e listas.</p>
+  <p>Na prática, pode ser usada para validar dados de entrada, gerar exemplos para documentação automática ou construir interfaces adaptativas em sistemas que consomem dados dinâmicos.</p>
 
-  <h2>Visão geral</h2>
-  <p>Generate Pydantic Schema faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
+  <h2>Fluxo de Execução</h2>
+  <ol>
+    <li>O usuário instancia a classe <code>GeneratePydanticSchema</code>, podendo opcionalmente informar um objeto <code>FieldMetadataParser</code> para customizar a extração de metadados dos campos.</li>
+    <li>O método <code>convert()</code> é chamado com um dicionário Python representando os dados a serem modelados e um nome raiz para o modelo (padrão "RootModel").</li>
+    <li>A classe analisa recursivamente cada chave e valor do dicionário:
+      <ul>
+        <li>Para campos escalares, determina o tipo básico.</li>
+        <li>Para dicionários aninhados, gera um novo modelo Pydantic com um nome automático único.</li>
+        <li>Para listas, analisa o tipo do primeiro elemento para definir o tipo dos itens na lista, gerando modelos para objetos se necessário.</li>
+      </ul>
+    </li>
+    <li>Campos recebem metadados (descrição) gerados automaticamente ou pela análise do <code>metadata_parser</code>.</li>
+    <li>Todos os modelos gerados são armazenados internamente, podendo ser recuperados pelo método <code>get_models()</code>.</li>
+    <li>Em caso de erro durante a conversão, uma exceção <code>RuntimeError</code> é lançada com detalhes do erro.</li>
+  </ol>
 
-  <h2>Uso</h2>
-  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
-  <pre data-lang="python"><code>
-from better_ai import GeneratePydanticSchema
-
-client = GeneratePydanticSchema()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parâmetros</h2>
-  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
+  <h2>Tabela de Métodos da Classe</h2>
   <table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <thead><tr><th>Método</th><th>Descrição</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
+      <tr><td><code>__init__</code></td><td>Inicializa a classe com um parser de metadados opcional.</td></tr>
+      <tr><td><code>convert</code></td><td>Converte um dicionário em um modelo Pydantic raiz.</td></tr>
+      <tr><td><code>get_models</code></td><td>Retorna todos os modelos Pydantic gerados até o momento.</td></tr>
+      <tr><td><code>_generate_name</code></td><td>Gera nomes únicos para modelos aninhados.</td></tr>
+      <tr><td><code>_create_model</code></td><td>Cria um modelo Pydantic a partir de campos definidos.</td></tr>
+      <tr><td><code>_resolve_type</code></td><td>Deduz o tipo base do valor recebido.</td></tr>
+      <tr><td><code>_parse_object</code></td><td>Constrói recursivamente modelos Pydantic para objetos.</td></tr>
+      <tr><td><code>_parse_field</code></td><td>Analisa o tipo e metadados de um campo individual.</td></tr>
     </tbody>
   </table>
 
-  <h2>Observações</h2>
-  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
-  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div>
+  <h2>Pontos Importantes da Arquitetura e Insights</h2>
+  <ul>
+    <li>A geração dinâmica aproveita o método <code>create_model</code> do Pydantic para criar classes em tempo de execução, facilitando a criação de modelos não conhecidos em tempo de codificação.</li>
+    <li>O uso recursivo permite a criação de modelos aninhados que refletem a estrutura complexa dos dados de entrada.</li>
+    <li>A contagem incremental garante nomes únicos para os modelos auxiliares, evitando colisões.</li>
+    <li>A classe depende do <code>FieldMetadataParser</code> para enriquecer os campos com metadados, criando uma separação que favorece a personalização e extensibilidade da análise de campos.</li>
+    <li>O tratamento específico para listas, com a tentativa de singularizar nomes (presumivelmente usando <code>inflector.singular_noun</code>), mostra atenção na nomenclatura dos modelos.</li>
+    <li>Manejo cuidadoso das exceções durante parsing e conversão, registrando mensagem de erro e mantendo usabilidade ao expor erros claros ao usuário.</li>
+    <li>Internamente, o armazenamento dos modelos em um dicionário permite consulta e reutilização posterior.</li>
+  </ul>
+
+  <h2>Descrição da Classe e Métodos</h2>
+
+  <h2>Classe <code>GeneratePydanticSchema</code></h2>
+
+  <h3>Descrição</h3>
+  <p>Esta classe tem o papel de converter dicionários complexos e aninhados em modelos Pydantic programaticamente. Ela automatiza a geração de schemas de validação que refletem fielmente a estrutura dos dados de entrada, com suporte para campos aninhados, listas e a integração com um parser de metadados para aumentar a descrição dos campos.</p>
+  <p>Seu uso é indicado para cenários de validação dinâmica e construção de APIs ou sistemas que recebem dados JSON diversos e precisam de validação forte e explícita.</p>
+
+  <h3>Argumentos do Construtor</h3>
+  <table>
+    <thead><tr><th>Argumento</th><th>Tipo</th><th>Descrição</th><th>Valor Padrão</th></tr></thead>
+    <tbody>
+      <tr><td><code>metadata_parser</code></td><td><code>FieldMetadataParser</code></td><td>Objeto para análise e extração de metadados de campos.</td><td>Nova instância de <code>FieldMetadataParser</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Métodos</h3>
+
+  <h3>1. <code>__init__</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Inicializa a instância da classe, definindo o parser de metadados e preparando o armazenamento interno para os modelos gerados.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>metadata_parser</code> (<code>FieldMetadataParser</code>): Parser opcional para extração de metadados.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>Não retorna valor.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+schema_generator = GeneratePydanticSchema()
+</code></pre>
+
+  <h3>2. <code>convert</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Recebe um dicionário Python e converte-o em um modelo Pydantic raiz, gerando automaticamente todos os modelos aninhados necessários para a validação completa da estrutura.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>data</code> (<code>Dict[str, Any]</code>): Dicionário de dados a ser convertido em modelo.</li>
+    <li><code>root_name</code> (<code>str</code>): Nome do modelo raiz a ser criado. Padrão é "RootModel".</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>Type[BaseModel]</code>: Modelo Pydantic gerado para o dicionário informado.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: Caso ocorra erro durante a conversão dos dados.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+data = {
+    "nome": "João",
+    "idade": 30,
+    "endereco": {
+        "rua": "Av. Brasil",
+        "numero": 100
+    }
+}
+
+model = schema_generator.convert(data, root_name="Pessoa")
+# model agora é uma classe Pydantic com campos nome, idade e endereco (que é outro modelo)
+</code></pre>
+
+  <h3>3. <code>get_models</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Retorna todos os modelos Pydantic criados até o momento, incluindo modelos aninhados gerados durante a conversão dos dados.</p>
+  <p><strong>Argumentos</strong></p>
+  <p>Nenhum.</p>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>Dict[str, Type[BaseModel]]</code>: Dicionário com nomes dos modelos como chave e classes Pydantic como valor.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <p>Nenhum.</p>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+all_models = schema_generator.get_models()
+# Pode acessar, por exemplo, all_models["Pessoa1"] para um modelo aninhado
+</code></pre>
+
+  <h3>4. <code>_generate_name</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Gera um nome único para modelos Pydantic aninhados, combinando uma base de nome com um contador incremental.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>base</code> (<code>str</code>): Nome base para o modelo.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>str</code>: Nome gerado único, ex: "Endereco1".</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <p>Nenhum.</p>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+nome = schema_generator._generate_name("endereco")
+# "Endereco1"
+</code></pre>
+
+  <h3>5. <code>_create_model</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Cria um modelo Pydantic dinamicamente a partir de um nome e campos especificados, armazenando-o no dicionário interno.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>name</code> (<code>str</code>): Nome do modelo.</li>
+    <li><code>fields</code> (<code>Dict[str, Tuple[Any, Any]]</code>): Mapeamento de campos para tuplas (tipo, metadados).</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>Type[BaseModel]</code>: Modelo Pydantic criado.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <p>Nenhum.</p>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+fields = {
+    "nome": (str, ...),
+    "idade": (int, ...)
+}
+
+model = schema_generator._create_model("Pessoa", fields)
+</code></pre>
+
+  <h3>6. <code>_resolve_type</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Determina o tipo Pydantic básico de um valor Python simples.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>value</code> (<code>Any</code>): Valor cujo tipo deve ser deduzido.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>Any</code>: Tipo Python correspondente (<code>str</code>, <code>bool</code>, <code>int</code>, <code>float</code>, <code>list</code>, <code>dict</code> ou <code>Any</code> como fallback).</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <p>Nenhum.</p>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+t = schema_generator._resolve_type(10)   # int
+t2 = schema_generator._resolve_type("hi") # str
+</code></pre>
+
+  <h3>7. <code>_parse_object</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Analisa um dicionário e cria um modelo Pydantic para ele, processando recursivamente todos os campos do objeto.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>obj</code> (<code>Dict[str, Any]</code>): Dicionário a ser parseado.</li>
+    <li><code>name</code> (<code>str</code>): Nome do modelo a ser criado.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>Type[BaseModel]</code>: Modelo Pydantic criado para o objeto analisado.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <p>Nenhum.</p>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+model = schema_generator._parse_object({"a": 1, "b": "x"}, "SimpleModel")
+</code></pre>
+
+  <h3>8. <code>_parse_field</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Determina o tipo e metadados para um campo individual, tratando casos de dicionários, listas, valores escalares e aplicando análise personalizada via <code>metadata_parser</code>.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>key</code> (<code>str</code>): Nome do campo.</li>
+    <li><code>value</code> (<code>Any</code>): Valor do campo para dedução do tipo.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>Tuple[Any, Any]</code>: Tupla com tipo do campo e instância <code>Field</code> contendo metadados para Pydantic.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: Se houver erro durante o parsing, encapsula o erro original.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+if __name__ == "__main__":
+    json_data = {
+        "script": {
+            "setting": {
+                "type": "str",
+                "description": "Onde o filme acontece",
+                "example": "Tokyo"
+            },
+            "genre": {
+                "type": "str",
+                "description": "Gênero do filme",
+                "example": "Heist"
+            },
+            "storyline": "A big robbery"
+        },
+        "context": {
+            "year": {
+                "type": "int",
+                "description": "Ano da história",
+                "example": 2025
+            }
+        },
+        "people": {
+            "characters": [
+                {
+                    "name": {
+                        "type": "str",
+                        "description": "Nome do personagem"
+                    },
+                    "role": "protagonist"
+                }
+            ]
+        }
+    }
+
+    converter = JsonToPydantic()
+    Movie = converter.convert(json_data, "Movie")
+
+    print(Movie.schema_json(indent=2))
+
+# python -m src.content_parse.pydantic_shema
+</code></pre>
+  <p>Essa documentação oferece um guia detalhado para programadores compreenderem e utilizarem a classe <code>GeneratePydanticSchema</code> de forma prática e eficiente, garantindo a geração rápida e correta de modelos Pydantic para validação e manipulação de dados complexos.</p>
 </page>

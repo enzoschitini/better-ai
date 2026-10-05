@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Database | BetterAI Docs</title>
-<meta name="description" content="Página de exemplo para Database, usada para validar o layout.">
+<meta name="description" content="BetterAI Docs">
 <link rel="canonical" href="pages/pt/modules/agents/utils/database.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,180 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copiar página</span></button>
             </div>
           </div>
-          <p class="lead">Página de exemplo para Database, usada para validar o layout.</p>
+          
           <details class="toc-inline"><summary>Nesta página</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Conteúdo de exemplo.</strong> Este texto existe só para validar o layout. Na versão final, a página é gerada a partir de <code>ipynb_contents/Modules/Agents/Utils/Database.md</code>.</p></div>
+        <div class="prose"><h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão Geral</h2>
+  <p>A classe <code>Database</code> atua como uma <strong>fábrica de conexão</strong> com bancos de dados, fornecendo uma interface unificada para conectar-se tanto a um banco SQLite local quanto a um banco Postgres hospedado no Supabase. Ela abstrai detalhes de configuração e escolhas de implementação, permitindo que o desenvolvedor selecione o tipo de banco apenas passando parâmetros simples, sem precisar lidar com configurações complexas.</p>
+  <p>Esse design é útil quando você tem ambientes diversos, como desenvolvimento local e produção na nuvem, e deseja uma forma consistente e elegante de inicializar conexões com diferentes bancos de dados, mantendo o restante da aplicação desacoplado da camada de persistência.</p>
 
-  <h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão geral</h2>
-  <p>Database faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
+  <h2 id="fluxo-de-execucao"><a class="anchor" href="#fluxo-de-execucao" aria-label="Link para esta seção">#</a>Fluxo de Execução</h2>
+  <ol>
+    <li>Ao instanciar a classe <code>Database</code>, você chama seu construtor (na verdade usa o método <code>__new__</code> customizado).</li>
+    <li>O parâmetro <code>local</code> decide se a conexão será com SQLite local (<code>local=True</code>) ou Supabase Postgres (<code>local=False</code>).</li>
+    <li>Se for local, chama-se o método <code>_local_database</code>, que constrói a conexão do tipo <code>SqliteDb</code> usando o arquivo <code>.db</code>.</li>
+    <li>Caso contrário, chama-se <code>_supabase</code> que cria a conexão do tipo <code>PostgresDb</code>, montando a URL do banco usando variáveis de ambiente ou parâmetro passado.</li>
+    <li>Métodos estáticos auxiliares geram nomes de schema, caminhos ou URLs conforme parâmetros e padrões internos.</li>
+    <li>Por fim, o objeto da respectiva classe de banco de dados (<code>SqliteDb</code> ou <code>PostgresDb</code>) é retornado, pronto para uso.</li>
+  </ol>
 
-  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
-  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> Database
-
-client = <span class="t-f">Database</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parametros"><a class="anchor" href="#parametros" aria-label="Link para esta seção">#</a>Parâmetros</h2>
-  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
+  <h2 id="tabela-de-metodos-da-classe"><a class="anchor" href="#tabela-de-metodos-da-classe" aria-label="Link para esta seção">#</a>Tabela de Métodos da Classe</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <thead><tr><th>Método</th><th>Descrição</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
+      <tr><td><code>__new__</code></td><td>Controla a criação do objeto, decide qual banco usar</td></tr>
+      <tr><td><code>_get_schema_name</code></td><td>Retorna o nome do schema para Postgres</td></tr>
+      <tr><td><code>_get_database_local_storage</code></td><td>Construção do caminho do arquivo SQLite</td></tr>
+      <tr><td><code>_get_database_url</code></td><td>Gera ou retorna a URL do banco Postgres</td></tr>
+      <tr><td><code>_supabase</code></td><td>Cria e configura o objeto de conexão Postgres</td></tr>
+      <tr><td><code>_local_database</code></td><td>Cria e configura o objeto de SQLite</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="observacoes"><a class="anchor" href="#observacoes" aria-label="Link para esta seção">#</a>Observações</h2>
-  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
-  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div></div>
+  <h2 id="variaveis-de-ambiente"><a class="anchor" href="#variaveis-de-ambiente" aria-label="Link para esta seção">#</a>Variáveis de Ambiente</h2>
+  <ul>
+    <li><code>SUPABASE_PROJECT_HOST</code>: Host do projeto Supabase para construção da URL de conexão.</li>
+    <li><code>SUPABASE_DATABASE_PASSWORD</code>: Senha do banco Postgres do Supabase.</li>
+  </ul>
+
+  <h2 id="pontos-importantes-da-arquitetura-e-insights"><a class="anchor" href="#pontos-importantes-da-arquitetura-e-insights" aria-label="Link para esta seção">#</a>Pontos Importantes da Arquitetura e Insights</h2>
+  <ul>
+    <li>Usa o método mágico <code>__new__</code> para implementar o padrão de <strong>Factory</strong>, retornando diferentes tipos de objetos conforme parâmetros.</li>
+    <li>O encapsulamento garante que detalhes específicos do banco (URLs, nomes de tabelas) ficam centralizados, facilitando manutenção.</li>
+    <li>Os métodos estáticos são usados para lógica de composição de strings, separando responsabilidades.</li>
+    <li>A classe depende das classes <code>SqliteDb</code> e <code>PostgresDb</code>, que representam as conexões efetivas aos bancos.</li>
+    <li>Variáveis de ambiente são usadas para manter dados sensíveis fora do código, seguindo boas práticas.</li>
+    <li>Permite injeção de parâmetros para maior flexibilidade (ex: nome do banco, URL customizada).</li>
+  </ul>
+
+  <h2 id="descricao-da-classe-e-metodos"><a class="anchor" href="#descricao-da-classe-e-metodos" aria-label="Link para esta seção">#</a>Descrição da Classe e Métodos</h2>
+
+  <h2 id="classe-database"><a class="anchor" href="#classe-database" aria-label="Link para esta seção">#</a>Classe <code>Database</code></h2>
+  <h3 id="descricao"><a class="anchor" href="#descricao" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Classe fábrica para facilitar a conexão com bancos SQLite locais ou Supabase Postgres, abstraindo a complexidade de configuração e conexão.</p>
+  <h3 id="argumentos-do-construtor"><a class="anchor" href="#argumentos-do-construtor" aria-label="Link para esta seção">#</a>Argumentos do Construtor</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argumento</th><th>Tipo</th><th>Descrição</th><th>Valor Padrão</th></tr></thead>
+    <tbody>
+      <tr><td><code>local</code></td><td><code>bool</code></td><td>Define se conecta localmente (SQLite), caso contrário Supabase Postgres</td><td>False</td></tr>
+      <tr><td><code>database_name</code></td><td><code>str | None</code></td><td>Nome do banco ou schema, opcional</td><td>None</td></tr>
+      <tr><td><code>database_url</code></td><td><code>str | None</code></td><td>URL completa para conexão remota, opcional</td><td>None</td></tr>
+    </tbody>
+  </table></div>
+  <h3 id="metodos"><a class="anchor" href="#metodos" aria-label="Link para esta seção">#</a>Métodos</h3>
+
+  <h3 id="1-new"><a class="anchor" href="#1-new" aria-label="Link para esta seção">#</a>1. <code>__new__</code></h3>
+  <h3 id="descricao-2"><a class="anchor" href="#descricao-2" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Método especial que controla a criação da instância da classe. Decide, conforme parâmetros, se será criado um objeto <code>SqliteDb</code> para banco local ou <code>PostgresDb</code> para Supabase.</p>
+  <h3 id="argumentos"><a class="anchor" href="#argumentos" aria-label="Link para esta seção">#</a>Argumentos</h3>
+  <ul>
+    <li><code>local</code> (bool): indica uso local ou remoto.</li>
+    <li><code>database_name</code> (str | None): nome do banco/schema.</li>
+    <li><code>database_url</code> (str | None): URL do banco remoto.</li>
+  </ul>
+  <h3 id="retornos"><a class="anchor" href="#retornos" aria-label="Link para esta seção">#</a>Retornos</h3>
+  <ul>
+    <li><code>SqliteDb</code> ou <code>PostgresDb</code>: objeto configurado para interagir com o banco correspondente.</li>
+  </ul>
+  <h3 id="raises"><a class="anchor" href="#raises" aria-label="Link para esta seção">#</a>Raises</h3>
+  <p>Nenhum.</p>
+  <h3 id="exemplos"><a class="anchor" href="#exemplos" aria-label="Link para esta seção">#</a>Exemplos</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-c"># Conecta a banco SQLite local padrão</span>
+db_local = <span class="t-f">Database</span>(local=<span class="t-n">True</span>)
+
+<span class="t-c"># Conecta a banco Supabase com nome específico</span>
+db_supabase = <span class="t-f">Database</span>(local=<span class="t-n">False</span>, database_name=<span class="t-s">&quot;test_schema&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-get-schema-name"><a class="anchor" href="#2-get-schema-name" aria-label="Link para esta seção">#</a>2. <code>_get_schema_name</code></h3>
+  <h3 id="descricao-3"><a class="anchor" href="#descricao-3" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Retorna o nome do schema para conexão Postgres, usando o nome passado ou o default "agent_db".</p>
+  <h3 id="argumentos-2"><a class="anchor" href="#argumentos-2" aria-label="Link para esta seção">#</a>Argumentos</h3>
+  <ul>
+    <li><code>database_name</code> (str | None): nome do schema.</li>
+  </ul>
+  <h3 id="retornos-2"><a class="anchor" href="#retornos-2" aria-label="Link para esta seção">#</a>Retornos</h3>
+  <ul>
+    <li><code>str</code>: nome do schema a ser usado.</li>
+  </ul>
+  <h3 id="raises-2"><a class="anchor" href="#raises-2" aria-label="Link para esta seção">#</a>Raises</h3>
+  <p>Nenhum.</p>
+  <h3 id="exemplos-2"><a class="anchor" href="#exemplos-2" aria-label="Link para esta seção">#</a>Exemplos</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>Database.<span class="t-f">_get_schema_name</span>(<span class="t-s">&quot;prod_schema&quot;</span>)  <span class="t-c"># Retorna &quot;prod_schema&quot;</span>
+Database.<span class="t-f">_get_schema_name</span>(<span class="t-n">None</span>)           <span class="t-c"># Retorna &quot;agent_db&quot;</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-get-database-local-storage"><a class="anchor" href="#3-get-database-local-storage" aria-label="Link para esta seção">#</a>3. <code>_get_database_local_storage</code></h3>
+  <h3 id="descricao-4"><a class="anchor" href="#descricao-4" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Monta o caminho do arquivo <code>.db</code> para o banco SQLite local conforme o nome fornecido.</p>
+  <h3 id="argumentos-3"><a class="anchor" href="#argumentos-3" aria-label="Link para esta seção">#</a>Argumentos</h3>
+  <ul>
+    <li><code>database_name</code> (str | None): nome do arquivo sem extensão.</li>
+  </ul>
+  <h3 id="retornos-3"><a class="anchor" href="#retornos-3" aria-label="Link para esta seção">#</a>Retornos</h3>
+  <ul>
+    <li><code>str</code>: caminho completo do arquivo SQLite.</li>
+  </ul>
+  <h3 id="raises-3"><a class="anchor" href="#raises-3" aria-label="Link para esta seção">#</a>Raises</h3>
+  <p>Nenhum.</p>
+  <h3 id="exemplos-3"><a class="anchor" href="#exemplos-3" aria-label="Link para esta seção">#</a>Exemplos</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>Database.<span class="t-f">_get_database_local_storage</span>(<span class="t-s">&quot;testdb&quot;</span>)  <span class="t-c"># &quot;src/agents/database/testdb.db&quot;</span>
+Database.<span class="t-f">_get_database_local_storage</span>(<span class="t-n">None</span>)      <span class="t-c"># &quot;src/agents/database/agno.db&quot;</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-get-database-url"><a class="anchor" href="#4-get-database-url" aria-label="Link para esta seção">#</a>4. <code>_get_database_url</code></h3>
+  <h3 id="descricao-5"><a class="anchor" href="#descricao-5" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Retorna a URL de conexão para o banco Postgres do Supabase. Usa a URL passada, se fornecida, ou constrói a partir das variáveis de ambiente.</p>
+  <h3 id="argumentos-4"><a class="anchor" href="#argumentos-4" aria-label="Link para esta seção">#</a>Argumentos</h3>
+  <ul>
+    <li><code>database_url</code> (str | None): URL completa opcional.</li>
+  </ul>
+  <h3 id="retornos-4"><a class="anchor" href="#retornos-4" aria-label="Link para esta seção">#</a>Retornos</h3>
+  <ul>
+    <li><code>str</code>: URL de conexão ao banco.</li>
+  </ul>
+  <h3 id="raises-4"><a class="anchor" href="#raises-4" aria-label="Link para esta seção">#</a>Raises</h3>
+  <p>Nenhum.</p>
+  <h3 id="exemplos-4"><a class="anchor" href="#exemplos-4" aria-label="Link para esta seção">#</a>Exemplos</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-c"># Usando URL direta</span>
+Database.<span class="t-f">_get_database_url</span>(<span class="t-s">&quot;postgresql://user:pass@host:5432/db&quot;</span>)
+
+<span class="t-c"># Usando ENV-SUPABASE_PROJECT_HOST e SUPABASE_DATABASE_PASSWORD</span>
+Database.<span class="t-f">_get_database_url</span>(<span class="t-n">None</span>)  <span class="t-c"># Exemplo: &quot;postgresql://postgres:password@db.projecthost:5432/postgres&quot;</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="5-supabase"><a class="anchor" href="#5-supabase" aria-label="Link para esta seção">#</a>5. <code>_supabase</code></h3>
+  <h3 id="descricao-6"><a class="anchor" href="#descricao-6" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Cria uma instância de <code>PostgresDb</code> configurada para Supabase, com nome do schema e URL definidos.</p>
+  <h3 id="argumentos-5"><a class="anchor" href="#argumentos-5" aria-label="Link para esta seção">#</a>Argumentos</h3>
+  <ul>
+    <li><code>database_url</code> (str | None): URL da conexão remota.</li>
+    <li><code>database_name</code> (str | None): nome do schema.</li>
+  </ul>
+  <h3 id="retornos-5"><a class="anchor" href="#retornos-5" aria-label="Link para esta seção">#</a>Retornos</h3>
+  <ul>
+    <li><code>PostgresDb</code>: objeto configurado para uso com Supabase.</li>
+  </ul>
+  <h3 id="raises-5"><a class="anchor" href="#raises-5" aria-label="Link para esta seção">#</a>Raises</h3>
+  <p>Nenhum.</p>
+  <h3 id="exemplos-5"><a class="anchor" href="#exemplos-5" aria-label="Link para esta seção">#</a>Exemplos</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>db = Database.<span class="t-f">_supabase</span>(database_url=<span class="t-n">None</span>, database_name=<span class="t-s">&quot;my_schema&quot;</span>)
+<span class="t-c"># db é uma instância de PostgresDb pronta para manipular o banco remoto</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="6-local-database"><a class="anchor" href="#6-local-database" aria-label="Link para esta seção">#</a>6. <code>_local_database</code></h3>
+  <h3 id="descricao-7"><a class="anchor" href="#descricao-7" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Cria uma instância de <code>SqliteDb</code> configurada para uso local, definindo o caminho do arquivo .db e tabelas.</p>
+  <h3 id="argumentos-6"><a class="anchor" href="#argumentos-6" aria-label="Link para esta seção">#</a>Argumentos</h3>
+  <ul>
+    <li><code>database_name</code> (str | None): nome do arquivo do banco local.</li>
+  </ul>
+  <h3 id="retornos-6"><a class="anchor" href="#retornos-6" aria-label="Link para esta seção">#</a>Retornos</h3>
+  <ul>
+    <li><code>SqliteDb</code>: objeto configurado para banco SQLite local.</li>
+  </ul>
+  <h3 id="raises-6"><a class="anchor" href="#raises-6" aria-label="Link para esta seção">#</a>Raises</h3>
+  <p>Nenhum.</p>
+  <h3 id="exemplos-6"><a class="anchor" href="#exemplos-6" aria-label="Link para esta seção">#</a>Exemplos</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>db = Database.<span class="t-f">_local_database</span>(database_name=<span class="t-s">&quot;localdb&quot;</span>)
+<span class="t-c"># db é uma instância de SqliteDb pronta para manipulação local</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <p>Essa documentação fornece uma visão completa e didática da classe <code>Database</code>, facilitando seu entendimento e uso prático.</p></div>
         <div class="feedback"></div>
         <p class="source">Fonte: <code>ipynb_contents/Modules/Agents/Utils/Database.md</code></p>
         <nav class="pager" aria-label="Páginas vizinhas"><a class="pager-link prev" href="../../../../../pages/pt/modules/index.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Anterior</small><span>Modules: visão geral</span></div></a><a class="pager-link next" href="../../../../../pages/pt/modules/agents/utils/model-gateway.html"><div><small>Próxima</small><span>Model Gateway</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

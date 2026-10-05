@@ -1,31 +1,259 @@
-<page data-lead="Página de exemplo para Pinecone Embedding, usada para validar o layout.">
-  <div class="callout" data-kind="note"><p><strong>Conteúdo de exemplo.</strong> Este texto existe só para validar o layout. Na versão final, a página é gerada a partir de <code>ipynb_contents/Internal Source Code/Vector Store/Pinecone Embedding.ipynb</code>.</p></div>
+<page data-lead="A classe PineconeEmbedding é uma implementação focada em facilitar o trabalho com vetores de embeddings baseados na biblioteca Pinecone, muito utilizada para armazenar e buscar vetores em alta escala.">
+  <h2>Visão Geral</h2>
+  <p>A classe <code>PineconeEmbedding</code> é uma implementação focada em facilitar o trabalho com vetores de embeddings baseados na biblioteca Pinecone, muito utilizada para armazenar e buscar vetores em alta escala. Ela oferece funcionalidades para dividir textos em pedaços menores, transformar esses pedaços em documentos estruturados com metadados, gerar vetores de embeddings a partir dos textos e gerenciar o armazenamento desses vetores em índices Pinecone.</p>
+  <p>Este serviço é ideal para aplicações que lidam com grandes volumes de dados textuais e precisam realizar buscas semânticas ou recomendações baseadas em embeddings. O uso típico envolve o processamento de texto bruto, geração de embeddings via OpenAI, armazenamento organizado e eficiente desses vetores, além da possibilidade de manutenção via remoção de vetores específicos.</p>
 
-  <h2>Visão geral</h2>
-  <p>Pinecone Embedding faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
+  <h2>Fluxo de Execução</h2>
+  <ol>
+    <li><strong>Inicialização da Classe</strong>: A classe é instanciada com um cliente Pinecone customizado ou padrão, configurando modelos de embedding, tamanhos de chunk, namespaces, e outros parâmetros de configuração carregados via ambiente ou arquivos.</li>
+    <li><strong>Geração de Vetores</strong>:
+      <ul>
+        <li>Recebe um texto completo e metadados associados (ex: <code>file_id</code>).</li>
+        <li>O texto é dividido em pedaços menores respeitando limites de tamanho e sobreposição.</li>
+        <li>Cada pedaço vira um documento com metadados.</li>
+        <li>Os documentos são transformados em vetores embeddings por lotes (batch).</li>
+        <li>Os vetores são salvos no namespace principal do Pinecone, com opcional salvamento no namespace global para reutilização.</li>
+      </ul>
+    </li>
+    <li><strong>Deleção de Vetores</strong>:
+      <ul>
+        <li>Possibilita apagar vetores do Pinecone filtrando por um campo metadata e valor, no namespace especificado.</li>
+        <li>Handle de deleções em lotes para eficiência.</li>
+        <li>Garante rollback e logging para evitar inconsistências em caso de falhas.</li>
+      </ul>
+    </li>
+    <li><strong>Monitoramento e Logs</strong>:
+      <ul>
+        <li>Integração com sistema de tracing (<code>ApplicationTracing</code>) para debug detalhado das etapas.</li>
+        <li>Tratamento de exceções cuidadoso para informar erros ocorridos no processo.</li>
+      </ul>
+    </li>
+  </ol>
 
-  <h2>Uso</h2>
-  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
-  <pre data-lang="python"><code>
-from better_ai import PineconeEmbedding
-
-client = PineconeEmbedding()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parâmetros</h2>
-  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
+  <h2>Tabela de Métodos da Classe</h2>
   <table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <thead><tr><th>Método</th><th>Descrição</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
+      <tr><td><code>__init__</code></td><td>Inicializa o serviço, configura cliente e parâmetros.</td></tr>
+      <tr><td><code>embedding_document</code></td><td>Cria e salva embeddings de texto dividido em chunks.</td></tr>
+      <tr><td><code>delete_documents</code></td><td>Deleta vetores no Pinecone com base em filtros metadata.</td></tr>
+      <tr><td><code>split_text</code></td><td>Divide um texto longo em múltiplos pedaços.</td></tr>
+      <tr><td><code>build_documents</code></td><td>Cria objetos Document com conteúdo e metadados. (método estático)</td></tr>
+      <tr><td><code>generate_embeddings</code></td><td>Gera as representações vetoriais a partir de textos.</td></tr>
     </tbody>
   </table>
 
-  <h2>Observações</h2>
-  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
-  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div>
+  <h2>Variáveis de Ambiente</h2>
+  <ul>
+    <li><code>OPENAI_EMBEDDING_MODEL</code>: Define o modelo de embedding da OpenAI a ser utilizado para gerar os vetores em caso de não fornecimento explícito.</li>
+  </ul>
+
+  <h2>Pontos Importantes da Arquitetura e Insights</h2>
+  <ul>
+    <li><strong>Herança e Reuso</strong>: <code>PineconeEmbedding</code> herda de <code>EmbeddingHelpers</code>, separando a lógica de manipulação de texto e geração de embeddings do fluxo mais alto de armazenamento e gerenciamento.</li>
+    <li><strong>Batching Inteligente</strong>: A geração e deleção de embeddings são processadas em lotes configuráveis para balancear performance e uso de recursos.</li>
+    <li><strong>Namespaces Separados</strong>: A distinção entre namespace principal e global permite organização dos dados, possibilitando cenários de escopo isolado e compartilhado.</li>
+    <li><strong>Logging e Tracing Profundos</strong>: Integração com sistema de tracing customizado que possibilita depuração granular e monitoramento detalhado das operações.</li>
+    <li><strong>Tratamento Robusto de Erros</strong>: Rolback explícito em caso de falhas na inserção em lote garante a consistência do índice Pinecone.</li>
+    <li><strong>Uso de OpenAIEmbeddings</strong>: Abstração da geração dos embeddings via modelo OpenAI que pode ser trocado facilmente via variável de ambiente ou argumento.</li>
+    <li><strong>Dependências Externas</strong>: A classe depende da implementação de cliente Pinecone (<code>PineconeClient</code>), configuração (<code>PineconeVectorStoreConfig</code>) e da biblioteca LangChain para manipulação de documentos e embeddings.</li>
+  </ul>
+
+  <h2>Descrição da Classe e Métodos</h2>
+
+  <h3>Classe <code>PineconeEmbedding</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Classe para gerenciar a criação, armazenamento, e remoção de embeddings textuais utilizando Pinecone como serviço de vector search. Ela divide textos em pedaços, gera embeddings via OpenAI, e permite persistir esses vetores em namespaces configuráveis, facilitando integrações em sistemas que demandam busca semântica.</p>
+  <p><strong>Argumentos do Construtor</strong></p>
+  <table>
+    <thead><tr><th>Argumento</th><th>Tipo</th><th>Descrição</th><th>Valor Padrão</th></tr></thead>
+    <tbody>
+      <tr><td><code>vector_client</code></td><td><code>Optional[PineconeClient]</code></td><td>Cliente Pinecone customizado para operações de vetor. Se não fornecido, cria um padrão.</td><td><code>None</code></td></tr>
+      <tr><td><code>embedding_model_name</code></td><td><code>str</code></td><td>Nome do modelo de embedding usado. Se None, busca variável ambiente <code>OPENAI_EMBEDDING_MODEL</code> ou padrão da config.</td><td><code>None</code></td></tr>
+      <tr><td><code>dimensions</code></td><td><code>int</code></td><td>Dimensionalidade dos vetores, se não informado usa configuração padrão.</td><td><code>None</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>1. <code>__init__</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Inicializa o serviço de embeddings, configurando cliente Pinecone, parâmetros como chunk size, namespaces, modelo de embedding, e cria stores Pinecone globais e principais.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>vector_client</code> (Optional[PineconeClient]): cliente Pinecone para operações.</li>
+    <li><code>embedding_model_name</code> (str): nome do modelo de embedding.</li>
+    <li><code>dimensions</code> (int): dimensão dos vetores.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: Em falhas durante a inicialização.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+service = PineconeEmbedding()
+# ou com cliente customizado e modelo definido
+service_custom = PineconeEmbedding(
+    vector_client=my_pinecone_client,
+    embedding_model_name="text-embedding-ada-002",
+    dimensions=1536
+)
+</code></pre>
+
+  <h3>2. <code>embedding_document</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Processa texto longo, divide em chunks, cria documentos associando metadados, gera embeddings para esses chunks em batches, e salva os vetores no Pinecone. Pode salvar cópias no namespace global para reaproveitamento.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>text</code> (str): texto completo para gerar vetores.</li>
+    <li><code>metadata</code> (dict): metadados para associar aos documentos vetoriais.</li>
+    <li><code>save_global</code> (bool): flag para salvar vetores também no namespace global.</li>
+    <li><code>batch_size</code> (int | None): tamanho do lote para geração dos embeddings.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>dict</code>: Resultado com status, mensagens, e informações detalhadas sobre embeddings salvos, incluindo ids e contagem.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Não diretamente, erros são capturados e reportados no retorno com rollback.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+response = service.embedding_document(
+    text="Um texto muito longo que precisa ser dividido e vetorizado...",
+    metadata={"file_id": "doc_001"},
+    save_global=True,
+    batch_size=50
+)
+if response["status"] == "success":
+    print(f"Vetores salvos, batches: {response['embedding_informations']['batch_count']}")
+else:
+    print("Erro:", response["message"])
+</code></pre>
+
+  <h3>3. <code>delete_documents</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Remove vetores do índice Pinecone filtrando pelo valor de um campo metadata, dentro do namespace especificado. Executa deleções em batches para performance e segurança.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>target_feature</code> (str): campo metadata usado para filtro (ex: "file_id").</li>
+    <li><code>target_id</code> (str): valor que identifica os vetores para deletar.</li>
+    <li><code>namespace</code> (str): namespace Pinecone para executar a remoção.</li>
+    <li><code>features</code> (list): lista opcional de features válidas para validação do filtro.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>dict</code>: Informações sobre quantidade de vetores deletados e namespace.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: se o <code>target_feature</code> não estiver dentro da lista <code>features</code> quando fornecida.</li>
+    <li><code>RuntimeError</code>: em caso de erro durante a remoção.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+result = service.delete_documents(
+    target_feature="file_id",
+    target_id="doc_001",
+    namespace="embedding_file"
+)
+print(f"Vectors deleted: {result['deleted_vectors']}")
+</code></pre>
+
+  <h3>4. <code>split_text</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Divide um texto em múltiplos pedaços menores, respeitando limites de tamanho e sobreposição para facilitar o processamento e geração de embeddings.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>text</code> (str): texto a ser dividido.</li>
+    <li><code>chunk_size</code> (int | None): tamanho desejado do chunk (opcional).</li>
+    <li><code>chunk_overlap</code> (int | None): sobreposição entre chunks (opcional).</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>List[str]</code>: lista com os pedaços de texto gerados.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: se falhar ao dividir o texto.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+chunks = service.split_text("Texto muito longo...", chunk_size=200, chunk_overlap=40)
+print(f"Quantidade de chunks gerados: {len(chunks)}")
+</code></pre>
+
+  <h3>5. <code>build_documents</code> (método estático)</h3>
+  <p><strong>Descrição</strong></p>
+  <p>Cria objetos Document (da LangChain) a partir de pedaços de texto, associando um dicionário de metadados a cada documento.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>chunks</code> (List[str]): lista de textos fragmentados.</li>
+    <li><code>metadata</code> (Dict[str, Any]): metadados para anexar em cada documento.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>List[Document]</code>: lista de documentos prontos para ingesta.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: se falhar ao construir os Document.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+documents = PineconeEmbedding.build_documents(
+    ["texto 1", "texto 2"],
+    {"file_id": "abc123", "created_at": "2024-06-01"}
+)
+for doc in documents:
+    print(doc.metadata)
+</code></pre>
+
+  <h3>6. <code>generate_embeddings</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Gera os embeddings vetoriais para uma lista de textos, utilizando o modelo configurado.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>texts</code> (List[str]): lista de frases ou documentos para transformar em vetores.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>List[List[float]]</code>: lista de vetores numéricos correspondentes aos textos.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: se ocorrer erro na geração dos embeddings.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+embeddings = service.generate_embeddings([
+    "primeiro texto",
+    "segundo texto"
+])
+print(f"Embedding do primeiro texto tem dimensão {len(embeddings[0])}")
+</code></pre>
+
+  <h2>Exemplo de uso completo</h2>
+  <pre data-lang="python"><code>
+pine_client = PineconeClient(index_name="exemplo-index", main_namespace="embeddings")
+service = PineconeEmbedding(vector_client=pine_client, embedding_model_name="text-embedding-ada-002")
+
+texto = "Este é um exemplo de texto que será dividido, embeddado e armazenado."
+
+response = service.embedding_document(
+    text=texto,
+    metadata={"file_id": "exemplo_12345"},
+    save_global=True
+)
+
+if response['status'] == "success":
+    print("Embeddings gerados e salvos com sucesso!")
+else:
+    print("Falha ao salvar embeddings:", response["message"])
+</code></pre>
+
+  <p>Essa documentação detalha o funcionamento do <code>PineconeEmbedding</code>, destacando seu uso prático, os métodos disponíveis e dicas para integração eficiente com sistemas de vetorização baseados em Pinecone e OpenAI.</p>
 </page>

@@ -1,31 +1,282 @@
-<page data-lead="Pagina di esempio per Document Parse, usata per validare il layout.">
-  <div class="callout" data-kind="note"><p><strong>Contenuto di esempio.</strong> Questo testo esiste solo per validare il layout. Nella versione finale la pagina è generata da <code>ipynb_contents/Modules/Content Parse/Document Parse.md</code>.</p></div>
-
+<page data-lead="La classe DocumentParse ha come obiettivo orchestrare l&#x27;intera pipeline di elaborazione dei documenti, dall&#x27;estrazione del contenuto grezzo del file fino al salvataggio dei dati elaborati in un database NoSQL.">
   <h2>Panoramica</h2>
-  <p>Document Parse fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
+  <p>La classe <code>DocumentParse</code> ha come obiettivo orchestrare l'intera pipeline di elaborazione dei documenti, dall'estrazione del contenuto grezzo del file fino al salvataggio dei dati elaborati in un database NoSQL. È responsabile di far convergere diverse fasi fondamentali per trasformare i file digitali in dati strutturati pronti all'uso, automatizzando il flusso di parsing con validazioni, calcoli dei costi e integrazione con i sistemi di archiviazione.</p>
+  <p>Questo componente è fondamentale nei sistemi che devono interpretare documenti elettronici (come PDF, TXT, ecc.) ed estrarre informazioni specifiche secondo uno schema predefinito. In pratica, può essere utilizzato in pipeline di machine learning, API di conversione di documenti e applicazioni che dipendono dall'estrazione automatizzata di dati.</p>
+  <p>Con questa classe, lo sviluppatore può inviare un job contenente un file e le sue configurazioni, e ricevere in cambio i dati strutturati del documento con i costi computazionali calcolati, oltre ad avere il risultato archiviato per consultazioni future.</p>
 
-  <h2>Uso</h2>
-  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
-  <pre data-lang="python"><code>
-from better_ai import DocumentParse
+  <h2>Flusso di Esecuzione</h2>
+  <ol>
+    <li><strong>Creazione dell'istanza della classe:</strong> Inizializzazione con job_id, metadata JSON, schema JSON, contenuto del file (in byte), estensione del file e configurazioni opzionali per il parsing.</li>
+    <li><strong>Chiamata del metodo <code>run()</code>:</strong> Questo metodo esegue l'intero flusso interno, ed è responsabile del coordinamento delle fasi.</li>
+    <li><strong>Caricamento e validazione dei dati:</strong> Il metodo privato <code>_load_schema_and_config()</code> deserializza i JSON di metadata e schema, oltre a unire le configurazioni predefinite e quelle personalizzate.</li>
+    <li><strong>Estrazione del contenuto del file:</strong> <code>_extract_file_content()</code> utilizza <code>FileContentExtractor</code> per ottenere il testo grezzo del file in base alla sua estensione.</li>
+    <li><strong>Parsing del contenuto estratto:</strong> <code>_parse_content()</code> invoca <code>ContentParsingAgent</code>, che mappa il testo estratto nella struttura definita dallo schema.</li>
+    <li><strong>Calcolo dei costi:</strong> <code>_calculate_costs()</code> determina il costo di elaborazione in base al modello di linguaggio usato e ai token consumati, convertendo i valori nella valuta locale.</li>
+    <li><strong>Costruzione della risposta:</strong> <code>_build_response()</code> crea il payload che verrà inviato dall'API e il payload che verrà salvato nel database.</li>
+    <li><strong>Persistenza dei risultati:</strong> <code>_save()</code> salva i dati elaborati nel database NoSQL configurato.</li>
+    <li><strong>Valore di ritorno:</strong> <code>run()</code> restituisce la risposta pronta per l'API contenente il contenuto estratto e strutturato.</li>
+  </ol>
 
-client = DocumentParse()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parametri</h2>
-  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
+  <h2>Tabella dei Metodi della Classe</h2>
   <table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <thead><tr><th>Metodo</th><th>Descrizione</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
+      <tr><td><code>__init__</code></td><td>Inizializza il job di parsing con i dati e le configurazioni forniti</td></tr>
+      <tr><td><code>run</code></td><td>Esegue la pipeline completa di parsing del documento</td></tr>
+      <tr><td><code>_load_schema_and_config</code></td><td>Valida e carica metadata, schema e configurazione JSON</td></tr>
+      <tr><td><code>_extract_file_content</code></td><td>Estrae il testo grezzo del file usando l'extractor</td></tr>
+      <tr><td><code>_parse_content</code></td><td>Esegue l'agente che formatta il contenuto secondo lo schema</td></tr>
+      <tr><td><code>_calculate_costs</code></td><td>Calcola i costi dei token usati e converte i valori</td></tr>
+      <tr><td><code>_build_response</code></td><td>Costruisce i payload per l'API e il database</td></tr>
+      <tr><td><code>_save</code></td><td>Salva il risultato elaborato nel database NoSQL</td></tr>
     </tbody>
   </table>
 
-  <h2>Note</h2>
-  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
-  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div>
+  <h2>Variabili d'Ambiente</h2>
+  <p>Nessuna variabile d'ambiente esplicita è richiesta direttamente in questa classe. La configurazione predefinita e le informazioni del database sono ottenute tramite <code>DocumentParseConfig</code>, che può avere una propria gestione delle ENV (non mostrata qui).</p>
+
+  <h2>Punti Importanti dell'Architettura e Insights</h2>
+  <ul>
+    <li><strong>Incapsulamento e netta separazione delle responsabilità:</strong> La classe organizza ogni fase del flusso in metodi privati, facilitando manutenzione e test.</li>
+    <li><strong>Uso della composizione:</strong> La classe utilizza altre classi per responsabilità specifiche, come <code>FileContentExtractor</code> per l'estrazione, <code>ContentParsingAgent</code> per il parsing e <code>DocumentStore</code> per la persistenza, seguendo il principio di responsabilità unica.</li>
+    <li><strong>Gestione robusta degli errori:</strong> Usa eccezioni HTTP per validare i JSON forniti, garantendo che il flusso prosegua solo con dati validi.</li>
+    <li><strong>Calcolo dinamico dei costi:</strong> Si integra con servizi esterni per il calcolo del costo basato sui token elaborati e sulla conversione di cambio attuale, adatto a sistemi a pagamento in base all'uso.</li>
+    <li><strong>Flessibilità nella configurazione:</strong> Consente una configurazione personalizzata tramite JSON che viene unita alla configurazione predefinita per adattare il comportamento del parsing.</li>
+  </ul>
+
+  <h2>Descrizione della Classe e dei Metodi</h2>
+
+  <h2>Classe <code>DocumentParse</code></h2>
+
+  <h3>Descrizione</h3>
+  <p>Classe che gestisce l'elaborazione completa dei documenti per l'estrazione di contenuto strutturato. Riceve il contenuto del file, i metadati, lo schema e le configurazioni. Esegue l'estrazione del testo, il parsing secondo lo schema, il calcolo dei costi operativi e l'archiviazione del risultato elaborato. Fornisce una risposta pronta per l'uso da parte delle API.</p>
+
+  <h3>Argomenti del Costruttore</h3>
+  <table>
+    <thead><tr><th>Argomento</th><th>Tipo</th><th>Descrizione</th><th>Valore Predefinito</th></tr></thead>
+    <tbody>
+      <tr><td><code>job_id</code></td><td>str</td><td>Identificatore univoco del job di elaborazione</td><td>-</td></tr>
+      <tr><td><code>metadata</code></td><td>dict/str JSON</td><td>Metadati associati al documento (è attesa una stringa JSON)</td><td>-</td></tr>
+      <tr><td><code>schema</code></td><td>str</td><td>Stringa JSON che definisce lo schema dei dati attesi</td><td>-</td></tr>
+      <tr><td><code>file_bytes</code></td><td>BytesIO</td><td>Contenuto binario del file da elaborare</td><td>-</td></tr>
+      <tr><td><code>file_extension</code></td><td>str</td><td>Estensione del file (esempio: '.pdf', '.txt')</td><td>-</td></tr>
+      <tr><td><code>config</code></td><td>Optional[str]</td><td>Stringa JSON contenente la configurazione personalizzata per il parsing</td><td>None</td></tr>
+    </tbody>
+  </table>
+
+  <h3>1. <code>__init__</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Inizializza l'oggetto <code>DocumentParse</code> con le informazioni essenziali per l'elaborazione del documento, configurando i parametri e caricando le configurazioni predefinite del sistema.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>job_id (str): Identificatore del job di elaborazione.</li>
+    <li>metadata (dict/str): Metadati in formato stringa JSON.</li>
+    <li>schema (str): Schema JSON per la strutturazione dei dati.</li>
+    <li>file_bytes (BytesIO): Byte del file.</li>
+    <li>file_extension (str): Estensione del file.</li>
+    <li>config (Optional[str]): Configurazione personalizzata come stringa JSON (opzionale).</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nessuna.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+document_parse = DocumentParse(
+    job_id="job123",
+    metadata='{"author": "John Doe"}',
+    schema='{"type": "object", "properties": {"title": {"type": "string"}}}',
+    file_bytes=BytesIO(b"conteudo do arquivo"),
+    file_extension=".txt",
+    config=None
+)
+</code></pre>
+
+  <h3>2. <code>run</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Esegue la pipeline completa di elaborazione del documento, dalla validazione dei dati all'estrazione, al parsing, ai calcoli e all'archiviazione, restituendo il risultato finale pronto per l'API.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>dict: Risposta formattata per l'API contenente il job_id e il contenuto elaborato.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>HTTPException: in caso di JSON non validi nei dati forniti.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+response = document_parse.run()
+print(response)
+# Exemplo de saída:
+# {
+#   "job_id": "job123",
+#   "content": {...dados extraídos e formatados...}
+# }
+</code></pre>
+
+  <h3>3. <code>_load_schema_and_config</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Esegue il parsing e la validazione dei JSON di metadata, schema e configurazione, fondendo la configurazione predefinita con quella personalizzata quando fornita.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>HTTPException: se metadata, schema o config sono JSON non validi.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+document_parse._load_schema_and_config()
+# Inicializa self.metadata_data, self.schema_data e self.config_data com os valores carregados.
+</code></pre>
+
+  <h3>4. <code>_extract_file_content</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Usa la classe <code>FileContentExtractor</code> per estrarre il contenuto testuale grezzo del file in base alla sua estensione.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+document_parse._extract_file_content()
+print(document_parse.result_extract)
+# Exemplo de saída:
+# {'response': 'Texto extraído do arquivo'}
+</code></pre>
+
+  <h3>5. <code>_parse_content</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Esegue l'agente di parsing <code>ContentParsingAgent</code>, che elabora il testo estratto e lo struttura secondo lo schema atteso, preparando una risposta formattata.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+document_parse._parse_content()
+print(document_parse.agent_response)
+# Exemplo:
+# {'content': {...dados estruturados...}, 'metadata': {...informações de processamento...}}
+</code></pre>
+
+  <h3>6. <code>_calculate_costs</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Calcola il costo dell'elaborazione in base ai token di input e output usati dal modello, utilizzando il tasso di cambio attuale per la conversione nella valuta locale (BRL).</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+document_parse._calculate_costs()
+print(document_parse.input_cost, document_parse.output_cost, document_parse.rate)
+# Valores numéricos representando os custos
+</code></pre>
+
+  <h3>7. <code>_build_response</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Costruisce i payload che verranno restituiti dall'API e salvati nel database, consolidando il contenuto estratto e le informazioni di costo e di processo.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+document_parse._build_response()
+print(document_parse.api_response)
+# {'job_id': 'job123', 'content': {...dados extraídos...}}
+</code></pre>
+
+  <h3>8. <code>_save</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Salva i dati elaborati nel database NoSQL configurato, usando la classe <code>DocumentStore</code>.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+document_parse._save()
+# Dados persistidos no banco conforme configuração automática da classe
+</code></pre>
+
+  <h2>Uso</h2>
+  <pre data-lang="python"><code>
+if __name__ == "__main__":
+    # Exemplo de uso
+    job_id = "job_123"
+    metadata = """{"user_id": "user_456"}"""
+
+    schema = """
+    {
+    "summary": {
+        "type": "str",
+        "description": "Resumo do conteúdo do arquivo"
+    }
+    }
+    """
+    config = """
+    {
+    "model_provider": "OpenAI",
+    "model_id": "gpt-4.1-mini",
+    "max_input_tokens": 1000000,
+    "debug_mode": true,
+    "instructions": "Extraia dados do texto",
+    "description": "Leia o texto e extraia as informações relevantes conforme o esquema definido. Retorne um JSON estruturado com os dados extraídos. Caso não encontre alguma informação, retorne null para aquele campo."
+    }
+    """
+
+    with open("src\\content_parse\\module\\example.pdf", "rb") as f:
+        file_bytes = BytesIO(f.read())
+
+    parser = DocumentParse(
+        job_id=job_id,
+        metadata=metadata,
+        schema=schema,
+        config=config,
+        file_bytes=file_bytes,
+        file_extension="pdf"
+    )
+
+    response = parser.run()
+
+    print("\nResposta do parser:")
+    print(json.dumps(response, indent=2))
+
+# python -m src.content_parse.module.document_parse
+</code></pre>
 </page>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pinecone Client | BetterAI Docs</title>
-<meta name="description" content="Página de exemplo para Pinecone Client, usada para validar o layout.">
+<meta name="description" content="A classe PineconeClient é uma abstração para gerenciar a conexão e as operações com o serviço Pinecone, que é uma solução de armazenamento e busca vetorial de alto desempenho.">
 <link rel="canonical" href="pages/pt/internal-source-code/vector-store/pinecone-client.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,184 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copiar página</span></button>
             </div>
           </div>
-          <p class="lead">Página de exemplo para Pinecone Client, usada para validar o layout.</p>
+          <p class="lead">A classe PineconeClient é uma abstração para gerenciar a conexão e as operações com o serviço Pinecone, que é uma solução de armazenamento e busca vetorial de alto desempenho.</p>
           <details class="toc-inline"><summary>Nesta página</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Conteúdo de exemplo.</strong> Este texto existe só para validar o layout. Na versão final, a página é gerada a partir de <code>ipynb_contents/Internal Source Code/Vector Store/Pinecone Client.ipynb</code>.</p></div>
+        <div class="prose"><h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão Geral</h2>
+  <p>A classe <code>PineconeClient</code> é uma abstração para gerenciar a conexão e as operações com o serviço Pinecone, que é uma solução de armazenamento e busca vetorial de alto desempenho. Ela facilita a integração com APIs externas (Pinecone e OpenAI), cuidando da configuração das chaves de API, definição de namespaces e inicialização do modelo de embeddings para trabalhar com vetores de texto.</p>
+  <p>Essa classe resolve o problema de configuração manual e repetitiva dessas integrações, fornecendo uma interface unificada e segura para criar e manipular stores vetoriais usando namespaces personalizados e modelos de embedding específicos. Na prática, ela pode ser usada para armazenar e buscar vetores gerados a partir de textos, o que é fundamental para sistemas como buscas semânticas, recomendação baseada em similaridade e NLP.</p>
 
-  <h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão geral</h2>
-  <p>Pinecone Client faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
+  <h2 id="fluxo-de-execucao"><a class="anchor" href="#fluxo-de-execucao" aria-label="Link para esta seção">#</a>Fluxo de Execução</h2>
+  <ol>
+    <li><strong>Inicialização do Cliente:</strong>
+      <ul>
+        <li>Ao criar uma instância de <code>PineconeClient</code>, as chaves de API do OpenAI e Pinecone são carregadas das variáveis de ambiente.</li>
+        <li>São definidos <code>index_name</code>, <code>main_namespace</code> e <code>global_namespace</code> tanto pelos parâmetros do construtor quanto por variáveis de ambiente ou configuração padrão.</li>
+        <li>O modelo de embedding a ser usado é selecionado da mesma forma.</li>
+        <li>Inicializa internamente a conexão com Pinecone e o modelo de embedding OpenAI.</li>
+      </ul>
+    </li>
+    <li><strong>Configuração das Conexões:</strong>
+      <ul>
+        <li><code>_init_pinecone</code> cria o cliente Pinecone e instancia o index especificado.</li>
+        <li><code>_init_embeddings</code> inicializa o modelo de embedding OpenAI de acordo com a configuração.</li>
+      </ul>
+    </li>
+    <li><strong>Resolução do Namespace:</strong>
+      <ul>
+        <li>Método <code>get_namespace()</code> retorna o namespace a ser usado nas operações, priorizando um valor passado no método, caso seja fornecido, ou o namespace principal da instância.</li>
+      </ul>
+    </li>
+    <li><strong>Criação da Vector Store:</strong>
+      <ul>
+        <li><code>create_vector_store()</code> monta a instância de <code>PineconeVectorStore</code>, associando o index e o modelo de embedding apropriados ao namespace desejado.</li>
+        <li>O objeto retornado permite realizar operações de similaridade vetorial.</li>
+      </ul>
+    </li>
+  </ol>
 
-  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
-  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> PineconeClient
-
-client = <span class="t-f">PineconeClient</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parametros"><a class="anchor" href="#parametros" aria-label="Link para esta seção">#</a>Parâmetros</h2>
-  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
+  <h2 id="tabela-de-metodos-da-classe"><a class="anchor" href="#tabela-de-metodos-da-classe" aria-label="Link para esta seção">#</a>Tabela de Métodos da Classe</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <thead><tr><th>Método</th><th>Descrição</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
+      <tr><td><code>__init__</code></td><td>Inicializa cliente Pinecone, carregando configurações e chaves</td></tr>
+      <tr><td><code>_init_pinecone</code></td><td>Estabelece conexão com Pinecone e instancia index</td></tr>
+      <tr><td><code>_init_embeddings</code></td><td>Inicializa o modelo de embedding OpenAI</td></tr>
+      <tr><td><code>get_namespace</code></td><td>Retorna o namespace resolvido para operações</td></tr>
+      <tr><td><code>create_vector_store</code></td><td>Retorna uma instância configurada de PineconeVectorStore</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="observacoes"><a class="anchor" href="#observacoes" aria-label="Link para esta seção">#</a>Observações</h2>
-  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
-  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div></div>
+  <h2 id="variaveis-de-ambiente"><a class="anchor" href="#variaveis-de-ambiente" aria-label="Link para esta seção">#</a>Variáveis de Ambiente</h2>
+  <ul>
+    <li><code>OPENAI_API_KEY</code>: Chave da API OpenAI para geração de embeddings.</li>
+    <li><code>PINECONE_API_KEY</code>: Chave da API Pinecone para acesso ao serviço.</li>
+    <li><code>PINECONE_INDEX_NAME</code>: Nome do índice Pinecone a ser utilizado.</li>
+    <li><code>PINECONE_NAMESPACE</code>: Namespace principal padrão para armazenar vetores.</li>
+    <li><code>PINECONE_GLOBAL_NAMESPACE</code>: Namespace global opcional para vetores compartilhados.</li>
+    <li><code>OPENAI_EMBEDDING_MODEL</code>: Nome do modelo de embedding OpenAI a ser usado.</li>
+  </ul>
+
+  <h2 id="pontos-importantes-da-arquitetura-e-insights"><a class="anchor" href="#pontos-importantes-da-arquitetura-e-insights" aria-label="Link para esta seção">#</a>Pontos Importantes da Arquitetura e Insights</h2>
+  <ul>
+    <li>A classe usa encapsulamento para ocultar detalhes de inicialização do Pinecone e do modelo de embedding.</li>
+    <li>O uso de variáveis de ambiente com fallback para parâmetros do construtor aumenta flexibilidade e reutilização.</li>
+    <li>O padrão de "injeção de dependência" está presente na criação do vector store, permitindo que embedding e namespace sejam sobrescritos na chamada.</li>
+    <li>Integração com módulos externos especializados (<code>langchain_openai</code>, <code>langchain_pinecone</code>), evidenciando uso de composição.</li>
+    <li>A classe utiliza um sistema de tracing customizado (<code>ApplicationTracing</code>) para facilitar debug e monitoramento, gerando logs detalhados em cada etapa.</li>
+    <li>Separação clara entre configuração, inicialização e criação da vector store, favorecendo manutenção e testes.</li>
+  </ul>
+
+  <h2 id="descricao-da-classe-e-metodos"><a class="anchor" href="#descricao-da-classe-e-metodos" aria-label="Link para esta seção">#</a>Descrição da Classe e Métodos</h2>
+
+  <h3 id="classe-pineconeclient"><a class="anchor" href="#classe-pineconeclient" aria-label="Link para esta seção">#</a>Classe <code>PineconeClient</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Classe para controle e facilitação da conexão com o serviço Pinecone e gerenciamento dos vetores armazenados. Integra APIs do Pinecone e OpenAI para criar uma base vetorial customizada, que pode ser consultada ou atualizada a partir de modelos de embedding fornecidos. Permite configurar namespaces e modelos de forma flexível, simplificando operações vetoriais em aplicações.</p>
+  <p><strong>Argumentos do Construtor</strong></p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argumento</th><th>Tipo</th><th>Descrição</th><th>Valor Padrão</th></tr></thead>
+    <tbody>
+      <tr><td><code>index_name</code></td><td><code>Optional[str]</code></td><td>Nome do índice Pinecone a ser utilizado</td><td><code>None</code></td></tr>
+      <tr><td><code>main_namespace</code></td><td><code>Optional[str]</code></td><td>Namespace primário para armazenar vetores</td><td><code>None</code></td></tr>
+      <tr><td><code>global_namespace</code></td><td><code>Optional[str]</code></td><td>Namespace global opcional para vetores compartilhados</td><td><code>None</code></td></tr>
+      <tr><td><code>embedding_model</code></td><td><code>Optional[str]</code></td><td>Nome do modelo OpenAI para embeddings</td><td><code>None</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Inicializa o cliente Pinecone carregando as chaves de API, configurações, definindo os namespaces e modelo de embedding, além de estabelecer conexões.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>index_name</code> (Optional[str]): nome do índice Pinecone (opcional)</li>
+    <li><code>main_namespace</code> (Optional[str]): namespace primário (opcional)</li>
+    <li><code>global_namespace</code> (Optional[str]): namespace global (opcional)</li>
+    <li><code>embedding_model</code> (Optional[str]): nome do modelo OpenAI (opcional)</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>Não retorna valor.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>EnvironmentError</code>: se as chaves de API não estiverem definidas.</li>
+    <li><code>ValueError</code>: se o <code>index_name</code> não for definido.</li>
+    <li><code>RuntimeError</code>: para falhas gerais de inicialização.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>client = <span class="t-f">PineconeClient</span>(index_name=<span class="t-s">&quot;meu_indice&quot;</span>, main_namespace=<span class="t-s">&quot;app_namespace&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-init-pinecone"><a class="anchor" href="#2-init-pinecone" aria-label="Link para esta seção">#</a>2. <code>_init_pinecone</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Estabelece conexão com o serviço Pinecone e instancia o índice com o nome configurado.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>Não retorna valor.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>client.<span class="t-f">_init_pinecone</span>()
+<span class="t-c"># Internamente conecta ao Pinecone e configura o index para operações</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-init-embeddings"><a class="anchor" href="#3-init-embeddings" aria-label="Link para esta seção">#</a>3. <code>_init_embeddings</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Inicializa o modelo OpenAI para geração de embeddings, podendo usar um nome de modelo personalizado.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>model_name</code> (Optional[str]): nome do modelo de embedding (opcional)</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>Não retorna valor.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>client.<span class="t-f">_init_embeddings</span>(<span class="t-s">&quot;text-embedding-ada-002&quot;</span>)
+<span class="t-c"># Atualiza o modelo de embedding usado pelo cliente</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-get-namespace"><a class="anchor" href="#4-get-namespace" aria-label="Link para esta seção">#</a>4. <code>get_namespace</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Retorna o namespace a ser usado para operações, priorizando o argumento passado, ou retornando o principal configurado.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>namespace</code> (Optional[str]): namespace opcional substituto.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>str</code>: namespace resolvido para uso.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>ns = client.<span class="t-f">get_namespace</span>()  <span class="t-c"># retorna o main_namespace configurado</span>
+ns2 = client.<span class="t-f">get_namespace</span>(<span class="t-s">&quot;namespace_alternativo&quot;</span>)  <span class="t-c"># retorna &quot;namespace_alternativo&quot;</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="5-create-vector-store"><a class="anchor" href="#5-create-vector-store" aria-label="Link para esta seção">#</a>5. <code>create_vector_store</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Cria e retorna uma instância <code>PineconeVectorStore</code> configurada com o índice, embedding e namespace selecionados.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>namespace</code> (Optional[str]): namespace para a store (opcional).</li>
+    <li><code>embedding_model</code> (Optional[OpenAIEmbeddings]): instância do modelo de embedding (opcional).</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>PineconeVectorStore</code>: objeto para manipulação do armazenamento vetorial.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>vector_store = client.<span class="t-f">create_vector_store</span>()
+<span class="t-c"># Usa main_namespace e modelo configurado</span>
+
+vector_store_custom = client.<span class="t-f">create_vector_store</span>(namespace=<span class="t-s">&quot;ns_custom&quot;</span>)
+<span class="t-c"># Cria store com namespace customizado</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">if</span> __name__ == <span class="t-s">&quot;__main__&quot;</span>:
+    client = <span class="t-f">PineconeClient</span>()
+    vector_store = client.<span class="t-f">create_vector_store</span>()
+    <span class="t-f">print</span>(<span class="t-s">&quot;Pinecone Client initialized and VectorStore created successfully.&quot;</span>)
+
+<span class="t-c"># python -m src.vector_store.pinecone.client</span></code></pre><button class="copy floating" type="button"></button></div></div></div>
         <div class="feedback"></div>
         <p class="source">Fonte: <code>ipynb_contents/Internal Source Code/Vector Store/Pinecone Client.ipynb</code></p>
         <nav class="pager" aria-label="Páginas vizinhas"><a class="pager-link prev" href="../../../../pages/pt/internal-source-code/utils/unique-id-factory.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Anterior</small><span>Unique ID Factory</span></div></a><a class="pager-link next" href="../../../../pages/pt/internal-source-code/vector-store/pinecone-embedding.html"><div><small>Próxima</small><span>Pinecone Embedding</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

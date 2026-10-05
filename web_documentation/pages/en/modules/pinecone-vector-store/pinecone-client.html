@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pinecone Client | BetterAI Docs</title>
-<meta name="description" content="Sample page for Pinecone Client, used to validate the layout.">
+<meta name="description" content="BetterAI Docs">
 <link rel="canonical" href="pages/en/modules/pinecone-vector-store/pinecone-client.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,159 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copy page</span></button>
             </div>
           </div>
-          <p class="lead">Sample page for Pinecone Client, used to validate the layout.</p>
+          
           <details class="toc-inline"><summary>On this page</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Placeholder content.</strong> This text exists only to validate the layout. In the final version the page is generated from <code>ipynb_contents/Modules/Pinecone Vector Store/Pinecone Client.md</code>.</p></div>
+        <div class="prose"><h2 id="overview"><a class="anchor" href="#overview" aria-label="Link para esta seção">#</a>Overview</h2>
+  <p>The <code>PineconeClient</code> class is a unified client to make integration with the Pinecone service easier, used for vector storage and search. It manages the configuration needed to authenticate with the OpenAI and Pinecone APIs, initializes the embeddings for vectorization, and creates and manages the VectorStores and associated namespaces.</p>
+  <p>This client solves the common problem of dealing individually with configuration, authentication and creation of Pinecone objects, centralizing those responsibilities in a simple interface. In practice, it can be used by developers who need to index and query vector data for semantic search, recommendation or NLP applications, simplifying the process of connecting to Pinecone and OpenAI.</p>
 
-  <h2 id="overview"><a class="anchor" href="#overview" aria-label="Link para esta seção">#</a>Overview</h2>
-  <p>Pinecone Client is part of the BetterAI platform. This paragraph stands in for the text coming from the source, so that spacing, line measure and the side index can be checked.</p>
+  <h2 id="execution-flow"><a class="anchor" href="#execution-flow" aria-label="Link para esta seção">#</a>Execution Flow</h2>
+  <ol>
+    <li><strong>Client Initialization (<code>__init__</code>)</strong>: receives optional parameters or reads environment variables to configure the index, namespaces and embeddings model. Validates that the API keys are available and raises exceptions otherwise.</li>
+    <li><strong>Loading of Credentials and Settings</strong>: configures the Pinecone index name, the main and global namespaces, and the embedding model to be used, using default values from the configuration or user inputs.</li>
+    <li><strong>Initialization of the Pinecone Connection (<code>_init_pinecone</code>)</strong>: creates a Pinecone client instance authenticated with the key provided and selects the configured index for operations.</li>
+    <li><strong>Initialization of the Embeddings Model (<code>_init_embeddings</code>)</strong>: instantiates the OpenAIEmbeddings model, responsible for generating text vectors for use with Pinecone.</li>
+    <li><strong>Using the Client to Get Namespaces (<code>get_namespace</code>)</strong>: resolves which namespace to use, prioritizing the value specified in the call or the configured main one.</li>
+    <li><strong>Creation of a Configured VectorStore (<code>create_vector_store</code>)</strong>: builds a PineconeVectorStore object tied to the index, namespace and embeddings model, ready to index or search vectors.</li>
+  </ol>
 
-  <h2 id="usage"><a class="anchor" href="#usage" aria-label="Link para esta seção">#</a>Usage</h2>
-  <p>The block below shows the typical call, with syntax highlighting:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> PineconeClient
-
-client = <span class="t-f">PineconeClient</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parameters"><a class="anchor" href="#parameters" aria-label="Link para esta seção">#</a>Parameters</h2>
-  <p>The table below exists to validate horizontal scrolling on narrow screens:</p>
+  <h2 id="class-methods-table"><a class="anchor" href="#class-methods-table" aria-label="Link para esta seção">#</a>Class Methods Table</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>
+    <thead><tr><th>Method</th><th>Description</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identifier of the model to use.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limit in seconds for the response.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Returns the response in chunks.</td></tr>
+      <tr><td><code>__init__</code></td><td>Initializes the Pinecone client with credentials and settings.</td></tr>
+      <tr><td><code>_init_pinecone</code></td><td>Establishes the connection with Pinecone and selects the index.</td></tr>
+      <tr><td><code>_init_embeddings</code></td><td>Initializes the embeddings model used for vectorization.</td></tr>
+      <tr><td><code>get_namespace</code></td><td>Resolves and returns the namespace to be used.</td></tr>
+      <tr><td><code>create_vector_store</code></td><td>Creates and returns a PineconeVectorStore configured for a namespace.</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="notes"><a class="anchor" href="#notes" aria-label="Link para esta seção">#</a>Notes</h2>
-  <p>A sample warning, to check the styling of the attention callout:</p>
-  <div class="callout" data-kind="warn"><p><strong>Development only.</strong> The values above are fictitious and must not be used in production.</p></div></div>
+  <h2 id="important-architecture-points-and-insights"><a class="anchor" href="#important-architecture-points-and-insights" aria-label="Link para esta seção">#</a>Important Architecture Points and Insights</h2>
+  <ul>
+    <li><strong>Centralization of Configuration and Initialization</strong>: the class groups the reading of settings (environment and defaults), credential checking and initializations, promoting greater safety and clarity in the client's bootstrap.</li>
+    <li><strong>Use of a Decorator for Logging and Error Handling</strong>: the <code>trace</code> decorator is applied to critical methods to standardize the generation of informational logs and the capture of exceptions, making monitoring easier.</li>
+    <li><strong>Separation of Responsibilities</strong>: internal methods (<code>_init_pinecone</code>, <code>_init_embeddings</code>) are encapsulated and complement the configuration done in the constructor, keeping the constructor lean.</li>
+    <li><strong>Integration with Other Classes</strong>: uses external Langchain classes for embeddings and vector stores (<code>OpenAIEmbeddings</code> and <code>PineconeVectorStore</code>) as well as a custom configuration (<code>PineconeVectorStoreConfig</code>) and an internal tracing system (<code>ApplicationTracing</code>).</li>
+    <li><strong>Parameter Flexibility</strong>: allows overriding default settings via arguments in the constructor and in the methods, favoring reusability and simple customization.</li>
+  </ul>
+
+  <h2 id="class-and-methods-description"><a class="anchor" href="#class-and-methods-description" aria-label="Link para esta seção">#</a>Class and Methods Description</h2>
+
+  <h2 id="pineconeclient-class"><a class="anchor" href="#pineconeclient-class" aria-label="Link para esta seção">#</a><code>PineconeClient</code> Class</h2>
+  <h3 id="description"><a class="anchor" href="#description" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>Responsible for managing the connection and basic operations with the Pinecone service for vector storage. Automates the loading of the necessary credentials, initializes the index and embeddings, and abstracts the creation of stores and namespaces, making it easier to use the vector store in applications.</p>
+  <h3 id="constructor-arguments"><a class="anchor" href="#constructor-arguments" aria-label="Link para esta seção">#</a>Constructor Arguments</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argument</th><th>Type</th><th>Description</th><th>Default Value</th></tr></thead>
+    <tbody>
+      <tr><td><code>index_name</code></td><td><code>Optional[str]</code></td><td>Name of the Pinecone index to be used</td><td>None</td></tr>
+      <tr><td><code>main_namespace</code></td><td><code>Optional[str]</code></td><td>Main namespace for vector operations</td><td>None</td></tr>
+      <tr><td><code>global_namespace</code></td><td><code>Optional[str]</code></td><td>Global namespace for operations</td><td>None</td></tr>
+      <tr><td><code>embedding_model</code></td><td><code>Optional[str]</code></td><td>Name of the OpenAI embedding model for generating the vectors</td><td>None</td></tr>
+    </tbody>
+  </table></div>
+  <h3 id="methods"><a class="anchor" href="#methods" aria-label="Link para esta seção">#</a>Methods</h3>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <h3 id="description-2"><a class="anchor" href="#description-2" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>Initializes the Pinecone client, loading credentials, defining index and namespace settings, and initializing the connections with Pinecone and the embeddings model.</p>
+  <h3 id="arguments"><a class="anchor" href="#arguments" aria-label="Link para esta seção">#</a>Arguments</h3>
+  <ul>
+    <li><code>index_name</code> (Optional[str]): Pinecone index name.</li>
+    <li><code>main_namespace</code> (Optional[str]): main namespace.</li>
+    <li><code>global_namespace</code> (Optional[str]): global namespace.</li>
+    <li><code>embedding_model</code> (Optional[str]): name of the model for embeddings.</li>
+  </ul>
+  <h3 id="returns"><a class="anchor" href="#returns" aria-label="Link para esta seção">#</a>Returns</h3>
+  <ul>
+    <li>Does not return a value.</li>
+  </ul>
+  <h3 id="raises"><a class="anchor" href="#raises" aria-label="Link para esta seção">#</a>Raises</h3>
+  <ul>
+    <li><code>EnvironmentError</code>: if the OpenAI or Pinecone API keys are not found.</li>
+    <li><code>ValueError</code>: if the index name is not provided or configured.</li>
+  </ul>
+  <h3 id="examples"><a class="anchor" href="#examples" aria-label="Link para esta seção">#</a>Examples</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>client = <span class="t-f">PineconeClient</span>(
+    index_name=<span class="t-s">&quot;meu_indice&quot;</span>,
+    main_namespace=<span class="t-s">&quot;namespace_principal&quot;</span>,
+    embedding_model=<span class="t-s">&quot;text-embedding-ada-002&quot;</span>
+)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-init-pinecone"><a class="anchor" href="#2-init-pinecone" aria-label="Link para esta seção">#</a>2. <code>_init_pinecone</code></h3>
+  <h3 id="description-3"><a class="anchor" href="#description-3" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>Establishes the connection with the Pinecone service using the API key and selects the configured index for subsequent operations.</p>
+  <h3 id="arguments-2"><a class="anchor" href="#arguments-2" aria-label="Link para esta seção">#</a>Arguments</h3>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <h3 id="returns-2"><a class="anchor" href="#returns-2" aria-label="Link para esta seção">#</a>Returns</h3>
+  <ul>
+    <li>Does not return a value.</li>
+  </ul>
+  <h3 id="raises-2"><a class="anchor" href="#raises-2" aria-label="Link para esta seção">#</a>Raises</h3>
+  <ul>
+    <li>May propagate exceptions related to the connection with Pinecone.</li>
+  </ul>
+  <h3 id="examples-2"><a class="anchor" href="#examples-2" aria-label="Link para esta seção">#</a>Examples</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>client.<span class="t-f">_init_pinecone</span>()  <span class="t-c"># Normalmente chamado dentro do construtor</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-init-embeddings"><a class="anchor" href="#3-init-embeddings" aria-label="Link para esta seção">#</a>3. <code>_init_embeddings</code></h3>
+  <h3 id="description-4"><a class="anchor" href="#description-4" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>Initializes the embeddings model to be used to generate vectors from texts. It can receive a specific model or use the default configured when the client was initialized.</p>
+  <h3 id="arguments-3"><a class="anchor" href="#arguments-3" aria-label="Link para esta seção">#</a>Arguments</h3>
+  <ul>
+    <li><code>model_name</code> (Optional[str]): name of the embedding model.</li>
+    <li>If not provided, uses the configured default model.</li>
+  </ul>
+  <h3 id="returns-3"><a class="anchor" href="#returns-3" aria-label="Link para esta seção">#</a>Returns</h3>
+  <ul>
+    <li>Does not return a value.</li>
+  </ul>
+  <h3 id="examples-3"><a class="anchor" href="#examples-3" aria-label="Link para esta seção">#</a>Examples</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>client.<span class="t-f">_init_embeddings</span>(<span class="t-s">&quot;text-embedding-ada-002&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-get-namespace"><a class="anchor" href="#4-get-namespace" aria-label="Link para esta seção">#</a>4. <code>get_namespace</code></h3>
+  <h3 id="description-5"><a class="anchor" href="#description-5" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>Resolves which namespace to use for an operation, prioritizing the one explicitly provided in the parameter or returning the configured main namespace.</p>
+  <h3 id="arguments-4"><a class="anchor" href="#arguments-4" aria-label="Link para esta seção">#</a>Arguments</h3>
+  <ul>
+    <li><code>namespace</code> (Optional[str]): desired namespace.</li>
+  </ul>
+  <h3 id="returns-4"><a class="anchor" href="#returns-4" aria-label="Link para esta seção">#</a>Returns</h3>
+  <ul>
+    <li><code>str</code>: the namespace actually used.</li>
+  </ul>
+  <h3 id="examples-4"><a class="anchor" href="#examples-4" aria-label="Link para esta seção">#</a>Examples</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>ns = client.<span class="t-f">get_namespace</span>(<span class="t-s">&quot;namespace_especifico&quot;</span>)
+<span class="t-f">print</span>(ns)  <span class="t-c"># &quot;namespace_especifico&quot;</span>
+
+ns = client.<span class="t-f">get_namespace</span>()
+<span class="t-f">print</span>(ns)  <span class="t-c"># retorna o main_namespace configurado</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="5-create-vector-store"><a class="anchor" href="#5-create-vector-store" aria-label="Link para esta seção">#</a>5. <code>create_vector_store</code></h3>
+  <h3 id="description-6"><a class="anchor" href="#description-6" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>Creates and returns a <code>PineconeVectorStore</code> instance configured for a specific namespace and embeddings model, useful for vector ingestion and queries.</p>
+  <h3 id="arguments-5"><a class="anchor" href="#arguments-5" aria-label="Link para esta seção">#</a>Arguments</h3>
+  <ul>
+    <li><code>namespace</code> (Optional[str]): namespace to use in the vector store.</li>
+    <li><code>embedding_model</code> (Optional[OpenAIEmbeddings]): embeddings model to be used.</li>
+  </ul>
+  <h3 id="returns-5"><a class="anchor" href="#returns-5" aria-label="Link para esta seção">#</a>Returns</h3>
+  <ul>
+    <li><code>PineconeVectorStore</code>: configured instance of the vector store.</li>
+  </ul>
+  <h3 id="examples-5"><a class="anchor" href="#examples-5" aria-label="Link para esta seção">#</a>Examples</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>vector_store = client.<span class="t-f">create_vector_store</span>(namespace=<span class="t-s">&quot;minerais&quot;</span>)
+<span class="t-c"># Usa main_namespace e modelo padrão caso não informado</span>
+
+embeddings = <span class="t-f">OpenAIEmbeddings</span>(model=<span class="t-s">&quot;text-embedding-ada-002&quot;</span>)
+vector_store_custom = client.<span class="t-f">create_vector_store</span>(
+    namespace=<span class="t-s">&quot;custom_ns&quot;</span>,
+    embedding_model=embeddings
+)</code></pre><button class="copy floating" type="button"></button></div></div></div>
         <div class="feedback"></div>
         <p class="source">Source: <code>ipynb_contents/Modules/Pinecone Vector Store/Pinecone Client.md</code></p>
         <nav class="pager" aria-label="Neighboring pages"><a class="pager-link prev" href="../../../../pages/en/modules/image-generation/utils/payload-builder.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Previous</small><span>Payload Builder</span></div></a><a class="pager-link next" href="../../../../pages/en/modules/pinecone-vector-store/pinecone-retriever.html"><div><small>Next</small><span>Pinecone Retriever</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

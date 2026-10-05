@@ -1,31 +1,151 @@
-<page data-lead="Página de exemplo para Pinecone Retriever, usada para validar o layout.">
-  <div class="callout" data-kind="note"><p><strong>Conteúdo de exemplo.</strong> Este texto existe só para validar o layout. Na versão final, a página é gerada a partir de <code>ipynb_contents/Modules/Pinecone Vector Store/Pinecone Retriever.md</code>.</p></div>
+<page data-lead="">
+  <h2>Visão Geral</h2>
+  <p>A classe <code>PineconeRetriever</code> é um serviço especializado em operações de recuperação (retrieval) de vetores armazenados em um índice Pinecone. Ela serve como uma camada de abstração para facilitar buscas por similaridade vetorial e consultas baseadas em metadados, encapsulando a interação direta com o índice e o mecanismo de embeddings.</p>
+  <p>Este componente é crucial para aplicações que trabalham com dados vetoriais, como sistemas de recomendação, recuperação semântica ou análise de similaridade textual, pois garante uma API simples e segura para realizar consultas complexas no Pinecone. Pode ser utilizado em pipelines de processamento de linguagem natural, sistemas de busca ou qualquer aplicação que precise recuperar vetores próximos a partir de consultas textuais ou filtros por metadata.</p>
 
-  <h2>Visão geral</h2>
-  <p>Pinecone Retriever faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
+  <h2>Fluxo de Execução</h2>
+  <ol>
+    <li><strong>Inicialização</strong>: Cria uma instância do <code>PineconeRetriever</code>, recebendo opcionalmente um cliente Pinecone configurado. Caso não fornecido, um cliente padrão é criado internamente; durante essa fase, são inicializados componentes essenciais como índice, embeddings e namespace.</li>
+    <li><strong>Busca por Similaridade (<code>similarity_search</code>)</strong>:
+      <ul>
+        <li>Recebe um texto de consulta, quantidade máxima de resultados (<code>k</code>) e filtros opcionais.</li>
+        <li>Valida os parâmetros e gera o embedding do texto.</li>
+        <li>Constrói filtros compatíveis com Pinecone para a consulta.</li>
+        <li>Executa a consulta vetorial no índice, recuperando vetores similares.</li>
+        <li>Normaliza e formata a resposta, retornando uma lista de documentos com texto, metadados e scores.</li>
+      </ul>
+    </li>
+    <li><strong>Recuperação por Metadata (<code>get_all_docs_by_metadata</code>)</strong>:
+      <ul>
+        <li>Aceita chave e valor (ou lista de valores) para filtro por metadata, além de parâmetros de paginação.</li>
+        <li>Utiliza um vetor "dummy" para satisfazer a API Pinecone que exige vetor, realizando a busca usando apenas o filtro.</li>
+        <li>Executa consultas paginadas para recuperar todos os vetores que satisfaçam o filtro.</li>
+        <li>Retorna uma lista completa dos vetores com metadados e ids, porém o score não possui significado semântico aqui.</li>
+      </ul>
+    </li>
+  </ol>
 
-  <h2>Uso</h2>
-  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
-  <pre data-lang="python"><code>
-from better_ai import PineconeRetriever
-
-client = PineconeRetriever()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parâmetros</h2>
-  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
+  <h2>Tabela de Métodos da Classe</h2>
   <table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <thead><tr><th>Método</th><th>Descrição</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
+      <tr><td><code>__init__</code></td><td>Inicializa o retriever configurando dependências.</td></tr>
+      <tr><td><code>similarity_search</code></td><td>Realiza busca por similaridade vetorial com filtro.</td></tr>
+      <tr><td><code>get_all_docs_by_metadata</code></td><td>Recupera vetores por filtro de metadata paginadamente.</td></tr>
     </tbody>
   </table>
 
-  <h2>Observações</h2>
-  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
-  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div>
+  <h2>Pontos Importantes da Arquitetura e Insights</h2>
+  <ul>
+    <li><strong>Separação de Responsabilidades</strong>: A classe atua exclusivamente como serviço de consulta, desacoplando a lógica de embedding e comunicação com Pinecone via um cliente especializado.</li>
+    <li><strong>Uso de Decorator para Tracing</strong>: O decorator <code>@trace</code> é aplicado em métodos públicos para padronizar logging e captura de exceções, garantindo rastreabilidade e fácil debugging.</li>
+    <li><strong>Normalização e Abstração</strong>: Os resultados brutos do Pinecone são transformados para um formato uniforme consumido pela aplicação, escondendo complexidades do índice.</li>
+    <li><strong>Paginação Explícita</strong>: A recuperação por metadata implementa paginação manual para assegurar que todos os resultados são obtidos, contornando limitações da API Pinecone.</li>
+    <li><strong>Filtro Dinâmico e Flexível</strong>: Suporte para filtros simples a partir de um dicionário, traduzindo para operadores <code>$eq</code> e <code>$in</code> do Pinecone, facilitando buscas parametrizadas.</li>
+    <li><strong>Dependências Utilizadas</strong>: A classe utiliza <code>PineconeClient</code> (para acesso ao índice e embeddings) e <code>PineconeVectorStoreConfig</code> (para configurações de batch e dimensão).</li>
+  </ul>
+
+  <h2>Descrição da Classe e Métodos</h2>
+
+  <h2>Classe <code>PineconeRetriever</code></h2>
+  <h3>Descrição</h3>
+  <p>O <code>PineconeRetriever</code> é responsável por realizar consultas eficientes e seguras em índices vetoriais gerenciados pelo Pinecone. Ele disponibiliza mecanismos tanto para buscas por similaridade textual, transformando texto em vetores e consultando o índice, quanto para recuperações baseadas em metadados, com paginação automática e filtragem compatível.</p>
+  <h3>Argumentos do Construtor</h3>
+  <table>
+    <thead><tr><th>Argumento</th><th>Tipo</th><th>Descrição</th><th>Valor Padrão</th></tr></thead>
+    <tbody>
+      <tr><td>client</td><td>Optional[PineconeClient]</td><td>Instância do cliente Pinecone já configurada com índice, embeddings e namespace; se omitido cria um cliente padrão automático.</td><td>None</td></tr>
+    </tbody>
+  </table>
+  <h3>Métodos</h3>
+
+  <h3>1. <code>__init__</code></h3>
+  <h3>Descrição</h3>
+  <p>Inicializa uma instância do <code>PineconeRetriever</code>, configurando as dependências essenciais como índice, embeddings e namespace, usando o <code>PineconeClient</code> fornecido ou criando um padrão. Também carrega configurações como tamanho de lote (batch_size) e dimensão dos vetores.</p>
+  <h3>Argumentos</h3>
+  <ul>
+    <li>client (Optional[PineconeClient]): Objeto cliente configurado; pode ser None.</li>
+  </ul>
+  <h3>Retornos</h3>
+  <ul>
+    <li>Não retorna valor.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li>ValueError: se o client for None e não puder ser criado o padrão.</li>
+  </ul>
+  <h3>Exemplos</h3>
+  <pre data-lang="python"><code>
+# Criando retriever com cliente padrão
+retriever = PineconeRetriever()
+
+# Criando retriever com cliente customizado
+client = PineconeClient()
+retriever = PineconeRetriever(client)
+</code></pre>
+
+  <h3>2. <code>similarity_search</code></h3>
+  <h3>Descrição</h3>
+  <p>Executa busca por similaridade vetorial a partir de um texto consulta, retornando os documentos mais similares no índice Pinecone, podendo aplicar filtros por metadata para restringir resultados.</p>
+  <h3>Argumentos</h3>
+  <ul>
+    <li>query (str): Texto base para busca por similaridade.</li>
+    <li>k (int): Número máximo de resultados retornados. Default: 5.</li>
+    <li>filter_search (Optional[Dict[str, Any]]): Dicionário para filtro por metadata, ex: {"file_id": "abc"} ou {"file_id": ["abc", "def"]}.</li>
+  </ul>
+  <h3>Retornos</h3>
+  <ul>
+    <li>List[Dict[str, Any]]: Lista de dicionários contendo id, texto (campo 'text' dos metadados), demais metadados e score.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li>ValueError: Se query vazia ou k &lt;= 0.</li>
+    <li>RuntimeError: Falha na geração do embedding, consulta ou processamento dos resultados.</li>
+  </ul>
+  <h3>Exemplos</h3>
+  <pre data-lang="python"><code>
+results = retriever.similarity_search(
+    query="Como funciona o sistema de recomendação?",
+    k=3,
+    filter_search={"category": "tutorial"}
+)
+
+for doc in results:
+    print(f"ID: {doc['id']}, Score: {doc['score']}")
+    print(f"Texto: {doc['text']}")
+</code></pre>
+
+  <h3>3. <code>get_all_docs_by_metadata</code></h3>
+  <h3>Descrição</h3>
+  <p>Recupera todos os vetores do índice Pinecone que correspondam a um filtro de metadata, realizando consultas paginadas. Essa função não faz busca por similaridade, usa vetor "dummy" como exigido pela API e retorna os resultados brutos filtrados.</p>
+  <h3>Argumentos</h3>
+  <ul>
+    <li>batch_size (int | None): Limite de resultados por página. Controla memória e latência. Usa o valor configurado se None.</li>
+    <li>dimension (int | None): Dimensão do vetor (necessária para criar vetor dummy). Usa o valor configurado se None.</li>
+    <li>target_key (str): Chave de metadata para filtrar (ex: "file_id"). Default: "file_id".</li>
+    <li>target_value (Union[str, List[str]]): Valor ou lista de valores para filtro.</li>
+  </ul>
+  <h3>Retornos</h3>
+  <ul>
+    <li>List[Dict[str, Any]]: Lista contendo id, metadata e score dos vetores que satisfazem o filtro.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li>ValueError: Se target_value for vazio.</li>
+    <li>RuntimeError: Falha na recuperação paginada.</li>
+  </ul>
+  <h3>Exemplos</h3>
+  <pre data-lang="python"><code>
+all_vectors = retriever.get_all_docs_by_metadata(
+    batch_size=100,
+    target_key="user_id",
+    target_value=["user1", "user2"]
+)
+
+print(f"Total vetores recuperados: {len(all_vectors)}")
+for vector in all_vectors:
+    print(vector["id"], vector["metadata"])
+</code></pre>
+
+  <p>Esta documentação fornece uma visão clara do funcionamento e uso do <code>PineconeRetriever</code>, detalhando seu papel, metodologia de consulta e exemplos práticos para integração em sistemas que utilizem Pinecone para vetores.</p>
 </page>

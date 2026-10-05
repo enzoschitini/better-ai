@@ -1,31 +1,73 @@
-<page data-lead="Sample page for AgnoUI, used to validate the layout.">
-  <div class="callout" data-kind="note"><p><strong>Placeholder content.</strong> This text exists only to validate the layout. In the final version the page is generated from <code>ipynb_contents/Internal Source Code/AgnoUI.ipynb</code>.</p></div>
+<page data-lead="A beautiful, open-source interface for interacting with AI agents">
+  <media src="https://cdn.prod.website-files.com/6796d350b8c706e4533e7e32/689baa0854831df3725ec8b7_6416750e7ab3f27d87d33cde5869f7af_Without%20Agno.avif"></media>
 
-  <h2>Overview</h2>
-  <p>AgnoUI is part of the BetterAI platform. This paragraph stands in for the text coming from the source, so that spacing, line measure and the side index can be checked.</p>
+  <h2>Install Node.JS</h2>
+  <p><a href="https://nodejs.org/pt-br">Node.JS</a></p>
+  <p><a href="https://nodejs.org/pt-br/download">Download</a></p>
+  <div class="callout" data-kind="note"><p><code>node --version</code></p></div>
+  <div class="callout" data-kind="note"><p><code>local: "C:\Program Files\nodejs"</code></p></div>
 
-  <h2>Usage</h2>
-  <p>The block below shows the typical call, with syntax highlighting:</p>
+  <h2>Get Started with Agent UI</h2>
+  <p>To clone the Agent UI, run the following command in your terminal:</p>
+  <pre data-lang="bash"><code>
+npx create-agent-ui@latest
+</code></pre>
+  <p>Enter y to create a new project, install dependencies, then run the agent-ui using:</p>
+  <pre data-lang="bash"><code>
+C:\Users\schit>cd agent-ui
+</code></pre>
+  <pre data-lang="bash"><code>
+C:\Users\schit\agent-ui>npm run dev
+</code></pre>
+  <p>Open <a href="http://localhost:3000">http://localhost:3000</a> to view the Agent UI, but remember to connect to your local agents.</p>
+  <div class="callout" data-kind="note"><p>Local: <a href="http://localhost:3000">http://localhost:3000</a><br>Network: <a href="http://10.5.0.2:3000">http://10.5.0.2:3000</a></p></div>
+
+  <h2>Minimal setup</h2>
   <pre data-lang="python"><code>
-from better_ai import Agnoui
+import os
+from dotenv import load_dotenv
 
-client = Agnoui()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
+#os.environ["AGNO_TELEMETRY"] = "false"
+#AGNO_TELEMETRY = os.getenv("AGNO_TELEMETRY")
 
-  <h2>Parameters</h2>
-  <p>The table below exists to validate horizontal scrolling on narrow screens:</p>
-  <table>
-    <thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>
-    <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identifier of the model to use.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limit in seconds for the response.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Returns the response in chunks.</td></tr>
-    </tbody>
-  </table>
+from agno.agent import Agent
+from agno.models.openai import OpenAIChat
+from agno.os import AgentOS
 
-  <h2>Notes</h2>
-  <p>A sample warning, to check the styling of the attention callout:</p>
-  <div class="callout" data-kind="warn"><p><strong>Development only.</strong> The values above are fictitious and must not be used in production.</p></div>
+load_dotenv()
+
+assistant = Agent(
+    name="Assistant",
+    model=OpenAIChat(id="gpt-4.1-mini"),
+    instructions=["You are a helpful AI assistant."],
+    markdown=True,
+)
+
+agent_os = AgentOS(
+    id="my-first-os",
+    description="My first AgentOS",
+    agents=[assistant],
+)
+
+app = agent_os.get_app()
+
+if __name__ == "__main__":
+    # Default port is 7777, change with port=...
+    agent_os.serve(app="minimal_setup:app", reload=True)
+</code></pre>
+
+  <h2>AgnoUI.bat</h2>
+  <pre data-title="AgnoUI.bat"><code>
+@echo off
+cd C:\Users\schit\agent-ui
+npm run dev
+pause
+</code></pre>
+
+  <h2>Others links:</h2>
+  <p><a href="https://docs-v1.agno.com/agent-ui/introduction#get-started-with-agent-ui">Agent UI</a></p>
+  <p><a href="https://docs.agno.com/examples/agent-os/overview">Agent OS</a></p>
+  <p><a href="https://docs.agno.com/agent-os/interfaces/ag-ui/introduction">AG-UI</a></p>
+  <p><a href="https://github.com/agno-agi/agno">GitHub</a></p>
+  <p>Author: Enzo Schitini</p>
 </page>

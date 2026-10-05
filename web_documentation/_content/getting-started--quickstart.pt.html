@@ -1,31 +1,240 @@
-<page data-lead="Página de exemplo para Quickstart, usada para validar o layout.">
-  <div class="callout" data-kind="note"><p><strong>Conteúdo de exemplo.</strong> Este texto existe só para validar o layout. Na versão final, a página é gerada a partir de <code>ipynb_contents/Getting Started/1. Quickstart.ipynb</code>.</p></div>
+<page data-lead="Guia rápido para configurar o ambiente, instalar dependências e executar os serviços do BetterAI pela primeira vez.">
+  <h2>1. Atualize o Projeto</h2>
+  <p>Primeiro, certifique-se de estar na branch correta e de que o seu código está atualizado:</p>
+  <pre data-lang="bash"><code>
+git checkout production
+git pull
+git checkout -b nome-da-sua-branch
+</code></pre>
 
-  <h2>Visão geral</h2>
-  <p>Quickstart faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
+  <h2>2. Crie o Ambiente Virtual</h2>
+  <div class="callout" data-kind="info"><p><strong>Requisito:</strong> Python 3.14 ou superior (versão fixada em <code>.python-version</code>).</p></div>
+  <p>Crie um ambiente virtual para isolar as dependências do projeto:</p>
+  <pre data-lang="bash"><code>
+python -m venv .venv
+</code></pre>
 
-  <h2>Uso</h2>
-  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
-  <pre data-lang="python"><code>
-from better_ai import Quickstart
+  <h2>3. Ative o Ambiente Virtual</h2>
+  <codetabs>
+    <tab title="PowerShell"><pre data-lang="bash"><code>
+.\.venv\Scripts\Activate.ps1
+</code></pre></tab>
+    <tab title="CMD"><pre data-lang="bash"><code>
+.venv\Scripts\activate.bat
+</code></pre></tab>
+  </codetabs>
+  <p>Após a ativação, o seu terminal deve ficar parecido com isto:</p>
+  <pre><code>
+(.venv) PS C:\Users\nome_do_usuario\better-ai&gt;
+</code></pre>
 
-client = Quickstart()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
+  <h2>4. Instale as Dependências</h2>
+  <p>Você pode instalar as dependências de duas formas:</p>
+  <h3>Usando uv (recomendado)</h3>
+  <pre data-lang="bash"><code>
+uv sync
+</code></pre>
 
-  <h2>Parâmetros</h2>
-  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
+  <h2>5. Configure as Variáveis de Ambiente</h2>
+  <p>Crie um arquivo <code>.env</code> na raiz do projeto com as seguintes variáveis:</p>
   <table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <thead><tr><th>Variável</th><th>Descrição</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
+      <tr><td><code>BETTERAI_API_KEY</code></td><td>Chave de API interna da BetterAI</td></tr>
+      <tr><td><code>OPENAI_API_KEY</code></td><td>Chave de API da OpenAI</td></tr>
+      <tr><td><code>OPENAI_EMBEDDING_MODEL</code></td><td>Modelo de embeddings da OpenAI utilizado</td></tr>
+      <tr><td><code>GEMINI_API_KEY</code></td><td>Chave de API do Google Gemini</td></tr>
+      <tr><td><code>GROQ_API_KEY</code></td><td>Chave de API da Groq</td></tr>
+      <tr><td><code>ANTHROPIC_API_KEY</code></td><td>Chave de API da Anthropic (Claude)</td></tr>
+      <tr><td><code>TAVILY_API_KEY</code></td><td>Chave de API do Tavily (busca web)</td></tr>
+      <tr><td><code>FAL_API_KEY</code></td><td>Chave de API do Fal (geração de mídia)</td></tr>
+      <tr><td><code>EXCHANGE_RATE_API_KEY</code></td><td>Chave de API de cotação de câmbio</td></tr>
+      <tr><td><code>HUGGINGFACEHUB_API_TOKEN</code></td><td>Token de acesso ao Hugging Face Hub</td></tr>
+      <tr><td><code>PINECONE_API_KEY</code></td><td>Chave de API do Pinecone (vector store)</td></tr>
+      <tr><td><code>PINECONE_ENVIRONMENT</code></td><td>Região/ambiente do Pinecone</td></tr>
+      <tr><td><code>PINECONE_INDEX_NAME</code></td><td>Nome do índice vetorial no Pinecone</td></tr>
+      <tr><td><code>PINECONE_NAMESPACE</code></td><td>Namespace da base de conhecimento</td></tr>
+      <tr><td><code>PINECONE_GLOBAL_NAMESPACE</code></td><td>Namespace global da base de conhecimento</td></tr>
+      <tr><td><code>MONGO_URI</code></td><td>String de conexão completa do MongoDB</td></tr>
+      <tr><td><code>MONGO_USER</code></td><td>Usuário do MongoDB</td></tr>
+      <tr><td><code>MONGO_PASSWORD</code></td><td>Senha do MongoDB</td></tr>
+      <tr><td><code>MONGO_HOST</code></td><td>Host do MongoDB</td></tr>
+      <tr><td><code>MONGO_PORT</code></td><td>Porta do MongoDB</td></tr>
+      <tr><td><code>NOSQL_BACKEND</code></td><td>Backend NoSQL utilizado (<code>local</code> ou remoto)</td></tr>
+      <tr><td><code>SUPABASE_URL</code></td><td>URL do projeto Supabase</td></tr>
+      <tr><td><code>SUPABASE_SECRET_KEY</code></td><td>Chave secreta de serviço do Supabase</td></tr>
+      <tr><td><code>SUPABASE_DATABASE_URL</code></td><td>String de conexão do banco Postgres do Supabase</td></tr>
+      <tr><td><code>SUPABASE_PROJECT_NAME</code></td><td>Nome do projeto Supabase</td></tr>
+      <tr><td><code>SUPABASE_PROJECT_HOST</code></td><td>Host do projeto Supabase</td></tr>
+      <tr><td><code>SUPABASE_DATABASE_PASSWORD</code></td><td>Senha do banco de dados Supabase</td></tr>
+      <tr><td><code>SHOW_INFO_LOGS</code></td><td>Exibe logs informativos (<code>true</code>/<code>false</code>)</td></tr>
+      <tr><td><code>SHOW_METADATA</code></td><td>Exibe metadados nas respostas (<code>true</code>/<code>false</code>)</td></tr>
+      <tr><td><code>FORMAT_METADATA</code></td><td>Formata os metadados exibidos (<code>true</code>/<code>false</code>)</td></tr>
+      <tr><td><code>SAVE_LOGS</code></td><td>Salva logs de execução (<code>true</code>/<code>false</code>)</td></tr>
+      <tr><td><code>SAVE_MONGO</code></td><td>Salva dados de execução no MongoDB (<code>true</code>/<code>false</code>)</td></tr>
+      <tr><td><code>LOCAL</code></td><td>Flag para execução local (<code>true</code>/<code>false</code>)</td></tr>
+    </tbody>
+  </table>
+  <details>
+    <summary>Ver o modelo completo do .env</summary>
+    <pre data-lang="env" data-title=".env"><code>
+# BetterAI
+BETTERAI_API_KEY=********************
+
+# LLM's
+OPENAI_API_KEY=********************
+OPENAI_EMBEDDING_MODEL=text-embedding-3-large
+
+GEMINI_API_KEY=********************
+GROQ_API_KEY=********************
+ANTHROPIC_API_KEY=********************
+
+# Tools
+TAVILY_API_KEY=********************
+FAL_API_KEY=********************
+EXCHANGE_RATE_API_KEY=********************
+HUGGINGFACEHUB_API_TOKEN=********************
+
+# Database
+
+# Pinecone
+PINECONE_API_KEY=********************
+PINECONE_ENVIRONMENT=us-east-1
+PINECONE_INDEX_NAME=backai-vectorstore
+PINECONE_NAMESPACE=knowledge_base
+PINECONE_GLOBAL_NAMESPACE=global_knowledge_base
+
+# MongoDB
+MONGO_URI=********************
+MONGO_USER=********************
+MONGO_PASSWORD=********************
+MONGO_HOST=********************
+MONGO_PORT=********************
+
+NOSQL_BACKEND=local
+
+# Supabase
+SUPABASE_URL=********************
+SUPABASE_SECRET_KEY=********************
+SUPABASE_DATABASE_URL=********************
+SUPABASE_PROJECT_NAME=better-ai-bucket-storage
+SUPABASE_PROJECT_HOST=********************
+SUPABASE_DATABASE_PASSWORD=********************
+
+# Application Tracing Rules
+SHOW_INFO_LOGS=false
+SHOW_METADATA=false
+FORMAT_METADATA=false
+SAVE_LOGS=false
+SAVE_MONGO=false
+
+LOCAL=false
+</code></pre>
+  </details>
+
+  <h2>6. Execute a aplicação</h2>
+  <p>O projeto expõe <strong>dois serviços independentes</strong>, que podem ser executados separadamente ou em paralelo (em terminais distintos):</p>
+  <table>
+    <thead><tr><th>Serviço</th><th>Comando</th><th>Porta</th><th>Quando usar</th></tr></thead>
+    <tbody>
+      <tr><td>API (FastAPI)</td><td><code>uvicorn web_services:app --reload</code></td><td><code>8000</code></td><td>Consumo programático dos módulos de IA via HTTP</td></tr>
+      <tr><td>Interface (Streamlit)</td><td><code>streamlit run web_app.py</code></td><td><code>8501</code></td><td>Uso visual das aplicações (Acquarello, Content Generator)</td></tr>
+    </tbody>
+  </table>
+  <div class="callout" data-kind="info"><p><strong>Pré-requisitos:</strong> ambiente virtual ativado (passo 3), dependências instaladas (passo 4) e arquivo <code>.env</code> configurado (passo 5).</p></div>
+
+  <h3>6.1. API (FastAPI + Uvicorn)</h3>
+  <pre data-lang="bash"><code>
+uvicorn web_services:app --reload
+</code></pre>
+  <p>A flag <code>--reload</code> reinicia o servidor automaticamente a cada alteração no código — recomendada apenas em desenvolvimento.</p>
+  <pre><code>
+INFO:     Will watch for changes in these directories: ['C:\\Users\\user_name\\better-ai']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [24960] using StatReload
+INFO:     Router included: /agents
+INFO:     Router included: /davinci
+INFO:     Router included: /deep-research
+INFO:     Router included: /parse-content
+INFO:     Router included: /vector-store
+INFO:     Started server process [4748]
+INFO:     Waiting for application startup.
+INFO:
+
+    ╔═══════════════════════════════════════════════════════════════════════╗
+
+        ██████╗ ███████╗████████╗████████╗███████╗██████╗      █████╗ ██╗ ✦
+        ██╔══██╗██╔════╝╚══██╔══╝╚══██╔══╝██╔════╝██╔══██╗    ██╔══██╗██║
+        ██████╔╝█████╗     ██║      ██║   █████╗  ██████╔╝    ███████║██║
+        ██╔══██╗██╔══╝     ██║      ██║   ██╔══╝  ██╔══██╗    ██╔══██║██║
+        ██████╔╝███████╗   ██║      ██║   ███████╗██║  ██║    ██║  ██║██║
+        ╚═════╝ ╚══════╝   ╚═╝      ╚═╝   ╚══════╝╚═╝  ╚═╝    ╚═╝  ╚═╝╚═╝
+
+    ╚═══════════════════════════════════════════════════════════════════════╝
+
+                        ✦ Where intelligence finds purpose. ✦
+
+INFO:     BetterAI Web Service Network initialized successfully at 2026-08-17 08:55:20.
+INFO:     Version: 1.0.0
+INFO:     API_DOMAIN: http://localhost:8000
+INFO:     Health check available at: http://localhost:8000/health
+INFO:     Documentation available at: http://localhost:8000/docs
+INFO:     Application startup complete.
+</code></pre>
+  <p><strong>Endereços disponíveis</strong></p>
+  <table>
+    <thead><tr><th>Recurso</th><th>URL</th></tr></thead>
+    <tbody>
+      <tr><td>Base URL</td><td><a href="http://localhost:8000">http://localhost:8000</a></td></tr>
+      <tr><td>Health check</td><td><a href="http://localhost:8000/health">http://localhost:8000/health</a></td></tr>
+      <tr><td>Documentação interativa (Swagger UI)</td><td><a href="http://localhost:8000/docs">http://localhost:8000/docs</a></td></tr>
+    </tbody>
+  </table>
+  <p><strong>Valide a inicialização</strong></p>
+  <p>Confirme que a API respondeu corretamente antes de seguir:</p>
+  <pre data-lang="bash"><code>
+curl -X GET "http://127.0.0.1:8000/health"
+</code></pre>
+  <p><strong>Endpoints principais</strong></p>
+  <table>
+    <thead><tr><th>Endpoint</th><th>Descrição</th></tr></thead>
+    <tbody>
+      <tr><td><code>GET /health</code></td><td>Verificação de disponibilidade do serviço</td></tr>
+      <tr><td><code>GET /health-authorization</code></td><td>Verificação de disponibilidade com autenticação</td></tr>
+      <tr><td><code>POST /deep-research/context-builder</code></td><td>Construção de contexto a partir de pesquisa profunda</td></tr>
+      <tr><td><code>POST /parse-content/document-parse</code></td><td>Extração e estruturação de conteúdo de documentos</td></tr>
+      <tr><td><code>POST /davinci/image-generation</code></td><td>Geração de imagens</td></tr>
+    </tbody>
+  </table>
+  <p>Cada resposta segue um formato padronizado com <code>job_id</code>, <code>status</code>, <code>result</code> e métricas de tempo de execução. Os parâmetros e exemplos completos de request/response estão em <a href="@/modules/web-service-network/web-service-network-api">Web Service Network - API.ipynb</a>.</p>
+
+  <h3>6.2. Interface Streamlit</h3>
+  <pre data-lang="bash"><code>
+streamlit run web_app.py
+</code></pre>
+  <p>A aplicação ficará disponível em <a href="http://localhost:8501">http://localhost:8501</a>, com as seguintes páginas:</p>
+  <table>
+    <thead><tr><th>Aplicação</th><th>URL</th><th>Documentação</th></tr></thead>
+    <tbody>
+      <tr><td>Acquarello</td><td><a href="http://localhost:8501/acquarello">http://localhost:8501/acquarello</a></td><td><a href="@/streamlit-applications/acquarello">Acquarello.ipynb</a></td></tr>
+      <tr><td>Content Generator</td><td><a href="http://localhost:8501/content_generator">http://localhost:8501/content_generator</a></td><td><a href="@/streamlit-applications/content-generator">Content Generator.ipynb</a></td></tr>
     </tbody>
   </table>
 
-  <h2>Observações</h2>
-  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
-  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div>
+  <h3>6.3. Resolução de problemas</h3>
+  <table>
+    <thead><tr><th>Sintoma</th><th>Causa provável</th><th>O que fazer</th></tr></thead>
+    <tbody>
+      <tr><td><code>ModuleNotFoundError</code> ao iniciar</td><td>Ambiente virtual não ativado ou dependências ausentes</td><td>Reative o <code>.venv</code> (passo 3) e rode <code>uv sync</code> (passo 4)</td></tr>
+      <tr><td>Erro de autenticação nos provedores de IA</td><td>Chaves ausentes ou inválidas no <code>.env</code></td><td>Revise o passo 5 e confirme os valores das chaves</td></tr>
+      <tr><td>Falha de conexão com MongoDB/Supabase/Pinecone</td><td>Credenciais ou host incorretos no <code>.env</code></td><td>Verifique as variáveis de banco e a conectividade de rede</td></tr>
+      <tr><td>Porta já em uso</td><td>Outra instância do serviço está ativa</td><td>Encerre o processo anterior ou use outra porta (<code>--port</code>)</td></tr>
+    </tbody>
+  </table>
+  <p>Se o ambiente virtual ficar inconsistente, recrie-o do zero:</p>
+  <pre data-lang="bash"><code>
+deactivate
+Remove-Item -Recurse -Force .\.venv
+python -m venv .venv
+</code></pre>
 </page>

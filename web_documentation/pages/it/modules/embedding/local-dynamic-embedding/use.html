@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Use | BetterAI Docs</title>
-<meta name="description" content="Pagina di esempio per Use, usata per validare il layout.">
+<meta name="description" content="Modulo per generare embedding di testo in locale con una API fluente (concatenabile), cambio dinamico del provider e recupero per similarità.">
 <link rel="canonical" href="pages/it/modules/embedding/local-dynamic-embedding/use.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,184 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copia pagina</span></button>
             </div>
           </div>
-          <p class="lead">Pagina di esempio per Use, usata per validare il layout.</p>
+          <p class="lead">Modulo per generare embedding di testo in locale con una API fluente (concatenabile), cambio dinamico del provider e recupero per similarità.</p>
           <details class="toc-inline"><summary>In questa pagina</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Contenuto di esempio.</strong> Questo testo esiste solo per validare il layout. Nella versione finale la pagina è generata da <code>ipynb_contents/Modules/Embedding/Local Dynamic Embedding/Use.ipynb</code>.</p></div>
+        <div class="prose"><p>Modulo per generare <em>embedding</em> di testo in locale con una <strong>API fluente</strong> (concatenabile), cambio dinamico del provider e recupero per similarità.</p>
+  <p>Il flusso tipico è: <strong>configurare → elaborare il testo → accedere ai chunk → recuperare per similarità → esportare</strong>.</p>
 
-  <h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
-  <p>Use fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
+  <h2 id="come-eseguire"><a class="anchor" href="#come-eseguire" aria-label="Link para esta seção">#</a>Come eseguire</h2>
+  <p>Il modulo usa <em>import</em> relativi (<code>EmbeddingFactory</code>), quindi deve essere eseguito come modulo, con il flag <code>-m</code>:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">python</span> <span class="t-n">-m</span> src.embedding.modules.local_embedding</code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>Eseguire direttamente il file (<code>python arquivo.py</code>) si rompe a causa dell'import relativo.</p>
 
-  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
-  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> Use
+  <h2 id="avvio-rapido"><a class="anchor" href="#avvio-rapido" aria-label="Link para esta seção">#</a>Avvio rapido</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> src.embedding.modules.local_embedding.module <span class="t-k">import</span> (
+    LocalDynamicEmbedding,
+    EmbeddingFactory,
+)
 
-client = <span class="t-f">Use</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
+<span class="t-c"># Monta o pipeline (encadeando as configurações)</span>
+pipeline = (
+    <span class="t-f">LocalDynamicEmbedding</span>()
+    .<span class="t-f">with_fake_embeddings</span>(size=<span class="t-n">384</span>)          <span class="t-c"># embeddings falsos p/ testes</span>
+    .<span class="t-f">with_splitter</span>(chunk_size=<span class="t-n">120</span>, chunk_overlap=<span class="t-n">20</span>)
+    .<span class="t-f">with_top_k</span>(<span class="t-n">3</span>)
+)
 
-  <h2 id="parametri"><a class="anchor" href="#parametri" aria-label="Link para esta seção">#</a>Parametri</h2>
-  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
+<span class="t-c"># Processa um texto e recebe a quantidade de chunks gerados</span>
+qtd = pipeline.<span class="t-f">process_text</span>(<span class="t-s">&quot;seu texto...&quot;</span>, metadata={<span class="t-s">&quot;fonte&quot;</span>: <span class="t-s">&quot;exemplo&quot;</span>})
+
+<span class="t-c"># Recupera os trechos mais similares a uma consulta</span>
+resultados = pipeline.<span class="t-f">retrieve</span>(<span class="t-s">&quot;sua pergunta?&quot;</span>, include_embedding=<span class="t-n">True</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="provider-disponibili"><a class="anchor" href="#provider-disponibili" aria-label="Link para esta seção">#</a>Provider disponibili</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>EmbeddingFactory.<span class="t-f">available</span>()   <span class="t-c"># -&gt; lista os provedores registrados</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>Usa questo metodo per scoprire quali backend di embedding sono installati/registrati nell'ambiente.</p>
+
+  <h2 id="costruire-la-pipeline-api-fluente"><a class="anchor" href="#costruire-la-pipeline-api-fluente" aria-label="Link para esta seção">#</a>Costruire la pipeline (API fluente)</h2>
+  <p>Ogni metodo <code>with_*</code> restituisce la stessa istanza, permettendo la concatenazione. Se <strong>non</strong> definisci un provider di embedding, la classe ricade automaticamente su <code>fake</code>.</p>
   <div class="table-wrap"><table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <thead><tr><th>Metodo</th><th>Effetto</th><th>Parametri</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
+      <tr><td><code>.with_fake_embeddings(size=384)</code></td><td>Usa embedding finti (vettori di dimensione <code>size</code>) — ideale per test senza dipendenze esterne</td><td><code>size</code>: dimensione del vettore</td></tr>
+      <tr><td><code>.with_splitter(chunk_size, chunk_overlap)</code></td><td>Configura come il testo viene diviso in chunk</td><td><code>chunk_size</code>: dimensione del chunk; <code>chunk_overlap</code>: sovrapposizione tra i chunk</td></tr>
+      <tr><td><code>.with_top_k(k)</code></td><td>Definisce il numero predefinito di risultati restituiti nel recupero</td><td><code>k</code>: numero di risultati</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="note"><a class="anchor" href="#note" aria-label="Link para esta seção">#</a>Note</h2>
-  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
-  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div></div>
+  <h3 id="costruttori-di-fabbrica-cambio-di-provider-in-1-riga"><a class="anchor" href="#costruttori-di-fabbrica-cambio-di-provider-in-1-riga" aria-label="Link para esta seção">#</a>Costruttori di fabbrica (cambio di provider in 1 riga)</h3>
+  <p>Per usare un provider reale esistono costruttori alternativi, per esempio:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>pipeline_openai = LocalDynamicEmbedding.<span class="t-f">from_openai_embeddings</span>(
+    model=<span class="t-s">&quot;text-embedding-3-large&quot;</span>,
+    chunk_size=<span class="t-n">3000</span>,
+    chunk_overlap=<span class="t-n">300</span>,
+    top_k=<span class="t-n">5</span>,
+)</code></pre><button class="copy floating" type="button"></button></div></div>
+  <div class="callout" data-kind="info"><p>Richiede che le dipendenze del provider (es.: OpenAI) siano installate e configurate.</p></div>
+
+  <h2 id="elaborare-il-testo"><a class="anchor" href="#elaborare-il-testo" aria-label="Link para esta seção">#</a>Elaborare il testo</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>qtd = pipeline.<span class="t-f">process_text</span>(texto, metadata={<span class="t-s">&quot;fonte&quot;</span>: <span class="t-s">&quot;apostila_energia&quot;</span>})</code></pre><button class="copy floating" type="button"></button></div></div>
+  <ul>
+    <li><strong>Valore di ritorno:</strong> numero di chunk generati <strong>in questa chiamata</strong> (<code>int</code>).</li>
+    <li><strong><code>metadata</code></strong> (opzionale): dizionario allegato a ogni chunk generato da questo testo.</li>
+    <li>Può essere chiamato più volte; i chunk si accumulano.</li>
+  </ul>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>pipeline.total_chunks   <span class="t-c"># total acumulado de chunks em todas as chamadas</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="accedere-ai-chunk"><a class="anchor" href="#accedere-ai-chunk" aria-label="Link para esta seção">#</a>Accedere ai chunk</h2>
+  <p><code>pipeline.chunks</code> è la lista di oggetti chunk. Ogni chunk espone:</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Attributo</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>chunk.index</code></td><td>Indice del chunk</td></tr>
+      <tr><td><code>chunk.content</code></td><td>Testo del chunk</td></tr>
+      <tr><td><code>chunk.length</code></td><td>Lunghezza del testo</td></tr>
+      <tr><td><code>chunk.dim</code></td><td>Dimensione del vettore di embedding</td></tr>
+      <tr><td><code>chunk.metadata</code></td><td>Metadati associati</td></tr>
+      <tr><td><code>chunk.embedding</code></td><td>Vettore di embedding (lista di float)</td></tr>
+    </tbody>
+  </table></div>
+  <p>Esempio:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">for</span> chunk <span class="t-k">in</span> pipeline.chunks:
+    preview = chunk.content[:<span class="t-n">60</span>].<span class="t-f">replace</span>(<span class="t-s">&quot;\n&quot;</span>, <span class="t-s">&quot; &quot;</span>)
+    <span class="t-f">print</span>(f<span class="t-s">&quot;[{chunk.index}] len={chunk.length} dim={chunk.dim} meta={chunk.metadata}&quot;</span>)
+    <span class="t-f">print</span>(f<span class="t-s">&quot;     texto: {preview}...&quot;</span>)
+    <span class="t-f">print</span>(f<span class="t-s">&quot;     embedding[:3]: {chunk.embedding[:3]}&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="recupero-per-similarita"><a class="anchor" href="#recupero-per-similarita" aria-label="Link para esta seção">#</a>Recupero per similarità</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>resultados = pipeline.<span class="t-f">retrieve</span>(<span class="t-s">&quot;como gerar eletricidade a partir do vento?&quot;</span>,
+                               include_embedding=<span class="t-n">True</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+  <ul>
+    <li><strong>Valore di ritorno:</strong> lista di dizionari ordinati per rilevanza. Ogni elemento contiene:
+      <ul>
+        <li><code>score</code> — punteggio di similarità (<code>float</code>)</li>
+        <li><code>content</code> — testo del brano recuperato</li>
+        <li><code>embedding</code> — vettore del brano (solo se <code>include_embedding=True</code>)</li>
+      </ul>
+    </li>
+    <li>Il numero di risultati segue il <code>top_k</code> configurato.</li>
+  </ul>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">for</span> i, r <span class="t-k">in</span> <span class="t-f">enumerate</span>(pipeline.<span class="t-f">retrieve</span>(consulta, include_embedding=<span class="t-n">True</span>), <span class="t-n">1</span>):
+    <span class="t-f">print</span>(f<span class="t-s">&quot;#{i} score={r['score']:.4f} | dim={len(r['embedding'])}&quot;</span>)
+    <span class="t-f">print</span>(f<span class="t-s">&quot;   {r['content'][:70]}...&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="esportare-i-chunk-pronti-per-json"><a class="anchor" href="#esportare-i-chunk-pronti-per-json" aria-label="Link para esta seção">#</a>Esportare i chunk (pronti per JSON)</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>dados = pipeline.<span class="t-f">get_chunks</span>(include_embedding=<span class="t-n">False</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+  <ul>
+    <li><strong>Valore di ritorno:</strong> lista di dizionari serializzabili (ideale per <code>json.dumps</code>).</li>
+    <li>Usa <code>include_embedding=False</code> per omettere i vettori e ottenere un output snello.</li>
+  </ul>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">import</span> json
+exemplo = pipeline.<span class="t-f">get_chunks</span>(include_embedding=<span class="t-n">False</span>)[<span class="t-n">0</span>]
+<span class="t-f">print</span>(json.<span class="t-f">dumps</span>(exemplo, ensure_ascii=<span class="t-n">False</span>, indent=<span class="t-n">2</span>))</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="esempio-completo"><a class="anchor" href="#esempio-completo" aria-label="Link para esta seção">#</a>Esempio completo</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> src.embedding.modules.local_embedding.module <span class="t-k">import</span> (
+    LocalDynamicEmbedding, EmbeddingFactory,
+)
+<span class="t-k">import</span> json
+
+<span class="t-f">print</span>(<span class="t-s">&quot;Provedores disponíveis:&quot;</span>, EmbeddingFactory.<span class="t-f">available</span>())
+
+texto = (
+    <span class="t-s">&quot;A energia solar é uma fonte renovável...\n\n&quot;</span>
+    <span class="t-s">&quot;A energia eólica aproveita a força dos ventos...\n\n&quot;</span>
+    <span class="t-s">&quot;Já os combustíveis fósseis são fontes não renováveis...\n\n&quot;</span>
+    <span class="t-s">&quot;O uso de baterias é essencial para armazenar energia...&quot;</span>
+)
+
+<span class="t-c"># 1) Configuração (sem embeddings -&gt; usa fake automaticamente)</span>
+pipeline = (
+    <span class="t-f">LocalDynamicEmbedding</span>()
+    .<span class="t-f">with_fake_embeddings</span>(size=<span class="t-n">384</span>)
+    .<span class="t-f">with_splitter</span>(chunk_size=<span class="t-n">120</span>, chunk_overlap=<span class="t-n">20</span>)
+    .<span class="t-f">with_top_k</span>(<span class="t-n">3</span>)
+)
+
+<span class="t-c"># 2) Processamento</span>
+qtd = pipeline.<span class="t-f">process_text</span>(texto, metadata={<span class="t-s">&quot;fonte&quot;</span>: <span class="t-s">&quot;apostila_energia&quot;</span>})
+<span class="t-f">print</span>(f<span class="t-s">&quot;Chunks gerados: {qtd} | total: {pipeline.total_chunks}&quot;</span>)
+
+<span class="t-c"># 3) Inspeção dos chunks</span>
+<span class="t-k">for</span> chunk <span class="t-k">in</span> pipeline.chunks:
+    <span class="t-f">print</span>(f<span class="t-s">&quot;[{chunk.index}] dim={chunk.dim} meta={chunk.metadata}&quot;</span>)
+
+<span class="t-c"># 4) Recuperação</span>
+<span class="t-k">for</span> i, r <span class="t-k">in</span> <span class="t-f">enumerate</span>(pipeline.<span class="t-f">retrieve</span>(<span class="t-s">&quot;energia do vento?&quot;</span>, include_embedding=<span class="t-n">True</span>), <span class="t-n">1</span>):
+    <span class="t-f">print</span>(f<span class="t-s">&quot;#{i} score={r['score']:.4f} -&gt; {r['content'][:60]}...&quot;</span>)
+
+<span class="t-c"># 5) Exportação JSON</span>
+<span class="t-f">print</span>(json.<span class="t-f">dumps</span>(pipeline.<span class="t-f">get_chunks</span>(include_embedding=<span class="t-n">False</span>)[<span class="t-n">0</span>],
+                 ensure_ascii=<span class="t-n">False</span>, indent=<span class="t-n">2</span>))</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="riferimento-rapido-dell-api"><a class="anchor" href="#riferimento-rapido-dell-api" aria-label="Link para esta seção">#</a>Riferimento rapido dell'API</h2>
+  <p><strong><code>EmbeddingFactory</code></strong></p>
+  <ul>
+    <li><code>EmbeddingFactory.available()</code> → lista di provider</li>
+  </ul>
+  <p><strong><code>LocalDynamicEmbedding</code></strong></p>
+  <ul>
+    <li><code>LocalDynamicEmbedding()</code> → istanza vuota (fallback: fake)</li>
+    <li><code>.with_fake_embeddings(size=384)</code> → <em>self</em></li>
+    <li><code>.with_splitter(chunk_size, chunk_overlap)</code> → <em>self</em></li>
+    <li><code>.with_top_k(k)</code> → <em>self</em></li>
+    <li><code>.from_openai_embeddings(model, chunk_size, chunk_overlap, top_k)</code> → nuova istanza (classmethod)</li>
+    <li><code>.process_text(texto, metadata=None)</code> → <code>int</code> (chunk generati)</li>
+    <li><code>.total_chunks</code> → <code>int</code> (cumulativo)</li>
+    <li><code>.chunks</code> → lista di oggetti chunk (<code>.index</code>, <code>.content</code>, <code>.length</code>, <code>.dim</code>, <code>.metadata</code>, <code>.embedding</code>)</li>
+    <li><code>.retrieve(consulta, include_embedding=False)</code> → lista di dict (<code>score</code>, <code>content</code>, [<code>embedding</code>])</li>
+    <li><code>.get_chunks(include_embedding=False)</code> → lista di dict serializzabili</li>
+  </ul>
+
+  <h2 id="osservazioni"><a class="anchor" href="#osservazioni" aria-label="Link para esta seção">#</a>Osservazioni</h2>
+  <ul>
+    <li>Senza un provider configurato, la pipeline usa <strong>fake embeddings</strong> — perfetto per testare il flusso senza dipendere da API esterne.</li>
+    <li>Cambiare provider richiede una sola riga (tramite costruttore di fabbrica), senza modificare il resto del codice.</li>
+    <li>Esegui sempre come modulo (<code>python -m ...</code>) a causa degli import relativi.</li>
+  </ul>
+
+  <div class="callout" data-kind="note"><p>Questa documentazione descrive l'<strong>API pubblica osservabile</strong> a partire dal file di dimostrazione. I dettagli interni di implementazione (algoritmo di similarità, formato esatto dello splitter, provider registrati) dipendono dal codice sorgente del modulo. Se vuoi, inviami <code>module.py</code> e io integro con questi dettagli.</p></div></div>
         <div class="feedback"></div>
         <p class="source">Fonte: <code>ipynb_contents/Modules/Embedding/Local Dynamic Embedding/Use.ipynb</code></p>
         <nav class="pager" aria-label="Pagine vicine"><a class="pager-link prev" href="../../../../../pages/it/modules/embedding/local-dynamic-embedding/documentation.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Precedente</small><span>Documentation</span></div></a><a class="pager-link next" href="../../../../../pages/it/modules/image-generation/cost-calculator/cost-calculator.html"><div><small>Successiva</small><span>Cost Calculator</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

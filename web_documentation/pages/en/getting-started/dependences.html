@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dependences | BetterAI Docs</title>
-<meta name="description" content="Sample page for Dependences, used to validate the layout.">
+<meta name="description" content="This project uses a robust set of libraries for building APIs, orchestrating AI agents, processing data, storage and integration with external services.">
 <link rel="canonical" href="pages/en/getting-started/dependences.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,125 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copy page</span></button>
             </div>
           </div>
-          <p class="lead">Sample page for Dependences, used to validate the layout.</p>
+          <p class="lead">This project uses a robust set of libraries for building APIs, orchestrating AI agents, processing data, storage and integration with external services.</p>
           <details class="toc-inline"><summary>On this page</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Placeholder content.</strong> This text exists only to validate the layout. In the final version the page is generated from <code>ipynb_contents/Getting Started/2. Dependences.ipynb</code>.</p></div>
+        <div class="prose"><p>Dependencies are organized by responsibility to make maintenance, scalability and understanding of the architecture easier.</p>
+  <p><strong>Project:</strong> <code>better-ai</code> · <strong>Version:</strong> <code>0.1.0</code> · <strong>Required Python:</strong> <code>&gt;=3.12</code></p>
+  <div class="callout" data-kind="note"><p><strong>Source of truth:</strong> <code>pyproject.toml</code>. Recommended installation with <code>uv sync</code> (or <code>uv pip install -e .</code>).</p></div>
 
-  <h2 id="overview"><a class="anchor" href="#overview" aria-label="Link para esta seção">#</a>Overview</h2>
-  <p>Dependences is part of the BetterAI platform. This paragraph stands in for the text coming from the source, so that spacing, line measure and the side index can be checked.</p>
-
-  <h2 id="usage"><a class="anchor" href="#usage" aria-label="Link para esta seção">#</a>Usage</h2>
-  <p>The block below shows the typical call, with syntax highlighting:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> Dependences
-
-client = <span class="t-f">Dependences</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parameters"><a class="anchor" href="#parameters" aria-label="Link para esta seção">#</a>Parameters</h2>
-  <p>The table below exists to validate horizontal scrolling on narrow screens:</p>
+  <h2 id="1-core-api-infrastructure"><a class="anchor" href="#1-core-api-infrastructure" aria-label="Link para esta seção">#</a>1. Core &amp; API Infrastructure</h2>
+  <p>Responsible for structuring the backend application and HTTP communication.</p>
   <div class="table-wrap"><table>
-    <thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>
+    <thead><tr><th>Library</th><th>Version</th><th>Description</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identifier of the model to use.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limit in seconds for the response.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Returns the response in chunks.</td></tr>
+      <tr><td><code>dotenv</code></td><td><code>~0.9.9</code></td><td>Environment variables management via <code>.env</code></td></tr>
+      <tr><td><code>fastapi</code></td><td><code>~0.120.4</code></td><td>Modern framework for building fast APIs in Python</td></tr>
+      <tr><td><code>uvicorn</code></td><td><code>~0.23.2</code></td><td>ASGI server to run FastAPI applications</td></tr>
+      <tr><td><code>python-multipart</code></td><td><code>~0.0.20</code></td><td>Support for file uploads in APIs</td></tr>
+      <tr><td><code>requests</code></td><td><code>~2.32.5</code></td><td>HTTP client to consume external APIs</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="notes"><a class="anchor" href="#notes" aria-label="Link para esta seção">#</a>Notes</h2>
-  <p>A sample warning, to check the styling of the attention callout:</p>
-  <div class="callout" data-kind="warn"><p><strong>Development only.</strong> The values above are fictitious and must not be used in production.</p></div></div>
+  <h2 id="2-orchestration-langchain-stack"><a class="anchor" href="#2-orchestration-langchain-stack" aria-label="Link para esta seção">#</a>2. Orchestration (LangChain Stack)</h2>
+  <p>Main layer of intelligence and agent orchestration.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Library</th><th>Version</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>langchain</code></td><td><code>~0.3.27</code></td><td>Framework for building applications with LLMs</td></tr>
+      <tr><td><code>langchain-community</code></td><td><code>~0.3.31</code></td><td>Additional community integrations</td></tr>
+      <tr><td><code>langchain-experimental</code></td><td><code>~0.3.4</code></td><td>Experimental features</td></tr>
+      <tr><td><code>langchain-openai</code></td><td><code>~0.3.35</code></td><td>Integration with OpenAI models</td></tr>
+      <tr><td><code>langchain-google-genai</code></td><td><code>~2.1.12</code></td><td>Integration with Google Gemini models</td></tr>
+      <tr><td><code>langchain-groq</code></td><td><code>~0.3.8</code></td><td>Integration with Groq models (high performance)</td></tr>
+      <tr><td><code>langchain-pinecone</code></td><td><code>~0.2.13</code></td><td>Integration with the Pinecone vector database</td></tr>
+      <tr><td><code>langchain-text-splitters</code></td><td><code>&gt;=0.3.11</code></td><td>Text chunking strategies for RAG pipelines</td></tr>
+      <tr><td><code>agno</code></td><td><code>~2.5.8</code></td><td>Agent framework (memory, tools, agent teams)</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="3-ai-models-sdks"><a class="anchor" href="#3-ai-models-sdks" aria-label="Link para esta seção">#</a>3. AI Models &amp; SDKs</h2>
+  <p>Native SDKs for direct use of the models, useful when a feature is not covered by LangChain.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Library</th><th>Version</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>google-genai</code></td><td><code>~1.52.0</code></td><td>Official SDK for using Gemini models</td></tr>
+      <tr><td><code>anthropic</code></td><td><code>&gt;=0.105.2</code></td><td>Official Anthropic SDK (Claude models)</td></tr>
+      <tr><td><code>groq</code></td><td><code>~0.37.1</code></td><td>Official Groq SDK for low-latency inference</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="4-data-persistence-memory"><a class="anchor" href="#4-data-persistence-memory" aria-label="Link para esta seção">#</a>4. Data Persistence &amp; Memory</h2>
+  <p>Storage layer for structured and vector data.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Library</th><th>Version</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>pinecone</code></td><td><code>~7.3.0</code></td><td>Vector database for embeddings</td></tr>
+      <tr><td><code>faiss-cpu</code></td><td><code>&gt;=1.14.3</code></td><td>Local (in-process) vector index, with no external service dependency</td></tr>
+      <tr><td><code>pymongo</code></td><td><code>~4.15.3</code></td><td>MongoDB client (NoSQL)</td></tr>
+      <tr><td><code>supabase</code></td><td><code>~2.27.3</code></td><td>Backend as a Service with Postgres + Auth</td></tr>
+      <tr><td><code>psycopg2</code></td><td><code>&gt;=2.9.11</code></td><td>PostgreSQL driver (compiled from source)</td></tr>
+      <tr><td><code>psycopg2-binary</code></td><td><code>&gt;=2.9.11</code></td><td>Precompiled binary version of the PostgreSQL driver</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="5-document-processing-rag"><a class="anchor" href="#5-document-processing-rag" aria-label="Link para esta seção">#</a>5. Document Processing &amp; RAG</h2>
+  <p>Extraction and handling of documents to feed the knowledge base.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Library</th><th>Version</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>pymupdf</code></td><td><code>~1.26.7</code></td><td>PDF reading and extraction (high performance)</td></tr>
+      <tr><td><code>pypdf</code></td><td><code>~6.2.0</code></td><td>PDF file handling</td></tr>
+      <tr><td><code>python-docx</code></td><td><code>~1.2.0</code></td><td>Reading and writing Word files</td></tr>
+      <tr><td><code>python-pptx</code></td><td><code>~1.0.2</code></td><td>PowerPoint file handling</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="6-data-analysis-formatting"><a class="anchor" href="#6-data-analysis-formatting" aria-label="Link para esta seção">#</a>6. Data Analysis &amp; Formatting</h2>
+  <p>Data analysis, transformation and visualization.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Library</th><th>Version</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>pandas</code></td><td><code>~2.3.3</code></td><td>Data manipulation and analysis</td></tr>
+      <tr><td><code>pandasai</code></td><td><code>&gt;=2.0.24</code></td><td>Natural-language queries over DataFrames via LLM</td></tr>
+      <tr><td><code>openpyxl</code></td><td><code>~3.1.5</code></td><td>Excel file reading/writing</td></tr>
+      <tr><td><code>tabulate</code></td><td><code>~0.9.0</code></td><td>Text table formatting</td></tr>
+      <tr><td><code>matplotlib</code></td><td><code>~3.10.8</code></td><td>Data visualization</td></tr>
+      <tr><td><code>seaborn</code></td><td><code>~0.13.2</code></td><td>Statistical visualizations based on matplotlib</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="7-external-tools-integrations"><a class="anchor" href="#7-external-tools-integrations" aria-label="Link para esta seção">#</a>7. External Tools &amp; Integrations</h2>
+  <p>Search tools and third-party APIs used by the agents.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Library</th><th>Version</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>wikipedia</code></td><td><code>~1.4.0</code></td><td>Access to Wikipedia data</td></tr>
+      <tr><td><code>tavily</code></td><td><code>&gt;=1.1.0</code></td><td>Search API optimized for LLMs</td></tr>
+      <tr><td><code>yfinance</code></td><td><code>&gt;=1.2.0</code></td><td>Yahoo Finance financial data</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="8-internal-services-utilities"><a class="anchor" href="#8-internal-services-utilities" aria-label="Link para esta seção">#</a>8. Internal Services &amp; Utilities</h2>
+  <p>Interface, tests and utilities supporting development.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Library</th><th>Version</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>streamlit</code></td><td><code>&gt;=1.56.0</code></td><td>Web interface for the platform's demos and dashboards</td></tr>
+      <tr><td><code>pytest</code></td><td><code>&gt;=9.0.2</code></td><td>Automated testing framework</td></tr>
+      <tr><td><code>inflect</code></td><td><code>~7.5.0</code></td><td>Pluralization and normalization of English terms</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="versioning-conventions"><a class="anchor" href="#versioning-conventions" aria-label="Link para esta seção">#</a>Versioning conventions</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Operator</th><th>Meaning</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><code>~=X.Y.Z</code></td><td>Allows patch updates, pins major and minor</td><td><code>~=0.3.27</code> → <code>&gt;=0.3.27, &lt;0.4.0</code></td></tr>
+      <tr><td><code>&gt;=X.Y.Z</code></td><td>Accepts any version equal or higher</td><td><code>&gt;=1.56.0</code></td></tr>
+    </tbody>
+  </table></div>
+  <p>The libraries with <code>~=</code> are the ones that directly affect the behavior of the agents and the RAG pipelines — keeping them pinned by minor avoids silent API breakage. Those marked with <code>&gt;=</code> are peripheral or stable enough to follow the latest versions.</p></div>
         <div class="feedback"></div>
         <p class="source">Source: <code>ipynb_contents/Getting Started/2. Dependences.ipynb</code></p>
         <nav class="pager" aria-label="Neighboring pages"><a class="pager-link prev" href="../../../pages/en/getting-started/quickstart.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Previous</small><span>Quickstart</span></div></a><a class="pager-link next" href="../../../pages/en/getting-started/licence.html"><div><small>Next</small><span>Licence</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

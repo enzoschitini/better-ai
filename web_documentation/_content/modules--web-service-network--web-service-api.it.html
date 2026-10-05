@@ -1,31 +1,202 @@
-<page data-lead="Pagina di esempio per Web Service API, usata per validare il layout.">
-  <div class="callout" data-kind="note"><p><strong>Contenuto di esempio.</strong> Questo testo esiste solo per validare il layout. Nella versione finale la pagina è generata da <code>ipynb_contents/Modules/Web Service Network/Web Service API.ipynb</code>.</p></div>
-
+<page data-lead="La classe WebServiceAPI agisce come un involucro configurabile per creare e gestire un&#x27;applicazione FastAPI.">
   <h2>Panoramica</h2>
-  <p>Web Service API fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
+  <p>La classe <code>WebServiceAPI</code> agisce come un involucro configurabile per creare e gestire un'applicazione FastAPI. Il suo scopo è semplificare il processo di inizializzazione dell'applicazione web, configurare i middleware essenziali, registrare le rotte predefinite e integrare automaticamente router aggiuntivi in modo dinamico a partire da pacchetti Python.</p>
+  <p>Risolve il problema della ripetizione e della dispersione delle configurazioni comuni nelle API FastAPI, riunendo in un unico punto tutta la configurazione iniziale, il middleware CORS, le rotte di base per salute e autenticazione, oltre a facilitare l'estensione dell'API con router esterni. In pratica, può essere usata per accelerare lo sviluppo di API RESTful, garantendo una base coerente e consentendo un'integrazione modulare e test facilitati.</p>
+  <p>La classe è particolarmente utile nei progetti che vogliono mantenere un'architettura pulita e scalabile, con log chiari del ciclo di vita dell'applicazione e controllo centralizzato della configurazione tramite dizionario e variabili d'ambiente.</p>
 
-  <h2>Uso</h2>
-  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
-  <pre data-lang="python"><code>
-from better_ai import WebServiceApi
+  <h2>Flusso di Esecuzione</h2>
+  <ol>
+    <li><strong>Istanziazione della classe</strong><br>Lo sviluppatore crea un'istanza di <code>WebServiceAPI</code>, passando opzionalmente un dizionario di configurazioni personalizzato. Se non viene passato alcun dizionario, viene usato un valore predefinito tramite l'import <code>CONFIG</code>.</li>
+    <li><strong>Inizializzazione dell'applicazione con <code>initialize()</code></strong><br>Chiamando il metodo <code>initialize()</code>, l'applicazione FastAPI viene creata con le configurazioni di nome, descrizione, versione, gestione del ciclo di vita e middleware CORS configurati, oltre alla registrazione delle rotte predefinite (<code>/health</code>, <code>/</code>, <code>/health-authorization</code>).</li>
+    <li><strong>Inclusione di router aggiuntivi</strong><br>Dopo aver inizializzato l'applicazione, lo sviluppatore può includere router aggiuntivi utilizzando i metodi <code>include_routers()</code> o <code>test_routers()</code> passando liste di router FastAPI. Ogni inclusione viene registrata nei log per facilitare il tracciamento.</li>
+    <li><strong>Scoperta dinamica dei router</strong><br>Se si desidera, si può usare il metodo <code>collect_routers(package_name)</code> per caricare dinamicamente i router definiti nei moduli di un determinato pacchetto, consentendo un'estensibilità modulare.</li>
+    <li><strong>Ottenimento dell'istanza FastAPI</strong><br>Infine, per eseguire o manipolare l'applicazione al di fuori della classe, il metodo <code>get_app()</code> restituisce l'istanza FastAPI già inizializzata.</li>
+    <li><strong>Esecuzione e log del ciclo di vita</strong><br>Al momento dell'inizializzazione dell'applicazione, un banner e informazioni importanti vengono mostrati nei log. Vengono inoltre registrati gli eventi di arresto dell'applicazione.</li>
+  </ol>
 
-client = WebServiceApi()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parametri</h2>
-  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
+  <h2>Tabella dei Metodi della Classe</h2>
   <table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <thead><tr><th>Metodo</th><th>Descrizione</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
+      <tr><td><code>__init__</code></td><td>Inizializza la classe con le configurazioni e prepara il logger</td></tr>
+      <tr><td><code>initialize</code></td><td>Crea e configura l'applicazione FastAPI</td></tr>
+      <tr><td><code>include_routers</code></td><td>Aggiunge router all'applicazione dopo l'inizializzazione</td></tr>
+      <tr><td><code>test_routers</code></td><td>Aggiunge router all'applicazione a scopo di test</td></tr>
+      <tr><td><code>collect_routers</code></td><td>Scopre e importa dinamicamente i router di un pacchetto</td></tr>
+      <tr><td><code>get_app</code></td><td>Restituisce l'istanza FastAPI inizializzata</td></tr>
     </tbody>
   </table>
 
-  <h2>Note</h2>
-  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
-  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div>
+  <h2>Variabili d'Ambiente</h2>
+  <ul>
+    <li><code>DOMAIN</code>: Definisce il dominio di base dell'applicazione, usato per mostrare URL e documentazione. Se non definita, assume <code>"http://localhost:8000"</code>.</li>
+  </ul>
+
+  <h2>Punti Importanti dell'Architettura e Insights</h2>
+  <ul>
+    <li>La classe incapsula la configurazione di FastAPI sulla base di un dizionario esterno, facilitando la parametrizzazione senza modificare il codice.</li>
+    <li>Uso di <code>asynccontextmanager</code> per controllare il ciclo di vita dell'applicazione FastAPI, con log chiari all'avvio e all'arresto.</li>
+    <li>L'inclusione dinamica dei router con <code>collect_routers</code> utilizza l'introspezione tramite <code>pkgutil</code> e <code>importlib</code>, consentendo la modularizzazione delle API.</li>
+    <li>Netta separazione tra configurazione di base (middleware, rotte predefinite) ed espansione tramite rotte aggiuntive.</li>
+    <li>Il logger predefinito è collegato al server <code>uvicorn</code>, garantendo l'integrazione con i log di runtime di ASGI.</li>
+    <li>Le rotte predefinite includono una rotta di autorizzazione che dipende da una validazione tramite chiave API, usando il metodo statico <code>Authorization.validate_api_key</code>.</li>
+  </ul>
+
+  <h2>Descrizione della Classe e dei Metodi</h2>
+
+  <h2>Classe <code>WebServiceAPI</code></h2>
+
+  <h3>Descrizione</h3>
+  <p>Questa classe rappresenta un wrapper configurabile per applicazioni FastAPI, che permette di inizializzare un'API web sulla base di configurazioni esterne, aggiungere middleware e rotte predefinite, gestire il ciclo di vita dell'applicazione e ampliare l'API tramite l'inclusione dinamica di router provenienti da pacchetti Python.</p>
+
+  <h3>Argomenti del Costruttore</h3>
+  <table>
+    <thead><tr><th>Argomento</th><th>Tipo</th><th>Descrizione</th><th>Valore Predefinito</th></tr></thead>
+    <tbody>
+      <tr><td><code>config</code></td><td>dict</td><td>Dizionario con le configurazioni per il servizio web</td><td><code>CONFIG</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>1. <code>__init__</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Inizializza la classe, definendo configurazioni, logger e dominio di base per l'applicazione.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>config</code> (dict): configurazioni per l'API.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nessuna.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+ws_api = WebServiceAPI()  # Usa CONFIG padrão
+ws_api_custom = WebServiceAPI(config=my_config_dict)
+</code></pre>
+
+  <h3>2. <code>initialize</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Crea e configura un'istanza FastAPI con titolo, descrizione, versione e il ciclo di vita definito. Aggiunge il middleware CORS e registra le rotte predefinite per l'health check e la rotta radice.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>FastAPI: istanza dell'applicazione FastAPI inizializzata.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nessuna.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+app = ws_api.initialize()
+# app agora está pronta para uso em um servidor ASGI
+</code></pre>
+
+  <h3>3. <code>include_routers</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Include nell'applicazione una lista di router FastAPI, garantendo che l'applicazione sia già stata inizializzata. Registra nei log l'inclusione di ciascun router.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>routers</code> (list): lista di oggetti router di FastAPI.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>RuntimeError: se l'applicazione non è inizializzata.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+ws_api.include_routers([user_router, product_router])
+</code></pre>
+
+  <h3>4. <code>test_routers</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Simile a <code>include_routers</code>, include una lista di router per eventuali test o uso ad-hoc, con log dell'inclusione.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>routers</code> (list): lista di router da includere.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>RuntimeError: se l'applicazione non è inizializzata.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+ws_api.test_routers([test_router])
+</code></pre>
+
+  <h3>5. <code>collect_routers</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Scopre e importa dinamicamente tutti i router chiamati <code>router</code> all'interno dei moduli del pacchetto indicato, restituendoli in una lista.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>package_name</code> (str): nome del pacchetto (dotted path) in cui cercare moduli con router.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>list: lista di istanze di router FastAPI trovate.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nessuna.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+routers = ws_api.collect_routers("src.api.v1")
+# Retorna todos os routers em src/api/v1/*
+</code></pre>
+
+  <h3>6. <code>get_app</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Restituisce l'istanza FastAPI inizializzata da usare esternamente.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>FastAPI: istanza FastAPI.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>RuntimeError: se chiamato prima dell'inizializzazione dell'applicazione.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+app = ws_api.get_app()
+</code></pre>
+  <p><strong>Esempi pratici completi:</strong></p>
+  <pre data-lang="python"><code>
+ws_api = WebServiceAPI()
+app = ws_api.initialize()
+
+routers = ws_api.collect_routers("src.api.v1")
+ws_api.include_routers(routers)
+
+# Agora app está pronto para ser executado
+</code></pre>
+  <p>Un altro esempio semplificato:</p>
+  <pre data-lang="python"><code>
+ws_api = WebServiceAPI()
+ws_api.initialize()
+
+ws_api.include_routers([user_router])
+
+app = ws_api.get_app()
+</code></pre>
+  <p>La documentazione qui sopra fornisce i dettagli essenziali per la comprensione, l'estensione e l'uso pratico della classe <code>WebServiceAPI</code> in progetti reali, facilitando lo sviluppo di API modulari e ben configurate con FastAPI.</p>
 </page>

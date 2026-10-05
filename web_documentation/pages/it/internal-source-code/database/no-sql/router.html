@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Router | BetterAI Docs</title>
-<meta name="description" content="Pagina di esempio per Router, usata per validare il layout.">
+<meta name="description" content="Questa documentazione descrive in dettaglio la classe DocumentStore, un componente essenziale per la persistenza dei dati nella tua architettura, progettato per offrire flessibilità e disaccoppiamento.">
 <link rel="canonical" href="pages/it/internal-source-code/database/no-sql/router.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,148 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copia pagina</span></button>
             </div>
           </div>
-          <p class="lead">Pagina di esempio per Router, usata per validare il layout.</p>
+          <p class="lead">Questa documentazione descrive in dettaglio la classe DocumentStore, un componente essenziale per la persistenza dei dati nella tua architettura, progettato per offrire flessibilità e disaccoppiamento.</p>
           <details class="toc-inline"><summary>In questa pagina</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Contenuto di esempio.</strong> Questo testo esiste solo per validare il layout. Nella versione finale la pagina è generata da <code>ipynb_contents/Internal Source Code/Database/No SQL/Router.ipynb</code>.</p></div>
+        <div class="prose"><h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
+  <p>La classe <code>DocumentStore</code> agisce come <strong>Router</strong> e <strong>Proxy</strong> per le operazioni sui database NoSQL. Il suo obiettivo principale è astrarre la complessità di quale database venga utilizzato (MongoDB o JSON Locale).</p>
+  <p>Questo permette agli sviluppatori di scrivere una sola volta il codice della logica di business, potendo cambiare l'archiviazione semplicemente modificando una variabile d'ambiente o un parametro iniziale, il che è ideale per passare da un ambiente di <strong>Produzione</strong> (MongoDB) a uno di <strong>Sviluppo/Test</strong> (Locale).</p>
 
-  <h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
-  <p>Router fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
+  <h2 id="flusso-di-esecuzione"><a class="anchor" href="#flusso-di-esecuzione" aria-label="Link para esta seção">#</a>Flusso di Esecuzione</h2>
+  <p>Il funzionamento della classe segue una logica in tre semplici fasi:</p>
+  <ol>
+    <li><strong>Istanziazione:</strong> Alla creazione dell'oggetto, il codice verifica l'argomento <code>backend</code> o la variabile d'ambiente <code>NOSQL_BACKEND</code>.</li>
+    <li><strong>Fabbrica (Factory):</strong> Il metodo interno <code>_initialize_manager</code> decide quale classe gestore istanziare (<code>MongoDBManager</code> o <code>LocalManager</code>).</li>
+    <li><strong>Delega (Proxy):</strong> Quando viene chiamato un metodo come <code>save_payload</code>, <code>DocumentStore</code> non elabora direttamente il dato; "passa la palla" al gestore istanziato nella fase 2.</li>
+  </ol>
 
-  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
-  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> Router
-
-client = <span class="t-f">Router</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parametri"><a class="anchor" href="#parametri" aria-label="Link para esta seção">#</a>Parametri</h2>
-  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
+  <h2 id="tabella-dei-metodi"><a class="anchor" href="#tabella-dei-metodi" aria-label="Link para esta seção">#</a>Tabella dei Metodi</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <thead><tr><th>Metodo</th><th>Tipo</th><th>Descrizione Breve</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
+      <tr><td><code>__init__</code></td><td>Costruttore</td><td>Definisce il backend e inizializza il gestore.</td></tr>
+      <tr><td><code>_initialize_manager</code></td><td>Privato</td><td>Logica decisionale (Factory) per scegliere il backend.</td></tr>
+      <tr><td><code>save_payload</code></td><td>Proxy</td><td>Inserisce nuovi documenti nel database.</td></tr>
+      <tr><td><code>fetch_documents</code></td><td>Proxy</td><td>Cerca e recupera documenti filtrati.</td></tr>
+      <tr><td><code>update_documents</code></td><td>Proxy</td><td>Aggiorna i dati dei documenti esistenti.</td></tr>
+      <tr><td><code>delete_documents</code></td><td>Proxy</td><td>Rimuove documenti dal database.</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="note"><a class="anchor" href="#note" aria-label="Link para esta seção">#</a>Note</h2>
-  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
-  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div></div>
+  <h2 id="architettura-e-insights"><a class="anchor" href="#architettura-e-insights" aria-label="Link para esta seção">#</a>Architettura e Insights</h2>
+  <ul>
+    <li><strong>Pattern Proxy:</strong> La classe funge da interfaccia unificata. Il codice che chiama <code>DocumentStore</code> non ha bisogno di sapere <em>come</em> funziona MongoDB, ma solo <em>cosa</em> vuole fare.</li>
+    <li><strong>Pattern Factory:</strong> La logica di creazione dell'oggetto database è centralizzata in un unico punto, facilitando l'aggiunta di nuovi backend in futuro (come Redis o DynamoDB).</li>
+    <li><strong>Disaccoppiamento:</strong> L'uso di <code>args</code> e <code>*kwargs</code> nei metodi permette all'interfaccia di essere abbastanza generica da accettare i diversi parametri richiesti da backend distinti senza rompere la firma dei metodi.</li>
+  </ul>
+
+  <h2 id="dettaglio-della-classe"><a class="anchor" href="#dettaglio-della-classe" aria-label="Link para esta seção">#</a>Dettaglio della Classe</h2>
+
+  <h2 id="classe-documentstore"><a class="anchor" href="#classe-documentstore" aria-label="Link para esta seção">#</a>Classe DocumentStore</h2>
+  <p><strong>Descrizione</strong></p>
+  <p>Una classe di astrazione di alto livello che gestisce la persistenza dei documenti NoSQL. Centralizza le operazioni CRUD (Create, Read, Update, Delete) e delega l'esecuzione a backend specifici in base alla configurazione.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>backend</code> (Optional[str]): Una stringa che indica il backend desiderato. Valori accettati: <code>"mongo"</code> oppure <code>"local"</code>. Se <code>None</code>, cerca nella variabile d'ambiente <code>NOSQL_BACKEND</code>.</li>
+  </ul>
+
+  <h2 id="metodi"><a class="anchor" href="#metodi" aria-label="Link para esta seção">#</a>Metodi</h2>
+
+  <h2 id="1-initialize-manager"><a class="anchor" href="#1-initialize-manager" aria-label="Link para esta seção">#</a>1. _initialize_manager</h2>
+  <p><strong>Descrizione</strong></p>
+  <p>Metodo interno che decide quale implementazione di database verrà caricata in memoria.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Non ha argomenti diretti (utilizza lo stato di <code>self.backend</code>).</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>Union[MongoDBManager, LocalManager]</code>: Un'istanza della classe responsabile della comunicazione reale con il database.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: Se il backend indicato non è "mongo" o "local".</li>
+  </ul>
+
+  <h2 id="2-save-payload"><a class="anchor" href="#2-save-payload" aria-label="Link para esta seção">#</a>2. save_payload</h2>
+  <p><strong>Descrizione</strong></p>
+  <p>Esegue l'inserimento di un documento o di un carico di dati nel backend selezionato.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>args</code> / <code>*kwargs</code>: Di solito includono il nome del database, il nome della collezione/tabella e il dizionario dei dati (payload).</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>dict</code>: Informazioni sull'esito dell'operazione (es: ID del documento inserito).</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>Exception</code>: Propaga gli errori specifici del driver di connessione al database.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>store = <span class="t-f">DocumentStore</span>(backend=<span class="t-s">&quot;local&quot;</span>)
+store.<span class="t-f">save_payload</span>(db=<span class="t-s">&quot;app&quot;</span>, collection=<span class="t-s">&quot;logs&quot;</span>, data={<span class="t-s">&quot;status&quot;</span>: <span class="t-s">&quot;sucesso&quot;</span>})</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="3-fetch-documents"><a class="anchor" href="#3-fetch-documents" aria-label="Link para esta seção">#</a>3. fetch_documents</h2>
+  <p><strong>Descrizione</strong></p>
+  <p>Interroga il database per restituire i documenti che corrispondono ai criteri indicati.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>args</code> / <code>*kwargs</code>: Filtri di ricerca (es: <code>{"id": 123}</code>).</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>list</code>: Una lista contenente i documenti trovati (dizionari).</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-c"># Busca todos os usuários com nome Enzo</span>
+users = store.<span class="t-f">fetch_documents</span>(<span class="t-s">&quot;mydb&quot;</span>, <span class="t-s">&quot;users&quot;</span>, {<span class="t-s">&quot;name&quot;</span>: <span class="t-s">&quot;Enzo&quot;</span>})</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="4-update-documents"><a class="anchor" href="#4-update-documents" aria-label="Link para esta seção">#</a>4. update_documents</h2>
+  <p><strong>Descrizione</strong></p>
+  <p>Modifica i documenti esistenti nel database in base a un criterio di selezione.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>args</code> / <code>*kwargs</code>: Filtro di ricerca e nuovi dati da applicare.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>dict</code>: Riepilogo dell'operazione (quantità di campi modificati).</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>store.<span class="t-f">update_documents</span>(<span class="t-s">&quot;mydb&quot;</span>, <span class="t-s">&quot;users&quot;</span>, {<span class="t-s">&quot;name&quot;</span>: <span class="t-s">&quot;Enzo&quot;</span>}, {<span class="t-s">&quot;active&quot;</span>: <span class="t-n">True</span>})</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="5-delete-documents"><a class="anchor" href="#5-delete-documents" aria-label="Link para esta seção">#</a>5. delete_documents</h2>
+  <p><strong>Descrizione</strong></p>
+  <p>Rimuove uno o più documenti dal database.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>args</code> / <code>*kwargs</code>: Filtri per identificare quali documenti devono essere eliminati.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>dict</code>: Conferma della rimozione.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>store.<span class="t-f">delete_documents</span>(<span class="t-s">&quot;mydb&quot;</span>, <span class="t-s">&quot;users&quot;</span>, {<span class="t-s">&quot;name&quot;</span>: <span class="t-s">&quot;Enzo&quot;</span>})</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">import</span> json
+<span class="t-k">from</span> src.database.no_relational_db.router <span class="t-k">import</span> DocumentStore
+
+manager = <span class="t-f">DocumentStore</span>(backend=<span class="t-s">&quot;local&quot;</span>)
+
+manager.<span class="t-f">save_payload</span>(<span class="t-s">&quot;mydb&quot;</span>, <span class="t-s">&quot;users&quot;</span>, {<span class="t-s">&quot;name&quot;</span>: <span class="t-s">&quot;Enzo&quot;</span>})
+
+docs = manager.<span class="t-f">fetch_documents</span>(<span class="t-s">&quot;mydb&quot;</span>, <span class="t-s">&quot;users&quot;</span>, {<span class="t-s">&quot;name&quot;</span>: <span class="t-s">&quot;Enzo&quot;</span>})
+<span class="t-f">print</span>(json.<span class="t-f">dumps</span>(docs, indent=<span class="t-n">4</span>))
+
+manager.<span class="t-f">update_documents</span>(<span class="t-s">&quot;mydb&quot;</span>, <span class="t-s">&quot;users&quot;</span>, {<span class="t-s">&quot;name&quot;</span>: <span class="t-s">&quot;Enzo&quot;</span>}, {<span class="t-s">&quot;age&quot;</span>: <span class="t-n">25</span>})
+
+manager.<span class="t-f">delete_documents</span>(<span class="t-s">&quot;mydb&quot;</span>, <span class="t-s">&quot;users&quot;</span>, {<span class="t-s">&quot;name&quot;</span>: <span class="t-s">&quot;Enzo&quot;</span>})
+
+response = manager.<span class="t-f">save_payload</span>(<span class="t-s">&quot;mydb&quot;</span>, <span class="t-s">&quot;users&quot;</span>, {<span class="t-s">&quot;name&quot;</span>: <span class="t-s">&quot;Enzo&quot;</span>})
+<span class="t-f">print</span>(response[<span class="t-s">&quot;inserted_id&quot;</span>])</code></pre><button class="copy floating" type="button"></button></div></div></div>
         <div class="feedback"></div>
         <p class="source">Fonte: <code>ipynb_contents/Internal Source Code/Database/No SQL/Router.ipynb</code></p>
         <nav class="pager" aria-label="Pagine vicine"><a class="pager-link prev" href="../../../../../pages/it/internal-source-code/database/no-sql/mongo-manager.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Precedente</small><span>Mongo Manager</span></div></a><a class="pager-link next" href="../../../../../pages/it/internal-source-code/database/sql/supabase-database.html"><div><small>Successiva</small><span>Supabase Database</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

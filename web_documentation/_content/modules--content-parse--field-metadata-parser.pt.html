@@ -1,31 +1,168 @@
-<page data-lead="Página de exemplo para Field Metadata Parser, usada para validar o layout.">
-  <div class="callout" data-kind="note"><p><strong>Conteúdo de exemplo.</strong> Este texto existe só para validar o layout. Na versão final, a página é gerada a partir de <code>ipynb_contents/Modules/Content Parse/Field Metadata Parser.md</code>.</p></div>
+<page data-lead="A classe FieldMetadataParser é responsável por interpretar metadados definidos em dicionários para campos de dados e convertê-los em tipos e campos compatíveis com a biblioteca Pydantic.">
+  <h2>Visão Geral</h2>
+  <p>A classe <code>FieldMetadataParser</code> é responsável por interpretar metadados definidos em dicionários para campos de dados e convertê-los em tipos e campos compatíveis com a biblioteca Pydantic. Ela analisa informações como tipo do campo, obrigatoriedade, descrição, exemplos e restrições, gerando assim uma representação pronta para validação e uso em modelos Pydantic.</p>
+  <p>Esse processo é fundamental para sistemas que recebem esquemas de dados dinâmicos ou configurações externas e precisam construir modelos de validação de forma automatizada e consistente. Com essa classe, é possível transformar uma especificação JSON-like diretamente em tipos Pydantic, garantindo validação automática e documentação gerada a partir dos metadados.</p>
+  <p>Na prática, pode ser utilizada em frameworks de dados, importações dinâmicas de esquemas, ou qualquer aplicação que modele dados a partir de definições flexíveis.</p>
 
-  <h2>Visão geral</h2>
-  <p>Field Metadata Parser faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
+  <h2>Fluxo de Execução</h2>
+  <ol>
+    <li>O método <code>parse</code> recebe um valor arbitrário que pode ser um metadado de campo ou não.</li>
+    <li>Verifica se o valor é um dicionário contendo a chave <code>"type"</code>, identificando-o como metadado válido para análise.</li>
+    <li>Caso seja metadado, delega para o método privado <code>_parse_metadata</code> que faz a transformacão detalhada.</li>
+    <li><code>_parse_metadata</code> extrai o tipo informado e verifica se o campo é obrigatório (<code>required</code>).</li>
+    <li>Se o tipo for <code>"list"</code>, busca a definição do tipo dos itens (<code>items</code>), podendo gerar um tipo genérico ou um modelo aninhado para objetos complexos.</li>
+    <li>Mapeia o tipo string para o tipo Python correspondente, utilizando o método <code>_map_type</code>.</li>
+    <li>Se o campo não for obrigatório, o tipo é encapsulado em <code>Optional</code> para suportar ausência de valor.</li>
+    <li>Cria um <code>Field</code> do Pydantic com parâmetros como valor padrão, descrição, exemplos e restrições de tamanho.</li>
+    <li>Retorna uma tupla formada pelo tipo final e o objeto <code>Field</code> para uso diretamente em modelos Pydantic.</li>
+    <li>Caso o valor não seja um metadado reconhecido, retorna <code>None</code>.</li>
+    <li>Se houver erro no parsing, lança uma exceção do tipo <code>RuntimeError</code> com detalhes.</li>
+  </ol>
 
-  <h2>Uso</h2>
-  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
-  <pre data-lang="python"><code>
-from better_ai import FieldMetadataParser
-
-client = FieldMetadataParser()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parâmetros</h2>
-  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
+  <h2>Tabela de Métodos da Classe</h2>
   <table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <thead><tr><th>Método</th><th>Descrição</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
+      <tr><td><code>__init__</code></td><td>Não implementado explicitamente (construtor padrão)</td></tr>
+      <tr><td><code>parse</code></td><td>Analisa o valor e retorna tipo e Field para metadados ou None</td></tr>
+      <tr><td><code>_parse_metadata</code></td><td>Converte dicionário de metadados em tipo Pydantic e Field configurado</td></tr>
+      <tr><td><code>_map_type</code></td><td>Mapeia nome de tipo string para tipo Python correspondente</td></tr>
     </tbody>
   </table>
 
-  <h2>Observações</h2>
-  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
-  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div>
+  <h2>Variáveis de Ambiente</h2>
+  <p>Nenhuma variável de ambiente é necessária para o funcionamento desta classe.</p>
+
+  <h2>Pontos Importantes da Arquitetura e Insights</h2>
+  <ul>
+    <li>A classe utiliza encapsulamento, restringindo funções auxiliares ao escopo privado (<code>_parse_metadata</code> e <code>_map_type</code>).</li>
+    <li>Utiliza criação dinâmica de modelos Pydantic (<code>create_model</code>) para representar tipos complexos aninhados (objetos dentro de listas), permitindo flexibilidade e extensibilidade.</li>
+    <li>O parser interpreta uma estrutura JSON-like para produzir tipos anotados e informações completas para validação — facilitando integração com dados dinâmicos.</li>
+    <li>Suporta atributos opcionais, valores padrões, descrições e exemplos, promovendo documentação automática via Pydantic.</li>
+    <li>Tratamento explícito de erros com mensagens claras facilita depuração.</li>
+    <li>O método <code>_map_type</code> é facilmente extensível para novos tipos, bastando adicionar ao dicionário.</li>
+  </ul>
+
+  <h2>Descrição da Classe e Métodos</h2>
+
+  <h2>Classe <code>FieldMetadataParser</code></h2>
+
+  <h3>Descrição</h3>
+  <p>Classe para analisar metadados fornecidos em dicionários e transformá-los em tipos e campos configurados para uso com Pydantic. Facilita a criação dinâmica de modelos de validação a partir de especificações externas, interpretando tipos, obrigatoriedade e metadados descritivos.</p>
+
+  <h3>Argumentos do Construtor</h3>
+  <p>Nenhum parâmetro no construtor.</p>
+
+  <h3>Métodos</h3>
+
+  <h3>1. <code>parse</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Recebe um valor qualquer e, se este for um dicionário que define metadados de campo (com a chave <code>"type"</code>), retorna uma tupla contendo o tipo Pydantic resultante e um objeto <code>Field</code> configurado com as propriedades. Caso contrário, retorna <code>None</code>.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>value</code> (Any): Valor para ser analisado como metadado de campo.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>Tuple[Any, Any] | None</code>: Tupla com o tipo do campo e o objeto Field, ou <code>None</code> se não for metadado.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: Se ocorrer qualquer erro durante a análise dos metadados, é lançada uma exceção com mensagem explicativa.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+# Metadado válido para um campo inteiro obrigatório
+result = parser.parse({"type": "int", "required": True, "description": "Idade do usuário"})
+# result será algo como (int, Field(..., description="Idade do usuário"))
+
+# Metadado inválido ou não seguindo o padrão retorna None
+result = parser.parse("apenas uma string")
+# result será None
+</code></pre>
+
+  <h3>2. <code>_parse_metadata</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Método auxiliar privado que recebe um dicionário validado de metadados, extrai seu tipo, configurando o tipo e as propriedades do campo, especialmente tratando listas e objetos aninhados, retornando a tupla com o tipo Pydantic e o objeto <code>Field</code>.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>value</code> (Dict[str, Any]): Dicionário contendo as propriedades do campo, como tipo, exigência, exemplos, entre outros.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>Tuple[Any, Any]</code>: Tupla com o tipo do campo e as informações de <code>Field</code>.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: Caso o tipo seja <code>"list"</code> e não contenha a definição obrigatória da chave <code>"items"</code>.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+# Parse de um campo do tipo lista de inteiros não obrigatória
+type_, field = parser._parse_metadata({
+    "type": "list",
+    "items": {"type": "int"},
+    "required": False,
+    "description": "Lista de números"
+})
+# type_ será Optional[List[int]]
+# field conterá description e configurações
+
+# Parse de um campo objeto aninhado dentro da lista
+type_, field = parser._parse_metadata({
+    "type": "list",
+    "items": {
+        "type": "object",
+        "properties": {
+            "nome": {"type": "str", "description": "Nome do item"}
+        }
+    }
+})
+# type_ será List[ModeloDinâmico]
+# field configurado conforme descrito
+</code></pre>
+
+  <h3>3. <code>_map_type</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Mapeia um nome de tipo representado por uma string para o tipo Python correspondente, utilizado na modelagem Pydantic. Se o tipo não for reconhecido, retorna <code>Any</code> como fallback.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>type_name</code> (str): String representando o tipo, por exemplo, <code>"str"</code>, <code>"int"</code>, <code>"list"</code>.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>tipo</code>: Tipo Python correspondente (ex: <code>str</code>, <code>int</code>, <code>list</code>) ou <code>Any</code> se não reconhecido.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+if __name__ == "__main__":
+    parser = FieldMetadataParser()
+
+    test_cases = [
+        {
+            "input": {
+                "type": "str",
+                "description": "Nome do personagem",
+                "example": "John"
+            }
+        },
+        {
+            "input": {
+                "type": "int",
+                "default": 10
+            }
+        },
+        {
+            "input": "valor simples"
+        }
+    ]
+
+    for i, case in enumerate(test_cases, 1):
+        result = parser.parse(case["input"])
+        print(f"\nTeste {i}")
+        print("Input:", case["input"])
+        print("Output:", result)
+
+# python -m src.content_parse.pydantic_shema
+</code></pre>
 </page>

@@ -1,31 +1,76 @@
-<page data-lead="Pagina di esempio per Loader Files, usata per validare il layout.">
-  <div class="callout" data-kind="note"><p><strong>Contenuto di esempio.</strong> Questo testo esiste solo per validare il layout. Nella versione finale la pagina è generata da <code>ipynb_contents/Internal Source Code/Utils/Loader Files.ipynb</code>.</p></div>
+<page data-lead="Ecco la documentazione didattica della classe FilesPayloadBuilder, strutturata per facilitare la comprensione di sviluppatori e integratori.">
+  <h2>1. Panoramica</h2>
+  <p>La classe <code>FilesPayloadBuilder</code> agisce come un <strong>filtro di sicurezza e trasformatore di dati</strong> nel livello di ingresso della tua API. Quando un utente invia file tramite FastAPI, questi arrivano come oggetti <code>UploadFile</code>.</p>
+  <p>Questa classe garantisce che i file non "rompano" il server perché troppo grandi o perché hanno formati malevoli o non supportati. Dopo la validazione, trasforma i dati grezzi in un dizionario Python (payload) facile da manipolare da altre parti del sistema, come servizi di elaborazione delle immagini o database.</p>
 
-  <h2>Panoramica</h2>
-  <p>Loader Files fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
+  <h2>2. Flusso di Esecuzione</h2>
+  <p>Il flusso di elaborazione di un file segue questo percorso logico:</p>
+  <ol>
+    <li><strong>Ricezione</strong>: L'API riceve un elenco di file tramite modulo (Multipart).</li>
+    <li><strong>Lettura Asincrona</strong>: Il contenuto del file viene letto dalla memoria o dal disco temporaneo in modo non bloccante (<code>await f.read()</code>).</li>
+    <li><strong>Verifica del Tipo</strong>: Il sistema controlla che il <code>content_type</code> (es: image/png) sia nell'elenco dei tipi consentiti.</li>
+    <li><strong>Verifica del Peso</strong>: La dimensione totale dei byte letti viene confrontata con il limite configurato (es: 10MB).</li>
+    <li><strong>Strutturazione</strong>: Se tutto è corretto, i dati vengono organizzati in un dizionario. Se qualcosa fallisce, viene sollevata immediatamente un'eccezione HTTP, interrompendo il processo per proteggere il server.</li>
+  </ol>
 
-  <h2>Uso</h2>
-  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
-  <pre data-lang="python"><code>
-from better_ai import LoaderFiles
-
-client = LoaderFiles()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parametri</h2>
-  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
+  <h2>3. Riepilogo dei Metodi</h2>
   <table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <thead><tr><th>Metodo</th><th>Tipo</th><th>Breve Descrizione</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
+      <tr><td><code>__init__</code></td><td>Costruttore</td><td>Configura le regole di business (dimensione massima e tipi accettati).</td></tr>
+      <tr><td><code>build_images_payload</code></td><td>Coroutine (async)</td><td>Valida l'elenco dei file e genera la struttura dati finale.</td></tr>
     </tbody>
   </table>
 
-  <h2>Note</h2>
-  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
-  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div>
+  <h2>4. Architettura e Spunti</h2>
+  <ul>
+    <li><strong>Sicurezza Reattiva</strong>: Validando dimensione e tipo MIME subito all'ingresso, eviti attacchi di "Denial of Service" (DoS) tramite upload di file giganti.</li>
+    <li><strong>Uso di Set per le Prestazioni</strong>: La variabile <code>allowed_types</code> viene convertita in un <code>set</code>. In Python, verificare se un elemento esiste in un <code>set</code> è molto più veloce che in una <code>list</code> o <code>tuple</code>, soprattutto se l'elenco dei formati cresce.</li>
+    <li><strong>Integrazione con FastAPI</strong>: L'uso di <code>HTTPException</code> permette di restituire gli errori di validazione direttamente all'utente finale con i codici di stato appropriati (400 Bad Request), senza bisogno di blocchi try/except aggiuntivi nella rotta dell'API.</li>
+  </ul>
+
+  <h2>5. Dettaglio della Classe</h2>
+
+  <h3>Classe FilesPayloadBuilder</h3>
+  <p><strong>Descrizione</strong><br>Responsabile di validare l'integrità dei file inviati tramite upload e di prepararli per l'elaborazione interna. Centralizza le regole su "cosa può entrare" nel sistema in termini di file multimediali.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>max_mb</code> (int): La dimensione massima consentita per ogni singolo file in Megabyte.</li>
+    <li><code>allowed_types</code> (Iterable[str]): Una collezione di stringhe che rappresentano i tipi MIME accettati (es: <code>["image/jpeg", "application/pdf"]</code>).</li>
+  </ul>
+
+  <h3>Metodi</h3>
+
+  <h3>1. build_images_payload</h3>
+  <p><strong>Descrizione</strong><br>Questo è il cuore della classe. Scorre ogni file inviato, ne legge il contenuto binario e verifica che soddisfi i requisiti di sicurezza definiti nel costruttore.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>files</code> (List[UploadFile]): Un elenco di oggetti file provenienti da un endpoint FastAPI.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>list[dict]</code>: Un elenco di dizionari, dove ogni dizionario contiene:
+      <ul>
+        <li><code>filename</code>: Nome originale del file.</li>
+        <li><code>content_type</code>: Formato del file.</li>
+        <li><code>size_bytes</code>: Dimensione reale in byte.</li>
+        <li><code>bytes</code>: Il contenuto binario grezzo.</li>
+      </ul>
+    </li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>HTTPException (400)</code>: Sollevata se il formato del file non è consentito.</li>
+    <li><code>HTTPException (400)</code>: Sollevata se il file supera il limite di Megabyte configurato.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+builder = FilesPayloadBuilder(max_mb=2, allowed_types=["image/png"])
+
+# Em uma rota FastAPI
+@app.post("/upload")
+async def upload_image(files: List[UploadFile]):
+    payload = await builder.build_images_payload(files)
+    return {"status": "sucesso", "arquivos_processados": len(payload)}
+</code></pre>
 </page>

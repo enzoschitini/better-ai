@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Documentation | BetterAI Docs</title>
-<meta name="description" content="Pagina di esempio per Documentation, usata per validare il layout.">
+<meta name="description" content="La classe LocalDynamicEmbedding offre una pipeline locale per l'elaborazione dei testi, in cui il testo viene diviso in pezzi (chunk), ogni pezzo viene convertito in un vettore di embedding e questi vettori vengono archiviati per il successivo recupero per similarità.">
 <link rel="canonical" href="pages/it/modules/embedding/local-dynamic-embedding/documentation.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,433 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copia pagina</span></button>
             </div>
           </div>
-          <p class="lead">Pagina di esempio per Documentation, usata per validare il layout.</p>
+          <p class="lead">La classe LocalDynamicEmbedding offre una pipeline locale per l'elaborazione dei testi, in cui il testo viene diviso in pezzi (chunk), ogni pezzo viene convertito in un vettore di embedding e questi vettori vengono archiviati per il successivo recupero per similarità.</p>
           <details class="toc-inline"><summary>In questa pagina</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Contenuto di esempio.</strong> Questo testo esiste solo per validare il layout. Nella versione finale la pagina è generata da <code>ipynb_contents/Modules/Embedding/Local Dynamic Embedding/Documentation.ipynb</code>.</p></div>
+        <div class="prose"><h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
+  <p>La classe <code>LocalDynamicEmbedding</code> offre una pipeline locale per l'elaborazione dei testi, in cui il testo viene diviso in pezzi (chunk), ogni pezzo viene convertito in un vettore di embedding e questi vettori vengono archiviati per il successivo recupero per similarità. Questa pipeline supporta diversi provider di embedding, inclusi provider reali (come OpenAI e Huggingface) ed embedding finti per i test, facilitando la sperimentazione senza bisogno di API esterne.</p>
+  <p>Il problema principale risolto è quello di lavorare con testi lunghi per attività di recupero e ricerca senza dipendere esclusivamente da servizi esterni, ottimizzando la divisione del testo e il calcolo degli embedding in modo modulare e configurabile. Inoltre, fornisce una API fluente che permette di configurare passo dopo passo il provider di embedding, lo splitter di testo e il numero di risultati recuperati.</p>
+  <p>In pratica, può essere usata per creare sistemi di ricerca locale nei documenti, chatbot che devono comprendere documenti o basi di conoscenza, e per il prototipaggio rapido, dove si vuole cambiare facilmente il provider di embedding o i parametri di chunking.</p>
 
-  <h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
-  <p>Documentation fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
+  <h2 id="flusso-di-esecuzione"><a class="anchor" href="#flusso-di-esecuzione" aria-label="Link para esta seção">#</a>Flusso di Esecuzione</h2>
+  <ol>
+    <li><strong>Configurazione della pipeline</strong>: Inizialmente, l'utente crea un'istanza di <code>LocalDynamicEmbedding</code> e configura i componenti necessari usando il modello fluente:
+      <ul>
+        <li>Definisce il provider di embedding con <code>with_provider()</code> o con metodi di comodo come <code>from_openai_embeddings()</code>.</li>
+        <li>Regola lo splitter di testo con <code>with_splitter()</code>.</li>
+        <li>Configura quanti risultati vuole recuperare con <code>with_top_k()</code>.</li>
+      </ul>
+    </li>
+    <li><strong>Elaborazione del testo</strong>: Il metodo <code>process_text(texto)</code> riceve un testo in ingresso, lo divide in chunk in base ai parametri definiti, genera gli embedding per ogni chunk e archivia tutto in un indice vettoriale FAISS in memoria.</li>
+    <li><strong>Recupero delle informazioni</strong>: Con l'indice creato, si chiama <code>retrieve(query)</code> per cercare i chunk più simili alla query, restituendo i testi, i metadati, gli score di similarità e, opzionalmente, i vettori di embedding.</li>
+    <li><strong>Gestione e consultazione dei chunk</strong>: L'utente può accedere ai chunk archiviati tramite proprietà e metodi come <code>chunks</code>, <code>get_chunks()</code> o <code>get_chunk(index)</code> per esplorare il contenuto e i vettori.</li>
+    <li><strong>Riconfigurazione e pulizia</strong>: Se si desidera modificare la configurazione o reimpostare la pipeline, <code>clear()</code> pulisce lo stato, permettendo riconfigurazioni senza creare una nuova istanza.</li>
+  </ol>
 
-  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
-  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> Documentation
-
-client = <span class="t-f">Documentation</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parametri"><a class="anchor" href="#parametri" aria-label="Link para esta seção">#</a>Parametri</h2>
-  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
+  <h2 id="tabella-dei-metodi-della-classe"><a class="anchor" href="#tabella-dei-metodi-della-classe" aria-label="Link para esta seção">#</a>Tabella dei Metodi della Classe</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <thead><tr><th>Metodo</th><th>Descrizione</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
+      <tr><td><code>__init__</code></td><td>Costruttore che inizializza parametri e stato.</td></tr>
+      <tr><td><code>with_embeddings</code></td><td>Definisce un'istanza personalizzata di embedding.</td></tr>
+      <tr><td><code>with_fake_embeddings</code></td><td>Configura l'uso di embedding finti.</td></tr>
+      <tr><td><code>with_provider</code></td><td>Configura il provider di embedding per nome.</td></tr>
+      <tr><td><code>with_splitter</code></td><td>Regola i parametri dello splitter (chunk size, overlap).</td></tr>
+      <tr><td><code>with_top_k</code></td><td>Definisce il numero di risultati nel recupero.</td></tr>
+      <tr><td><code>from_provider</code></td><td>Istanzia la classe con un provider di embedding.</td></tr>
+      <tr><td><code>from_openai_embeddings</code></td><td>Crea un'istanza con embedding OpenAI.</td></tr>
+      <tr><td><code>from_huggingface_embeddings</code></td><td>Crea un'istanza con embedding Huggingface.</td></tr>
+      <tr><td><code>from_fake_embeddings</code></td><td>Crea un'istanza con embedding finti.</td></tr>
+      <tr><td><code>process_text</code></td><td>Elabora il testo, dividendo, calcolando gli embedding e archiviando.</td></tr>
+      <tr><td><code>retrieve</code></td><td>Recupera i chunk più rilevanti per una query.</td></tr>
+      <tr><td><code>as_retriever</code></td><td>Restituisce un oggetto per eseguire ricerche esterne.</td></tr>
+      <tr><td><code>chunks</code></td><td>Proprietà che restituisce la lista dei chunk archiviati.</td></tr>
+      <tr><td><code>get_chunks</code></td><td>Restituisce i chunk sotto forma di dizionari.</td></tr>
+      <tr><td><code>get_chunk</code></td><td>Restituisce un chunk specifico tramite indice.</td></tr>
+      <tr><td><code>total_chunks</code></td><td>Restituisce il numero totale di chunk archiviati.</td></tr>
+      <tr><td><code>clear</code></td><td>Pulisce lo stato per una nuova configurazione o per il riuso.</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="note"><a class="anchor" href="#note" aria-label="Link para esta seção">#</a>Note</h2>
-  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
-  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div></div>
+  <h2 id="punti-importanti-dell-architettura-e-insight"><a class="anchor" href="#punti-importanti-dell-architettura-e-insight" aria-label="Link para esta seção">#</a>Punti Importanti dell'Architettura e Insight</h2>
+  <ul>
+    <li><strong>Builder Pattern / Fluent API</strong>: La classe adotta un pattern builder per la configurazione fluente, permettendo all'utente di configurare la pipeline passo dopo passo prima dell'elaborazione, il che aumenta la flessibilità nella costruzione del flusso.</li>
+    <li><strong>Lazy Initialization</strong>: Componenti come embedding e splitter vengono inizializzati solo quando necessari, permettendo modifiche e configurazioni prima che l'elaborazione diventi effettiva.</li>
+    <li><strong>Separazione delle Responsabilità</strong>: La creazione degli embedding è delegata a <code>EmbeddingFactory</code>, che astrae diversi provider (OpenAI, Huggingface, fake), facilitando estensioni e manutenzione.</li>
+    <li><strong>Indicizzazione Locale con FAISS</strong>: Archivia gli embedding in un indice FAISS locale per una ricerca rapida in memoria, efficiente per prototipi e applicazioni su scala ridotta senza infrastruttura esterna.</li>
+    <li><strong>Gestione dello Stato e Guard Rail</strong>: Dopo l'elaborazione (<code>process_text</code>), la riconfigurazione dei componenti principali viene bloccata per evitare incoerenze, e <code>clear()</code> permette di reimpostare la pipeline.</li>
+    <li><strong>Classe Ausiliaria <code>Chunk</code></strong>: Rappresenta ogni pezzo del testo con il suo contenuto, indice, metadati e vettore di embedding, facilitando l'accesso alle informazioni in modo strutturato.</li>
+    <li><strong>Ispezione Completa dei Chunk</strong>: Ogni chunk permette di accedere facilmente al suo testo, ai metadata, al vettore di embedding, alla lunghezza in caratteri e alla dimensione dell'embedding, soddisfacendo esigenze di debug e analisi.</li>
+    <li><strong>Uso di .env e dotenv</strong>: Carica le variabili d'ambiente per le autenticazioni (es: OpenAI), anche se questa responsabilità resta alle librerie di embedding.</li>
+  </ul>
+
+  <h2 id="descrizione-della-classe-e-dei-metodi"><a class="anchor" href="#descrizione-della-classe-e-dei-metodi" aria-label="Link para esta seção">#</a>Descrizione della Classe e dei Metodi</h2>
+
+  <h3 id="classe-localdynamicembedding"><a class="anchor" href="#classe-localdynamicembedding" aria-label="Link para esta seção">#</a>Classe <code>LocalDynamicEmbedding</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Classe per costruire una pipeline locale di chunking, generazione di embedding e recupero tramite ricerca per similarità. Supporta più provider di embedding configurati tramite API fluente, permette di regolare come il testo viene diviso e come i risultati vengono selezionati, operando in locale con FAISS per l'indicizzazione e la ricerca.</p>
+  <p>Permette di elaborare testi lunghi dividendoli in pezzi, calcolare gli embedding per ogni pezzo, archiviare questi vettori e recuperarli con delle query, il tutto in modo modulare e riutilizzabile.</p>
+  <p><strong>Argomenti del Costruttore</strong></p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argomento</th><th>Tipo</th><th>Descrizione</th><th>Valore Predefinito</th></tr></thead>
+    <tbody>
+      <tr><td><code>embeddings</code></td><td><code>Optional[Embeddings]</code></td><td>Istanza personalizzata dell'oggetto di embedding da utilizzare.</td><td>None (usa fake interno)</td></tr>
+      <tr><td><code>size</code></td><td><code>int</code></td><td>Dimensione del vettore di embedding (usata per i fake embedding).</td><td>384</td></tr>
+      <tr><td><code>chunk_size</code></td><td><code>int</code></td><td>Numero massimo di caratteri per pezzo nella divisione del testo.</td><td>500</td></tr>
+      <tr><td><code>chunk_overlap</code></td><td><code>int</code></td><td>Quantità di sovrapposizione tra i pezzi per mantenere il contesto.</td><td>50</td></tr>
+      <tr><td><code>top_k</code></td><td><code>int</code></td><td>Numero di risultati migliori da restituire nel recupero.</td><td>4</td></tr>
+      <tr><td><code>separators</code></td><td><code>Optional[List[str]]</code></td><td>Lista di separatori usati per la divisione del testo (es: "\n\n", "\n", ecc.)</td><td>Lista predefinita definita</td></tr>
+    </tbody>
+  </table></div>
+  <p><strong>Metodi</strong></p>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Inizializza la pipeline con i parametri di chunking, embedding e recupero, configurando lo stato iniziale e preparando gli attributi per il lazy loading.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>embeddings</code> (Optional[Embeddings]): Istanza di embedding personalizzata, opzionale.</li>
+    <li><code>size</code> (int): Dimensione del vettore di embedding per i fake embedding.</li>
+    <li><code>chunk_size</code> (int): Dimensione massima del chunk.</li>
+    <li><code>chunk_overlap</code> (int): Sovrapposizione tra i chunk.</li>
+    <li><code>top_k</code> (int): Numero di risultati da restituire.</li>
+    <li><code>separators</code> (Optional[List[str]]): Separatori usati per dividere il testo.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore (None).</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Non specificati.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>pipeline = <span class="t-f">LocalDynamicEmbedding</span>(chunk_size=<span class="t-n">1000</span>, top_k=<span class="t-n">3</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-with-embeddings"><a class="anchor" href="#2-with-embeddings" aria-label="Link para esta seção">#</a>2. <code>with_embeddings</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Definisce un'istanza personalizzata di embedding per la pipeline prima di qualsiasi elaborazione.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>embeddings</code> (Embeddings): Istanza di embedding da usare.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>LocalDynamicEmbedding</code>: Restituisce self per permettere la concatenazione delle chiamate.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: Se viene chiamato dopo l'avvio dell'elaborazione o con embedding non valide.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>pipeline = <span class="t-f">LocalDynamicEmbedding</span>().<span class="t-f">with_embeddings</span>(custom_embeddings)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-with-fake-embeddings"><a class="anchor" href="#3-with-fake-embeddings" aria-label="Link para esta seção">#</a>3. <code>with_fake_embeddings</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Configura la pipeline per usare embedding finti, con la possibilità di definire la dimensione del vettore.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>size</code> (Optional[int]): Dimensione degli embedding finti.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>LocalDynamicEmbedding</code>: Restituisce self per la concatenazione.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: Se la dimensione non è valida o si verifica un errore interno.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>pipeline = <span class="t-f">LocalDynamicEmbedding</span>().<span class="t-f">with_fake_embeddings</span>(size=<span class="t-n">128</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-with-provider"><a class="anchor" href="#4-with-provider" aria-label="Link para esta seção">#</a>4. <code>with_provider</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Configura il provider di embedding tramite nome e parametri specifici (es: "openai", "huggingface", "fake").</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>provider</code> (str): Nome del provider.</li>
+    <li><code>**kwargs</code>: Parametri aggiuntivi per il provider.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>LocalDynamicEmbedding</code>: Restituisce self per la concatenazione.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: Se il provider non può essere configurato o istanziato.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>pipeline = <span class="t-f">LocalDynamicEmbedding</span>().<span class="t-f">with_provider</span>(<span class="t-s">&quot;openai&quot;</span>, model=<span class="t-s">&quot;text-embedding-3-large&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="5-with-splitter"><a class="anchor" href="#5-with-splitter" aria-label="Link para esta seção">#</a>5. <code>with_splitter</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Configura i parametri dello splitter di testo: dimensione del chunk, sovrapposizione tra i chunk e separatori.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>chunk_size</code> (Optional[int]): Dimensione massima del chunk.</li>
+    <li><code>chunk_overlap</code> (Optional[int]): Sovrapposizione tra i chunk.</li>
+    <li><code>separators</code> (Optional[List[str]]): Separatori usati per la divisione.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>LocalDynamicEmbedding</code>: Restituisce self per la concatenazione.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: Se chiamato dopo l'inizio dell'elaborazione del testo.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>pipeline = <span class="t-f">LocalDynamicEmbedding</span>().<span class="t-f">with_splitter</span>(chunk_size=<span class="t-n">1000</span>, chunk_overlap=<span class="t-n">100</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="6-with-top-k"><a class="anchor" href="#6-with-top-k" aria-label="Link para esta seção">#</a>6. <code>with_top_k</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Definisce quanti risultati migliori verranno restituiti nelle ricerche.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>top_k</code> (int): Numero di risultati migliori.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>LocalDynamicEmbedding</code>: Restituisce self per la concatenazione.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>No.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>pipeline = <span class="t-f">LocalDynamicEmbedding</span>().<span class="t-f">with_top_k</span>(<span class="t-n">10</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="7-from-provider"><a class="anchor" href="#7-from-provider" aria-label="Link para esta seção">#</a>7. <code>from_provider</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Membro di classe che crea un'istanza preconfigurata per un provider qualsiasi con parametri di splitter e top_k.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>provider</code> (str): Nome del provider.</li>
+    <li><code>chunk_size</code> (int): Dimensione del chunk.</li>
+    <li><code>chunk_overlap</code> (int): Sovrapposizione dei chunk.</li>
+    <li><code>top_k</code> (int): Numero di risultati da restituire.</li>
+    <li><code>separators</code> (Optional[List[str]]): Separatori per la divisione.</li>
+    <li><code>**provider_kwargs</code>: Argomenti per la creazione del provider.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>LocalDynamicEmbedding</code>: Istanza configurata.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Non documentato.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>pipeline = LocalDynamicEmbedding.<span class="t-f">from_provider</span>(<span class="t-s">&quot;huggingface&quot;</span>, model=<span class="t-s">&quot;all-MiniLM-L6-v2&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="8-from-openai-embeddings"><a class="anchor" href="#8-from-openai-embeddings" aria-label="Link para esta seção">#</a>8. <code>from_openai_embeddings</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Crea un'istanza con embedding OpenAI già configurato, può personalizzare il modello e i parametri dei chunk.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>model</code> (str): Modello OpenAI.</li>
+    <li><code>chunk_size</code> (int): Dimensione del chunk.</li>
+    <li><code>chunk_overlap</code> (int): Sovrapposizione dei chunk.</li>
+    <li><code>top_k</code> (int): Numero di risultati.</li>
+    <li><code>separators</code> (Optional[List[str]]): Separatori.</li>
+    <li><code>**kwargs</code>: Parametri extra per il provider.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>LocalDynamicEmbedding</code>: Istanza configurata OpenAI.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>pipeline = LocalDynamicEmbedding.<span class="t-f">from_openai_embeddings</span>(model=<span class="t-s">&quot;text-embedding-3-large&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="9-from-huggingface-embeddings"><a class="anchor" href="#9-from-huggingface-embeddings" aria-label="Link para esta seção">#</a>9. <code>from_huggingface_embeddings</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Crea un'istanza configurata per usare embedding Huggingface.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>model</code> (str): Modello Huggingface.</li>
+    <li><code>chunk_size</code> (int), <code>chunk_overlap</code> (int), <code>top_k</code> (int), <code>separators</code> (Optional[List[str]]), <code>**kwargs</code>.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>LocalDynamicEmbedding</code>: Istanza configurata Huggingface.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>pipeline = LocalDynamicEmbedding.<span class="t-f">from_huggingface_embeddings</span>()</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="10-from-fake-embeddings"><a class="anchor" href="#10-from-fake-embeddings" aria-label="Link para esta seção">#</a>10. <code>from_fake_embeddings</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Crea un'istanza per l'uso di embedding finti, con dimensione parametrizzata.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>size</code> (int): Dimensione degli embedding fake.</li>
+    <li><code>chunk_size</code> (int), <code>chunk_overlap</code> (int), <code>top_k</code> (int), <code>separators</code> (Optional[List[str]]).</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>LocalDynamicEmbedding</code>: Istanza configurata con embedding fake.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>pipeline = LocalDynamicEmbedding.<span class="t-f">from_fake_embeddings</span>(size=<span class="t-n">256</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="11-process-text"><a class="anchor" href="#11-process-text" aria-label="Link para esta seção">#</a>11. <code>process_text</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Elabora un testo, dividendolo in chunk, calcolando gli embedding, archiviando i chunk e aggiungendoli all'indice FAISS.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>text</code> (str): Testo da elaborare (non può essere vuoto).</li>
+    <li><code>metadata</code> (Optional[dict]): Metadati associati al testo.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>int</code>: Numero di chunk creati.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: Se il testo è vuoto o in caso di errore nell'elaborazione.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>num_chunks = pipeline.<span class="t-f">process_text</span>(<span class="t-s">&quot;Texto extenso a ser processado&quot;</span>, metadata={<span class="t-s">&quot;source&quot;</span>: <span class="t-s">&quot;documento&quot;</span>})
+<span class="t-f">print</span>(f<span class="t-s">&quot;{num_chunks} chunks criados.&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="12-retrieve"><a class="anchor" href="#12-retrieve" aria-label="Link para esta seção">#</a>12. <code>retrieve</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Esegue una ricerca per similarità nell'indice restituendo i migliori chunk per una query.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>query</code> (str): Query per la ricerca.</li>
+    <li><code>top_k</code> (Optional[int]): Numero massimo di risultati (sovrascrive quello definito).</li>
+    <li><code>include_embedding</code> (bool): Se includere i vettori di embedding nel risultato.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>List[Dict]</code>: Lista di risultati con contenuto, score, metadati e, opzionalmente, embedding.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: Se non è ancora stato elaborato alcun testo.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>resultados = pipeline.<span class="t-f">retrieve</span>(<span class="t-s">&quot;consulta de teste&quot;</span>, top_k=<span class="t-n">3</span>, include_embedding=<span class="t-n">True</span>)
+<span class="t-k">for</span> r <span class="t-k">in</span> resultados:
+    <span class="t-f">print</span>(r[<span class="t-s">&quot;content&quot;</span>], r[<span class="t-s">&quot;score&quot;</span>])</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="13-as-retriever"><a class="anchor" href="#13-as-retriever" aria-label="Link para esta seção">#</a>13. <code>as_retriever</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Restituisce un oggetto <code>VectorStoreRetriever</code> configurato per eseguire query sull'indice.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>**kwargs</code>: Parametri aggiuntivi per la configurazione del retriever.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>VectorStoreRetriever</code>: Oggetto per eseguire query.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: Se la pipeline non è stata elaborata.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>retriever = pipeline.<span class="t-f">as_retriever</span>()
+docs = retriever.<span class="t-f">get_relevant_documents</span>(<span class="t-s">&quot;consulta&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="14-chunks"><a class="anchor" href="#14-chunks" aria-label="Link para esta seção">#</a>14. <code>chunks</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Proprietà che restituisce la lista con tutti gli oggetti <code>Chunk</code> archiviati.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>List[Chunk]</code>: Lista dei chunk.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">for</span> chunk <span class="t-k">in</span> pipeline.chunks:
+    <span class="t-f">print</span>(chunk.content)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="15-get-chunks"><a class="anchor" href="#15-get-chunks" aria-label="Link para esta seção">#</a>15. <code>get_chunks</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Restituisce tutti i chunk come dizionari, con l'opzione di includere gli embedding.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>include_embedding</code> (bool): Definisce se il vettore di embedding deve essere incluso.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>List[dict]</code>: Lista di dizionari che rappresentano i chunk.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>chunks_data = pipeline.<span class="t-f">get_chunks</span>(include_embedding=<span class="t-n">False</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="16-get-chunk"><a class="anchor" href="#16-get-chunk" aria-label="Link para esta seção">#</a>16. <code>get_chunk</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Ottiene un chunk specifico tramite indice.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>index</code> (int): Indice del chunk desiderato.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>Optional[Chunk]</code>: Il chunk corrispondente, oppure None se non esiste.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>chunk = pipeline.<span class="t-f">get_chunk</span>(<span class="t-n">0</span>)
+<span class="t-f">print</span>(chunk.content <span class="t-k">if</span> chunk <span class="t-k">else</span> <span class="t-s">&quot;Chunk não encontrado&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="17-total-chunks"><a class="anchor" href="#17-total-chunks" aria-label="Link para esta seção">#</a>17. <code>total_chunks</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Proprietà che restituisce il totale dei chunk elaborati e archiviati.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>int</code>: Numero totale di chunk.</li>
+  </ul>
+
+  <h3 id="18-clear"><a class="anchor" href="#18-clear" aria-label="Link para esta seção">#</a>18. <code>clear</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Pulisce l'intero stato della pipeline, inclusi chunk e indice, permettendo la riconfigurazione.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>LocalDynamicEmbedding</code>: Restituisce self per la concatenazione.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>pipeline.<span class="t-f">clear</span>()</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="classe-ausiliaria-chunk"><a class="anchor" href="#classe-ausiliaria-chunk" aria-label="Link para esta seção">#</a>Classe Ausiliaria <code>Chunk</code></h2>
+  <p><strong>Descrizione</strong></p>
+  <p>Rappresenta un pezzo (chunk) del testo originale con il suo contenuto, i metadati e il vettore di embedding, permettendo una facile ispezione dei dati generati nella pipeline.</p>
+  <p><strong>Argomenti del Costruttore</strong></p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argomento</th><th>Tipo</th><th>Descrizione</th><th>Valore Predefinito</th></tr></thead>
+    <tbody>
+      <tr><td><code>index</code></td><td><code>int</code></td><td>Indice del chunk nel testo originale</td><td></td></tr>
+      <tr><td><code>content</code></td><td><code>str</code></td><td>Contenuto testuale del chunk</td><td></td></tr>
+      <tr><td><code>metadata</code></td><td><code>dict</code></td><td>Metadati associati</td><td></td></tr>
+      <tr><td><code>embedding</code></td><td><code>List[float]</code></td><td>Vettore di embedding del chunk</td><td><code>[]</code></td></tr>
+    </tbody>
+  </table></div>
+  <p><strong>Proprietà</strong></p>
+  <ul>
+    <li><code>length</code>: Restituisce il numero di caratteri nel contenuto del chunk.</li>
+    <li><code>dim</code>: Restituisce la dimensione del vettore di embedding.</li>
+  </ul>
+  <p><strong>Metodi</strong></p>
+  <ul>
+    <li><code>to_dict(include_embedding=True)</code>: Restituisce un dizionario che rappresenta il chunk, includendo opzionalmente gli embedding.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>chunk = <span class="t-f">Chunk</span>(<span class="t-n">0</span>, <span class="t-s">&quot;Olá mundo&quot;</span>, {<span class="t-s">&quot;source&quot;</span>: <span class="t-s">&quot;doc1&quot;</span>}, [<span class="t-n">0.1</span>, <span class="t-n">0.2</span>, <span class="t-n">0.3</span>])
+<span class="t-f">print</span>(chunk.length)  <span class="t-c"># 9</span>
+<span class="t-f">print</span>(chunk.<span class="t-f">to_dict</span>(include_embedding=<span class="t-n">False</span>))  <span class="t-c"># {'index': 0, 'content': 'Olá mundo', ...}</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <p>In questo modo, <code>LocalDynamicEmbedding</code> offre una pipeline modulare, configurabile ed efficiente per gestire embedding locali su testo, ideale per gli sviluppatori che cercano il pieno controllo del flusso di pre-elaborazione e recupero, oltre a facilitare rapidi cambi tra provider di embedding e regolazioni dei parametri di chunking.</p></div>
         <div class="feedback"></div>
         <p class="source">Fonte: <code>ipynb_contents/Modules/Embedding/Local Dynamic Embedding/Documentation.ipynb</code></p>
         <nav class="pager" aria-label="Pagine vicine"><a class="pager-link prev" href="../../../../../pages/it/modules/embedding/embedding-module.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Precedente</small><span>Embedding Module</span></div></a><a class="pager-link next" href="../../../../../pages/it/modules/embedding/local-dynamic-embedding/use.html"><div><small>Successiva</small><span>Use</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

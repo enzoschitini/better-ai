@@ -1,31 +1,110 @@
-<page data-lead="Página de exemplo para Storage Menage Repository, usada para validar o layout.">
-  <div class="callout" data-kind="note"><p><strong>Conteúdo de exemplo.</strong> Este texto existe só para validar o layout. Na versão final, a página é gerada a partir de <code>ipynb_contents/Internal Source Code/Storage/Storage Menage Repository.ipynb</code>.</p></div>
+<page data-lead="Esta é a documentação didática para a classe StorageRepository, um componente essencial para o gerenciamento híbrido de arquivos em sua aplicação.">
+  <h2>1. Visão Geral</h2>
+  <p>A classe <code>StorageRepository</code> atua como uma <strong>camada de abstração</strong> (ou Repositório) para o armazenamento de imagens. O seu principal objetivo é unificar dois mundos: o <strong>armazenamento local</strong> (disco rígido do servidor) e o <strong>armazenamento em nuvem</strong> (Supabase Storage).</p>
+  <p>Ao utilizar esta classe, o restante do seu código não precisa se preocupar com detalhes técnicos como manipulação de caminhos de arquivos ou protocolos de rede; ele apenas solicita que uma imagem seja salva, e o repositório decide como e onde isso deve acontecer.</p>
 
-  <h2>Visão geral</h2>
-  <p>Storage Menage Repository faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
+  <h2>2. Fluxo de Execução</h2>
+  <p>O ciclo de vida de uma operação comum nesta classe segue estes passos:</p>
+  <ol>
+    <li><strong>Configuração</strong>: O objeto é criado recebendo um <code>base_path</code> (onde salvar localmente) e um <code>bucket_name</code> (onde salvar na nuvem).</li>
+    <li><strong>Preparação de Dados</strong>: Ao receber uma lista de objetos <code>GeneratedImage</code>, a classe extrai os bytes e identifica o formato (MIME type).</li>
+    <li><strong>Persistência Local</strong>: Se o método <code>local_repository</code> for chamado, a classe gera nomes únicos baseados na data e hora atual para evitar conflitos de arquivos e grava os bytes no disco.</li>
+    <li><strong>Sincronização Remota</strong>: Se o método <code>upload_to_supabase</code> for chamado, a classe utiliza internamente o <code>StorageManager</code> para enviar os dados para a nuvem e recupera instantaneamente o link público de acesso.</li>
+  </ol>
 
-  <h2>Uso</h2>
-  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
-  <pre data-lang="python"><code>
-from better_ai import StorageMenageRepository
-
-client = StorageMenageRepository()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parâmetros</h2>
-  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
+  <h2>3. Tabela de Métodos</h2>
   <table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <thead><tr><th>Método</th><th>Tipo</th><th>Descrição Breve</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
+      <tr><td><code>__init__</code></td><td>Construtor</td><td>Define as rotas base e o bucket de destino.</td></tr>
+      <tr><td><code>local_repository</code></td><td>Público</td><td>Salva múltiplas imagens no sistema de arquivos local.</td></tr>
+      <tr><td><code>_mime_to_extension</code></td><td>Privado (Auxiliar)</td><td>Converte tipos como <code>image/png</code> para a extensão <code>.png</code>.</td></tr>
+      <tr><td><code>upload_to_supabase</code></td><td>Público</td><td>Envia um arquivo para o Supabase e retorna sua URL.</td></tr>
     </tbody>
   </table>
 
-  <h2>Observações</h2>
-  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
-  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div>
+  <h2>4. Arquitetura e Insights</h2>
+  <ul>
+    <li><strong>Padrão Repository</strong>: Esta classe isola a lógica de infraestrutura. Se amanhã você decidir trocar o Supabase pelo Amazon S3, você só precisará alterar este arquivo, sem quebrar o resto do sistema.</li>
+    <li><strong>Geração de Nomes Únicos</strong>: O uso de <code>datetime.utcnow()</code> no salvamento local garante que, mesmo que duas imagens sejam geradas em sequência, elas tenham nomes distintos, prevenindo a sobreposição acidental de dados.</li>
+    <li><strong>Tratamento de Extensões</strong>: O método <code>_mime_to_extension</code> atua como um guardião de integridade, garantindo que apenas tipos de imagem suportados (JPEG e PNG) sejam processados, evitando arquivos corrompidos ou desconhecidos.</li>
+  </ul>
+
+  <h2>5. Detalhamento da Classe</h2>
+
+  <h3>Classe StorageRepository</h3>
+  <p><strong>Descrição</strong></p>
+  <p>Gerencia a persistência de imagens de forma híbrida. Permite que imagens geradas pela aplicação sejam armazenadas tanto em diretórios locais quanto no serviço de Storage do Supabase, padronizando o acesso aos arquivos.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>base_path</code> (str): Diretório base local ou prefixo de pasta no storage remoto.</li>
+    <li><code>bucket_name</code> (str): Nome do bucket configurado no console do Supabase.</li>
+  </ul>
+
+  <h3>Métodos</h3>
+
+  <h3>1. local_repository</h3>
+  <p><strong>Descrição</strong></p>
+  <p>Itera sobre uma lista de imagens, gera nomes de arquivo baseados em carimbo de data/hora (timestamp) e as salva no disco local.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>images</code> (List[GeneratedImage]): Lista de objetos contendo os bytes e o MIME type.</li>
+    <li><code>prefix</code> (str): Nome inicial do arquivo (ex: "avatar", "post"). Default é "image".</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>List[str]</code>: Uma lista contendo o caminho completo (path) de cada arquivo salvo com sucesso.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: Se uma imagem possuir um MIME type não mapeado.</li>
+    <li><code>IOError</code>: Caso ocorra erro de permissão ou espaço em disco ao gravar.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+repo = StorageRepository(base_path="./data/exports")
+paths = repo.local_repository(lista_de_imagens, prefix="geracao_ia")
+# Retorno: ["./data/exports/geracao_ia_20240101_120000_1.jpg", ...]
+</code></pre>
+
+  <h3>2. upload_to_supabase</h3>
+  <p><strong>Descrição</strong></p>
+  <p>Faz a ponte entre a aplicação e o Supabase. Envia os bytes brutos para o bucket e retorna o link direto para visualização.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>file_name</code> (str): Nome que o arquivo terá dentro do bucket.</li>
+    <li><code>byte_data</code> (bytes): O conteúdo binário da imagem.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>str</code>: A URL pública (HTTP) para acessar o arquivo na nuvem.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ConnectionError</code>: Se houver falha na rede ou nas credenciais do Supabase.</li>
+    <li><code>ValueError</code>: Se os parâmetros de nome de arquivo forem inválidos.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+repo = StorageRepository(base_path="galeria", bucket_name="bucket_oficial")
+url_publica = repo.upload_to_supabase("foto_perfil.png", dados_em_bytes)
+print(url_publica)
+Saída: https://projeto.supabase.co/storage/v1/object/public/bucket_oficial/galeria/foto_perfil.png
+</code></pre>
+
+  <h3>3. _mime_to_extension</h3>
+  <p><strong>Descrição</strong></p>
+  <p>Método interno de suporte que traduz o tipo MIME da imagem para uma extensão de arquivo amigável ao sistema operacional.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>mime_type</code> (str): O tipo MIME (ex: "image/jpeg").</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>str</code>: A extensão curta (ex: "jpg" ou "png").</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: Se o MIME type não for "image/jpeg" ou "image/png".</li>
+  </ul>
 </page>

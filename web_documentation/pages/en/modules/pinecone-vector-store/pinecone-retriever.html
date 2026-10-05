@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pinecone Retriever | BetterAI Docs</title>
-<meta name="description" content="Sample page for Pinecone Retriever, used to validate the layout.">
+<meta name="description" content="BetterAI Docs">
 <link rel="canonical" href="pages/en/modules/pinecone-vector-store/pinecone-retriever.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -73,36 +73,152 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copy page</span></button>
             </div>
           </div>
-          <p class="lead">Sample page for Pinecone Retriever, used to validate the layout.</p>
+          
           <details class="toc-inline"><summary>On this page</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="note"><p><strong>Placeholder content.</strong> This text exists only to validate the layout. In the final version the page is generated from <code>ipynb_contents/Modules/Pinecone Vector Store/Pinecone Retriever.md</code>.</p></div>
+        <div class="prose"><h2 id="overview"><a class="anchor" href="#overview" aria-label="Link para esta seção">#</a>Overview</h2>
+  <p>The <code>PineconeRetriever</code> class is a service specialized in retrieval operations on vectors stored in a Pinecone index. It serves as an abstraction layer to make vector similarity searches and metadata-based queries easier, encapsulating the direct interaction with the index and the embeddings mechanism.</p>
+  <p>This component is crucial for applications that work with vector data, such as recommendation systems, semantic retrieval or text similarity analysis, because it guarantees a simple and safe API to perform complex queries on Pinecone. It can be used in natural language processing pipelines, search systems or any application that needs to retrieve nearby vectors from text queries or metadata filters.</p>
 
-  <h2 id="overview"><a class="anchor" href="#overview" aria-label="Link para esta seção">#</a>Overview</h2>
-  <p>Pinecone Retriever is part of the BetterAI platform. This paragraph stands in for the text coming from the source, so that spacing, line measure and the side index can be checked.</p>
+  <h2 id="execution-flow"><a class="anchor" href="#execution-flow" aria-label="Link para esta seção">#</a>Execution Flow</h2>
+  <ol>
+    <li><strong>Initialization</strong>: Creates a <code>PineconeRetriever</code> instance, optionally receiving a configured Pinecone client. If none is provided, a default client is created internally; during this phase, essential components such as index, embeddings and namespace are initialized.</li>
+    <li><strong>Similarity Search (<code>similarity_search</code>)</strong>:
+      <ul>
+        <li>Receives a query text, a maximum number of results (<code>k</code>) and optional filters.</li>
+        <li>Validates the parameters and generates the text embedding.</li>
+        <li>Builds Pinecone-compatible filters for the query.</li>
+        <li>Runs the vector query on the index, retrieving similar vectors.</li>
+        <li>Normalizes and formats the response, returning a list of documents with text, metadata and scores.</li>
+      </ul>
+    </li>
+    <li><strong>Retrieval by Metadata (<code>get_all_docs_by_metadata</code>)</strong>:
+      <ul>
+        <li>Accepts a key and value (or list of values) for metadata filtering, plus pagination parameters.</li>
+        <li>Uses a "dummy" vector to satisfy the Pinecone API, which requires a vector, performing the search using only the filter.</li>
+        <li>Runs paginated queries to retrieve all the vectors that satisfy the filter.</li>
+        <li>Returns a complete list of the vectors with metadata and ids, but the score has no semantic meaning here.</li>
+      </ul>
+    </li>
+  </ol>
 
-  <h2 id="usage"><a class="anchor" href="#usage" aria-label="Link para esta seção">#</a>Usage</h2>
-  <p>The block below shows the typical call, with syntax highlighting:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> PineconeRetriever
-
-client = <span class="t-f">PineconeRetriever</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parameters"><a class="anchor" href="#parameters" aria-label="Link para esta seção">#</a>Parameters</h2>
-  <p>The table below exists to validate horizontal scrolling on narrow screens:</p>
+  <h2 id="class-methods-table"><a class="anchor" href="#class-methods-table" aria-label="Link para esta seção">#</a>Class Methods Table</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>
+    <thead><tr><th>Method</th><th>Description</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identifier of the model to use.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limit in seconds for the response.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Returns the response in chunks.</td></tr>
+      <tr><td><code>__init__</code></td><td>Initializes the retriever, setting up dependencies.</td></tr>
+      <tr><td><code>similarity_search</code></td><td>Performs vector similarity search with a filter.</td></tr>
+      <tr><td><code>get_all_docs_by_metadata</code></td><td>Retrieves vectors by metadata filter, paginated.</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="notes"><a class="anchor" href="#notes" aria-label="Link para esta seção">#</a>Notes</h2>
-  <p>A sample warning, to check the styling of the attention callout:</p>
-  <div class="callout" data-kind="warn"><p><strong>Development only.</strong> The values above are fictitious and must not be used in production.</p></div></div>
+  <h2 id="important-architecture-points-and-insights"><a class="anchor" href="#important-architecture-points-and-insights" aria-label="Link para esta seção">#</a>Important Architecture Points and Insights</h2>
+  <ul>
+    <li><strong>Separation of Responsibilities</strong>: The class acts exclusively as a query service, decoupling the embedding logic and communication with Pinecone via a specialized client.</li>
+    <li><strong>Use of a Decorator for Tracing</strong>: The <code>@trace</code> decorator is applied to public methods to standardize logging and exception capture, ensuring traceability and easy debugging.</li>
+    <li><strong>Normalization and Abstraction</strong>: Pinecone's raw results are transformed into a uniform format consumed by the application, hiding the index's complexities.</li>
+    <li><strong>Explicit Pagination</strong>: Retrieval by metadata implements manual pagination to ensure that all results are obtained, working around Pinecone API limitations.</li>
+    <li><strong>Dynamic and Flexible Filter</strong>: Support for simple filters from a dictionary, translated to Pinecone's <code>$eq</code> and <code>$in</code> operators, making parameterized searches easier.</li>
+    <li><strong>Dependencies Used</strong>: The class uses <code>PineconeClient</code> (for access to the index and embeddings) and <code>PineconeVectorStoreConfig</code> (for batch and dimension settings).</li>
+  </ul>
+
+  <h2 id="class-and-methods-description"><a class="anchor" href="#class-and-methods-description" aria-label="Link para esta seção">#</a>Class and Methods Description</h2>
+
+  <h2 id="pineconeretriever-class"><a class="anchor" href="#pineconeretriever-class" aria-label="Link para esta seção">#</a><code>PineconeRetriever</code> Class</h2>
+  <h3 id="description"><a class="anchor" href="#description" aria-label="Link para esta seção">#</a>Description</h3>
+  <p><code>PineconeRetriever</code> is responsible for performing efficient and safe queries on vector indexes managed by Pinecone. It provides mechanisms both for text similarity searches, turning text into vectors and querying the index, and for metadata-based retrievals, with automatic pagination and compatible filtering.</p>
+  <h3 id="constructor-arguments"><a class="anchor" href="#constructor-arguments" aria-label="Link para esta seção">#</a>Constructor Arguments</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argument</th><th>Type</th><th>Description</th><th>Default Value</th></tr></thead>
+    <tbody>
+      <tr><td>client</td><td>Optional[PineconeClient]</td><td>Pinecone client instance already configured with index, embeddings and namespace; if omitted, creates a default client automatically.</td><td>None</td></tr>
+    </tbody>
+  </table></div>
+  <h3 id="methods"><a class="anchor" href="#methods" aria-label="Link para esta seção">#</a>Methods</h3>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <h3 id="description-2"><a class="anchor" href="#description-2" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>Initializes a <code>PineconeRetriever</code> instance, setting up the essential dependencies such as index, embeddings and namespace, using the <code>PineconeClient</code> provided or creating a default one. It also loads settings such as batch size (batch_size) and vector dimension.</p>
+  <h3 id="arguments"><a class="anchor" href="#arguments" aria-label="Link para esta seção">#</a>Arguments</h3>
+  <ul>
+    <li>client (Optional[PineconeClient]): Configured client object; can be None.</li>
+  </ul>
+  <h3 id="returns"><a class="anchor" href="#returns" aria-label="Link para esta seção">#</a>Returns</h3>
+  <ul>
+    <li>Does not return a value.</li>
+  </ul>
+  <h3 id="raises"><a class="anchor" href="#raises" aria-label="Link para esta seção">#</a>Raises</h3>
+  <ul>
+    <li>ValueError: if the client is None and the default cannot be created.</li>
+  </ul>
+  <h3 id="examples"><a class="anchor" href="#examples" aria-label="Link para esta seção">#</a>Examples</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-c"># Criando retriever com cliente padrão</span>
+retriever = <span class="t-f">PineconeRetriever</span>()
+
+<span class="t-c"># Criando retriever com cliente customizado</span>
+client = <span class="t-f">PineconeClient</span>()
+retriever = <span class="t-f">PineconeRetriever</span>(client)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-similarity-search"><a class="anchor" href="#2-similarity-search" aria-label="Link para esta seção">#</a>2. <code>similarity_search</code></h3>
+  <h3 id="description-3"><a class="anchor" href="#description-3" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>Runs a vector similarity search from a query text, returning the most similar documents in the Pinecone index, with the option of applying metadata filters to restrict the results.</p>
+  <h3 id="arguments-2"><a class="anchor" href="#arguments-2" aria-label="Link para esta seção">#</a>Arguments</h3>
+  <ul>
+    <li>query (str): Base text for the similarity search.</li>
+    <li>k (int): Maximum number of results returned. Default: 5.</li>
+    <li>filter_search (Optional[Dict[str, Any]]): Dictionary for metadata filtering, e.g.: {"file_id": "abc"} or {"file_id": ["abc", "def"]}.</li>
+  </ul>
+  <h3 id="returns-2"><a class="anchor" href="#returns-2" aria-label="Link para esta seção">#</a>Returns</h3>
+  <ul>
+    <li>List[Dict[str, Any]]: List of dictionaries containing id, text ('text' field of the metadata), other metadata and score.</li>
+  </ul>
+  <h3 id="raises-2"><a class="anchor" href="#raises-2" aria-label="Link para esta seção">#</a>Raises</h3>
+  <ul>
+    <li>ValueError: If query is empty or k &lt;= 0.</li>
+    <li>RuntimeError: Failure in generating the embedding, in the query or in processing the results.</li>
+  </ul>
+  <h3 id="examples-2"><a class="anchor" href="#examples-2" aria-label="Link para esta seção">#</a>Examples</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>results = retriever.<span class="t-f">similarity_search</span>(
+    query=<span class="t-s">&quot;Como funciona o sistema de recomendação?&quot;</span>,
+    k=<span class="t-n">3</span>,
+    filter_search={<span class="t-s">&quot;category&quot;</span>: <span class="t-s">&quot;tutorial&quot;</span>}
+)
+
+<span class="t-k">for</span> doc <span class="t-k">in</span> results:
+    <span class="t-f">print</span>(f<span class="t-s">&quot;ID: {doc['id']}, Score: {doc['score']}&quot;</span>)
+    <span class="t-f">print</span>(f<span class="t-s">&quot;Texto: {doc['text']}&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-get-all-docs-by-metadata"><a class="anchor" href="#3-get-all-docs-by-metadata" aria-label="Link para esta seção">#</a>3. <code>get_all_docs_by_metadata</code></h3>
+  <h3 id="description-4"><a class="anchor" href="#description-4" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>Retrieves all the vectors from the Pinecone index that match a metadata filter, performing paginated queries. This function does not do similarity search, uses a "dummy" vector as required by the API and returns the raw filtered results.</p>
+  <h3 id="arguments-3"><a class="anchor" href="#arguments-3" aria-label="Link para esta seção">#</a>Arguments</h3>
+  <ul>
+    <li>batch_size (int | None): Limit of results per page. Controls memory and latency. Uses the configured value if None.</li>
+    <li>dimension (int | None): Vector dimension (needed to create the dummy vector). Uses the configured value if None.</li>
+    <li>target_key (str): Metadata key to filter on (e.g. "file_id"). Default: "file_id".</li>
+    <li>target_value (Union[str, List[str]]): Value or list of values for the filter.</li>
+  </ul>
+  <h3 id="returns-3"><a class="anchor" href="#returns-3" aria-label="Link para esta seção">#</a>Returns</h3>
+  <ul>
+    <li>List[Dict[str, Any]]: List containing id, metadata and score of the vectors that satisfy the filter.</li>
+  </ul>
+  <h3 id="raises-3"><a class="anchor" href="#raises-3" aria-label="Link para esta seção">#</a>Raises</h3>
+  <ul>
+    <li>ValueError: If target_value is empty.</li>
+    <li>RuntimeError: Failure in the paginated retrieval.</li>
+  </ul>
+  <h3 id="examples-3"><a class="anchor" href="#examples-3" aria-label="Link para esta seção">#</a>Examples</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>all_vectors = retriever.<span class="t-f">get_all_docs_by_metadata</span>(
+    batch_size=<span class="t-n">100</span>,
+    target_key=<span class="t-s">&quot;user_id&quot;</span>,
+    target_value=[<span class="t-s">&quot;user1&quot;</span>, <span class="t-s">&quot;user2&quot;</span>]
+)
+
+<span class="t-f">print</span>(f<span class="t-s">&quot;Total vetores recuperados: {len(all_vectors)}&quot;</span>)
+<span class="t-k">for</span> vector <span class="t-k">in</span> all_vectors:
+    <span class="t-f">print</span>(vector[<span class="t-s">&quot;id&quot;</span>], vector[<span class="t-s">&quot;metadata&quot;</span>])</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <p>This documentation provides a clear view of how <code>PineconeRetriever</code> works and is used, detailing its role, query methodology and practical examples for integration in systems that use Pinecone for vectors.</p></div>
         <div class="feedback"></div>
         <p class="source">Source: <code>ipynb_contents/Modules/Pinecone Vector Store/Pinecone Retriever.md</code></p>
         <nav class="pager" aria-label="Neighboring pages"><a class="pager-link prev" href="../../../../pages/en/modules/pinecone-vector-store/pinecone-client.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Previous</small><span>Pinecone Client</span></div></a><a class="pager-link next" href="../../../../pages/en/modules/pinecone-vector-store/pinecone-vector-service.html"><div><small>Next</small><span>Pinecone Vector Service</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>

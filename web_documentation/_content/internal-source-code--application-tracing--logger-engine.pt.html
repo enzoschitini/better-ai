@@ -1,31 +1,200 @@
-<page data-lead="Página de exemplo para Logger Engine, usada para validar o layout.">
-  <div class="callout" data-kind="note"><p><strong>Conteúdo de exemplo.</strong> Este texto existe só para validar o layout. Na versão final, a página é gerada a partir de <code>ipynb_contents/Internal Source Code/Application Tracing/Logger Engine.ipynb</code>.</p></div>
+<page data-lead="Esta é uma documentação detalhada e didática da classe LoggerEngine, projetada para ser o núcleo de rastreabilidade e monitoramento de aplicações Python.">
+  <h2>Visão Geral</h2>
+  <p>A LoggerEngine não é apenas um simples formatador de mensagens; ela é um orquestrador de telemetria. Sua principal função é centralizar a captura de eventos do sistema e decidir, com base em configurações dinâmicas (variáveis de ambiente ou parâmetros de instância), para onde esses dados devem ir: console, arquivos locais ou um banco de dados NoSQL (MongoDB).</p>
+  <p>O objetivo principal é garantir que o desenvolvedor tenha logs estruturados. Em vez de simples linhas de texto, a classe transforma cada evento em um objeto de dados rico, facilitando auditorias e a busca por erros em ambientes de produção.</p>
 
-  <h2>Visão geral</h2>
-  <p>Logger Engine faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
+  <h2>Fluxo de Execução</h2>
+  <p>Para entender como a classe opera, imagine o seguinte caminho percorrido por uma informação:</p>
+  <ol>
+    <li><strong>Chamada do Método <code>log()</code></strong>: O usuário envia a mensagem, o nível (INFO, ERROR, etc.) e metadados.</li>
+    <li><strong>Resolução de Configurações</strong>: O motor verifica se deve seguir a configuração global da classe ou se houve uma instrução específica para aquela chamada (ex: forçar o salvamento no MongoDB apenas para um erro crítico).</li>
+    <li><strong>Construção do Payload</strong>: Os dados brutos são enviados para um "Builder" que padroniza o formato (adiciona timestamps, IDs únicos e formata o JSON).</li>
+    <li><strong>Configuração do Logger</strong>: A classe prepara os "Handlers" (saídas). Se <code>save_logs</code> for True, ela abre um canal com o arquivo; se for exibir no console, define o nível de verbosidade.</li>
+    <li><strong>Emissão e Persistência</strong>: A mensagem é exibida na tela e, simultaneamente, o payload estruturado é enviado para o MongoDB.</li>
+  </ol>
 
-  <h2>Uso</h2>
-  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
-  <pre data-lang="python"><code>
-from better_ai import LoggerEngine
-
-client = LoggerEngine()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parâmetros</h2>
-  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
+  <h2>Resumo dos Métodos</h2>
   <table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <thead><tr><th>Método</th><th>Responsabilidade</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
+      <tr><td><code>_get_env_bool</code></td><td>Lê variáveis de ambiente (OS) e as converte para booleano com segurança.</td></tr>
+      <tr><td><code>_resolve_config</code></td><td>Decide quais flags (salvar, mostrar, persistir) serão usadas na execução atual.</td></tr>
+      <tr><td><code>_build_payloads</code></td><td>Transforma os argumentos em mensagens amigáveis e objetos JSON estruturados.</td></tr>
+      <tr><td><code>_get_logger</code></td><td>Configura a biblioteca nativa <code>logging</code> do Python (Handlers e Formatters).</td></tr>
+      <tr><td><code>_emit_log</code></td><td>Realiza o disparo final da mensagem para as saídas de texto.</td></tr>
+      <tr><td><code>_save_to_mongo</code></td><td>Gerencia a comunicação e inserção dos logs no banco de dados.</td></tr>
+      <tr><td><code>log</code></td><td><strong>Ponto de entrada único.</strong> Orquestra a execução de todos os métodos acima.</td></tr>
     </tbody>
   </table>
 
-  <h2>Observações</h2>
-  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
-  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div>
+  <h2>Arquitetura e Insights</h2>
+  <ul>
+    <li><strong>Configuração Híbrida</strong>: A classe utiliza um padrão de prioridade: <code>Variável de Ambiente</code> &gt; <code>Argumento do Método</code> &gt; <code>Valor Padrão da Instância</code>. Isso permite mudar o comportamento do log sem alterar o código, apenas mudando o ambiente.</li>
+    <li><strong>Desacoplamento de Payloads</strong>: Note que a classe diferencia a "mensagem de texto" (para humanos lerem no console) do "payload de dados" (para máquinas processarem no MongoDB).</li>
+    <li><strong>Rastreabilidade Única</strong>: O uso de um <code>log_id</code> gerado automaticamente permite que você rastreie uma transação específica através de múltiplos arquivos ou coleções de banco de dados.</li>
+  </ul>
+
+  <h2>Detalhamento Técnico</h2>
+
+  <h2>Classe LoggerEngine</h2>
+  <p><strong>Descrição</strong><br>Gerenciador centralizado de logs estruturados. Permite o controle dinâmico da verbosidade e persistência de dados em múltiplos destinos, garantindo padronização em toda a aplicação.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>log_id</code> (str): Identificador único da transação.</li>
+    <li><code>flag</code> (str): Identificador da origem (ex: "AuthService").</li>
+    <li><code>file_name</code> (str): Nome do módulo Python de origem.</li>
+    <li><code>log_file_name</code> (str): Prefixo do arquivo de log local.</li>
+    <li><code>show_info_logs</code> (bool): Habilita/Desabilita nível INFO no console.</li>
+    <li><code>show_metadata</code> (bool): Define se dados extras aparecem no texto do log.</li>
+    <li><code>save_logs</code> (bool): Habilita escrita em arquivo <code>.log</code>.</li>
+    <li><code>save_mongo</code> (bool): Habilita persistência no MongoDB.</li>
+    <li><code>format_metadata</code> (bool): Aplica formatação visual aos metadados.</li>
+  </ul>
+
+  <h2>1. Método log()</h2>
+  <p><strong>Descrição</strong><br>Método principal e público. Ele serve como o "maestro" da classe, recebendo os dados e acionando os métodos privados na ordem correta para processar o log.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>level</code> (str): Nível de severidade (ex: "INFO", "WARNING", "ERROR", "CRITICAL").</li>
+    <li><code>func_name</code> (str, opcional): Nome da função onde o log foi gerado.</li>
+    <li><code>message</code> (str, opcional): Texto explicativo do evento.</li>
+    <li><code>metadata</code> (dict, opcional): Dicionário com dados técnicos adicionais.</li>
+    <li><code>save_logs / save_mongo / show_info_logs / show_metadata</code> (bool, opcional): Parâmetros para sobrescrever o comportamento padrão da instância apenas para este log.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>dict</code>: Retorna o payload completo que foi gerado e/ou persistido.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>AttributeError</code>: Caso o <code>level</code> informado não seja um nível de log válido.</li>
+    <li><code>ConnectionError</code>: Caso o salvamento no MongoDB falhe.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+logger = LoggerEngine(flag="API_GATEWAY", save_mongo=True)
+
+# Exemplo simples
+logger.log(level="INFO", message="Servidor iniciado na porta 8080")
+
+# Exemplo complexo com metadados e sobrescrita
+logger.log(
+    level="ERROR",
+    func_name="process_payment",
+    message="Falha na transação",
+    metadata={"user_id": 123, "error_code": "ST-404"},
+    save_logs=True # Força salvar em arquivo este erro específico
+)
+</code></pre>
+
+  <h2>2. Método _get_env_bool()</h2>
+  <p><strong>Descrição</strong><br>Utilitário interno para capturar configurações do sistema operacional de forma segura, tratando strings como "true", "1" ou "yes" como valores booleanos verdadeiros.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>env_name</code> (str): O nome da chave da variável de ambiente.</li>
+    <li><code>default</code> (bool): O valor de retorno caso a variável não esteja definida.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>bool</code>: O estado lógico resolvido.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>KeyError</code>: Se o valor presente na variável de ambiente for inválido (não conversível para booleano).</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+# Se no terminal: export SHOW_INFO_LOGS=True
+val = engine._get_env_bool("SHOW_INFO_LOGS", False)
+# val será True
+</code></pre>
+
+  <h2>3. Método _resolve_config()</h2>
+  <p><strong>Descrição</strong><br>Este método atua como o cérebro decisório da classe. Ele compara as configurações globais (definidas ao instanciar a classe) com as configurações locais (passadas no momento do log). Se um parâmetro for enviado como <code>None</code>, ele assume o padrão da instância.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>save_logs</code> (bool/None): Desejo de salvar em arquivo para este evento.</li>
+    <li><code>save_mongo</code> (bool/None): Desejo de persistir no banco para este evento.</li>
+    <li><code>show_info_logs</code> (bool/None): Desejo de mostrar nível INFO no console.</li>
+    <li><code>show_metadata</code> (bool/None): Desejo de exibir metadados no console.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>dict</code>: Um dicionário com as chaves e seus valores booleanos finais (Ex: <code>{'save_logs': True, ...}</code>).</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+# Instância configurada para NÃO salvar nada
+engine = LoggerEngine(save_logs=False)
+
+# Chamada forçando o salvamento
+config = engine._resolve_config(save_logs=True, save_mongo=None, ...)
+# config['save_logs'] será True (sobrescrita)
+</code></pre>
+
+  <h2>4. Método _build_payloads()</h2>
+  <p><strong>Descrição</strong><br>Responsável pela padronização dos dados. Ele separa a "mensagem para humanos" (string formatada) do "payload para máquinas" (dicionário estruturado). Ele utiliza internamente uma classe auxiliar (<code>PayloadBuilder</code>) para garantir que todos os logs do sistema tenham a mesma cara.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>level</code> (str): Nível do log.</li>
+    <li><code>func_name</code> (str): Nome da função de origem.</li>
+    <li><code>message</code> (str): Texto da mensagem.</li>
+    <li><code>metadata</code> (dict): Dados extras.</li>
+    <li><code>show_metadata</code> (bool): Define se o dicionário de metadados deve ser injetado na string de texto.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>tuple</code>: <code>(display_message: str, mongo_payload: dict)</code></li>
+  </ul>
+
+  <h2>5. Método _get_logger()</h2>
+  <p><strong>Descrição</strong><br>Configura a infraestrutura do Python Standard Library (<code>logging</code>). Ele cria o objeto que realmente "fala" com o console e com o sistema de arquivos, definindo cores, formatos de data e para qual arquivo o texto deve ser enviado.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>save_logs</code> (bool): Se True, adiciona um <code>FileHandler</code>.</li>
+    <li><code>show_info_logs</code> (bool): Define o <code>level</code> mínimo do logger (DEBUG, INFO ou WARNING).</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>logging.Logger</code>: O objeto logger pronto para uso.</li>
+  </ul>
+
+  <h2>6. Método _emit_log()</h2>
+  <p><strong>Descrição</strong><br>É o gatilho final. Após tudo estar configurado e a mensagem formatada, este método identifica o nível solicitado (info, error, debug) e dispara o comando para o objeto logger.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>logger</code> (logging.Logger): A instância configurada no método anterior.</li>
+    <li><code>level</code> (str): A severidade.</li>
+    <li><code>message</code> (str): A mensagem final já formatada.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>AttributeError</code>: Se você tentar usar um nível que não existe (ex: <code>logger.log(level="BATATA")</code>).</li>
+  </ul>
+
+  <h2>7. Método _save_to_mongo()</h2>
+  <p><strong>Descrição</strong><br>Realiza a persistência persistente. Ele pega o payload estruturado e o envia para uma coleção no MongoDB. Isso é crucial para dashboards futuros (como Grafana ou Kibana).</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>mongo_metadata</code> (dict): O payload completo gerado pelo <code>_build_payloads</code>.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>str</code>: O ID do documento inserido no banco de dados.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ConnectionError</code>: Se o banco de dados estiver fora do ar ou as credenciais estiverem incorretas.</li>
+  </ul>
+
+  <h2>Resumo do Ciclo de Vida do Log</h2>
+  <p>Para visualizar como esses métodos interagem, imagine esta sequência:</p>
+  <ol>
+    <li><strong>User</strong> chama <code>log()</code>.</li>
+    <li><code>log()</code> chama <code>_resolve_config()</code> para saber as regras.</li>
+    <li><code>log()</code> chama <code>_build_payloads()</code> para preparar os dados.</li>
+    <li><code>log()</code> chama <code>_get_logger()</code> para preparar a saída.</li>
+    <li><code>log()</code> chama <code>_emit_log()</code> para imprimir na tela/arquivo.</li>
+    <li><code>log()</code> chama <code>_save_to_mongo()</code> para guardar no banco.</li>
+  </ol>
 </page>

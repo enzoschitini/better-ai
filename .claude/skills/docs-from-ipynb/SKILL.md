@@ -52,7 +52,8 @@ the id without guessing at the slug rules.
 ### 2. Read the source
 
 For `.ipynb`, the text is the concatenation of the markdown cells in order; these
-notebooks carry no code cells, and if one does, its source becomes a code block. For
+a code cell's source becomes a code block (code kept in English, comments translated per
+`reference/translation.md`). For
 `.md`, the file is the text.
 
 If the file is 0 bytes, there is nothing to author. Say so, run the build (the page
@@ -84,6 +85,9 @@ with `###` mapping to `<h2>` and `####` to `<h3>` (the page title owns `<h1>`).
 Write `<page-id>.it.html` and `<page-id>.en.html`. **Read `reference/translation.md`
 first.** Same markup, same structure, same anchors - only the prose changes. Code,
 identifiers, commands, environment variable names and file paths are never translated.
+**Code cells are never skipped: every code block is reproduced in all three files, with the
+code in English and only its comments translated** (`# ...` lines, docstring prose). Before
+building, check each `<pre>` in the `it` and `en` files for comments still in Portuguese.
 
 ### 5. Build
 
@@ -134,4 +138,5 @@ If you find yourself writing any of that by hand, stop - you are editing derived
 | "The page looks wrong, I'll patch `pages/...`" | Derived. Fix `_content/` and rebuild. |
 | "I'll add a section explaining the module better" | The source decides what the page says. |
 | "`<div class="grid">` should work, it's just HTML" | The contract is an allowlist. The build will reject it. |
+| "Code is never translated, so I'll copy the `<pre>` as is" | Code stays, but its comments are translated in `it` and `en`. |
 | "The build printed a lot, it probably worked" | Read the summary. `errors: 0` or it did not. |
