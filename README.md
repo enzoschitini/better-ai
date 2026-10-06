@@ -2,6 +2,8 @@
 
 ![BetterAI](<images/Frame 27346.png>)
 
+[Documentation](https://enzoschitini.github.io/better-ai/web_documentation/pages/en/index.html)
+
 # Múltiplos Modelos de IA, Um Único Back-end Unificado
 
 A BetterAI é um back-end de IA modular, escrito em Python, que reúne atrás de uma única interface os provedores de modelos que normalmente vivem espalhados em SDKs incompatíveis entre si. O `ModelGateway` — construído sobre o framework Agno — cria modelos e agentes da **OpenAI, Anthropic, Google Gemini e Groq** a partir da mesma chamada, validando os parâmetros por introspecção do construtor de cada provedor para evitar erros silenciosos. Trocar de modelo passa a ser uma decisão de configuração, não uma refatoração.
