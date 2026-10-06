@@ -246,7 +246,8 @@ def walk_dir(directory: Path, parents: list) -> list:
 
 class Area:
     def __init__(self, title, icon, cfg_entry, children):
-        self.title = title
+        # the folder name fixes the url/id; config "title" only changes the label
+        self.title = cfg_entry.get("title", title)
         self.icon = icon
         self.cfg = cfg_entry
         self.children = children
@@ -1061,11 +1062,14 @@ def build(repo: Path, out_dir: Path, cfg: dict, report: list):
                 index_pages.append([page.area.area_id if page.area else "home",
                                     page.url(lang), page.title, crumb, order])
                 if page.page_id in [p["id"] for p in cfg["home"][lang]["popular"]]:
-                    popular_idx.append(pi)
+                    popular_idx.append((pi, page.page_id))
                 for sec in sections:
                     index_sections.append([pi, sec["id"], sec["heading"],
                                            fold(sec["text"]), sec["text"]])
 
+        pop_order = [p["id"] for p in cfg["home"][lang]["popular"]]
+        popular_idx = [pi for pi, pid in sorted(popular_idx,
+                                                key=lambda x: pop_order.index(x[1]))]
         write(out_dir / ("search-%s.json" % lang),
               json.dumps({"p": index_pages, "s": index_sections,
                           "popular": popular_idx}, ensure_ascii=False))

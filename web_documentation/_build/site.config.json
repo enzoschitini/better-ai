@@ -7,7 +7,7 @@
     "baseUrl": ""
   },
   "links": {
-    "github": "#",
+    "github": "https://github.com/enzoschitini/better-ai",
     "swagger": "#",
     "repo": ""
   },
@@ -19,7 +19,7 @@
       },
       {
         "label": "GitHub",
-        "url": "#"
+        "url": "https://github.com/enzoschitini/better-ai"
       }
     ],
     "platform": [
@@ -41,21 +41,8 @@
         "pt": "Primeiros passos",
         "it": "Primi passi",
         "en": "First steps"
-      }
-    },
-    {
-      "dir": "Modules",
-      "icon": "boxes",
-      "about": {
-        "pt": "Os serviços de IA da plataforma: agentes, parsing de documentos, deep research e imagens.",
-        "it": "I servizi di IA della piattaforma: agenti, parsing di documenti, deep research e immagini.",
-        "en": "The platform’s AI services: agents, document parsing, deep research and images."
       },
-      "loose": {
-        "pt": "Geral",
-        "it": "Generale",
-        "en": "General"
-      }
+      "title": "Introduction"
     },
     {
       "dir": "Agents",
@@ -64,20 +51,6 @@
         "pt": "Os agentes da plataforma construídos sobre o Agno: utilitários de banco de dados e gateway de modelos, e o AgnoUI.",
         "it": "Gli agenti della piattaforma costruiti su Agno: utilità per database e gateway dei modelli, e AgnoUI.",
         "en": "The platform’s agents built on Agno: database and model gateway utilities, and AgnoUI."
-      },
-      "loose": {
-        "pt": "Geral",
-        "it": "Generale",
-        "en": "General"
-      }
-    },
-    {
-      "dir": "Internal Source Code",
-      "icon": "code",
-      "about": {
-        "pt": "A infraestrutura por baixo: tracing, bancos de dados, storage, base vetorial, embeddings, custo por token e utilitários.",
-        "it": "L’infrastruttura sottostante: tracing, database, storage, base vettoriale, embedding, costo per token e utilità.",
-        "en": "The infrastructure underneath: tracing, databases, storage, vector store, embeddings, token cost and utilities."
       },
       "loose": {
         "pt": "Geral",
@@ -112,6 +85,35 @@
         "it": "Strumenti",
         "en": "Tools"
       }
+    },
+    {
+      "dir": "Modules",
+      "icon": "boxes",
+      "about": {
+        "pt": "Os serviços de IA da plataforma: agentes, parsing de documentos, deep research e imagens.",
+        "it": "I servizi di IA della piattaforma: agenti, parsing di documenti, deep research e immagini.",
+        "en": "The platform’s AI services: agents, document parsing, deep research and images."
+      },
+      "loose": {
+        "pt": "Geral",
+        "it": "Generale",
+        "en": "General"
+      }
+    },
+    {
+      "dir": "Internal Source Code",
+      "icon": "code",
+      "about": {
+        "pt": "A infraestrutura por baixo: tracing, bancos de dados, storage, base vetorial, embeddings, custo por token e utilitários.",
+        "it": "L’infrastruttura sottostante: tracing, database, storage, base vettoriale, embedding, costo per token e utilità.",
+        "en": "The infrastructure underneath: tracing, databases, storage, vector store, embeddings, token cost and utilities."
+      },
+      "loose": {
+        "pt": "Geral",
+        "it": "Generale",
+        "en": "General"
+      },
+      "title": "Internal Services"
     }
   ],
   "ui": {
@@ -250,7 +252,7 @@
   },
   "home": {
     "pt": {
-      "p1": "A BetterAI é um back-end de IA modular, escrito em Python, que coloca OpenAI, Anthropic, Google Gemini e Groq atrás da mesma interface. Sobre essa base roda a Web Service Network, a API FastAPI que expõe os serviços em produção.",
+      "p1": "A BetterAI é um back-end de IA modular, escrito em Python, que coloca OpenAI, Anthropic, Google Gemini e Groq atrás da mesma interface. Sobre essa base rodam o FastAPI e o Streamlit, que expõem a plataforma em produção.",
       "p2": "A plataforma faz hoje o seguinte:",
       "li": [
         "<strong>Parsing de documentos:</strong> converte <code>txt</code>, <code>md</code>, <code>pdf</code> e <code>docx</code> em dados estruturados, conforme o schema de quem chama.",
@@ -269,19 +271,24 @@
       "exploreH": "Explore por área",
       "popular": [
         {
-          "id": "agents/agno-agents/utils/model-gateway",
-          "icon": "boxes",
-          "text": "Modelos e agentes de qualquer provedor pela mesma chamada."
+          "id": "getting-started/quickstart",
+          "icon": "bolt",
+          "text": "Instalação, dependências e licença."
         },
         {
-          "id": "api/web-service-network-api/use",
-          "icon": "code",
+          "id": "streamlit-applications",
+          "icon": "layout",
+          "text": "Aplicações Streamlit da plataforma."
+        },
+        {
+          "id": "api",
+          "icon": "globe",
           "text": "Autenticação, formato das respostas e endpoints."
         }
       ]
     },
     "it": {
-      "p1": "BetterAI è un back-end di IA modulare, scritto in Python, che mette OpenAI, Anthropic, Google Gemini e Groq dietro la stessa interfaccia. Su questa base gira la Web Service Network, l’API FastAPI che espone i servizi in produzione.",
+      "p1": "BetterAI è un back-end di IA modulare, scritto in Python, che mette OpenAI, Anthropic, Google Gemini e Groq dietro la stessa interfaccia. Su questa base girano FastAPI e Streamlit, che espongono la piattaforma in produzione.",
       "p2": "Oggi la piattaforma fa quanto segue:",
       "li": [
         "<strong>Parsing di documenti:</strong> converte file <code>txt</code>, <code>md</code>, <code>pdf</code> e <code>docx</code> in dati strutturati, secondo lo schema di chi chiama.",
@@ -300,19 +307,24 @@
       "exploreH": "Esplora per area",
       "popular": [
         {
-          "id": "agents/agno-agents/utils/model-gateway",
-          "icon": "boxes",
-          "text": "Modelli e agenti di qualsiasi provider con la stessa chiamata."
+          "id": "getting-started/quickstart",
+          "icon": "bolt",
+          "text": "Installazione, dipendenze e licenza."
         },
         {
-          "id": "api/web-service-network-api/use",
-          "icon": "code",
+          "id": "streamlit-applications",
+          "icon": "layout",
+          "text": "Le applicazioni Streamlit della piattaforma."
+        },
+        {
+          "id": "api",
+          "icon": "globe",
           "text": "Autenticazione, formato delle risposte ed endpoint."
         }
       ]
     },
     "en": {
-      "p1": "BetterAI is a modular AI back end written in Python that puts OpenAI, Anthropic, Google Gemini and Groq behind the same interface. On top of it runs the Web Service Network, the FastAPI service that exposes the platform in production.",
+      "p1": "BetterAI is a modular AI back end written in Python that puts OpenAI, Anthropic, Google Gemini and Groq behind the same interface. On top of it run FastAPI and Streamlit, which expose the platform in production.",
       "p2": "Today the platform does the following:",
       "li": [
         "<strong>Document parsing:</strong> turns <code>txt</code>, <code>md</code>, <code>pdf</code> and <code>docx</code> files into structured data, following the caller’s schema.",
@@ -331,13 +343,18 @@
       "exploreH": "Explore by area",
       "popular": [
         {
-          "id": "agents/agno-agents/utils/model-gateway",
-          "icon": "boxes",
-          "text": "Models and agents from any provider through the same call."
+          "id": "getting-started/quickstart",
+          "icon": "bolt",
+          "text": "Installation, dependencies and license."
         },
         {
-          "id": "api/web-service-network-api/use",
-          "icon": "code",
+          "id": "streamlit-applications",
+          "icon": "layout",
+          "text": "The platform’s Streamlit applications."
+        },
+        {
+          "id": "api",
+          "icon": "globe",
           "text": "Authentication, response format and endpoints."
         }
       ]
