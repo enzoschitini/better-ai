@@ -132,9 +132,7 @@
       return { u: R + p[1], t: p[2], c: p[3], s: 0 };
     });
     ROWS = rows; sel = 0;
-    var label = (C.i && C.i.suggestions) || 'Sugestões';
-    list.innerHTML = '<li class="no-results">' + esc(label) + '</li>' +
-      rows.map(function (r, i) {
+    list.innerHTML = rows.map(function (r, i) {
         return '<li class="result" role="option" aria-selected="' + (i === 0) + '">' +
           '<a href="' + r.u + '"><span class="r-title">' + esc(r.t) + '</span>' +
           '<span class="r-path">' + esc(r.c) + '</span></a></li>';
