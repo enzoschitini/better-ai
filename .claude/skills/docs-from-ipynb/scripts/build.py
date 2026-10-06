@@ -1002,6 +1002,14 @@ def build(repo: Path, out_dir: Path, cfg: dict, report: list):
     counts = {"content": 0, "fallback": 0, "empty": 0, "generated": 0}
     errors = []
 
+    # A blank source file only counts as "empty" while _content holds no real text for
+    # it. Pages documented straight from the code (no notebook) carry real content.
+    for p in pages:
+        if p.node and p.node.source_empty:
+            base = content_path(content_dir, p.page_id, BASE_LANG)
+            if base.exists() and "Fonte ainda vazia" not in base.read_text(encoding="utf-8"):
+                p.node.source_empty = False
+
     for lang in LANGS:
         index_pages, index_sections, popular_idx = [], [], []
         t = cfg["ui"][lang]
