@@ -47,9 +47,9 @@
       "dir": "Modules",
       "icon": "boxes",
       "about": {
-        "pt": "Os serviços de IA da plataforma: agentes, parsing de documentos, deep research, embeddings, imagens, Pinecone e a API.",
-        "it": "I servizi di IA della piattaforma: agenti, parsing di documenti, deep research, embedding, immagini, Pinecone e l’API.",
-        "en": "The platform’s AI services: agents, document parsing, deep research, embeddings, images, Pinecone and the API."
+        "pt": "Os serviços de IA da plataforma: agentes, parsing de documentos, deep research, imagens e a API.",
+        "it": "I servizi di IA della piattaforma: agenti, parsing di documenti, deep research, immagini e l’API.",
+        "en": "The platform’s AI services: agents, document parsing, deep research, images and the API."
       },
       "loose": {
         "pt": "Geral",
@@ -61,9 +61,9 @@
       "dir": "Internal Source Code",
       "icon": "code",
       "about": {
-        "pt": "A infraestrutura por baixo: tracing, bancos de dados, storage, custo por token e utilitários.",
-        "it": "L’infrastruttura sottostante: tracing, database, storage, costo per token e utilità.",
-        "en": "The infrastructure underneath: tracing, databases, storage, token cost and utilities."
+        "pt": "A infraestrutura por baixo: tracing, bancos de dados, storage, base vetorial, embeddings, custo por token e utilitários.",
+        "it": "L’infrastruttura sottostante: tracing, database, storage, base vettoriale, embedding, costo per token e utilità.",
+        "en": "The infrastructure underneath: tracing, databases, storage, vector store, embeddings, token cost and utilities."
       },
       "loose": {
         "pt": "Geral",
