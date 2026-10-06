@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Image Generator Service | BetterAI Docs</title>
-<meta name="description" content="Pagina di esempio per Image Generator Service, usata per validare il layout.">
+<meta name="description" content="Servizio che orchestra la generazione e la modifica di immagini con Gemini: costruisce il prompt multimodale, configura la generazione, chiama il modello ed esegue il parsing delle risposte.">
 <link rel="canonical" href="pages/it/modules/image-generation/image-generator-service.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -46,7 +46,7 @@
         <button class="icon-btn" type="button" data-theme-toggle aria-label="Cambia tema chiaro o scuro"></button>
       </div>
     </div>
-    <nav class="tabs-row" aria-label="Aree della documentazione"><a class="tab" href="../../../../pages/it/index.html">Panoramica</a><a class="tab" href="../../../../pages/it/getting-started/index.html">Getting Started</a><a class="tab" href="../../../../pages/it/modules/index.html" aria-current="page">Modules</a><a class="tab" href="../../../../pages/it/internal-source-code/index.html">Internal Source Code</a><a class="tab" href="../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a></nav>
+    <nav class="tabs-row" aria-label="Aree della documentazione"><a class="tab" href="../../../../pages/it/index.html">Panoramica</a><a class="tab" href="../../../../pages/it/getting-started/index.html">Getting Started</a><a class="tab" href="../../../../pages/it/modules/index.html" aria-current="page">Modules</a><a class="tab" href="../../../../pages/it/agents/index.html">Agents</a><a class="tab" href="../../../../pages/it/internal-source-code/index.html">Internal Source Code</a><a class="tab" href="../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../pages/it/api/index.html">API</a></nav>
     <div class="subbar">
       <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
         <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Modules</span>
@@ -60,7 +60,7 @@
 
 <div class="shell">
   <aside class="side-wrap" id="side" aria-label="Navigazione della documentazione">
-    <nav class="side"><div class="side-areas"><a href="../../../../pages/it/index.html">Panoramica</a><a href="../../../../pages/it/getting-started/index.html">Getting Started</a><a href="../../../../pages/it/modules/index.html" aria-current="page">Modules</a><a href="../../../../pages/it/internal-source-code/index.html">Internal Source Code</a><a href="../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a></div><a class="side-link" href="../../../../pages/it/modules/index.html"><span>Panoramica</span></a><div class="side-group"><p class="side-title">Agents</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Utils</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/modules/agents/utils/database.html"><span>Database</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/agents/utils/model-gateway.html"><span>Model Gateway</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Content Parse</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Content Parsing Agent</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/modules/content-parse/content-parsing-agent/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/content-parse/content-parsing-agent/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/it/modules/content-parse/document-parse.html"><span>Document Parse</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/content-parse/field-metadata-parser.html"><span>Field Metadata Parser</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/content-parse/generate-pydantic-schema.html"><span>Generate Pydantic Schema</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/content-parse/json-to-pydantic.html"><span>Json To Pydantic</span></a></li></ul></div><div class="side-group"><p class="side-title">Deep Research</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Tavily Research</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/modules/deep-research/tavily-research/context-builder.html"><span>Context Builder</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/deep-research/tavily-research/tavily-core.html"><span>Tavily Core</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Image Generation</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Cost Calculator</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/modules/image-generation/cost-calculator/cost-calculator.html"><span>Cost Calculator</span><span class="badge">vuota</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/image-generation/cost-calculator/pricing-table.html"><span>Pricing Table</span><span class="badge">vuota</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/it/modules/image-generation/image-generator-service.html" aria-current="page"><span>Image Generator Service</span><span class="badge">vuota</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/image-generation/module.html"><span>Module</span><span class="badge">vuota</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Utils</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/modules/image-generation/utils/config.html"><span>Config</span><span class="badge">vuota</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/image-generation/utils/gemini-client.html"><span>Gemini Client</span><span class="badge">vuota</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/image-generation/utils/params-validator.html"><span>Params Validator</span><span class="badge">vuota</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/image-generation/utils/payload-builder.html"><span>Payload Builder</span><span class="badge">vuota</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Web Service Network</p><ul><li><a class="side-link" href="../../../../pages/it/modules/web-service-network/curl-compiler.html"><span>Curl Compiler</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/web-service-network/web-service-api.html"><span>Web Service API</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/web-service-network/web-service-network-api.html"><span>Web Service Network - API</span></a></li></ul></div></nav>
+    <nav class="side"><div class="side-areas"><a href="../../../../pages/it/index.html">Panoramica</a><a href="../../../../pages/it/getting-started/index.html">Getting Started</a><a href="../../../../pages/it/modules/index.html" aria-current="page">Modules</a><a href="../../../../pages/it/agents/index.html">Agents</a><a href="../../../../pages/it/internal-source-code/index.html">Internal Source Code</a><a href="../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/it/api/index.html">API</a></div><a class="side-link" href="../../../../pages/it/modules/index.html"><span>Panoramica</span></a><div class="side-group"><p class="side-title">Content Parse</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Content Parsing Agent</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/modules/content-parse/content-parsing-agent/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/content-parse/content-parsing-agent/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/it/modules/content-parse/document-parse.html"><span>Document Parse</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/content-parse/field-metadata-parser.html"><span>Field Metadata Parser</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/content-parse/generate-pydantic-schema.html"><span>Generate Pydantic Schema</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/content-parse/json-to-pydantic.html"><span>Json To Pydantic</span></a></li></ul></div><div class="side-group"><p class="side-title">Deep Research</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Tavily Research</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/modules/deep-research/tavily-research/context-builder.html"><span>Context Builder</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/deep-research/tavily-research/tavily-core.html"><span>Tavily Core</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Image Generation</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Cost Calculator</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/modules/image-generation/cost-calculator/cost-calculator.html"><span>Cost Calculator</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/image-generation/cost-calculator/pricing-table.html"><span>Pricing Table</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/it/modules/image-generation/image-generator-service.html" aria-current="page"><span>Image Generator Service</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/image-generation/module.html"><span>Module</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Utils</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/modules/image-generation/utils/config.html"><span>Config</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/image-generation/utils/gemini-client.html"><span>Gemini Client</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/image-generation/utils/params-validator.html"><span>Params Validator</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/image-generation/utils/payload-builder.html"><span>Payload Builder</span></a></li></ul></li></ul></div></nav>
   </aside>
   <div class="main">
     <div class="main-row">
@@ -73,36 +73,66 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copia pagina</span></button>
             </div>
           </div>
-          <p class="lead">Pagina di esempio per Image Generator Service, usata per validare il layout.</p>
+          <p class="lead">Servizio che orchestra la generazione e la modifica di immagini con Gemini: costruisce il prompt multimodale, configura la generazione, chiama il modello ed esegue il parsing delle risposte.</p>
           <details class="toc-inline"><summary>In questa pagina</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="warn"><p><strong>Sorgente ancora vuota.</strong> Il file <code>ipynb_contents/Modules/Image Generation/Image Generator Service.ipynb</code> ha 0 byte. Il corpo qui sotto è solo uno stampo di layout.</p></div>
+        <div class="prose"><div class="callout" data-kind="note"><p><strong>Fonte:</strong> <code>src/image_generation/image_generator_service.py</code>. Il notebook originale di questa pagina era vuoto; il contenuto è stato scritto a partire dal codice.</p></div>
 
   <h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
-  <p>Image Generator Service fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
+  <p>La classe <code>ImageGeneratorService</code> copre quattro passi, in quest'ordine: costruzione delle parti (testo e immagini), configurazione della generazione, chiamata al modello e parsing delle risposte (immagini, testo e metriche d'uso).</p>
 
-  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
-  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> ImageGeneratorService
-
-client = <span class="t-f">ImageGeneratorService</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parametri"><a class="anchor" href="#parametri" aria-label="Link para esta seção">#</a>Parametri</h2>
-  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
+  <h2 id="costruttore"><a class="anchor" href="#costruttore" aria-label="Link para esta seção">#</a>Costruttore</h2>
   <div class="table-wrap"><table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <thead><tr><th>Parametro</th><th>Tipo</th><th>Descrizione</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
+      <tr><td><code>client</code></td><td><code>genai.Client</code> (opzionale)</td><td>Client di Gemini già inizializzato. Se è <code>None</code>, ne viene creato uno nuovo con <code>GeminiClient().get_client()</code>.</td></tr>
+      <tr><td><code>content_config</code></td><td><code>dict</code> (opzionale)</td><td>Sovrascrive valori di <code>DEFAULT_CONTENT_CONFIG</code> (modello, <code>temperature</code>, <code>top_p</code>, <code>aspect_ratio</code>, <code>number_of_images</code> ecc.).</td></tr>
+    </tbody>
+  </table></div>
+  <p>La configurazione finale è l'unione di <code>DEFAULT_CONTENT_CONFIG</code> con <code>content_config</code>: le chiavi assenti ereditano il valore predefinito. Qualsiasi errore nell'inizializzazione solleva <code>RuntimeError</code>.</p>
+
+  <h2 id="metodi"><a class="anchor" href="#metodi" aria-label="Link para esta seção">#</a>Metodi</h2>
+  <h3 id="build-parts"><a class="anchor" href="#build-parts" aria-label="Link para esta seção">#</a>build_parts</h3>
+  <p>Costruisce la lista di <code>types.Part</code> inviata a Gemini. Il testo è composto da <code>BASE_PROMPT</code>, seguito da <code>[TASK]</code> con lo <code>user_prompt</code> e, se presenti <code>instructions</code>, da <code>[USER_CONTEXT]</code>. Ogni immagine di riferimento in <code>images</code> viene aggiunta come parte di byte.</p>
+  <p>Uno <code>user_prompt</code> vuoto o che non sia <code>str</code> genera un errore (<code>ValueError</code>, risollevato come <code>RuntimeError</code>). Il metodo salva inoltre in <code>self.text_input</code> il prompt, le istruzioni e il numero di immagini, per l'uso successivo in <code>parse_responses</code>.</p>
+
+  <h3 id="generate-config"><a class="anchor" href="#generate-config" aria-label="Link para esta seção">#</a>generate_config</h3>
+  <p>Restituisce un <code>types.GenerateContentConfig</code> con <code>temperature</code>, <code>top_p</code> e <code>max_output_tokens</code> della configurazione, <code>response_modalities</code> uguale a <code>["IMAGE", "TEXT"]</code> e <code>ImageConfig</code> con l'<code>aspect_ratio</code>.</p>
+
+  <h3 id="call-model"><a class="anchor" href="#call-model" aria-label="Link para esta seção">#</a>call_model</h3>
+  <p>Chiama <code>client.models.generate_content</code> una volta per ogni immagine richiesta, con lo stesso prompt, e restituisce la lista di risposte. Il numero di chiamate è <code>content_config["number_of_images"]</code>.</p>
+  <div class="callout" data-kind="warn"><p><strong>Costo e limiti.</strong> L'SDK attuale di Gemini non configura il numero di immagini per chiamata; per questo la generazione di più immagini avviene con più chiamate. Evita valori alti di <code>number_of_images</code> per non superare i limiti di frequenza né aumentare il costo.</p></div>
+
+  <h3 id="parse-responses"><a class="anchor" href="#parse-responses" aria-label="Link para esta seção">#</a>parse_responses</h3>
+  <p>Scorre le risposte e aggrega il risultato in un unico dizionario:</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Chiave</th><th>Contenuto</th></tr></thead>
+    <tbody>
+      <tr><td><code>text_input</code></td><td>Prompt, istruzioni e numero di immagini (compare solo dopo <code>build_parts</code>).</td></tr>
+      <tr><td><code>text_responses</code></td><td>Lista con i testi restituiti dal modello.</td></tr>
+      <tr><td><code>images</code></td><td>Lista di dizionari con <code>mime_type</code> e <code>data</code> (byte).</td></tr>
+      <tr><td><code>generate_config</code></td><td>La configurazione finale usata nella generazione.</td></tr>
+      <tr><td><code>usage_metadata</code></td><td>Una voce per risposta, con <code>prompt_tokens</code>, <code>output_tokens</code> e <code>total_tokens</code>, oppure <code>None</code> quando la risposta non contiene metriche.</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="note"><a class="anchor" href="#note" aria-label="Link para esta seção">#</a>Note</h2>
-  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
-  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div></div>
+  <h2 id="esempio-d-uso"><a class="anchor" href="#esempio-d-uso" aria-label="Link para esta seção">#</a>Esempio d'uso</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> src.image_generation.image_generator_service <span class="t-k">import</span> ImageGeneratorService
+
+<span class="t-c"># Crea il servizio con una configurazione parziale</span>
+service = <span class="t-f">ImageGeneratorService</span>(content_config={<span class="t-s">&quot;number_of_images&quot;</span>: <span class="t-n">2</span>})
+
+<span class="t-c"># 1. Costruisce le parti, 2. configura, 3. chiama il modello, 4. esegue il parsing</span>
+parts = service.<span class="t-f">build_parts</span>(user_prompt=<span class="t-s">&quot;Um grifo renascentista&quot;</span>)
+config = service.<span class="t-f">generate_config</span>()
+responses = service.<span class="t-f">call_model</span>(parts, config)
+result = service.<span class="t-f">parse_responses</span>(responses)
+
+<span class="t-f">print</span>(<span class="t-f">len</span>(result[<span class="t-s">&quot;images&quot;</span>]))</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="osservazioni"><a class="anchor" href="#osservazioni" aria-label="Link para esta seção">#</a>Osservazioni</h2>
+  <div class="callout" data-kind="warn"><p><strong>Tipo delle immagini in ingresso.</strong> In <code>build_parts</code>, tutte le immagini di riferimento vengono inviate con <code>mime_type</code> <code>image/jpeg</code>, anche quando il file originale è PNG.</p></div>
+  <p>Vedi anche <a href="utils/config.html">Config</a>, <a href="utils/gemini-client.html">Gemini Client</a> e <a href="module.html">Module</a>.</p></div>
         <div class="feedback"></div>
         <p class="source">Fonte: <code>ipynb_contents/Modules/Image Generation/Image Generator Service.ipynb</code></p>
         <nav class="pager" aria-label="Pagine vicine"><a class="pager-link prev" href="../../../../pages/it/modules/image-generation/cost-calculator/pricing-table.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Precedente</small><span>Pricing Table</span></div></a><a class="pager-link next" href="../../../../pages/it/modules/image-generation/module.html"><div><small>Successiva</small><span>Module</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
@@ -115,7 +145,7 @@ result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;cl
         <p>Where intelligence finds purpose.</p>
       </div>
       <div class="foot-col"><h2>Risorse</h2><a href="#">Swagger UI</a><a href="#">GitHub</a></div>
-      <div class="foot-col"><h2>Piattaforma</h2><a href="../../../../pages/it/modules/web-service-network/web-service-network-api.html">Web Service Network - API</a><a href="../../../../pages/it/streamlit-applications/acquarello.html">Acquarello</a><a href="../../../../pages/it/streamlit-applications/content-generator.html">Content Generator</a></div>
+      <div class="foot-col"><h2>Piattaforma</h2><a href="../../../../pages/it/api/web-service-network-api/use.html">Use</a><a href="../../../../pages/it/streamlit-applications/acquarello.html">Acquarello</a><a href="../../../../pages/it/streamlit-applications/content-generator.html">Content Generator</a></div>
     </footer>
   </div>
 </div>

@@ -1,31 +1,49 @@
-<page data-lead="Sample page for Params Validator, used to validate the layout.">
-  <div class="callout" data-kind="warn"><p><strong>Source still empty.</strong> The file <code>ipynb_contents/Modules/Image Generation/Utils/Params Validator.ipynb</code> is 0 bytes. The body below is only a layout mould.</p></div>
+<page data-lead="Validates the parameters of an image generation against the model catalog before the call is sent to the provider.">
+  <div class="callout" data-kind="note"><p><strong>Source:</strong> <code>src/image_generation/utils/params_validator.py</code>. This page's original notebook was empty; the content was written from the code.</p></div>
 
   <h2>Overview</h2>
-  <p>Params Validator is part of the BetterAI platform. This paragraph stands in for the text coming from the source, so that spacing, line measure and the side index can be checked.</p>
+  <p>The <code>ImageParamsValidator</code> class takes an optional catalog in the constructor; without it, it uses <code>IMAGE_MODELS_CATALOG</code> (see <a href="@/modules/image-generation/utils/config">Config</a>). The <code>validate()</code> method returns nothing: if everything is correct, it returns silently; otherwise, it raises <code>ValueError</code>.</p>
 
-  <h2>Usage</h2>
-  <p>The block below shows the typical call, with syntax highlighting:</p>
-  <pre data-lang="python"><code>
-from better_ai import ParamsValidator
-
-client = ParamsValidator()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parameters</h2>
-  <p>The table below exists to validate horizontal scrolling on narrow screens:</p>
+  <h2>validate parameters</h2>
+  <p>All are keyword-only and required.</p>
   <table>
-    <thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>
+    <thead><tr><th>Parameter</th><th>Type</th><th>Rule</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identifier of the model to use.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limit in seconds for the response.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Returns the response in chunks.</td></tr>
+      <tr><td><code>model</code></td><td><code>str</code></td><td>Must exist in the catalog.</td></tr>
+      <tr><td><code>number_of_images</code></td><td><code>int</code></td><td>Must be greater than or equal to 1 and cannot exceed the model's <code>max_output_images_per_prompt</code>.</td></tr>
+      <tr><td><code>output_mime_type</code></td><td><code>str</code></td><td>Must be in the model's <code>mime_types</code>.</td></tr>
+      <tr><td><code>aspect_ratio</code></td><td><code>str</code></td><td>Must be in the model's <code>supported_aspect_ratios</code>.</td></tr>
+      <tr><td><code>image_size</code></td><td><code>str</code></td><td>Must be in the model's <code>supported_resolutions</code> (for example <code>1K</code>, <code>2K</code>).</td></tr>
     </tbody>
   </table>
+  <p>The checks run in this order: model, image count, MIME type, aspect ratio and resolution. The first one that fails stops the validation.</p>
+
+  <h2>Usage example</h2>
+  <pre data-lang="python"><code>
+from src.image_generation.utils.params_validator import ImageParamsValidator
+
+validator = ImageParamsValidator()
+
+# Passes silently when the parameters are valid
+validator.validate(
+    model="imagen-4.0-fast-generate-001",
+    number_of_images=2,
+    output_mime_type="image/png",
+    aspect_ratio="16:9",
+    image_size="1K",
+)
+
+# Raises ValueError: the fast model only accepts 1K
+validator.validate(
+    model="imagen-4.0-fast-generate-001",
+    number_of_images=2,
+    output_mime_type="image/png",
+    aspect_ratio="16:9",
+    image_size="2K",
+)
+</code></pre>
 
   <h2>Notes</h2>
-  <p>A sample warning, to check the styling of the attention callout:</p>
-  <div class="callout" data-kind="warn"><p><strong>Development only.</strong> The values above are fictitious and must not be used in production.</p></div>
+  <div class="callout" data-kind="info"><p>The error messages of <code>validate()</code> are in English and, for MIME type, aspect ratio and resolution failures, list the values accepted by the model.</p></div>
+  <p>The validator is used by <code>TextToImage</code> in <code>generation.py</code>, before calling <code>generate_images</code>.</p>
 </page>

@@ -1,31 +1,72 @@
-<page data-lead="Sample page for Cost Calculator, used to validate the layout.">
-  <div class="callout" data-kind="warn"><p><strong>Source still empty.</strong> The file <code>ipynb_contents/Modules/Image Generation/Cost Calculator/Cost Calculator.ipynb</code> is 0 bytes. The body below is only a layout mould.</p></div>
+<page data-lead="Calculates in dollars the cost of a generation from the tokens used, the number of images and the model's price table.">
+  <div class="callout" data-kind="note"><p><strong>Source:</strong> <code>src/image_generation/cost_calculator/cost_calculator.py</code>. This page's original notebook was empty; the content was written from the code.</p></div>
 
   <h2>Overview</h2>
-  <p>Cost Calculator is part of the BetterAI platform. This paragraph stands in for the text coming from the source, so that spacing, line measure and the side index can be checked.</p>
+  <p>The <code>CostCalculator</code> class takes a price table in the constructor (by default, <code>PricingTable</code>; see <a href="@/modules/image-generation/cost-calculator/pricing-table">Pricing Table</a>) and offers two methods: <code>merge_cost_information</code> and <code>calculate</code>.</p>
 
-  <h2>Usage</h2>
-  <p>The block below shows the typical call, with syntax highlighting:</p>
-  <pre data-lang="python"><code>
-from better_ai import CostCalculator
+  <h2>merge_cost_information</h2>
+  <p>Sums <code>prompt_tokens</code>, <code>output_tokens</code> and <code>total_tokens</code> from a list of usage records, used when a generation makes several calls to the model.</p>
+  <div class="callout" data-kind="warn"><p><strong>Minimum of two records.</strong> With an empty list or with fewer than two items, the method raises <code>ValueError</code> ("You must provide at least two cost_information objects."). <code>PayloadBuilder</code> only calls it when there is more than one record.</p></div>
 
-client = CostCalculator()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parameters</h2>
-  <p>The table below exists to validate horizontal scrolling on narrow screens:</p>
+  <h2>calculate</h2>
   <table>
-    <thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>
+    <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identifier of the model to use.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limit in seconds for the response.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Returns the response in chunks.</td></tr>
+      <tr><td><code>model</code></td><td><code>str</code></td><td>Model used, looked up in <code>PricingTable</code>.</td></tr>
+      <tr><td><code>prompt_tokens</code></td><td><code>int</code></td><td>Input tokens.</td></tr>
+      <tr><td><code>output_tokens</code></td><td><code>int</code></td><td>Output tokens.</td></tr>
+      <tr><td><code>total_tokens</code></td><td><code>int</code></td><td>Total tokens. It is only passed through to the result; it does not enter the calculation.</td></tr>
+      <tr><td><code>num_images</code></td><td><code>int</code></td><td>Number of images (default <code>0</code>).</td></tr>
+      <tr><td><code>cached_prompt_tokens</code></td><td><code>int</code></td><td>Input tokens read from the cache (default <code>0</code>).</td></tr>
+      <tr><td><code>cache_storage_tokens</code></td><td><code>int</code></td><td>Tokens kept in the cache (default <code>0</code>).</td></tr>
+      <tr><td><code>cache_storage_hours</code></td><td><code>float</code></td><td>Hours of cache storage (default <code>0.0</code>).</td></tr>
     </tbody>
   </table>
 
+  <h3>Formulas</h3>
+  <table>
+    <thead><tr><th>Item</th><th>Calculation</th></tr></thead>
+    <tbody>
+      <tr><td>Input</td><td><code>prompt_tokens / 1_000_000 * input_per_million_tokens</code></td></tr>
+      <tr><td>Output</td><td><code>output_tokens / 1_000_000 * output_per_million_tokens</code>, only if the price and the tokens are non-zero</td></tr>
+      <tr><td>Images</td><td><code>num_images * image_price_per_unit</code>, only if the price and the quantity are non-zero</td></tr>
+      <tr><td>Input cache</td><td><code>cached_prompt_tokens / 1_000_000 * cache_input_per_million_tokens</code></td></tr>
+      <tr><td>Cache storage</td><td><code>cache_storage_tokens / 1_000_000 * cache_storage_per_million_tokens_per_hour * cache_storage_hours</code></td></tr>
+    </tbody>
+  </table>
+  <p>The total is the sum of the five items.</p>
+
+  <h3>Return value</h3>
+  <p>A dictionary with the tokens received and the dollar values rounded to 6 decimal places:</p>
+  <pre data-lang="json"><code>
+{
+  "prompt_tokens": 1174,
+  "output_tokens": 2633,
+  "total_tokens": 3807,
+  "prompt_usd": 0.000352,
+  "output_usd": 0.0,
+  "images_usd": 0.078,
+  "total_usd": 0.078352
+}
+</code></pre>
+
+  <h2>Usage example</h2>
+  <pre data-lang="python"><code>
+from src.image_generation.cost_calculator.cost_calculator import CostCalculator
+
+calculator = CostCalculator()
+
+# Calculate the cost of two images generated with gemini-2.5-flash-image
+cost = calculator.calculate(
+    model="gemini-2.5-flash-image",
+    prompt_tokens=1174,
+    output_tokens=2633,
+    total_tokens=3807,
+    num_images=2,
+)
+print(cost["total_usd"])
+</code></pre>
+
   <h2>Notes</h2>
-  <p>A sample warning, to check the styling of the attention callout:</p>
-  <div class="callout" data-kind="warn"><p><strong>Development only.</strong> The values above are fictitious and must not be used in production.</p></div>
+  <div class="callout" data-kind="warn"><p><strong>Model without a price.</strong> If the model is not in <code>PricingTable</code>, <code>PricingTable.get</code> raises <code>ValueError</code> ("Modelo sem precificação cadastrada") and the generation fails while building the payloads.</p></div>
 </page>

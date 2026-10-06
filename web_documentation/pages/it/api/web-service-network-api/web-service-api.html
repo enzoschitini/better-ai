@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Web Service API | BetterAI Docs</title>
+<meta name="description" content="La classe WebServiceAPI agisce come un involucro configurabile per creare e gestire un'applicazione FastAPI.">
+<link rel="canonical" href="pages/it/api/web-service-network-api/web-service-api.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="../../../../_design-system/css/design-system.css">
+</head>
+<body>
+<a class="skip" href="#main">Vai al contenuto</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span>Prototipo di layout. Il contenuto delle pagine è di esempio.</span>
+    <button type="button" aria-label="Chiudi avviso"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../pages/it/index.html">
+        <img src="../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Cerca nella documentazione">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Cerca...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="#"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="#">Swagger UI<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Lingua"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>IT</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="false"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="true"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="false"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Cambia tema chiaro o scuro"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Aree della documentazione"><a class="tab" href="../../../../pages/it/index.html">Panoramica</a><a class="tab" href="../../../../pages/it/getting-started/index.html">Getting Started</a><a class="tab" href="../../../../pages/it/modules/index.html">Modules</a><a class="tab" href="../../../../pages/it/agents/index.html">Agents</a><a class="tab" href="../../../../pages/it/internal-source-code/index.html">Internal Source Code</a><a class="tab" href="../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../pages/it/api/index.html" aria-current="page">API</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>API</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Web Service API</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Navigazione della documentazione">
+    <nav class="side"><div class="side-areas"><a href="../../../../pages/it/index.html">Panoramica</a><a href="../../../../pages/it/getting-started/index.html">Getting Started</a><a href="../../../../pages/it/modules/index.html">Modules</a><a href="../../../../pages/it/agents/index.html">Agents</a><a href="../../../../pages/it/internal-source-code/index.html">Internal Source Code</a><a href="../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/it/api/index.html" aria-current="page">API</a></div><a class="side-link" href="../../../../pages/it/api/index.html"><span>Panoramica</span></a><div class="side-group"><p class="side-title">Strumenti</p><ul><li><a class="side-link" href="../../../../pages/it/api/curl-compiler.html"><span>Curl Compiler</span></a></li></ul></div><div class="side-group"><p class="side-title">Web Service Network - API</p><ul><li><a class="side-link" href="../../../../pages/it/api/web-service-network-api/web-service-api.html" aria-current="page"><span>Web Service API</span></a></li><li><a class="side-link" href="../../../../pages/it/api/web-service-network-api/use.html"><span>Use</span></a></li></ul></div><div class="side-group"><p class="side-title">Deep Research</p><ul><li><a class="side-link" href="../../../../pages/it/api/deep-research/context-builder.html"><span>Context Builder</span></a></li></ul></div><div class="side-group"><p class="side-title">Parse Content</p><ul><li><a class="side-link" href="../../../../pages/it/api/parse-content/document-parse.html"><span>Document Parse</span></a></li></ul></div><div class="side-group"><p class="side-title">Image Generation</p><ul><li><a class="side-link" href="../../../../pages/it/api/image-generation/image-generation.html"><span>Image Generation</span></a></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Web Service Network - API</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Web Service API</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copia pagina</span></button>
+            </div>
+          </div>
+          <p class="lead">La classe WebServiceAPI agisce come un involucro configurabile per creare e gestire un'applicazione FastAPI.</p>
+          <details class="toc-inline"><summary>In questa pagina</summary><ul></ul></details>
+        </header>
+        <div class="prose"><h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
+  <p>La classe <code>WebServiceAPI</code> agisce come un involucro configurabile per creare e gestire un'applicazione FastAPI. Il suo scopo è semplificare il processo di inizializzazione dell'applicazione web, configurare i middleware essenziali, registrare le rotte predefinite e integrare automaticamente router aggiuntivi in modo dinamico a partire da pacchetti Python.</p>
+  <p>Risolve il problema della ripetizione e della dispersione delle configurazioni comuni nelle API FastAPI, riunendo in un unico punto tutta la configurazione iniziale, il middleware CORS, le rotte di base per salute e autenticazione, oltre a facilitare l'estensione dell'API con router esterni. In pratica, può essere usata per accelerare lo sviluppo di API RESTful, garantendo una base coerente e consentendo un'integrazione modulare e test facilitati.</p>
+  <p>La classe è particolarmente utile nei progetti che vogliono mantenere un'architettura pulita e scalabile, con log chiari del ciclo di vita dell'applicazione e controllo centralizzato della configurazione tramite dizionario e variabili d'ambiente.</p>
+
+  <h2 id="flusso-di-esecuzione"><a class="anchor" href="#flusso-di-esecuzione" aria-label="Link para esta seção">#</a>Flusso di Esecuzione</h2>
+  <ol>
+    <li><strong>Istanziazione della classe</strong><br>Lo sviluppatore crea un'istanza di <code>WebServiceAPI</code>, passando opzionalmente un dizionario di configurazioni personalizzato. Se non viene passato alcun dizionario, viene usato un valore predefinito tramite l'import <code>CONFIG</code>.</li>
+    <li><strong>Inizializzazione dell'applicazione con <code>initialize()</code></strong><br>Chiamando il metodo <code>initialize()</code>, l'applicazione FastAPI viene creata con le configurazioni di nome, descrizione, versione, gestione del ciclo di vita e middleware CORS configurati, oltre alla registrazione delle rotte predefinite (<code>/health</code>, <code>/</code>, <code>/health-authorization</code>).</li>
+    <li><strong>Inclusione di router aggiuntivi</strong><br>Dopo aver inizializzato l'applicazione, lo sviluppatore può includere router aggiuntivi utilizzando i metodi <code>include_routers()</code> o <code>test_routers()</code> passando liste di router FastAPI. Ogni inclusione viene registrata nei log per facilitare il tracciamento.</li>
+    <li><strong>Scoperta dinamica dei router</strong><br>Se si desidera, si può usare il metodo <code>collect_routers(package_name)</code> per caricare dinamicamente i router definiti nei moduli di un determinato pacchetto, consentendo un'estensibilità modulare.</li>
+    <li><strong>Ottenimento dell'istanza FastAPI</strong><br>Infine, per eseguire o manipolare l'applicazione al di fuori della classe, il metodo <code>get_app()</code> restituisce l'istanza FastAPI già inizializzata.</li>
+    <li><strong>Esecuzione e log del ciclo di vita</strong><br>Al momento dell'inizializzazione dell'applicazione, un banner e informazioni importanti vengono mostrati nei log. Vengono inoltre registrati gli eventi di arresto dell'applicazione.</li>
+  </ol>
+
+  <h2 id="tabella-dei-metodi-della-classe"><a class="anchor" href="#tabella-dei-metodi-della-classe" aria-label="Link para esta seção">#</a>Tabella dei Metodi della Classe</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Metodo</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Inizializza la classe con le configurazioni e prepara il logger</td></tr>
+      <tr><td><code>initialize</code></td><td>Crea e configura l'applicazione FastAPI</td></tr>
+      <tr><td><code>include_routers</code></td><td>Aggiunge router all'applicazione dopo l'inizializzazione</td></tr>
+      <tr><td><code>test_routers</code></td><td>Aggiunge router all'applicazione a scopo di test</td></tr>
+      <tr><td><code>collect_routers</code></td><td>Scopre e importa dinamicamente i router di un pacchetto</td></tr>
+      <tr><td><code>get_app</code></td><td>Restituisce l'istanza FastAPI inizializzata</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="variabili-d-ambiente"><a class="anchor" href="#variabili-d-ambiente" aria-label="Link para esta seção">#</a>Variabili d'Ambiente</h2>
+  <ul>
+    <li><code>DOMAIN</code>: Definisce il dominio di base dell'applicazione, usato per mostrare URL e documentazione. Se non definita, assume <code>"http://localhost:8000"</code>.</li>
+  </ul>
+
+  <h2 id="punti-importanti-dell-architettura-e-insights"><a class="anchor" href="#punti-importanti-dell-architettura-e-insights" aria-label="Link para esta seção">#</a>Punti Importanti dell'Architettura e Insights</h2>
+  <ul>
+    <li>La classe incapsula la configurazione di FastAPI sulla base di un dizionario esterno, facilitando la parametrizzazione senza modificare il codice.</li>
+    <li>Uso di <code>asynccontextmanager</code> per controllare il ciclo di vita dell'applicazione FastAPI, con log chiari all'avvio e all'arresto.</li>
+    <li>L'inclusione dinamica dei router con <code>collect_routers</code> utilizza l'introspezione tramite <code>pkgutil</code> e <code>importlib</code>, consentendo la modularizzazione delle API.</li>
+    <li>Netta separazione tra configurazione di base (middleware, rotte predefinite) ed espansione tramite rotte aggiuntive.</li>
+    <li>Il logger predefinito è collegato al server <code>uvicorn</code>, garantendo l'integrazione con i log di runtime di ASGI.</li>
+    <li>Le rotte predefinite includono una rotta di autorizzazione che dipende da una validazione tramite chiave API, usando il metodo statico <code>Authorization.validate_api_key</code>.</li>
+  </ul>
+
+  <h2 id="descrizione-della-classe-e-dei-metodi"><a class="anchor" href="#descrizione-della-classe-e-dei-metodi" aria-label="Link para esta seção">#</a>Descrizione della Classe e dei Metodi</h2>
+
+  <h2 id="classe-webserviceapi"><a class="anchor" href="#classe-webserviceapi" aria-label="Link para esta seção">#</a>Classe <code>WebServiceAPI</code></h2>
+
+  <h3 id="descrizione"><a class="anchor" href="#descrizione" aria-label="Link para esta seção">#</a>Descrizione</h3>
+  <p>Questa classe rappresenta un wrapper configurabile per applicazioni FastAPI, che permette di inizializzare un'API web sulla base di configurazioni esterne, aggiungere middleware e rotte predefinite, gestire il ciclo di vita dell'applicazione e ampliare l'API tramite l'inclusione dinamica di router provenienti da pacchetti Python.</p>
+
+  <h3 id="argomenti-del-costruttore"><a class="anchor" href="#argomenti-del-costruttore" aria-label="Link para esta seção">#</a>Argomenti del Costruttore</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argomento</th><th>Tipo</th><th>Descrizione</th><th>Valore Predefinito</th></tr></thead>
+    <tbody>
+      <tr><td><code>config</code></td><td>dict</td><td>Dizionario con le configurazioni per il servizio web</td><td><code>CONFIG</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Inizializza la classe, definendo configurazioni, logger e dominio di base per l'applicazione.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>config</code> (dict): configurazioni per l'API.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nessuna.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>ws_api = <span class="t-f">WebServiceAPI</span>()  <span class="t-c"># Usa CONFIG padrão</span>
+ws_api_custom = <span class="t-f">WebServiceAPI</span>(config=my_config_dict)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-initialize"><a class="anchor" href="#2-initialize" aria-label="Link para esta seção">#</a>2. <code>initialize</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Crea e configura un'istanza FastAPI con titolo, descrizione, versione e il ciclo di vita definito. Aggiunge il middleware CORS e registra le rotte predefinite per l'health check e la rotta radice.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>FastAPI: istanza dell'applicazione FastAPI inizializzata.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nessuna.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>app = ws_api.<span class="t-f">initialize</span>()
+<span class="t-c"># app agora está pronta para uso em um servidor ASGI</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-include-routers"><a class="anchor" href="#3-include-routers" aria-label="Link para esta seção">#</a>3. <code>include_routers</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Include nell'applicazione una lista di router FastAPI, garantendo che l'applicazione sia già stata inizializzata. Registra nei log l'inclusione di ciascun router.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>routers</code> (list): lista di oggetti router di FastAPI.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>RuntimeError: se l'applicazione non è inizializzata.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>ws_api.<span class="t-f">include_routers</span>([user_router, product_router])</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-test-routers"><a class="anchor" href="#4-test-routers" aria-label="Link para esta seção">#</a>4. <code>test_routers</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Simile a <code>include_routers</code>, include una lista di router per eventuali test o uso ad-hoc, con log dell'inclusione.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>routers</code> (list): lista di router da includere.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>RuntimeError: se l'applicazione non è inizializzata.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>ws_api.<span class="t-f">test_routers</span>([test_router])</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="5-collect-routers"><a class="anchor" href="#5-collect-routers" aria-label="Link para esta seção">#</a>5. <code>collect_routers</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Scopre e importa dinamicamente tutti i router chiamati <code>router</code> all'interno dei moduli del pacchetto indicato, restituendoli in una lista.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>package_name</code> (str): nome del pacchetto (dotted path) in cui cercare moduli con router.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>list: lista di istanze di router FastAPI trovate.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nessuna.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>routers = ws_api.<span class="t-f">collect_routers</span>(<span class="t-s">&quot;src.api.v1&quot;</span>)
+<span class="t-c"># Retorna todos os routers em src/api/v1/*</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="6-get-app"><a class="anchor" href="#6-get-app" aria-label="Link para esta seção">#</a>6. <code>get_app</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Restituisce l'istanza FastAPI inizializzata da usare esternamente.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>FastAPI: istanza FastAPI.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>RuntimeError: se chiamato prima dell'inizializzazione dell'applicazione.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>app = ws_api.<span class="t-f">get_app</span>()</code></pre><button class="copy floating" type="button"></button></div></div>
+  <p><strong>Esempi pratici completi:</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>ws_api = <span class="t-f">WebServiceAPI</span>()
+app = ws_api.<span class="t-f">initialize</span>()
+
+routers = ws_api.<span class="t-f">collect_routers</span>(<span class="t-s">&quot;src.api.v1&quot;</span>)
+ws_api.<span class="t-f">include_routers</span>(routers)
+
+<span class="t-c"># Agora app está pronto para ser executado</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>Un altro esempio semplificato:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>ws_api = <span class="t-f">WebServiceAPI</span>()
+ws_api.<span class="t-f">initialize</span>()
+
+ws_api.<span class="t-f">include_routers</span>([user_router])
+
+app = ws_api.<span class="t-f">get_app</span>()</code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>La documentazione qui sopra fornisce i dettagli essenziali per la comprensione, l'estensione e l'uso pratico della classe <code>WebServiceAPI</code> in progetti reali, facilitando lo sviluppo di API modulari e ben configurate con FastAPI.</p></div>
+        <div class="feedback"></div>
+        <p class="source">Fonte: <code>ipynb_contents/API/2. Web Service Network - API/1. Web Service API.ipynb</code></p>
+        <nav class="pager" aria-label="Pagine vicine"><a class="pager-link prev" href="../../../../pages/it/api/curl-compiler.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Precedente</small><span>Curl Compiler</span></div></a><a class="pager-link next" href="../../../../pages/it/api/web-service-network-api/use.html"><div><small>Successiva</small><span>Use</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="In questa pagina"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-brand">
+        <a class="brand" href="../../../../pages/it/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+        <p>Where intelligence finds purpose.</p>
+      </div>
+      <div class="foot-col"><h2>Risorse</h2><a href="#">Swagger UI</a><a href="#">GitHub</a></div>
+      <div class="foot-col"><h2>Piattaforma</h2><a href="../../../../pages/it/api/web-service-network-api/use.html">Use</a><a href="../../../../pages/it/streamlit-applications/acquarello.html">Acquarello</a><a href="../../../../pages/it/streamlit-applications/content-generator.html">Content Generator</a></div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Cerca nella documentazione">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Cerca pagine e sezioni" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Risultati"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>naviga</span></span>
+    <span><kbd>Enter</kbd><span>apri</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "it", "root": "../../../../", "index": "../../../../search-it.json", "alt": {"pt": "pages/pt/api/web-service-network-api/web-service-api.html", "it": "pages/it/api/web-service-network-api/web-service-api.html", "en": "pages/en/api/web-service-network-api/web-service-api.html"}, "i": {"noResults": "Nessun risultato per “%s”. Prova con il nome di un modulo, come “Pinecone”.", "suggestions": "Suggerimenti"}};</script>
+<script src="../../../../_design-system/js/ds.js"></script>
+<script src="../../../../_design-system/js/docs.js"></script>
+</body>
+</html>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Params Validator | BetterAI Docs</title>
-<meta name="description" content="Página de exemplo para Params Validator, usada para validar o layout.">
+<meta name="description" content="Valida os parâmetros de uma geração de imagem contra o catálogo de modelos antes de a chamada ser enviada ao provedor.">
 <link rel="canonical" href="pages/pt/modules/image-generation/utils/params-validator.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -46,7 +46,7 @@
         <button class="icon-btn" type="button" data-theme-toggle aria-label="Alternar tema claro e escuro"></button>
       </div>
     </div>
-    <nav class="tabs-row" aria-label="Áreas da documentação"><a class="tab" href="../../../../../pages/pt/index.html">Visão geral</a><a class="tab" href="../../../../../pages/pt/getting-started/index.html">Getting Started</a><a class="tab" href="../../../../../pages/pt/modules/index.html" aria-current="page">Modules</a><a class="tab" href="../../../../../pages/pt/internal-source-code/index.html">Internal Source Code</a><a class="tab" href="../../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a></nav>
+    <nav class="tabs-row" aria-label="Áreas da documentação"><a class="tab" href="../../../../../pages/pt/index.html">Visão geral</a><a class="tab" href="../../../../../pages/pt/getting-started/index.html">Getting Started</a><a class="tab" href="../../../../../pages/pt/modules/index.html" aria-current="page">Modules</a><a class="tab" href="../../../../../pages/pt/agents/index.html">Agents</a><a class="tab" href="../../../../../pages/pt/internal-source-code/index.html">Internal Source Code</a><a class="tab" href="../../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../../pages/pt/api/index.html">API</a></nav>
     <div class="subbar">
       <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
         <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Modules</span>
@@ -60,7 +60,7 @@
 
 <div class="shell">
   <aside class="side-wrap" id="side" aria-label="Navegação da documentação">
-    <nav class="side"><div class="side-areas"><a href="../../../../../pages/pt/index.html">Visão geral</a><a href="../../../../../pages/pt/getting-started/index.html">Getting Started</a><a href="../../../../../pages/pt/modules/index.html" aria-current="page">Modules</a><a href="../../../../../pages/pt/internal-source-code/index.html">Internal Source Code</a><a href="../../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a></div><a class="side-link" href="../../../../../pages/pt/modules/index.html"><span>Visão geral</span></a><div class="side-group"><p class="side-title">Agents</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Utils</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/modules/agents/utils/database.html"><span>Database</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/agents/utils/model-gateway.html"><span>Model Gateway</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Content Parse</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Content Parsing Agent</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/modules/content-parse/content-parsing-agent/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/content-parse/content-parsing-agent/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/pt/modules/content-parse/document-parse.html"><span>Document Parse</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/content-parse/field-metadata-parser.html"><span>Field Metadata Parser</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/content-parse/generate-pydantic-schema.html"><span>Generate Pydantic Schema</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/content-parse/json-to-pydantic.html"><span>Json To Pydantic</span></a></li></ul></div><div class="side-group"><p class="side-title">Deep Research</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Tavily Research</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/modules/deep-research/tavily-research/context-builder.html"><span>Context Builder</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/deep-research/tavily-research/tavily-core.html"><span>Tavily Core</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Image Generation</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Cost Calculator</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/cost-calculator/cost-calculator.html"><span>Cost Calculator</span><span class="badge">vazio</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/cost-calculator/pricing-table.html"><span>Pricing Table</span><span class="badge">vazio</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/image-generator-service.html"><span>Image Generator Service</span><span class="badge">vazio</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/module.html"><span>Module</span><span class="badge">vazio</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="true"><span>Utils</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub"><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/utils/config.html"><span>Config</span><span class="badge">vazio</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/utils/gemini-client.html"><span>Gemini Client</span><span class="badge">vazio</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/utils/params-validator.html" aria-current="page"><span>Params Validator</span><span class="badge">vazio</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/utils/payload-builder.html"><span>Payload Builder</span><span class="badge">vazio</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Web Service Network</p><ul><li><a class="side-link" href="../../../../../pages/pt/modules/web-service-network/curl-compiler.html"><span>Curl Compiler</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/web-service-network/web-service-api.html"><span>Web Service API</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/web-service-network/web-service-network-api.html"><span>Web Service Network - API</span></a></li></ul></div></nav>
+    <nav class="side"><div class="side-areas"><a href="../../../../../pages/pt/index.html">Visão geral</a><a href="../../../../../pages/pt/getting-started/index.html">Getting Started</a><a href="../../../../../pages/pt/modules/index.html" aria-current="page">Modules</a><a href="../../../../../pages/pt/agents/index.html">Agents</a><a href="../../../../../pages/pt/internal-source-code/index.html">Internal Source Code</a><a href="../../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../../pages/pt/api/index.html">API</a></div><a class="side-link" href="../../../../../pages/pt/modules/index.html"><span>Visão geral</span></a><div class="side-group"><p class="side-title">Content Parse</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Content Parsing Agent</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/modules/content-parse/content-parsing-agent/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/content-parse/content-parsing-agent/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/pt/modules/content-parse/document-parse.html"><span>Document Parse</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/content-parse/field-metadata-parser.html"><span>Field Metadata Parser</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/content-parse/generate-pydantic-schema.html"><span>Generate Pydantic Schema</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/content-parse/json-to-pydantic.html"><span>Json To Pydantic</span></a></li></ul></div><div class="side-group"><p class="side-title">Deep Research</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Tavily Research</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/modules/deep-research/tavily-research/context-builder.html"><span>Context Builder</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/deep-research/tavily-research/tavily-core.html"><span>Tavily Core</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Image Generation</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Cost Calculator</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/cost-calculator/cost-calculator.html"><span>Cost Calculator</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/cost-calculator/pricing-table.html"><span>Pricing Table</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/image-generator-service.html"><span>Image Generator Service</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/module.html"><span>Module</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="true"><span>Utils</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub"><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/utils/config.html"><span>Config</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/utils/gemini-client.html"><span>Gemini Client</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/utils/params-validator.html" aria-current="page"><span>Params Validator</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/utils/payload-builder.html"><span>Payload Builder</span></a></li></ul></li></ul></div></nav>
   </aside>
   <div class="main">
     <div class="main-row">
@@ -73,36 +73,54 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copiar página</span></button>
             </div>
           </div>
-          <p class="lead">Página de exemplo para Params Validator, usada para validar o layout.</p>
+          <p class="lead">Valida os parâmetros de uma geração de imagem contra o catálogo de modelos antes de a chamada ser enviada ao provedor.</p>
           <details class="toc-inline"><summary>Nesta página</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="warn"><p><strong>Fonte ainda vazia.</strong> O arquivo <code>ipynb_contents/Modules/Image Generation/Utils/Params Validator.ipynb</code> tem 0 bytes. O corpo abaixo é só um molde de layout.</p></div>
+        <div class="prose"><div class="callout" data-kind="note"><p><strong>Fonte:</strong> <code>src/image_generation/utils/params_validator.py</code>. O notebook original desta página estava vazio; o conteúdo foi escrito a partir do código.</p></div>
 
   <h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão geral</h2>
-  <p>Params Validator faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
+  <p>A classe <code>ImageParamsValidator</code> recebe um catálogo opcional no construtor; sem ele, usa <code>IMAGE_MODELS_CATALOG</code> (veja <a href="config.html">Config</a>). O método <code>validate()</code> não devolve nada: se tudo estiver correto, retorna em silêncio; caso contrário, levanta <code>ValueError</code>.</p>
 
-  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
-  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> ParamsValidator
-
-client = <span class="t-f">ParamsValidator</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parametros"><a class="anchor" href="#parametros" aria-label="Link para esta seção">#</a>Parâmetros</h2>
-  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
+  <h2 id="parametros-de-validate"><a class="anchor" href="#parametros-de-validate" aria-label="Link para esta seção">#</a>Parâmetros de validate</h2>
+  <p>Todos são nomeados (keyword-only) e obrigatórios.</p>
   <div class="table-wrap"><table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <thead><tr><th>Parâmetro</th><th>Tipo</th><th>Regra</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
+      <tr><td><code>model</code></td><td><code>str</code></td><td>Precisa existir no catálogo.</td></tr>
+      <tr><td><code>number_of_images</code></td><td><code>int</code></td><td>Deve ser maior ou igual a 1 e não pode passar de <code>max_output_images_per_prompt</code> do modelo.</td></tr>
+      <tr><td><code>output_mime_type</code></td><td><code>str</code></td><td>Precisa estar em <code>mime_types</code> do modelo.</td></tr>
+      <tr><td><code>aspect_ratio</code></td><td><code>str</code></td><td>Precisa estar em <code>supported_aspect_ratios</code> do modelo.</td></tr>
+      <tr><td><code>image_size</code></td><td><code>str</code></td><td>Precisa estar em <code>supported_resolutions</code> do modelo (por exemplo <code>1K</code>, <code>2K</code>).</td></tr>
     </tbody>
   </table></div>
+  <p>As verificações acontecem nesta ordem: modelo, quantidade de imagens, tipo MIME, proporção e resolução. A primeira que falhar interrompe a validação.</p>
+
+  <h2 id="exemplo-de-uso"><a class="anchor" href="#exemplo-de-uso" aria-label="Link para esta seção">#</a>Exemplo de uso</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> src.image_generation.utils.params_validator <span class="t-k">import</span> ImageParamsValidator
+
+validator = <span class="t-f">ImageParamsValidator</span>()
+
+<span class="t-c"># Passa em silêncio quando os parâmetros são válidos</span>
+validator.<span class="t-f">validate</span>(
+    model=<span class="t-s">&quot;imagen-4.0-fast-generate-001&quot;</span>,
+    number_of_images=<span class="t-n">2</span>,
+    output_mime_type=<span class="t-s">&quot;image/png&quot;</span>,
+    aspect_ratio=<span class="t-s">&quot;16:9&quot;</span>,
+    image_size=<span class="t-s">&quot;1K&quot;</span>,
+)
+
+<span class="t-c"># Levanta ValueError: o modelo fast só aceita 1K</span>
+validator.<span class="t-f">validate</span>(
+    model=<span class="t-s">&quot;imagen-4.0-fast-generate-001&quot;</span>,
+    number_of_images=<span class="t-n">2</span>,
+    output_mime_type=<span class="t-s">&quot;image/png&quot;</span>,
+    aspect_ratio=<span class="t-s">&quot;16:9&quot;</span>,
+    image_size=<span class="t-s">&quot;2K&quot;</span>,
+)</code></pre><button class="copy floating" type="button"></button></div></div>
 
   <h2 id="observacoes"><a class="anchor" href="#observacoes" aria-label="Link para esta seção">#</a>Observações</h2>
-  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
-  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div></div>
+  <div class="callout" data-kind="info"><p>As mensagens de erro de <code>validate()</code> estão em inglês e, nas falhas de tipo MIME, proporção e resolução, listam os valores aceitos pelo modelo.</p></div>
+  <p>O validador é usado por <code>TextToImage</code> em <code>generation.py</code>, antes de chamar <code>generate_images</code>.</p></div>
         <div class="feedback"></div>
         <p class="source">Fonte: <code>ipynb_contents/Modules/Image Generation/Utils/Params Validator.ipynb</code></p>
         <nav class="pager" aria-label="Páginas vizinhas"><a class="pager-link prev" href="../../../../../pages/pt/modules/image-generation/utils/gemini-client.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Anterior</small><span>Gemini Client</span></div></a><a class="pager-link next" href="../../../../../pages/pt/modules/image-generation/utils/payload-builder.html"><div><small>Próxima</small><span>Payload Builder</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
@@ -115,7 +133,7 @@ result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;cl
         <p>Where intelligence finds purpose.</p>
       </div>
       <div class="foot-col"><h2>Recursos</h2><a href="#">Swagger UI</a><a href="#">GitHub</a></div>
-      <div class="foot-col"><h2>Plataforma</h2><a href="../../../../../pages/pt/modules/web-service-network/web-service-network-api.html">Web Service Network - API</a><a href="../../../../../pages/pt/streamlit-applications/acquarello.html">Acquarello</a><a href="../../../../../pages/pt/streamlit-applications/content-generator.html">Content Generator</a></div>
+      <div class="foot-col"><h2>Plataforma</h2><a href="../../../../../pages/pt/api/web-service-network-api/use.html">Use</a><a href="../../../../../pages/pt/streamlit-applications/acquarello.html">Acquarello</a><a href="../../../../../pages/pt/streamlit-applications/content-generator.html">Content Generator</a></div>
     </footer>
   </div>
 </div>

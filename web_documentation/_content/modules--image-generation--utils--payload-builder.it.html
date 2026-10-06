@@ -1,31 +1,46 @@
-<page data-lead="Pagina di esempio per Payload Builder, usata per validare il layout.">
-  <div class="callout" data-kind="warn"><p><strong>Sorgente ancora vuota.</strong> Il file <code>ipynb_contents/Modules/Image Generation/Utils/Payload Builder.ipynb</code> ha 0 byte. Il corpo qui sotto è solo uno stampo di layout.</p></div>
+<page data-lead="Trasforma il risultato aggregato di una generazione in tre payload: il record di MongoDB, i file per lo Storage e la risposta restituita al client.">
+  <div class="callout" data-kind="note"><p><strong>Fonte:</strong> <code>src/image_generation/utils/payload_builder.py</code>. Il notebook originale di questa pagina era vuoto; il contenuto è stato scritto a partire dal codice.</p></div>
 
   <h2>Panoramica</h2>
-  <p>Payload Builder fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
+  <p>La classe <code>PayloadBuilder</code> riceve il <code>job_id</code> e il dizionario prodotto da <code>parse_responses</code> (vedi <a href="@/modules/image-generation/image-generator-service">Image Generator Service</a>). Le chiavi assenti hanno un valore predefinito: <code>text_input</code> e <code>text_responses</code> diventano vuoti e <code>generate_config</code> usa <code>DEFAULT_CONTENT_CONFIG</code>.</p>
 
-  <h2>Uso</h2>
-  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
-  <pre data-lang="python"><code>
-from better_ai import PayloadBuilder
-
-client = PayloadBuilder()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parametri</h2>
-  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
+  <h2>generate_payloads</h2>
+  <p>Restituisce la tupla <code>(mongo_payload, storage_payload, response_payload)</code>.</p>
   <table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <thead><tr><th>Payload</th><th>Destinazione</th><th>Contenuto</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
+      <tr><td><code>mongo_payload</code></td><td>MongoDB</td><td><code>jobId</code>, <code>user_input</code>, <code>text_response</code>, <code>image_response</code>, <code>generate_config</code> e <code>cost_information</code>. Non include i byte delle immagini.</td></tr>
+      <tr><td><code>storage_payload</code></td><td>Supabase Storage</td><td>Lista con <code>id</code>, <code>url</code>, <code>mime_type</code> e <code>byte</code> di ogni immagine.</td></tr>
+      <tr><td><code>response_payload</code></td><td>Client dell'API</td><td><code>text_response</code> e <code>images</code> (lista di URL).</td></tr>
     </tbody>
   </table>
 
-  <h2>Note</h2>
-  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
-  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div>
+  <h3>Immagini</h3>
+  <p>Per ogni immagine con <code>mime_type</code> e <code>data</code>, il builder genera un <code>id</code> con <code>IDGenerator.timestamp(prefix=ID_PREFIX)</code> e costruisce l'URL come <code>BASE_URL/&lt;id&gt;</code>. Le immagini senza <code>mime_type</code> o senza <code>data</code> vengono ignorate. Il campo <code>text_response</code> usa solo il primo testo di <code>text_responses</code>, oppure <code>None</code> se la lista è vuota.</p>
+
+  <h3>Costo</h3>
+  <p><code>cost_information</code> proviene da <code>CostCalculator</code> (vedi <a href="@/modules/image-generation/cost-calculator/cost-calculator">Cost Calculator</a>). Con una sola voce in <code>usage_metadata</code>, viene usata direttamente; con più voci, vengono sommate da <code>merge_cost_information</code>; senza alcuna voce, i token valgono 0. Il numero di immagini proviene da <code>number_of_images</code> della configurazione. Il risultato resta in cache per la vita dell'oggetto.</p>
+
+  <h2>Esempio d'uso</h2>
+  <pre data-lang="python"><code>
+from src.image_generation.utils.payload_builder import PayloadBuilder
+from src.utils.unique_id_factory import IDGenerator
+
+# Risultato aggregato di ImageGeneratorService.parse_responses
+parsed = {
+    "text_responses": ["Aqui está a imagem."],
+    "images": [{"mime_type": "image/png", "data": b"..."}],
+    "generate_config": {"model": "gemini-2.5-flash-image", "number_of_images": 1},
+    "usage_metadata": [{"prompt_tokens": 587, "output_tokens": 1320, "total_tokens": 1907}],
+}
+
+builder = PayloadBuilder(IDGenerator.timestamp(prefix="job_"), parsed)
+mongo_payload, storage_payload, response_payload = builder.generate_payloads()
+
+print(response_payload["images"])
+</code></pre>
+
+  <h2>Osservazioni</h2>
+  <div class="callout" data-kind="warn"><p><strong>URL e nome del file.</strong> L'URL usa l'<code>id</code> senza estensione, e anche <code>save_to_supabase</code> invia il file con l'<code>id</code> come nome. La variabile <code>ext</code> viene calcolata nel builder, ma non entra nell'URL.</p></div>
+  <p>Il file termina con un blocco <code>if __name__ == "__main__"</code> con dati di esempio, eseguibile con <code>python -m src.image_generation.utils.payload_builder</code>.</p>
 </page>

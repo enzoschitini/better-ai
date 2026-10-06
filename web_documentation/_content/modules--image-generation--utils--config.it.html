@@ -1,31 +1,70 @@
-<page data-lead="Pagina di esempio per Config, usata per validare il layout.">
-  <div class="callout" data-kind="warn"><p><strong>Sorgente ancora vuota.</strong> Il file <code>ipynb_contents/Modules/Image Generation/Utils/Config.ipynb</code> ha 0 byte. Il corpo qui sotto è solo uno stampo di layout.</p></div>
+<page data-lead="Costanti e tipi condivisi del modulo: catalogo dei modelli Imagen, parametri di archiviazione e database, configurazione predefinita di Gemini e prompt di base.">
+  <div class="callout" data-kind="note"><p><strong>Fonte:</strong> <code>src/image_generation/utils/config.py</code>. Il notebook originale di questa pagina era vuoto; il contenuto è stato scritto a partire dal codice.</p></div>
 
-  <h2>Panoramica</h2>
-  <p>Config fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
-
-  <h2>Uso</h2>
-  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
-  <pre data-lang="python"><code>
-from better_ai import Config
-
-client = Config()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parametri</h2>
-  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
+  <h2>Catalogo dei modelli</h2>
+  <p><code>IMAGE_MODELS_CATALOG</code> descrive cosa accetta ogni modello Imagen. È la fonte usata da <a href="@/modules/image-generation/utils/params-validator">Params Validator</a>.</p>
   <table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <thead><tr><th>Modello</th><th>Max. immagini per prompt</th><th>Proporzioni</th><th>Risoluzioni</th><th>Tipi MIME</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
+      <tr><td><code>imagen-4.0-generate-001</code></td><td>4</td><td><code>1:1</code>, <code>3:4</code>, <code>4:3</code>, <code>9:16</code>, <code>16:9</code></td><td><code>1K</code>, <code>2K</code></td><td><code>image/png</code>, <code>image/jpeg</code></td></tr>
+      <tr><td><code>imagen-4.0-fast-generate-001</code></td><td>4</td><td><code>1:1</code>, <code>3:4</code>, <code>4:3</code>, <code>9:16</code>, <code>16:9</code></td><td><code>1K</code></td><td><code>image/png</code>, <code>image/jpeg</code></td></tr>
+      <tr><td><code>imagen-4.0-ultra-generate-001</code></td><td>4</td><td><code>1:1</code>, <code>3:4</code>, <code>4:3</code>, <code>9:16</code>, <code>16:9</code></td><td><code>1K</code>, <code>2K</code></td><td><code>image/png</code>, <code>image/jpeg</code></td></tr>
     </tbody>
   </table>
 
-  <h2>Note</h2>
-  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
-  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div>
+  <h2>Archiviazione e database</h2>
+  <table>
+    <thead><tr><th>Costante</th><th>Valore</th><th>Uso</th></tr></thead>
+    <tbody>
+      <tr><td><code>BUCKET_NAME</code></td><td><code>images</code></td><td>Bucket di Supabase Storage.</td></tr>
+      <tr><td><code>STORAGE_BASE_PATH</code></td><td><code>image_generations</code></td><td>Cartella base all'interno del bucket.</td></tr>
+      <tr><td><code>ID_PREFIX</code></td><td><code>img_</code></td><td>Prefisso dell'identificatore di ogni immagine.</td></tr>
+      <tr><td><code>BASE_URL</code></td><td>URL pubblico del bucket, che termina con <code>/image_generations</code></td><td>Base degli URL restituiti al client.</td></tr>
+      <tr><td><code>DATABASE_NAME</code></td><td><code>GenAI</code></td><td>Database di MongoDB.</td></tr>
+      <tr><td><code>COLLECTION_NAME</code></td><td><code>ImageGeneration</code></td><td>Collezione di MongoDB.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Configurazione predefinita di Gemini</h2>
+  <p><code>DEFAULT_CONTENT_CONFIG</code> è la base che <a href="@/modules/image-generation/image-generator-service">Image Generator Service</a> unisce alla configurazione inviata dall'utente.</p>
+  <table>
+    <thead><tr><th>Chiave</th><th>Predefinito</th></tr></thead>
+    <tbody>
+      <tr><td><code>model</code></td><td><code>gemini-2.5-flash-image</code></td></tr>
+      <tr><td><code>temperature</code></td><td><code>0.75</code></td></tr>
+      <tr><td><code>top_p</code></td><td><code>0.85</code></td></tr>
+      <tr><td><code>max_output_tokens</code></td><td><code>1024</code></td></tr>
+      <tr><td><code>aspect_ratio</code></td><td><code>1:1</code></td></tr>
+      <tr><td><code>number_of_images</code></td><td><code>1</code></td></tr>
+    </tbody>
+  </table>
+  <p>Accanto a <code>max_output_tokens</code>, il codice riporta l'annotazione che <code>gemini-2.5-flash-image</code> usa 1024 o 2048 e <code>gemini-3-pro-image-preview</code> usa 4096 o 8192.</p>
+
+  <h2>Prompt di base</h2>
+  <p><code>BASE_PROMPT</code> è il testo, in inglese, che apre ogni prompt inviato a Gemini. Definisce il ruolo dell'agente (creazione e trasformazione visiva) e i vincoli: seguire la richiesta dell'utente, applicare lo stile delle immagini di riferimento, preservare ciò che non è stato chiesto di modificare, non aggiungere né rimuovere elementi senza istruzione e dare priorità a coerenza e qualità.</p>
+
+  <h2>Tipi ausiliari</h2>
+  <table>
+    <thead><tr><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>GeneratedImage</code></td><td><code>dataclass</code> con <code>image_bytes</code> e <code>mime_type</code>. È il formato interno dell'output di generazione.</td></tr>
+      <tr><td><code>Ratios</code></td><td>Proporzioni: <code>R1_1</code>, <code>R3_4</code>, <code>R4_3</code>, <code>R9_16</code>, <code>R16_9</code>.</td></tr>
+      <tr><td><code>Resolutions</code></td><td>Risoluzioni: <code>K1</code> (<code>1K</code>) e <code>K2</code> (<code>2K</code>).</td></tr>
+      <tr><td><code>MimeTypes</code></td><td><code>PNG</code> (<code>image/png</code>) e <code>JPEG</code> (<code>image/jpeg</code>).</td></tr>
+      <tr><td><code>ModelSpecs</code></td><td>Riunisce <code>id</code>, <code>max_images</code>, <code>ratios</code>, <code>resolutions</code> e <code>mimes</code> di un modello.</td></tr>
+      <tr><td><code>Imagen</code></td><td>Scorciatoie per i modelli: <code>Imagen.GENERATE</code>, <code>Imagen.FAST</code> e <code>Imagen.ULTRA</code>.</td></tr>
+    </tbody>
+  </table>
+  <pre data-lang="python"><code>
+from src.image_generation.utils.config import Imagen
+
+# Accede all'identificatore e alle opzioni di un modello
+model_id = Imagen.GENERATE.id
+ratio = Imagen.GENERATE.ratios.R16_9
+size = Imagen.GENERATE.resolutions.K2
+</code></pre>
+  <div class="callout" data-kind="note"><p><code>Imagen.FAST</code> definisce <code>Resolutions(K2=None)</code>, perché questo modello accetta solo <code>1K</code>.</p></div>
+
+  <h2>Frasi di introduzione</h2>
+  <p><code>IMAGE_INTRO_SENTENCES</code> è una lista di 50 frasi brevi in portoghese ("Aqui está a imagem conforme solicitado." e varianti) per introdurre un'immagine consegnata.</p>
 </page>

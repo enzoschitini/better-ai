@@ -23,7 +23,7 @@
       }
     ],
     "platform": [
-      "modules/web-service-network/web-service-network-api",
+      "api/web-service-network-api/use",
       "streamlit-applications/acquarello",
       "streamlit-applications/content-generator"
     ]
@@ -47,9 +47,23 @@
       "dir": "Modules",
       "icon": "boxes",
       "about": {
-        "pt": "Os serviços de IA da plataforma: agentes, parsing de documentos, deep research, imagens e a API.",
-        "it": "I servizi di IA della piattaforma: agenti, parsing di documenti, deep research, immagini e l’API.",
-        "en": "The platform’s AI services: agents, document parsing, deep research, images and the API."
+        "pt": "Os serviços de IA da plataforma: agentes, parsing de documentos, deep research e imagens.",
+        "it": "I servizi di IA della piattaforma: agenti, parsing di documenti, deep research e immagini.",
+        "en": "The platform’s AI services: agents, document parsing, deep research and images."
+      },
+      "loose": {
+        "pt": "Geral",
+        "it": "Generale",
+        "en": "General"
+      }
+    },
+    {
+      "dir": "Agents",
+      "icon": "bolt",
+      "about": {
+        "pt": "Os agentes da plataforma construídos sobre o Agno: utilitários de banco de dados e gateway de modelos, e o AgnoUI.",
+        "it": "Gli agenti della piattaforma costruiti su Agno: utilità per database e gateway dei modelli, e AgnoUI.",
+        "en": "The platform’s agents built on Agno: database and model gateway utilities, and AgnoUI."
       },
       "loose": {
         "pt": "Geral",
@@ -83,6 +97,20 @@
         "pt": "Aplicações",
         "it": "Applicazioni",
         "en": "Applications"
+      }
+    },
+    {
+      "dir": "API",
+      "icon": "globe",
+      "about": {
+        "pt": "A Web Service Network: a API FastAPI em produção, suas rotas e o compilador de CURL.",
+        "it": "La Web Service Network: l’API FastAPI in produzione, le sue rotte e il compilatore di CURL.",
+        "en": "The Web Service Network: the FastAPI service in production, its routes and the CURL compiler."
+      },
+      "loose": {
+        "pt": "Ferramentas",
+        "it": "Strumenti",
+        "en": "Tools"
       }
     }
   ],
@@ -241,12 +269,12 @@
       "exploreH": "Explore por área",
       "popular": [
         {
-          "id": "modules/agents/utils/model-gateway",
+          "id": "agents/agno-agents/utils/model-gateway",
           "icon": "boxes",
           "text": "Modelos e agentes de qualquer provedor pela mesma chamada."
         },
         {
-          "id": "modules/web-service-network/web-service-network-api",
+          "id": "api/web-service-network-api/use",
           "icon": "code",
           "text": "Autenticação, formato das respostas e endpoints."
         }
@@ -272,12 +300,12 @@
       "exploreH": "Esplora per area",
       "popular": [
         {
-          "id": "modules/agents/utils/model-gateway",
+          "id": "agents/agno-agents/utils/model-gateway",
           "icon": "boxes",
           "text": "Modelli e agenti di qualsiasi provider con la stessa chiamata."
         },
         {
-          "id": "modules/web-service-network/web-service-network-api",
+          "id": "api/web-service-network-api/use",
           "icon": "code",
           "text": "Autenticazione, formato delle risposte ed endpoint."
         }
@@ -303,12 +331,12 @@
       "exploreH": "Explore by area",
       "popular": [
         {
-          "id": "modules/agents/utils/model-gateway",
+          "id": "agents/agno-agents/utils/model-gateway",
           "icon": "boxes",
           "text": "Models and agents from any provider through the same call."
         },
         {
-          "id": "modules/web-service-network/web-service-network-api",
+          "id": "api/web-service-network-api/use",
           "icon": "code",
           "text": "Authentication, response format and endpoints."
         }

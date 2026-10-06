@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Use | BetterAI Docs</title>
+<meta name="description" content="A BetterAI Web Service Network é uma API modular de alto desempenho projetada para orquestrar serviços de inteligência artificial em produção.">
+<link rel="canonical" href="pages/pt/api/web-service-network-api/use.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="../../../../_design-system/css/design-system.css">
+</head>
+<body>
+<a class="skip" href="#main">Ir para o conteúdo</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span>Protótipo de layout. O conteúdo das páginas é de exemplo.</span>
+    <button type="button" aria-label="Fechar aviso"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../pages/pt/index.html">
+        <img src="../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Buscar na documentação">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Buscar...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="#"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="#">Swagger UI<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Idioma"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>PT</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="true"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="false"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="false"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Alternar tema claro e escuro"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Áreas da documentação"><a class="tab" href="../../../../pages/pt/index.html">Visão geral</a><a class="tab" href="../../../../pages/pt/getting-started/index.html">Getting Started</a><a class="tab" href="../../../../pages/pt/modules/index.html">Modules</a><a class="tab" href="../../../../pages/pt/agents/index.html">Agents</a><a class="tab" href="../../../../pages/pt/internal-source-code/index.html">Internal Source Code</a><a class="tab" href="../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../pages/pt/api/index.html" aria-current="page">API</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>API</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Use</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Navegação da documentação">
+    <nav class="side"><div class="side-areas"><a href="../../../../pages/pt/index.html">Visão geral</a><a href="../../../../pages/pt/getting-started/index.html">Getting Started</a><a href="../../../../pages/pt/modules/index.html">Modules</a><a href="../../../../pages/pt/agents/index.html">Agents</a><a href="../../../../pages/pt/internal-source-code/index.html">Internal Source Code</a><a href="../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/pt/api/index.html" aria-current="page">API</a></div><a class="side-link" href="../../../../pages/pt/api/index.html"><span>Visão geral</span></a><div class="side-group"><p class="side-title">Ferramentas</p><ul><li><a class="side-link" href="../../../../pages/pt/api/curl-compiler.html"><span>Curl Compiler</span></a></li></ul></div><div class="side-group"><p class="side-title">Web Service Network - API</p><ul><li><a class="side-link" href="../../../../pages/pt/api/web-service-network-api/web-service-api.html"><span>Web Service API</span></a></li><li><a class="side-link" href="../../../../pages/pt/api/web-service-network-api/use.html" aria-current="page"><span>Use</span></a></li></ul></div><div class="side-group"><p class="side-title">Deep Research</p><ul><li><a class="side-link" href="../../../../pages/pt/api/deep-research/context-builder.html"><span>Context Builder</span></a></li></ul></div><div class="side-group"><p class="side-title">Parse Content</p><ul><li><a class="side-link" href="../../../../pages/pt/api/parse-content/document-parse.html"><span>Document Parse</span></a></li></ul></div><div class="side-group"><p class="side-title">Image Generation</p><ul><li><a class="side-link" href="../../../../pages/pt/api/image-generation/image-generation.html"><span>Image Generation</span></a></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Web Service Network - API</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Use</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copiar página</span></button>
+            </div>
+          </div>
+          <p class="lead">A BetterAI Web Service Network é uma API modular de alto desempenho projetada para orquestrar serviços de inteligência artificial em produção.</p>
+          <details class="toc-inline"><summary>Nesta página</summary><ul></ul></details>
+        </header>
+        <div class="prose"><p>A <strong>BetterAI Web Service Network</strong> é uma API modular de alto desempenho projetada para orquestrar serviços de inteligência artificial em produção. Ela expõe um conjunto de routers especializados — pesquisa profunda na web, parsing de documentos, geração de imagens e gerenciamento de vector stores — todos acessíveis via HTTP com autenticação por chave de API.</p>
+  <p>A API é construída sobre <strong>FastAPI</strong> e servida com <strong>Uvicorn</strong>, oferecendo documentação interativa automática via Swagger UI (<code>/docs</code>) e suporte nativo a requisições assíncronas. Cada endpoint retorna respostas padronizadas com <code>job_id</code>, <code>status</code>, payload (<code>result</code> ou <code>content</code>) e métricas de tempo de execução, facilitando rastreabilidade e integração com pipelines de dados.</p>
+  <p><strong>Base URL:</strong> <code>http://localhost:8000</code><br><strong>Autenticação:</strong> <code>X-API-Key</code> no header de todas as rotas protegidas<br><strong>Versão atual:</strong> <code>1.0.0</code></p>
+  <p><a href="http://localhost:8000">🌐 Domain</a> · <a href="http://localhost:8000/health">🩺 Health</a> · <a href="http://localhost:8000/docs">📄 Documentation</a></p>
+
+  <h2 id="start-application"><a class="anchor" href="#start-application" aria-label="Link para esta seção">#</a>Start application</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-c"># uvicorn web_services:app --reload</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <div class="code plain"><div class="code-body"><pre data-lang=""><code>INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [8036] using StatReload
+INFO:     Router included: /davinci
+INFO:     Router included: /deep-research
+INFO:     Router included: /parse-content
+INFO:     Router included: /vector-store
+INFO:     Started server process [30416]
+INFO:     Waiting for application startup.
+INFO:
+
+    ╔═══════════════════════════════════════════════════════════════════════╗
+
+        ██████╗ ███████╗████████╗████████╗███████╗██████╗      █████╗ ██╗ ✦
+        ██╔══██╗██╔════╝╚══██╔══╝╚══██╔══╝██╔════╝██╔══██╗    ██╔══██╗██║
+        ██████╔╝█████╗     ██║      ██║   █████╗  ██████╔╝    ███████║██║
+        ██╔══██╗██╔══╝     ██║      ██║   ██╔══╝  ██╔══██╗    ██╔══██║██║
+        ██████╔╝███████╗   ██║      ██║   ███████╗██║  ██║    ██║  ██║██║
+        ╚═════╝ ╚══════╝   ╚═╝      ╚═╝   ╚══════╝╚═╝  ╚═╝    ╚═╝  ╚═╝╚═╝
+
+    ╚═══════════════════════════════════════════════════════════════════════╝
+
+                        ✦ Where intelligence finds purpose. ✦
+
+INFO:     BetterAI Web Service Network initialized successfully at 2026-05-21 16:19:25.
+INFO:     Version: 1.0.0
+INFO:     Domain: http://localhost:8000
+INFO:     Health check available at: http://localhost:8000/health
+INFO:     Documentation available at: http://localhost:8000/docs
+INFO:     Application startup complete.</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="routers"><a class="anchor" href="#routers" aria-label="Link para esta seção">#</a>Routers</h2>
+
+  <h2 id="healthy-healthy"><a class="anchor" href="#healthy-healthy" aria-label="Link para esta seção">#</a>Healthy - <code>/healthy</code></h2>
+  <div class="endpoint"><span class="method" data-m="GET">GET</span><span>/health</span></div>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">curl</span> <span class="t-n">-X</span> GET <span class="t-s">&quot;http://127.0.0.1:8000/health&quot;</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="healthy-with-authorization-health-authorization"><a class="anchor" href="#healthy-with-authorization-health-authorization" aria-label="Link para esta seção">#</a>Healthy With Authorization - <code>/health-authorization</code></h2>
+  <div class="endpoint"><span class="method" data-m="GET">GET</span><span>/health-authorization</span></div>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">curl</span> <span class="t-n">--location</span> <span class="t-s">'http://localhost:8000/health-authorization'</span> \
+<span class="t-n">--header</span> <span class="t-s">'X-API-Key: ******'</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <p><em>Author: Enzo Schitini</em></p></div>
+        <div class="feedback"></div>
+        <p class="source">Fonte: <code>ipynb_contents/API/2. Web Service Network - API/2. Use.ipynb</code></p>
+        <nav class="pager" aria-label="Páginas vizinhas"><a class="pager-link prev" href="../../../../pages/pt/api/web-service-network-api/web-service-api.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Anterior</small><span>Web Service API</span></div></a><a class="pager-link next" href="../../../../pages/pt/api/deep-research/context-builder.html"><div><small>Próxima</small><span>Context Builder</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="Nesta página"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-brand">
+        <a class="brand" href="../../../../pages/pt/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+        <p>Where intelligence finds purpose.</p>
+      </div>
+      <div class="foot-col"><h2>Recursos</h2><a href="#">Swagger UI</a><a href="#">GitHub</a></div>
+      <div class="foot-col"><h2>Plataforma</h2><a href="../../../../pages/pt/api/web-service-network-api/use.html">Use</a><a href="../../../../pages/pt/streamlit-applications/acquarello.html">Acquarello</a><a href="../../../../pages/pt/streamlit-applications/content-generator.html">Content Generator</a></div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Buscar na documentação">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Buscar páginas e seções" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Resultados"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>navegar</span></span>
+    <span><kbd>Enter</kbd><span>abrir</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "pt", "root": "../../../../", "index": "../../../../search-pt.json", "alt": {"pt": "pages/pt/api/web-service-network-api/use.html", "it": "pages/it/api/web-service-network-api/use.html", "en": "pages/en/api/web-service-network-api/use.html"}, "i": {"noResults": "Nada encontrado para “%s”. Tente o nome de um módulo, como “Pinecone”.", "suggestions": "Sugestões"}};</script>
+<script src="../../../../_design-system/js/ds.js"></script>
+<script src="../../../../_design-system/js/docs.js"></script>
+</body>
+</html>
