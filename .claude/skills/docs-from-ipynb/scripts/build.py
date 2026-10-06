@@ -20,6 +20,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import html as html_mod
 import json
 import posixpath
@@ -73,6 +74,19 @@ def fold(s: str) -> str:
 def esc(s: str) -> str:
     return (str(s).replace("&", "&amp;").replace("<", "&lt;")
             .replace(">", "&gt;").replace('"', "&quot;"))
+
+
+def ext(url) -> str:
+    """Atributos para um link que sai do site: abre em outra aba."""
+    return (' target="_blank" rel="noopener"'
+            if str(url).startswith(("http://", "https://")) else "")
+
+
+def asset_v(path: Path) -> str:
+    """?v=<hash> no url do asset, para o navegador nunca servir css/js velho."""
+    if not path.exists():
+        return ""
+    return "?v=" + hashlib.md5(path.read_bytes()).hexdigest()[:8]
 
 
 def strip_tags(s: str) -> str:
@@ -717,7 +731,7 @@ def page_html(page, lang, cfg, areas, pages, by_id, body, lead, status):
         "root": root,
         "index": "%ssearch-%s.json" % (root, lang),
         "alt": {l: page.url(l) for l in LANGS},
-        "i": {"noResults": t["noResults"], "suggestions": t["suggestions"]},
+        "i": {"noResults": t["noResults"]},
     }
 
     lang_items = "".join(
@@ -752,11 +766,12 @@ def page_html(page, lang, cfg, areas, pages, by_id, body, lead, status):
 
     edit = ""
     if page.source_label and cfg["links"].get("repo"):
-        edit = ('<a class="edit" href="%s/%s">%s%s</a>'
-                % (cfg["links"]["repo"].rstrip("/"), page.source_label,
-                   ico("edit"), esc(t["edit"])))
+        edit_url = "%s/%s" % (cfg["links"]["repo"].rstrip("/"), page.source_label)
+        edit = ('<a class="edit" href="%s"%s>%s%s</a>'
+                % (esc(edit_url), ext(edit_url), ico("edit"), esc(t["edit"])))
 
-    footer_res = "".join('<a href="%s">%s</a>' % (esc(l["url"]), esc(l["label"]))
+    footer_res = "".join('<a href="%s"%s>%s</a>'
+                         % (esc(l["url"]), ext(l["url"]), esc(l["label"]))
                          for l in cfg["footer"]["resources"])
     footer_plat = "".join(
         '<a href="%s%s">%s</a>' % (root, by_id[pid].url(lang), esc(by_id[pid].title))
@@ -791,7 +806,7 @@ def page_html(page, lang, cfg, areas, pages, by_id, body, lead, status):
     document.documentElement.dataset.theme = t;
   })();
 </script>
-<link rel="stylesheet" href="%(root)s_design-system/css/design-system.css">
+<link rel="stylesheet" href="%(root)s_design-system/css/design-system.css%(vCss)s">
 </head>
 <body>
 <a class="skip" href="#main">%(skip)s</a>
@@ -808,8 +823,8 @@ def page_html(page, lang, cfg, areas, pages, by_id, body, lead, status):
         %(searchIco)s<span>%(searchPh)s</span><kbd>Ctrl K</kbd>
       </button>
       <div class="actions">
-        <a class="btn-soft" href="%(github)s">%(codeIco)sGitHub</a>
-        <a class="btn-cta" href="%(swagger)s">Swagger UI%(chevIco)s</a>
+        <a class="btn-soft" href="%(github)s"%(githubExt)s>%(codeIco)sGitHub</a>
+        <a class="btn-cta" href="%(swagger)s"%(swaggerExt)s>Swagger UI%(chevIco)s</a>
         <div class="lang">
           <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
                   aria-expanded="false" aria-label="%(langLbl)s">%(globeIco)s<b>%(langUp)s</b></button>
@@ -881,8 +896,8 @@ def page_html(page, lang, cfg, areas, pages, by_id, body, lead, status):
 </dialog>
 
 <script>window.DOCS = %(docs)s;</script>
-<script src="%(root)s_design-system/js/ds.js"></script>
-<script src="%(root)s_design-system/js/docs.js"></script>
+<script src="%(root)s_design-system/js/ds.js%(vDs)s"></script>
+<script src="%(root)s_design-system/js/docs.js%(vDocs)s"></script>
 </body>
 </html>
 """ % {
@@ -909,7 +924,9 @@ def page_html(page, lang, cfg, areas, pages, by_id, body, lead, status):
         "menuIco": ico("menu"),
         "copyIco": ico("copy"),
         "github": esc(cfg["links"].get("github", "#")),
+        "githubExt": ext(cfg["links"].get("github", "#")),
         "swagger": esc(cfg["links"].get("swagger", "#")),
+        "swaggerExt": ext(cfg["links"].get("swagger", "#")),
         "langLbl": esc(t["langLbl"]),
         "langUp": lang.upper(),
         "langItems": lang_items,
@@ -937,6 +954,9 @@ def page_html(page, lang, cfg, areas, pages, by_id, body, lead, status):
         "footerPlat": footer_plat,
         "banner": banner,
         "docs": json.dumps(docs_cfg, ensure_ascii=False),
+        "vCss": cfg.get("_assetv", {}).get("css", ""),
+        "vDs": cfg.get("_assetv", {}).get("ds", ""),
+        "vDocs": cfg.get("_assetv", {}).get("docs", ""),
     }
 
 
@@ -1000,6 +1020,10 @@ def content_path(content_dir: Path, page_id: str, lang: str) -> Path:
 def build(repo: Path, out_dir: Path, cfg: dict, report: list):
     src_root = repo / SRC_DIR_NAME
     content_dir = repo / WEB_DIR_NAME / "_content"
+    ds_dir = repo / WEB_DIR_NAME / "_design-system"
+    cfg["_assetv"] = {"css": asset_v(ds_dir / "css" / "design-system.css"),
+                      "ds": asset_v(ds_dir / "js" / "ds.js"),
+                      "docs": asset_v(ds_dir / "js" / "docs.js")}
     areas, pages = build_tree(src_root, cfg)
     by_id = {p.page_id: p for p in pages}
     counts = {"content": 0, "fallback": 0, "empty": 0, "generated": 0}
