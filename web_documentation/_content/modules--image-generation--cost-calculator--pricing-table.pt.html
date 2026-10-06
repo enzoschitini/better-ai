@@ -1,31 +1,64 @@
-<page data-lead="Página de exemplo para Pricing Table, usada para validar o layout.">
-  <div class="callout" data-kind="warn"><p><strong>Fonte ainda vazia.</strong> O arquivo <code>ipynb_contents/Modules/Image Generation/Cost Calculator/Pricing Table.ipynb</code> tem 0 bytes. O corpo abaixo é só um molde de layout.</p></div>
+<page data-lead="Tabela de preços dos modelos Gemini usada para calcular o custo das gerações, com valores em dólares por milhão de tokens e por imagem.">
+  <div class="callout" data-kind="note"><p><strong>Fonte:</strong> <code>src/image_generation/cost_calculator/pricing_table.py</code>. O notebook original desta página estava vazio; o conteúdo foi escrito a partir do código.</p></div>
 
   <h2>Visão geral</h2>
-  <p>Pricing Table faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
+  <p>O arquivo define a <code>dataclass</code> <code>ModelPricing</code>, a classe <code>PricingTable</code> e a lista <code>BEST_TO_WORST_MODELS</code>. Os preços seguem a página de preços da API do Gemini, citada em comentário no código. A versão da tabela está em <code>PricingTable.VERSION</code> (<code>2026-02-11</code>).</p>
 
-  <h2>Uso</h2>
-  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
-  <pre data-lang="python"><code>
-from better_ai import PricingTable
-
-client = PricingTable()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parâmetros</h2>
-  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
+  <h2>ModelPricing</h2>
   <table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <thead><tr><th>Campo</th><th>Tipo</th><th>Descrição</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
+      <tr><td><code>input_per_million_tokens</code></td><td><code>float</code></td><td>Preço por milhão de tokens de entrada.</td></tr>
+      <tr><td><code>output_per_million_tokens</code></td><td><code>float</code></td><td>Preço por milhão de tokens de saída.</td></tr>
+      <tr><td><code>image_price_per_unit</code></td><td><code>float</code> ou <code>None</code></td><td>Preço por imagem gerada.</td></tr>
+      <tr><td><code>cache_input_per_million_tokens</code></td><td><code>float</code> ou <code>None</code></td><td>Preço por milhão de tokens de entrada lidos do cache.</td></tr>
+      <tr><td><code>cache_storage_per_million_tokens_per_hour</code></td><td><code>float</code> ou <code>None</code></td><td>Preço do armazenamento em cache, por milhão de tokens por hora.</td></tr>
     </tbody>
   </table>
+  <p>A <code>dataclass</code> é <code>frozen</code>: os valores não mudam depois de criados.</p>
 
-  <h2>Observações</h2>
-  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
-  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div>
+  <h2>Preços cadastrados</h2>
+  <table>
+    <thead><tr><th>Modelo</th><th>Entrada</th><th>Saída</th><th>Por imagem</th><th>Cache (entrada)</th><th>Cache (armazenamento/hora)</th></tr></thead>
+    <tbody>
+      <tr><td><code>gemini-3-flash-preview</code></td><td>0.50</td><td>3.00</td><td>-</td><td>0.05</td><td>1.00</td></tr>
+      <tr><td><code>gemini-3-pro-image-preview</code></td><td>2.00</td><td>12.00</td><td>0.134</td><td>-</td><td>-</td></tr>
+      <tr><td><code>gemini-2.5-flash</code></td><td>0.30</td><td>2.50</td><td>-</td><td>0.03</td><td>1.00</td></tr>
+      <tr><td><code>gemini-2.5-flash-preview-09-2025</code></td><td>0.30</td><td>2.50</td><td>-</td><td>0.03</td><td>1.00</td></tr>
+      <tr><td><code>gemini-2.5-flash-lite</code></td><td>0.10</td><td>0.40</td><td>-</td><td>0.01</td><td>1.00</td></tr>
+      <tr><td><code>gemini-2.5-flash-lite-preview-09-2025</code></td><td>0.10</td><td>0.40</td><td>-</td><td>0.01</td><td>1.00</td></tr>
+      <tr><td><code>gemini-2.5-flash-image</code></td><td>0.30</td><td>0.0</td><td>0.039</td><td>-</td><td>-</td></tr>
+      <tr><td><code>gemini-2.0-flash</code></td><td>0.10</td><td>0.40</td><td>0.039</td><td>0.025</td><td>1.00</td></tr>
+    </tbody>
+  </table>
+  <p>Valores em dólares: entrada, saída e cache por milhão de tokens; imagem por unidade. O traço indica <code>None</code>.</p>
+  <div class="callout" data-kind="info"><p>Em <code>gemini-2.5-flash-image</code>, a saída é imagem; por isso o preço de saída por token é <code>0.0</code> e o custo vem do preço por imagem.</p></div>
+  <div class="callout" data-kind="warn"><p><strong>Resolução única.</strong> O preço de <code>gemini-3-pro-image-preview</code> (<code>0.134</code>) vale para 1K e 2K. O comentário no código registra que 4K custa <code>0.24</code> e que a tabela ainda não diferencia a resolução.</p></div>
+
+  <h2>get</h2>
+  <p><code>PricingTable.get(model)</code> é um <code>classmethod</code> que devolve o <code>ModelPricing</code> do modelo. Se o modelo não estiver cadastrado, levanta <code>ValueError</code> ("Modelo sem precificação cadastrada").</p>
+  <pre data-lang="python"><code>
+from src.image_generation.cost_calculator.pricing_table import PricingTable
+
+# Busca o preço de um modelo
+pricing = PricingTable.get("gemini-2.5-flash-image")
+print(pricing.image_price_per_unit)
+
+# Versão da tabela de preços
+print(PricingTable.VERSION)
+</code></pre>
+
+  <h2>BEST_TO_WORST_MODELS</h2>
+  <p>Lista dos modelos, do melhor para o pior, na ordem definida no código:</p>
+  <ol>
+    <li><code>gemini-3-pro-image-preview</code></li>
+    <li><code>gemini-3-flash-preview</code></li>
+    <li><code>gemini-2.5-flash</code></li>
+    <li><code>gemini-2.5-flash-preview-09-2025</code></li>
+    <li><code>gemini-2.5-flash-image</code></li>
+    <li><code>gemini-2.0-flash</code></li>
+    <li><code>gemini-2.5-flash-lite-preview-09-2025</code></li>
+    <li><code>gemini-2.5-flash-lite</code></li>
+  </ol>
+  <p>O consumo desta tabela está em <a href="@/modules/image-generation/cost-calculator/cost-calculator">Cost Calculator</a>.</p>
 </page>

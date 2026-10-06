@@ -1,31 +1,31 @@
-<page data-lead="Sample page for Gemini Client, used to validate the layout.">
-  <div class="callout" data-kind="warn"><p><strong>Source still empty.</strong> The file <code>ipynb_contents/Modules/Image Generation/Utils/Gemini Client.ipynb</code> is 0 bytes. The body below is only a layout mould.</p></div>
+<page data-lead="Wrapper that reads the API key from the environment and creates, only once, the Gemini SDK client used by the image generation module.">
+  <div class="callout" data-kind="note"><p><strong>Source:</strong> <code>src/image_generation/utils/gemini_client.py</code>. This page's original notebook was empty; the content was written from the code.</p></div>
 
   <h2>Overview</h2>
-  <p>Gemini Client is part of the BetterAI platform. This paragraph stands in for the text coming from the source, so that spacing, line measure and the side index can be checked.</p>
+  <p>The file has two <code>dataclass</code>es: <code>GeminiConfig</code>, which resolves the API key, and <code>GeminiClient</code>, which creates and keeps the <code>genai.Client</code>.</p>
 
-  <h2>Usage</h2>
-  <p>The block below shows the typical call, with syntax highlighting:</p>
+  <h2>GeminiConfig</h2>
+  <p>The <code>api_key_env</code> field holds the name of the environment variable and defaults to <code>GEMINI_API_KEY</code>. The <code>get_api_key()</code> method reads that variable with <code>os.getenv</code>.</p>
+  <div class="callout" data-kind="warn"><p><strong>Required variable.</strong> If the variable does not exist or is empty, <code>get_api_key()</code> raises <code>EnvironmentError</code> with the message "Variável de ambiente 'GEMINI_API_KEY' não encontrada.".</p></div>
+  <pre data-lang="env" data-title=".env"><code>
+GEMINI_API_KEY=********************
+</code></pre>
+
+  <h2>GeminiClient</h2>
+  <p>The <code>get_client()</code> method creates the <code>genai.Client</code> on the first call and reuses the same instance on the following ones (the client is kept in <code>_client</code>).</p>
   <pre data-lang="python"><code>
-from better_ai import GeminiClient
+from src.image_generation.utils.gemini_client import GeminiClient
 
-client = GeminiClient()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
+# Create the client on the first call
+client = GeminiClient().get_client()
 
-  <h2>Parameters</h2>
-  <p>The table below exists to validate horizontal scrolling on narrow screens:</p>
-  <table>
-    <thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead>
-    <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identifier of the model to use.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limit in seconds for the response.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Returns the response in chunks.</td></tr>
-    </tbody>
-  </table>
+# Use a different environment variable name
+from src.image_generation.utils.gemini_client import GeminiConfig
+
+custom = GeminiClient(config=GeminiConfig(api_key_env="MY_GEMINI_KEY"))
+client = custom.get_client()
+</code></pre>
 
   <h2>Notes</h2>
-  <p>A sample warning, to check the styling of the attention callout:</p>
-  <div class="callout" data-kind="warn"><p><strong>Development only.</strong> The values above are fictitious and must not be used in production.</p></div>
+  <p>The file loads the <code>.env</code> with <code>load_dotenv()</code> when imported. The client is used by <a href="@/modules/image-generation/image-generator-service">Image Generator Service</a> and by <code>ImageGeneration</code> in <code>applications.py</code>.</p>
 </page>

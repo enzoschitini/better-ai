@@ -571,7 +571,9 @@ def home_body(page, lang, cfg, areas, by_id):
                               a.cfg["about"][lang]) for a in areas)
     pop = "".join(card_html(url(p["id"]), p["icon"], by_id[p["id"]].title, p["text"])
                   for p in h["popular"] if p["id"] in by_id)
-    return ("<p>%s</p><p>%s</p><ul>%s</ul>"
+    hero = render_media('src="%sassets/img/betterai-cover.png" caption="%s"'
+                        % (page.root_prefix(lang), cfg["site"]["tagline"]))
+    return (hero + "<p>%s</p><p>%s</p><ul>%s</ul>"
             "<h2 id=\"comece\">%s</h2><div class=\"cards one\">%s</div>"
             "<div class=\"callout\" data-kind=\"tip\"><p>%s</p></div>"
             "<h2 id=\"areas\">%s</h2><div class=\"cards\">%s</div>"

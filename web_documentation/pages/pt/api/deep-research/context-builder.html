@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Context Builder | BetterAI Docs</title>
+<meta name="description" content="Constrói um contexto rico em markdown a partir de uma pesquisa profunda na web, usando o TavilyDeepResearch como motor de busca.">
+<link rel="canonical" href="pages/pt/api/deep-research/context-builder.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="../../../../_design-system/css/design-system.css">
+</head>
+<body>
+<a class="skip" href="#main">Ir para o conteúdo</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span>Protótipo de layout. O conteúdo das páginas é de exemplo.</span>
+    <button type="button" aria-label="Fechar aviso"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../pages/pt/index.html">
+        <img src="../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Buscar na documentação">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Buscar...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="#"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="#">Swagger UI<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Idioma"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>PT</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="true"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="false"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="false"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Alternar tema claro e escuro"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Áreas da documentação"><a class="tab" href="../../../../pages/pt/index.html">Visão geral</a><a class="tab" href="../../../../pages/pt/getting-started/index.html">Getting Started</a><a class="tab" href="../../../../pages/pt/modules/index.html">Modules</a><a class="tab" href="../../../../pages/pt/agents/index.html">Agents</a><a class="tab" href="../../../../pages/pt/internal-source-code/index.html">Internal Source Code</a><a class="tab" href="../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../pages/pt/api/index.html" aria-current="page">API</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>API</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Context Builder</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Navegação da documentação">
+    <nav class="side"><div class="side-areas"><a href="../../../../pages/pt/index.html">Visão geral</a><a href="../../../../pages/pt/getting-started/index.html">Getting Started</a><a href="../../../../pages/pt/modules/index.html">Modules</a><a href="../../../../pages/pt/agents/index.html">Agents</a><a href="../../../../pages/pt/internal-source-code/index.html">Internal Source Code</a><a href="../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/pt/api/index.html" aria-current="page">API</a></div><a class="side-link" href="../../../../pages/pt/api/index.html"><span>Visão geral</span></a><div class="side-group"><p class="side-title">Ferramentas</p><ul><li><a class="side-link" href="../../../../pages/pt/api/curl-compiler.html"><span>Curl Compiler</span></a></li></ul></div><div class="side-group"><p class="side-title">Web Service Network - API</p><ul><li><a class="side-link" href="../../../../pages/pt/api/web-service-network-api/web-service-api.html"><span>Web Service API</span></a></li><li><a class="side-link" href="../../../../pages/pt/api/web-service-network-api/use.html"><span>Use</span></a></li></ul></div><div class="side-group"><p class="side-title">Deep Research</p><ul><li><a class="side-link" href="../../../../pages/pt/api/deep-research/context-builder.html" aria-current="page"><span>Context Builder</span></a></li></ul></div><div class="side-group"><p class="side-title">Parse Content</p><ul><li><a class="side-link" href="../../../../pages/pt/api/parse-content/document-parse.html"><span>Document Parse</span></a></li></ul></div><div class="side-group"><p class="side-title">Image Generation</p><ul><li><a class="side-link" href="../../../../pages/pt/api/image-generation/image-generation.html"><span>Image Generation</span></a></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Deep Research</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Context Builder</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copiar página</span></button>
+            </div>
+          </div>
+          <p class="lead">Constrói um contexto rico em markdown a partir de uma pesquisa profunda na web, usando o TavilyDeepResearch como motor de busca.</p>
+          <details class="toc-inline"><summary>Nesta página</summary><ul></ul></details>
+        </header>
+        <div class="prose"><h2 id="context-builder-deep-research-context-builder"><a class="anchor" href="#context-builder-deep-research-context-builder" aria-label="Link para esta seção">#</a>Context Builder - <code>/deep-research/context-builder</code></h2>
+  <div class="endpoint"><span class="method" data-m="POST">POST</span><span>/deep-research/context-builder</span></div>
+  <p>Constrói um contexto rico em markdown a partir de uma pesquisa profunda na web, usando o <strong>TavilyDeepResearch</strong> como motor de busca. Ideal para alimentar pipelines de RAG, geração de relatórios ou enriquecimento de prompts.</p>
+
+  <h3 id="parametros"><a class="anchor" href="#parametros" aria-label="Link para esta seção">#</a>Parâmetros</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Parâmetro</th><th>Tipo</th><th>Descrição</th><th>Exemplo</th></tr></thead>
+    <tbody>
+      <tr><td><code>query</code></td><td><code>string</code></td><td>Pergunta ou tema central da pesquisa. Define o que será buscado.</td><td><code>"Principais tendências de IA em 2026?"</code></td></tr>
+      <tr><td><code>search_depth</code></td><td><code>"basic"</code> | <code>"advanced"</code></td><td>Profundidade da busca. <code>basic</code> para uma visão rápida, <code>advanced</code> para uma pesquisa mais abrangente e detalhada.</td><td><code>"advanced"</code></td></tr>
+      <tr><td><code>max_results</code></td><td><code>integer</code> (1–100)</td><td>Número máximo de resultados a recuperar e incluir no contexto.</td><td><code>35</code></td></tr>
+      <tr><td><code>topic</code></td><td><code>string</code></td><td>Categoria ou domínio da pesquisa. Orienta o tipo de fonte priorizada. Valores comuns: <code>general</code>, <code>news</code>, <code>finance</code>.</td><td><code>"news"</code></td></tr>
+      <tr><td><code>include_answer</code></td><td><code>boolean</code></td><td>Se <code>true</code>, inclui no contexto uma resposta gerada automaticamente com base nos resultados encontrados.</td><td><code>true</code></td></tr>
+      <tr><td><code>min_score</code></td><td><code>float</code> (0.0–1.0)</td><td>Score mínimo de relevância. Resultados abaixo desse limiar são descartados. Valores mais altos = contexto mais preciso, porém menor.</td><td><code>0.5</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="request"><a class="anchor" href="#request" aria-label="Link para esta seção">#</a>Request</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">curl</span> <span class="t-n">--location</span> <span class="t-s">'http://localhost:8000/deep-research/context-builder'</span> \
+<span class="t-n">--header</span> <span class="t-s">'Content-Type: application/json'</span> \
+<span class="t-n">--header</span> <span class="t-s">'X-API-Key: ******'</span> \
+<span class="t-n">--data</span> '{
+    <span class="t-s">&quot;query&quot;</span>: <span class="t-s">&quot;Principais tendências de IA em 2026?&quot;</span>,
+    <span class="t-s">&quot;search_depth&quot;</span>: <span class="t-s">&quot;advanced&quot;</span>,
+    <span class="t-s">&quot;max_results&quot;</span>: 35,
+    <span class="t-s">&quot;topic&quot;</span>: <span class="t-s">&quot;general&quot;</span>,
+    <span class="t-s">&quot;include_answer&quot;</span>: true,
+    <span class="t-s">&quot;min_score&quot;</span>: 0.5
+}'</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="response"><a class="anchor" href="#response" aria-label="Link para esta seção">#</a>Response</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+    <span class="t-f">&quot;job_id&quot;</span>: <span class="t-s">&quot;job_1779392104064657200TsJh&quot;</span>,
+    <span class="t-f">&quot;status&quot;</span>: <span class="t-s">&quot;success&quot;</span>,
+    <span class="t-f">&quot;status_code&quot;</span>: <span class="t-n">200</span>,
+    <span class="t-f">&quot;result&quot;</span>: {
+        <span class="t-f">&quot;markdown&quot;</span>: <span class="t-s">&quot;...&quot;</span>,
+        <span class="t-f">&quot;urls&quot;</span>: [
+            <span class="t-s">&quot;https://example.com&quot;</span>
+        ]
+    },
+    <span class="t-f">&quot;time&quot;</span>: {
+        <span class="t-f">&quot;start&quot;</span>: <span class="t-s">&quot;2026-05-21 16:35:04&quot;</span>,
+        <span class="t-f">&quot;end&quot;</span>: <span class="t-s">&quot;2026-05-21 16:35:11&quot;</span>,
+        <span class="t-f">&quot;duration_seconds&quot;</span>: <span class="t-n">7.0</span>
+    }
+}</code></pre><button class="copy floating" type="button"></button></div></div></div>
+        <div class="feedback"></div>
+        <p class="source">Fonte: <code>ipynb_contents/API/3. Deep Research/Context Builder.ipynb</code></p>
+        <nav class="pager" aria-label="Páginas vizinhas"><a class="pager-link prev" href="../../../../pages/pt/api/web-service-network-api/use.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Anterior</small><span>Use</span></div></a><a class="pager-link next" href="../../../../pages/pt/api/parse-content/document-parse.html"><div><small>Próxima</small><span>Document Parse</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="Nesta página"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-brand">
+        <a class="brand" href="../../../../pages/pt/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+        <p>Where intelligence finds purpose.</p>
+      </div>
+      <div class="foot-col"><h2>Recursos</h2><a href="#">Swagger UI</a><a href="#">GitHub</a></div>
+      <div class="foot-col"><h2>Plataforma</h2><a href="../../../../pages/pt/api/web-service-network-api/use.html">Use</a><a href="../../../../pages/pt/streamlit-applications/acquarello.html">Acquarello</a><a href="../../../../pages/pt/streamlit-applications/content-generator.html">Content Generator</a></div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Buscar na documentação">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Buscar páginas e seções" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Resultados"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>navegar</span></span>
+    <span><kbd>Enter</kbd><span>abrir</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "pt", "root": "../../../../", "index": "../../../../search-pt.json", "alt": {"pt": "pages/pt/api/deep-research/context-builder.html", "it": "pages/it/api/deep-research/context-builder.html", "en": "pages/en/api/deep-research/context-builder.html"}, "i": {"noResults": "Nada encontrado para “%s”. Tente o nome de um módulo, como “Pinecone”.", "suggestions": "Sugestões"}};</script>
+<script src="../../../../_design-system/js/ds.js"></script>
+<script src="../../../../_design-system/js/docs.js"></script>
+</body>
+</html>

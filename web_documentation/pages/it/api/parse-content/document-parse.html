@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Document Parse | BetterAI Docs</title>
+<meta name="description" content="Riceve un file e uno schema JSON per estrarre e strutturare il suo contenuto tramite LLM.">
+<link rel="canonical" href="pages/it/api/parse-content/document-parse.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="../../../../_design-system/css/design-system.css">
+</head>
+<body>
+<a class="skip" href="#main">Vai al contenuto</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span>Prototipo di layout. Il contenuto delle pagine è di esempio.</span>
+    <button type="button" aria-label="Chiudi avviso"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../pages/it/index.html">
+        <img src="../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Cerca nella documentazione">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Cerca...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="#"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="#">Swagger UI<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Lingua"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>IT</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="false"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="true"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="false"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Cambia tema chiaro o scuro"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Aree della documentazione"><a class="tab" href="../../../../pages/it/index.html">Panoramica</a><a class="tab" href="../../../../pages/it/getting-started/index.html">Getting Started</a><a class="tab" href="../../../../pages/it/modules/index.html">Modules</a><a class="tab" href="../../../../pages/it/agents/index.html">Agents</a><a class="tab" href="../../../../pages/it/internal-source-code/index.html">Internal Source Code</a><a class="tab" href="../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../pages/it/api/index.html" aria-current="page">API</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>API</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Document Parse</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Navigazione della documentazione">
+    <nav class="side"><div class="side-areas"><a href="../../../../pages/it/index.html">Panoramica</a><a href="../../../../pages/it/getting-started/index.html">Getting Started</a><a href="../../../../pages/it/modules/index.html">Modules</a><a href="../../../../pages/it/agents/index.html">Agents</a><a href="../../../../pages/it/internal-source-code/index.html">Internal Source Code</a><a href="../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/it/api/index.html" aria-current="page">API</a></div><a class="side-link" href="../../../../pages/it/api/index.html"><span>Panoramica</span></a><div class="side-group"><p class="side-title">Strumenti</p><ul><li><a class="side-link" href="../../../../pages/it/api/curl-compiler.html"><span>Curl Compiler</span></a></li></ul></div><div class="side-group"><p class="side-title">Web Service Network - API</p><ul><li><a class="side-link" href="../../../../pages/it/api/web-service-network-api/web-service-api.html"><span>Web Service API</span></a></li><li><a class="side-link" href="../../../../pages/it/api/web-service-network-api/use.html"><span>Use</span></a></li></ul></div><div class="side-group"><p class="side-title">Deep Research</p><ul><li><a class="side-link" href="../../../../pages/it/api/deep-research/context-builder.html"><span>Context Builder</span></a></li></ul></div><div class="side-group"><p class="side-title">Parse Content</p><ul><li><a class="side-link" href="../../../../pages/it/api/parse-content/document-parse.html" aria-current="page"><span>Document Parse</span></a></li></ul></div><div class="side-group"><p class="side-title">Image Generation</p><ul><li><a class="side-link" href="../../../../pages/it/api/image-generation/image-generation.html"><span>Image Generation</span></a></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Parse Content</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Document Parse</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copia pagina</span></button>
+            </div>
+          </div>
+          <p class="lead">Riceve un file e uno schema JSON per estrarre e strutturare il suo contenuto tramite LLM.</p>
+          <details class="toc-inline"><summary>In questa pagina</summary><ul></ul></details>
+        </header>
+        <div class="prose"><h2 id="document-parse-parse-content-document-parse"><a class="anchor" href="#document-parse-parse-content-document-parse" aria-label="Link para esta seção">#</a>Document Parse - <code>/parse-content/document-parse</code></h2>
+  <div class="endpoint"><span class="method" data-m="POST">POST</span><span>/parse-content/document-parse</span></div>
+  <p>Riceve un file e uno schema JSON per estrarre e strutturare il suo contenuto tramite LLM. Usalo quando hai bisogno di trasformare documenti non strutturati (PDF, Word, testo) in dati organizzati e pronti per l'uso.</p>
+
+  <h3 id="parametri"><a class="anchor" href="#parametri" aria-label="Link para esta seção">#</a>Parametri</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Parametro</th><th>Tipo</th><th>Descrizione</th><th>Esempio</th></tr></thead>
+    <tbody>
+      <tr><td><code>metadata</code></td><td><code>string</code> (JSON)</td><td>Metadati ausiliari del documento, di libero utilizzo da parte del client.</td><td><code>{"client": "Acme", "doc_type": "contract"}</code></td></tr>
+      <tr><td><code>document_schema</code></td><td><code>string</code> (JSON)</td><td>Schema che definisce i campi da estrarre. Ogni chiave riceve <code>type</code> e <code>description</code>.</td><td><code>{"summary": {"type": "str", "description": "Resumo do documento"}}</code></td></tr>
+      <tr><td><code>file</code></td><td><code>file</code> (upload)</td><td>File da elaborare. Formati accettati: <code>txt</code>, <code>md</code>, <code>pdf</code>, <code>docx</code>. Limite: 50MB.</td><td><code>contrato.pdf</code></td></tr>
+      <tr><td><code>config</code></td><td><code>string</code> (JSON) — opzionale</td><td>Configurazioni del parser: modello LLM, istruzioni personalizzate e modalità debug.</td><td><code>{"model_provider": "OpenAI", "model_id": "gpt-4.1-mini", "debug_mode": false}</code></td></tr>
+    </tbody>
+  </table></div>
+  <p>Nota: il <code>job_id</code> viene generato automaticamente dal server e restituito nella risposta.</p>
+  <p>Formati degli schemi: https://github.com/enzoschitini/better-ai/blob/production/doc/Modules/Content%20Parse/Json%20To%20Pydantic.md</p>
+
+  <h3 id="config-spiegazione-di-ogni-parametro"><a class="anchor" href="#config-spiegazione-di-ogni-parametro" aria-label="Link para esta seção">#</a>Config (spiegazione di ogni parametro)</h3>
+  <p>Il campo <code>config</code> è opzionale. Se non viene inviato, l'API usa il <code>default_config</code> interno del parser.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Campo</th><th>Tipo</th><th>Cosa fa</th><th>Default</th><th>Quando modificarlo</th></tr></thead>
+    <tbody>
+      <tr><td><code>model_provider</code></td><td><code>string</code></td><td>Definisce il provider del modello di linguaggio. Attualmente i flussi principali usano <code>OpenAI</code> e <code>Groq</code>.</td><td><code>"OpenAI"</code></td><td>Cambialo quando vuoi cambiare provider per costo, latenza o disponibilità.</td></tr>
+      <tr><td><code>model_id</code></td><td><code>string</code></td><td>Identifica il modello usato per l'estrazione (<code>gpt-4.1-mini</code>, ad esempio).</td><td><code>"gpt-4.1-mini"</code></td><td>Modificalo quando ti serve più qualità, un costo inferiore o una finestra di contesto diversa.</td></tr>
+      <tr><td><code>max_input_tokens</code></td><td><code>integer</code></td><td>Limite di token di input consentiti per validare la dimensione del contesto prima dell'esecuzione.</td><td><code>1000000</code></td><td>Riducilo per imporre un limite di costo o aumentalo in scenari con documenti molto lunghi.</td></tr>
+      <tr><td><code>debug_mode</code></td><td><code>boolean</code></td><td>Attiva log e informazioni di debug dell'agente di parsing.</td><td><code>false</code></td><td>Usa <code>true</code> per il troubleshooting e torna a <code>false</code> in produzione.</td></tr>
+      <tr><td><code>instructions</code></td><td><code>string</code></td><td>Istruzioni operative su come estrarre i dati (stile, regole, focus).</td><td><code>"Extraia dados do texto"</code></td><td>Personalizzalo per orientare il modello verso formati e criteri specifici del tuo dominio.</td></tr>
+      <tr><td><code>description</code></td><td><code>string</code></td><td>Ruolo/comportamento atteso dell'agente, che rafforza il formato della risposta e il fallback con <code>null</code>.</td><td><code>"Leia o texto e extraia as informações relevantes conforme o esquema definido..."</code></td><td>Modificalo per scenari di business con politiche proprie di compilazione e validazione.</td></tr>
+    </tbody>
+  </table></div>
+  <p>Esempio completo di <code>config</code>:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+  <span class="t-f">&quot;model_provider&quot;</span>: <span class="t-s">&quot;OpenAI&quot;</span>,
+  <span class="t-f">&quot;model_id&quot;</span>: <span class="t-s">&quot;gpt-4.1-mini&quot;</span>,
+  <span class="t-f">&quot;max_input_tokens&quot;</span>: <span class="t-n">1000000</span>,
+  <span class="t-f">&quot;debug_mode&quot;</span>: <span class="t-k">false</span>,
+  <span class="t-f">&quot;instructions&quot;</span>: <span class="t-s">&quot;Extraia dados do texto&quot;</span>,
+  <span class="t-f">&quot;description&quot;</span>: <span class="t-s">&quot;Leia o texto e extraia as informações relevantes conforme o esquema definido. Retorne um JSON estruturado com os dados extraídos. Caso não encontre alguma informação, retorne null para aquele campo.&quot;</span>
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="request"><a class="anchor" href="#request" aria-label="Link para esta seção">#</a>Request</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">curl</span> <span class="t-n">--location</span> <span class="t-s">'http://localhost:8000/parse-content/document-parse'</span> \
+<span class="t-n">--header</span> <span class="t-s">'X-API-Key: ******'</span> \
+<span class="t-n">--form</span> <span class="t-s">'metadata=&quot;{\&quot;value1\&quot;: \&quot;value3\&quot;}&quot;'</span> \
+<span class="t-n">--form</span> 'document_schema=&quot;{
+  \&quot;summary\&quot;: {
+    \&quot;type\&quot;: \&quot;str\&quot;,
+    \&quot;description\&quot;: \&quot;Resumo do conteúdo do arquivo\&quot;
+  }
+}&quot;' \
+<span class="t-n">--form</span> 'config=&quot;{
+  \&quot;model_provider\&quot;: \&quot;OpenAI\&quot;,
+  \&quot;model_id\&quot;: \&quot;gpt-4.1-mini\&quot;,
+  \&quot;debug_mode\&quot;: true,
+  \&quot;instructions\&quot;: \&quot;Extraia dados do texto\&quot;,
+  \&quot;description\&quot;: \&quot;Leia o texto e extraia as informações relevantes conforme o esquema definido. Retorne um JSON estruturado com os dados extraídos. Caso não encontre alguma informação, retorne null para aquele campo.\&quot;
+}&quot;' \
+<span class="t-n">--form</span> <span class="t-s">'file=@&quot;/path/to/file&quot;'</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="response"><a class="anchor" href="#response" aria-label="Link para esta seção">#</a>Response</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+    <span class="t-f">&quot;job_id&quot;</span>: <span class="t-s">&quot;job_1788198742619260200fKBY&quot;</span>,
+    <span class="t-f">&quot;status&quot;</span>: <span class="t-s">&quot;success&quot;</span>,
+    <span class="t-f">&quot;status_code&quot;</span>: <span class="t-n">200</span>,
+    <span class="t-f">&quot;content&quot;</span>: {
+        <span class="t-f">&quot;summary&quot;</span>: <span class="t-s">&quot;...&quot;</span>
+    },
+    <span class="t-f">&quot;time&quot;</span>: {
+        <span class="t-f">&quot;start&quot;</span>: <span class="t-s">&quot;2026-08-31 14:52:22&quot;</span>,
+        <span class="t-f">&quot;end&quot;</span>: <span class="t-s">&quot;2026-08-31 14:52:30&quot;</span>,
+        <span class="t-f">&quot;duration_seconds&quot;</span>: <span class="t-n">8.0</span>
+    }
+}</code></pre><button class="copy floating" type="button"></button></div></div></div>
+        <div class="feedback"></div>
+        <p class="source">Fonte: <code>ipynb_contents/API/4. Parse Content/Document Parse.ipynb</code></p>
+        <nav class="pager" aria-label="Pagine vicine"><a class="pager-link prev" href="../../../../pages/it/api/deep-research/context-builder.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Precedente</small><span>Context Builder</span></div></a><a class="pager-link next" href="../../../../pages/it/api/image-generation/image-generation.html"><div><small>Successiva</small><span>Image Generation</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="In questa pagina"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-brand">
+        <a class="brand" href="../../../../pages/it/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+        <p>Where intelligence finds purpose.</p>
+      </div>
+      <div class="foot-col"><h2>Risorse</h2><a href="#">Swagger UI</a><a href="#">GitHub</a></div>
+      <div class="foot-col"><h2>Piattaforma</h2><a href="../../../../pages/it/api/web-service-network-api/use.html">Use</a><a href="../../../../pages/it/streamlit-applications/acquarello.html">Acquarello</a><a href="../../../../pages/it/streamlit-applications/content-generator.html">Content Generator</a></div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Cerca nella documentazione">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Cerca pagine e sezioni" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Risultati"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>naviga</span></span>
+    <span><kbd>Enter</kbd><span>apri</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "it", "root": "../../../../", "index": "../../../../search-it.json", "alt": {"pt": "pages/pt/api/parse-content/document-parse.html", "it": "pages/it/api/parse-content/document-parse.html", "en": "pages/en/api/parse-content/document-parse.html"}, "i": {"noResults": "Nessun risultato per “%s”. Prova con il nome di un modulo, come “Pinecone”.", "suggestions": "Suggerimenti"}};</script>
+<script src="../../../../_design-system/js/ds.js"></script>
+<script src="../../../../_design-system/js/docs.js"></script>
+</body>
+</html>

@@ -1,31 +1,72 @@
-<page data-lead="Página de exemplo para Cost Calculator, usada para validar o layout.">
-  <div class="callout" data-kind="warn"><p><strong>Fonte ainda vazia.</strong> O arquivo <code>ipynb_contents/Modules/Image Generation/Cost Calculator/Cost Calculator.ipynb</code> tem 0 bytes. O corpo abaixo é só um molde de layout.</p></div>
+<page data-lead="Calcula em dólares o custo de uma geração a partir dos tokens usados, do número de imagens e da tabela de preços do modelo.">
+  <div class="callout" data-kind="note"><p><strong>Fonte:</strong> <code>src/image_generation/cost_calculator/cost_calculator.py</code>. O notebook original desta página estava vazio; o conteúdo foi escrito a partir do código.</p></div>
 
   <h2>Visão geral</h2>
-  <p>Cost Calculator faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
+  <p>A classe <code>CostCalculator</code> recebe uma tabela de preços no construtor (por padrão, <code>PricingTable</code>; veja <a href="@/modules/image-generation/cost-calculator/pricing-table">Pricing Table</a>) e oferece dois métodos: <code>merge_cost_information</code> e <code>calculate</code>.</p>
 
-  <h2>Uso</h2>
-  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
-  <pre data-lang="python"><code>
-from better_ai import CostCalculator
+  <h2>merge_cost_information</h2>
+  <p>Soma <code>prompt_tokens</code>, <code>output_tokens</code> e <code>total_tokens</code> de uma lista de registros de uso, usada quando uma geração faz várias chamadas ao modelo.</p>
+  <div class="callout" data-kind="warn"><p><strong>Mínimo de dois registros.</strong> Com uma lista vazia ou com menos de dois itens, o método levanta <code>ValueError</code> ("You must provide at least two cost_information objects."). <code>PayloadBuilder</code> só o chama quando há mais de um registro.</p></div>
 
-client = CostCalculator()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
-
-  <h2>Parâmetros</h2>
-  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
+  <h2>calculate</h2>
   <table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <thead><tr><th>Parâmetro</th><th>Tipo</th><th>Descrição</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
+      <tr><td><code>model</code></td><td><code>str</code></td><td>Modelo usado, procurado em <code>PricingTable</code>.</td></tr>
+      <tr><td><code>prompt_tokens</code></td><td><code>int</code></td><td>Tokens de entrada.</td></tr>
+      <tr><td><code>output_tokens</code></td><td><code>int</code></td><td>Tokens de saída.</td></tr>
+      <tr><td><code>total_tokens</code></td><td><code>int</code></td><td>Total de tokens. Só é repassado ao resultado; não entra na conta.</td></tr>
+      <tr><td><code>num_images</code></td><td><code>int</code></td><td>Quantidade de imagens (padrão <code>0</code>).</td></tr>
+      <tr><td><code>cached_prompt_tokens</code></td><td><code>int</code></td><td>Tokens de entrada lidos do cache (padrão <code>0</code>).</td></tr>
+      <tr><td><code>cache_storage_tokens</code></td><td><code>int</code></td><td>Tokens mantidos em cache (padrão <code>0</code>).</td></tr>
+      <tr><td><code>cache_storage_hours</code></td><td><code>float</code></td><td>Horas de armazenamento em cache (padrão <code>0.0</code>).</td></tr>
     </tbody>
   </table>
 
+  <h3>Fórmulas</h3>
+  <table>
+    <thead><tr><th>Parcela</th><th>Cálculo</th></tr></thead>
+    <tbody>
+      <tr><td>Entrada</td><td><code>prompt_tokens / 1_000_000 * input_per_million_tokens</code></td></tr>
+      <tr><td>Saída</td><td><code>output_tokens / 1_000_000 * output_per_million_tokens</code>, só se o preço e os tokens forem diferentes de zero</td></tr>
+      <tr><td>Imagens</td><td><code>num_images * image_price_per_unit</code>, só se o preço e a quantidade forem diferentes de zero</td></tr>
+      <tr><td>Cache de entrada</td><td><code>cached_prompt_tokens / 1_000_000 * cache_input_per_million_tokens</code></td></tr>
+      <tr><td>Armazenamento de cache</td><td><code>cache_storage_tokens / 1_000_000 * cache_storage_per_million_tokens_per_hour * cache_storage_hours</code></td></tr>
+    </tbody>
+  </table>
+  <p>O total é a soma das cinco parcelas.</p>
+
+  <h3>Retorno</h3>
+  <p>Um dicionário com os tokens recebidos e os valores em dólares arredondados a 6 casas decimais:</p>
+  <pre data-lang="json"><code>
+{
+  "prompt_tokens": 1174,
+  "output_tokens": 2633,
+  "total_tokens": 3807,
+  "prompt_usd": 0.000352,
+  "output_usd": 0.0,
+  "images_usd": 0.078,
+  "total_usd": 0.078352
+}
+</code></pre>
+
+  <h2>Exemplo de uso</h2>
+  <pre data-lang="python"><code>
+from src.image_generation.cost_calculator.cost_calculator import CostCalculator
+
+calculator = CostCalculator()
+
+# Calcula o custo de duas imagens geradas com gemini-2.5-flash-image
+cost = calculator.calculate(
+    model="gemini-2.5-flash-image",
+    prompt_tokens=1174,
+    output_tokens=2633,
+    total_tokens=3807,
+    num_images=2,
+)
+print(cost["total_usd"])
+</code></pre>
+
   <h2>Observações</h2>
-  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
-  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div>
+  <div class="callout" data-kind="warn"><p><strong>Modelo sem preço.</strong> Se o modelo não estiver em <code>PricingTable</code>, <code>PricingTable.get</code> levanta <code>ValueError</code> ("Modelo sem precificação cadastrada") e a geração falha ao montar os payloads.</p></div>
 </page>

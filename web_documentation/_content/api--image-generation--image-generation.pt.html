@@ -1,0 +1,79 @@
+<page data-lead="Gera imagens a partir de um prompt textual, com suporte a instruções de estilo, configurações do modelo e imagens de referência.">
+  <h2>Image Generation - <code>/davinci/image-generation</code></h2>
+  <endpoint method="POST" path="/davinci/image-generation"></endpoint>
+  <p>Gera imagens a partir de um prompt textual, com suporte a instruções de estilo, configurações do modelo e imagens de referência. Use quando precisar criar ou transformar imagens de forma programática via LLM multimodal.</p>
+
+  <h3>Parâmetros</h3>
+  <table>
+    <thead><tr><th>Parâmetro</th><th>Tipo</th><th>Descrição</th><th>Exemplo</th></tr></thead>
+    <tbody>
+      <tr><td><code>user_input</code></td><td><code>string</code></td><td>Prompt principal que descreve a imagem a ser gerada.</td><td><code>"Uma pizzaria napolitana à noite"</code></td></tr>
+      <tr><td><code>instructions</code></td><td><code>string</code> — opcional</td><td>Instruções adicionais de estilo ou diretrizes criativas para a geração.</td><td><code>"Estilo de animação 3D como as da Disney"</code></td></tr>
+      <tr><td><code>config</code></td><td><code>string</code> (JSON) — opcional</td><td>Configurações do modelo: <code>model</code>, <code>temperature</code>, <code>top_p</code>, <code>max_output_tokens</code>, <code>aspect_ratio</code>, <code>number_of_images</code>.</td><td><code>{"model": "gemini-2.5-flash-image", "aspect_ratio": "9:16"}</code></td></tr>
+      <tr><td><code>files</code></td><td><code>file[]</code> — opcional</td><td>Imagens de referência para guiar a geração. Aceita múltiplos uploads.</td><td><code>reference.png</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Config (explicação de cada parâmetro)</h3>
+  <p>O campo <code>config</code> é opcional. Quando não enviado, a API usa o <code>DEFAULT_CONTENT_CONFIG</code> interno do módulo de geração. Os campos enviados sobrescrevem apenas os valores correspondentes.</p>
+  <table>
+    <thead><tr><th>Campo</th><th>Tipo</th><th>O que faz</th><th>Default</th><th>Quando ajustar</th></tr></thead>
+    <tbody>
+      <tr><td><code>model</code></td><td><code>string</code></td><td>Modelo multimodal usado na geração (<code>gemini-2.5-flash-image</code>, <code>gemini-3-pro-image-preview</code>).</td><td><code>"gemini-2.5-flash-image"</code></td><td>Troque para o modelo <code>pro</code> quando precisar de maior qualidade ou mais tokens de saída.</td></tr>
+      <tr><td><code>temperature</code></td><td><code>float</code> (0.0–2.0)</td><td>Controla a criatividade da geração. Valores baixos = resultados mais previsíveis.</td><td><code>0.75</code></td><td>Reduza para maior fidelidade ao prompt, aumente para mais variação criativa.</td></tr>
+      <tr><td><code>top_p</code></td><td><code>float</code> (0.0–1.0)</td><td>Nucleus sampling: limita o conjunto de tokens considerados.</td><td><code>0.85</code></td><td>Reduza para saídas mais conservadoras e consistentes.</td></tr>
+      <tr><td><code>max_output_tokens</code></td><td><code>integer</code></td><td>Limite de tokens de saída. <code>gemini-2.5-flash-image</code>: <code>1024</code> ou <code>2048</code>. <code>gemini-3-pro-image-preview</code>: <code>4096</code> ou <code>8192</code>.</td><td><code>1024</code></td><td>Aumente ao usar modelos <code>pro</code> ou quando a resposta textual for truncada.</td></tr>
+      <tr><td><code>aspect_ratio</code></td><td><code>string</code></td><td>Proporção da imagem gerada. Ver valores aceitos abaixo.</td><td><code>"1:1"</code></td><td>Ajuste conforme o destino da imagem (feed, stories, banner).</td></tr>
+      <tr><td><code>number_of_images</code></td><td><code>integer</code> (≥ 1)</td><td>Quantidade de imagens geradas. Cada imagem é uma chamada independente ao modelo.</td><td><code>1</code></td><td>Aumente para obter variações, lembrando que custo e latência crescem proporcionalmente.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Valores aceitos para <code>aspect_ratio</code></h3>
+  <table>
+    <thead><tr><th>Valor</th><th>Formato</th><th>Uso típico</th></tr></thead>
+    <tbody>
+      <tr><td><code>1:1</code></td><td>Quadrado</td><td>Post de feed, avatar, thumbnail</td></tr>
+      <tr><td><code>3:4</code></td><td>Retrato</td><td>Retratos, catálogo de produtos</td></tr>
+      <tr><td><code>4:3</code></td><td>Paisagem</td><td>Imagens clássicas, apresentações</td></tr>
+      <tr><td><code>9:16</code></td><td>Retrato full</td><td>Stories, Reels, TikTok</td></tr>
+      <tr><td><code>16:9</code></td><td>Widescreen</td><td>Banners, capas, vídeo/hero</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Request</h3>
+  <pre data-lang="bash"><code>
+curl --location 'http://localhost:8000/davinci/image-generation' \
+--form 'user_input="Crie a imagem de uma pizzaria napolitana"' \
+--form 'instructions="O estilo deve ser uma animação 3D como as da Disney"' \
+--form 'config="{
+  \"model\": \"gemini-2.5-flash-image\",
+  \"temperature\": 0.75,
+  \"top_p\": 0.85,
+  \"max_output_tokens\": 1024,
+  \"aspect_ratio\": \"9:16\",
+  \"number_of_images\": 2
+}"' \
+--form 'files=@"/path/to/file"'
+</code></pre>
+
+  <h3>Response</h3>
+  <pre data-lang="json"><code>
+{
+    "job_id": "job_1788272755499472800EkNu",
+    "status": "success",
+    "status_code": 200,
+    "result": {
+        "text_response": "Com certeza! Aqui está uma pizzaria napolitana em estilo de animação 3D da Disney:\n\n \n",
+        "images": [
+            "https://hsenyunovbrmjejxqvjn.supabase.co/storage/v1/object/public/images/image_generations/img_1788272774157403200z8UW",
+            "https://hsenyunovbrmjejxqvjn.supabase.co/storage/v1/object/public/images/image_generations/img_17882727741574032007MBY"
+        ]
+    },
+    "time": {
+        "start": "2026-09-01 11:25:55",
+        "end": "2026-09-01 11:26:19",
+        "duration_seconds": 24
+    }
+}
+</code></pre>
+</page>

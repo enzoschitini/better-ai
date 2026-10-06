@@ -1,0 +1,58 @@
+<page data-lead="The BetterAI Web Service Network is a high-performance modular API designed to orchestrate artificial intelligence services in production.">
+  <p>The <strong>BetterAI Web Service Network</strong> is a high-performance modular API designed to orchestrate artificial intelligence services in production. It exposes a set of specialized routers — deep web research, document parsing, image generation and vector store management — all accessible via HTTP with API key authentication.</p>
+  <p>The API is built on <strong>FastAPI</strong> and served with <strong>Uvicorn</strong>, offering automatic interactive documentation via Swagger UI (<code>/docs</code>) and native support for asynchronous requests. Each endpoint returns standardized responses with <code>job_id</code>, <code>status</code>, payload (<code>result</code> or <code>content</code>) and execution time metrics, making traceability and integration with data pipelines easier.</p>
+  <p><strong>Base URL:</strong> <code>http://localhost:8000</code><br><strong>Authentication:</strong> <code>X-API-Key</code> in the header of all protected routes<br><strong>Current version:</strong> <code>1.0.0</code></p>
+  <p><a href="http://localhost:8000">🌐 Domain</a> · <a href="http://localhost:8000/health">🩺 Health</a> · <a href="http://localhost:8000/docs">📄 Documentation</a></p>
+
+  <h2>Start application</h2>
+  <pre data-lang="bash"><code>
+# uvicorn web_services:app --reload
+</code></pre>
+  <pre><code>
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [8036] using StatReload
+INFO:     Router included: /davinci
+INFO:     Router included: /deep-research
+INFO:     Router included: /parse-content
+INFO:     Router included: /vector-store
+INFO:     Started server process [30416]
+INFO:     Waiting for application startup.
+INFO:
+
+    ╔═══════════════════════════════════════════════════════════════════════╗
+
+        ██████╗ ███████╗████████╗████████╗███████╗██████╗      █████╗ ██╗ ✦
+        ██╔══██╗██╔════╝╚══██╔══╝╚══██╔══╝██╔════╝██╔══██╗    ██╔══██╗██║
+        ██████╔╝█████╗     ██║      ██║   █████╗  ██████╔╝    ███████║██║
+        ██╔══██╗██╔══╝     ██║      ██║   ██╔══╝  ██╔══██╗    ██╔══██║██║
+        ██████╔╝███████╗   ██║      ██║   ███████╗██║  ██║    ██║  ██║██║
+        ╚═════╝ ╚══════╝   ╚═╝      ╚═╝   ╚══════╝╚═╝  ╚═╝    ╚═╝  ╚═╝╚═╝
+
+    ╚═══════════════════════════════════════════════════════════════════════╝
+
+                        ✦ Where intelligence finds purpose. ✦
+
+INFO:     BetterAI Web Service Network initialized successfully at 2026-05-21 16:19:25.
+INFO:     Version: 1.0.0
+INFO:     Domain: http://localhost:8000
+INFO:     Health check available at: http://localhost:8000/health
+INFO:     Documentation available at: http://localhost:8000/docs
+INFO:     Application startup complete.
+</code></pre>
+
+  <h2>Routers</h2>
+
+  <h2>Healthy - <code>/healthy</code></h2>
+  <endpoint method="GET" path="/health"></endpoint>
+  <pre data-lang="bash"><code>
+curl -X GET "http://127.0.0.1:8000/health"
+</code></pre>
+
+  <h2>Healthy With Authorization - <code>/health-authorization</code></h2>
+  <endpoint method="GET" path="/health-authorization"></endpoint>
+  <pre data-lang="bash"><code>
+curl --location 'http://localhost:8000/health-authorization' \
+--header 'X-API-Key: ******'
+</code></pre>
+  <p><em>Author: Enzo Schitini</em></p>
+</page>

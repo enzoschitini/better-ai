@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Web Service API | BetterAI Docs</title>
+<meta name="description" content="The WebServiceAPI class acts as a configurable wrapper to create and manage a FastAPI application.">
+<link rel="canonical" href="pages/en/api/web-service-network-api/web-service-api.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="../../../../_design-system/css/design-system.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span>Layout prototype. Page content is placeholder text.</span>
+    <button type="button" aria-label="Dismiss notice"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../pages/en/index.html">
+        <img src="../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Search the documentation">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Search...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="#"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="#">Swagger UI<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Language"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>EN</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="false"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="false"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="true"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light and dark theme"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Documentation areas"><a class="tab" href="../../../../pages/en/index.html">Overview</a><a class="tab" href="../../../../pages/en/getting-started/index.html">Getting Started</a><a class="tab" href="../../../../pages/en/modules/index.html">Modules</a><a class="tab" href="../../../../pages/en/agents/index.html">Agents</a><a class="tab" href="../../../../pages/en/internal-source-code/index.html">Internal Source Code</a><a class="tab" href="../../../../pages/en/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../pages/en/api/index.html" aria-current="page">API</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>API</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Web Service API</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Documentation navigation">
+    <nav class="side"><div class="side-areas"><a href="../../../../pages/en/index.html">Overview</a><a href="../../../../pages/en/getting-started/index.html">Getting Started</a><a href="../../../../pages/en/modules/index.html">Modules</a><a href="../../../../pages/en/agents/index.html">Agents</a><a href="../../../../pages/en/internal-source-code/index.html">Internal Source Code</a><a href="../../../../pages/en/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/en/api/index.html" aria-current="page">API</a></div><a class="side-link" href="../../../../pages/en/api/index.html"><span>Overview</span></a><div class="side-group"><p class="side-title">Tools</p><ul><li><a class="side-link" href="../../../../pages/en/api/curl-compiler.html"><span>Curl Compiler</span></a></li></ul></div><div class="side-group"><p class="side-title">Web Service Network - API</p><ul><li><a class="side-link" href="../../../../pages/en/api/web-service-network-api/web-service-api.html" aria-current="page"><span>Web Service API</span></a></li><li><a class="side-link" href="../../../../pages/en/api/web-service-network-api/use.html"><span>Use</span></a></li></ul></div><div class="side-group"><p class="side-title">Deep Research</p><ul><li><a class="side-link" href="../../../../pages/en/api/deep-research/context-builder.html"><span>Context Builder</span></a></li></ul></div><div class="side-group"><p class="side-title">Parse Content</p><ul><li><a class="side-link" href="../../../../pages/en/api/parse-content/document-parse.html"><span>Document Parse</span></a></li></ul></div><div class="side-group"><p class="side-title">Image Generation</p><ul><li><a class="side-link" href="../../../../pages/en/api/image-generation/image-generation.html"><span>Image Generation</span></a></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Web Service Network - API</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Web Service API</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copy page</span></button>
+            </div>
+          </div>
+          <p class="lead">The WebServiceAPI class acts as a configurable wrapper to create and manage a FastAPI application.</p>
+          <details class="toc-inline"><summary>On this page</summary><ul></ul></details>
+        </header>
+        <div class="prose"><h2 id="overview"><a class="anchor" href="#overview" aria-label="Link para esta seção">#</a>Overview</h2>
+  <p>The <code>WebServiceAPI</code> class acts as a configurable wrapper to create and manage a FastAPI application. Its purpose is to simplify the web application initialization process, configure essential middlewares, register default routes and automatically integrate additional routers dynamically from Python packages.</p>
+  <p>It solves the problem of repetition and scattering of common settings in FastAPI APIs, bringing together in one place all the initial configuration, CORS middleware, basic health and authentication routes, as well as making it easier to extend the API with external routers. In practice, it can be used to speed up the development of RESTful APIs, ensuring a consistent base and allowing modular integration and easier testing.</p>
+  <p>The class is especially useful in projects that want to keep a clean and scalable architecture, with clear logs of the application lifecycle and centralized control of configuration via a dictionary and environment variables.</p>
+
+  <h2 id="execution-flow"><a class="anchor" href="#execution-flow" aria-label="Link para esta seção">#</a>Execution Flow</h2>
+  <ol>
+    <li><strong>Class instantiation</strong><br>The developer creates an instance of <code>WebServiceAPI</code>, optionally passing a custom settings dictionary. If no dictionary is passed, a default one is used through the <code>CONFIG</code> import.</li>
+    <li><strong>Application initialization with <code>initialize()</code></strong><br>When the <code>initialize()</code> method is called, the FastAPI application is created with name, description, version, lifecycle management and CORS middlewares configured, and the default routes (<code>/health</code>, <code>/</code>, <code>/health-authorization</code>) are registered.</li>
+    <li><strong>Including additional routers</strong><br>After initializing the application, the developer can include additional routers using the <code>include_routers()</code> or <code>test_routers()</code> methods, passing lists of FastAPI routers. Each inclusion is logged to make tracking easier.</li>
+    <li><strong>Dynamic router discovery</strong><br>If desired, the <code>collect_routers(package_name)</code> method can be used to dynamically load routers defined in the modules of a given package, allowing modular extensibility.</li>
+    <li><strong>Getting the FastAPI instance</strong><br>Finally, to run or manipulate the application outside the class, the <code>get_app()</code> method returns the already initialized FastAPI instance.</li>
+    <li><strong>Execution and lifecycle logging</strong><br>When the application starts up, a banner and important information are shown in the logs. The application shutdown events are also recorded.</li>
+  </ol>
+
+  <h2 id="class-methods-table"><a class="anchor" href="#class-methods-table" aria-label="Link para esta seção">#</a>Class Methods Table</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Method</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Initializes the class with settings and prepares the logger</td></tr>
+      <tr><td><code>initialize</code></td><td>Creates and configures the FastAPI application</td></tr>
+      <tr><td><code>include_routers</code></td><td>Adds routers to the application after initialization</td></tr>
+      <tr><td><code>test_routers</code></td><td>Adds routers to the application for testing purposes</td></tr>
+      <tr><td><code>collect_routers</code></td><td>Discovers and imports routers from a package dynamically</td></tr>
+      <tr><td><code>get_app</code></td><td>Returns the initialized FastAPI instance</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="environment-variables"><a class="anchor" href="#environment-variables" aria-label="Link para esta seção">#</a>Environment Variables</h2>
+  <ul>
+    <li><code>DOMAIN</code>: Defines the base domain of the application, used to display URLs and documentation. If not set, it defaults to <code>"http://localhost:8000"</code>.</li>
+  </ul>
+
+  <h2 id="key-architecture-points-and-insights"><a class="anchor" href="#key-architecture-points-and-insights" aria-label="Link para esta seção">#</a>Key Architecture Points and Insights</h2>
+  <ul>
+    <li>The class encapsulates the FastAPI configuration based on an external dictionary, making parameterization easier without changing code.</li>
+    <li>Use of <code>asynccontextmanager</code> to control the lifecycle of the FastAPI application, with clear logs at startup and shutdown.</li>
+    <li>Dynamic inclusion of routers with <code>collect_routers</code> uses introspection via <code>pkgutil</code> and <code>importlib</code>, allowing API modularization.</li>
+    <li>Clear separation between basic configuration (middleware, default routes) and expansion through additional routes.</li>
+    <li>The default logger is tied to the <code>uvicorn</code> server, ensuring integration with the ASGI runtime logs.</li>
+    <li>The default routes include an authorization route that depends on validation via API key, using the static method <code>Authorization.validate_api_key</code>.</li>
+  </ul>
+
+  <h2 id="class-and-methods-description"><a class="anchor" href="#class-and-methods-description" aria-label="Link para esta seção">#</a>Class and Methods Description</h2>
+
+  <h2 id="webserviceapi-class"><a class="anchor" href="#webserviceapi-class" aria-label="Link para esta seção">#</a><code>WebServiceAPI</code> Class</h2>
+
+  <h3 id="description"><a class="anchor" href="#description" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>This class represents a configurable wrapper for FastAPI applications, allowing a web API to be initialized from external settings, adding default middlewares and routes, managing the application lifecycle and extending the API through the dynamic inclusion of routers coming from Python packages.</p>
+
+  <h3 id="constructor-arguments"><a class="anchor" href="#constructor-arguments" aria-label="Link para esta seção">#</a>Constructor Arguments</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argument</th><th>Type</th><th>Description</th><th>Default Value</th></tr></thead>
+    <tbody>
+      <tr><td><code>config</code></td><td>dict</td><td>Dictionary with settings for the web service</td><td><code>CONFIG</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Initializes the class, setting the configuration, logger and base domain for the application.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>config</code> (dict): settings for the API.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>Returns no value.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>ws_api = <span class="t-f">WebServiceAPI</span>()  <span class="t-c"># Usa CONFIG padrão</span>
+ws_api_custom = <span class="t-f">WebServiceAPI</span>(config=my_config_dict)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-initialize"><a class="anchor" href="#2-initialize" aria-label="Link para esta seção">#</a>2. <code>initialize</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Creates and configures a FastAPI instance with title, description, version and the defined lifecycle. Adds CORS middleware and registers default routes for the health check and the root route.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>FastAPI: initialized FastAPI application instance.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>app = ws_api.<span class="t-f">initialize</span>()
+<span class="t-c"># app agora está pronta para uso em um servidor ASGI</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-include-routers"><a class="anchor" href="#3-include-routers" aria-label="Link para esta seção">#</a>3. <code>include_routers</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Includes a list of FastAPI routers in the application, making sure the application has already been initialized. Logs the inclusion of each router.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>routers</code> (list): list of FastAPI router objects.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>Returns no value.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>RuntimeError: if the application is not initialized.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>ws_api.<span class="t-f">include_routers</span>([user_router, product_router])</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-test-routers"><a class="anchor" href="#4-test-routers" aria-label="Link para esta seção">#</a>4. <code>test_routers</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Similar to <code>include_routers</code>, it includes a list of routers for possible testing or ad-hoc use, with logging of the inclusion.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>routers</code> (list): list of routers to include.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>Returns no value.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>RuntimeError: if the application is not initialized.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>ws_api.<span class="t-f">test_routers</span>([test_router])</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="5-collect-routers"><a class="anchor" href="#5-collect-routers" aria-label="Link para esta seção">#</a>5. <code>collect_routers</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Dynamically discovers and imports all routers named <code>router</code> inside the modules of the given package, returning them in a list.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>package_name</code> (str): name of the package (dotted path) in which to look for modules with routers.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>list: list of FastAPI router instances found.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>routers = ws_api.<span class="t-f">collect_routers</span>(<span class="t-s">&quot;src.api.v1&quot;</span>)
+<span class="t-c"># Retorna todos os routers em src/api/v1/*</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="6-get-app"><a class="anchor" href="#6-get-app" aria-label="Link para esta seção">#</a>6. <code>get_app</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Returns the initialized FastAPI instance to be used externally.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>FastAPI: FastAPI instance.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>RuntimeError: if called before the application is initialized.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>app = ws_api.<span class="t-f">get_app</span>()</code></pre><button class="copy floating" type="button"></button></div></div>
+  <p><strong>Complete practical examples:</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>ws_api = <span class="t-f">WebServiceAPI</span>()
+app = ws_api.<span class="t-f">initialize</span>()
+
+routers = ws_api.<span class="t-f">collect_routers</span>(<span class="t-s">&quot;src.api.v1&quot;</span>)
+ws_api.<span class="t-f">include_routers</span>(routers)
+
+<span class="t-c"># Agora app está pronto para ser executado</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>Another simplified example:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>ws_api = <span class="t-f">WebServiceAPI</span>()
+ws_api.<span class="t-f">initialize</span>()
+
+ws_api.<span class="t-f">include_routers</span>([user_router])
+
+app = ws_api.<span class="t-f">get_app</span>()</code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>The documentation above provides essential details for understanding, extending and practically using the <code>WebServiceAPI</code> class in real projects, making it easier to develop modular, well-configured APIs with FastAPI.</p></div>
+        <div class="feedback"></div>
+        <p class="source">Source: <code>ipynb_contents/API/2. Web Service Network - API/1. Web Service API.ipynb</code></p>
+        <nav class="pager" aria-label="Neighboring pages"><a class="pager-link prev" href="../../../../pages/en/api/curl-compiler.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Previous</small><span>Curl Compiler</span></div></a><a class="pager-link next" href="../../../../pages/en/api/web-service-network-api/use.html"><div><small>Next</small><span>Use</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="On this page"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-brand">
+        <a class="brand" href="../../../../pages/en/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+        <p>Where intelligence finds purpose.</p>
+      </div>
+      <div class="foot-col"><h2>Resources</h2><a href="#">Swagger UI</a><a href="#">GitHub</a></div>
+      <div class="foot-col"><h2>Platform</h2><a href="../../../../pages/en/api/web-service-network-api/use.html">Use</a><a href="../../../../pages/en/streamlit-applications/acquarello.html">Acquarello</a><a href="../../../../pages/en/streamlit-applications/content-generator.html">Content Generator</a></div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Search the documentation">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Search pages and sections" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Results"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>navigate</span></span>
+    <span><kbd>Enter</kbd><span>open</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "en", "root": "../../../../", "index": "../../../../search-en.json", "alt": {"pt": "pages/pt/api/web-service-network-api/web-service-api.html", "it": "pages/it/api/web-service-network-api/web-service-api.html", "en": "pages/en/api/web-service-network-api/web-service-api.html"}, "i": {"noResults": "Nothing found for “%s”. Try a module name, such as “Pinecone”.", "suggestions": "Suggestions"}};</script>
+<script src="../../../../_design-system/js/ds.js"></script>
+<script src="../../../../_design-system/js/docs.js"></script>
+</body>
+</html>
