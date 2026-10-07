@@ -18,12 +18,23 @@
         "page": "getting-started/quickstart"
       },
       {
-        "label": "GitHub",
+        "page": "getting-started/licence"
+      },
+      {
+        "label": {
+          "pt": "Código-fonte",
+          "it": "Codice sorgente",
+          "en": "Source code"
+        },
         "url": "https://github.com/enzoschitini/better-ai"
       },
       {
-        "label": "LinkedIn",
-        "url": "https://www.linkedin.com/in/enzoschitini"
+        "label": {
+          "pt": "Reportar um problema",
+          "it": "Segnala un problema",
+          "en": "Report an issue"
+        },
+        "url": "https://github.com/enzoschitini/better-ai/issues"
       }
     ],
     "platform": [
@@ -163,7 +174,12 @@
       "emptyPending": "O conteúdo de <code>%s</code> ainda não foi publicado nesta documentação.",
       "goTo": "Ir para %s",
       "banner": "Criado por Enzo Schitini. Convido você a se conectar comigo no LinkedIn.",
-      "closeBanner": "Fechar aviso"
+      "closeBanner": "Fechar aviso",
+      "footDocs": "Documentação",
+      "footCreator": "Criador",
+      "footRepo": "Repositório no GitHub",
+      "footLicense": "Licença MIT",
+      "footMadeBy": "Criado por"
     },
     "it": {
       "skip": "Vai al contenuto",
@@ -207,7 +223,12 @@
       "emptyPending": "Il contenuto di <code>%s</code> non è ancora stato pubblicato in questa documentazione.",
       "goTo": "Vai a %s",
       "banner": "Creato da Enzo Schitini. Ti invito a connetterti con me su LinkedIn.",
-      "closeBanner": "Chiudi avviso"
+      "closeBanner": "Chiudi avviso",
+      "footDocs": "Documentazione",
+      "footCreator": "Creatore",
+      "footRepo": "Repository su GitHub",
+      "footLicense": "Licenza MIT",
+      "footMadeBy": "Creato da"
     },
     "en": {
       "skip": "Skip to content",
@@ -251,7 +272,12 @@
       "emptyPending": "The content of <code>%s</code> has not been published to this documentation yet.",
       "goTo": "Go to %s",
       "banner": "Created by Enzo Schitini. I invite you to connect with me on LinkedIn.",
-      "closeBanner": "Dismiss notice"
+      "closeBanner": "Dismiss notice",
+      "footDocs": "Documentation",
+      "footCreator": "Creator",
+      "footRepo": "Repository on GitHub",
+      "footLicense": "MIT License",
+      "footMadeBy": "Created by"
     }
   },
   "home": {
@@ -294,7 +320,8 @@
         "h": "Criador do projeto",
         "text": "Nos projetos de IA que desenvolvi, percebi uma lacuna clara: faltavam pilares sólidos para sustentar um Backend-AI confiável. Foi isso que me motivou a criar uma arquitetura eficiente, segura e escalável, pensada para empresas. Minha missão é simplificar o complexo e entregar estrutura real para quem quer inovar com IA.</p><p>Se o projeto é útil para você, vale conversar comigo.",
         "role": "Data Scientist & Data Analyst • AI Engineer @stefanini • SQL",
-        "gh": "Perfil e projetos de código aberto."
+        "gh": "Perfil e projetos de código aberto.",
+        "short": "Data Scientist & AI Engineer"
       }
     },
     "it": {
@@ -336,7 +363,8 @@
         "h": "Creatore del progetto",
         "text": "Nei progetti di IA che ho sviluppato ho notato una lacuna evidente: mancavano pilastri solidi per sostenere un Backend-AI affidabile. È questo che mi ha spinto a creare un’architettura efficiente, sicura e scalabile, pensata per le aziende. La mia missione è semplificare il complesso e offrire una struttura reale a chi vuole innovare con l’IA.</p><p>Se il progetto ti è utile, parliamone.",
         "role": "Data Scientist & Data Analyst • AI Engineer @stefanini • SQL",
-        "gh": "Profilo e progetti open source."
+        "gh": "Profilo e progetti open source.",
+        "short": "Data Scientist & AI Engineer"
       }
     },
     "en": {
@@ -378,7 +406,8 @@
         "h": "Project creator",
         "text": "In the AI projects I have built, I noticed a clear gap: there were no solid pillars to support a reliable AI backend. That is what motivated me to create an efficient, secure and scalable architecture designed for companies. My mission is to simplify the complex and deliver real structure to those who want to innovate with AI.</p><p>If the project is useful to you, let’s talk.",
         "role": "Data Scientist & Data Analyst • AI Engineer @stefanini • SQL",
-        "gh": "Profile and open source projects."
+        "gh": "Profile and open source projects.",
+        "short": "Data Scientist & AI Engineer"
       }
     }
   }

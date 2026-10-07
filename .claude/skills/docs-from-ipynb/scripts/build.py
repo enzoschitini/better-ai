@@ -89,6 +89,18 @@ def asset_v(path: Path) -> str:
     return "?v=" + hashlib.md5(path.read_bytes()).hexdigest()[:8]
 
 
+def css_links(root: str, cfg: dict) -> str:
+    """One <link> per stylesheet the design system imports, each with its own ?v=hash.
+
+    design-system.css pulls the partials in with @import, and those urls carry no version,
+    so a browser keeps serving a stale content.css even when the entry file is fresh.
+    Linking the partials directly (same order as the @imports) closes that gap.
+    """
+    return "\n".join('<link rel="stylesheet" href="%s">'
+                     % (u if u.startswith("http") else "%s_design-system/css/%s" % (root, u))
+                     for u in cfg["_cssurls"])
+
+
 def strip_tags(s: str) -> str:
     s = re.sub(r"(?is)<(script|style)\b.*?</\1>", " ", s)
     s = re.sub(r"(?s)<[^>]+>", " ", s)
@@ -782,14 +794,23 @@ def page_html(page, lang, cfg, areas, pages, by_id, body, lead, status):
         edit = ('<a class="edit" href="%s"%s>%s%s</a>'
                 % (esc(edit_url), ext(edit_url), ico("edit"), esc(t["edit"])))
 
-    footer_res = "".join(
-        '<a href="%s%s">%s</a>' % (root, by_id[l["page"]].url(lang), esc(by_id[l["page"]].title))
-        if "page" in l else
-        '<a href="%s"%s>%s</a>' % (esc(l["url"]), ext(l["url"]), esc(l["label"]))
-        for l in cfg["footer"]["resources"])
-    footer_plat = "".join(
-        '<a href="%s%s">%s</a>' % (root, by_id[pid].url(lang), esc(by_id[pid].title))
-        for pid in cfg["footer"]["platform"] if pid in by_id)
+    def foot_link(l):
+        if "page" in l:
+            return '<a href="%s%s">%s</a>' % (root, by_id[l["page"]].url(lang),
+                                              esc(by_id[l["page"]].title))
+        label = l["label"][lang] if isinstance(l["label"], dict) else l["label"]
+        return '<a href="%s"%s>%s</a>' % (esc(l["url"]), ext(l["url"]), esc(label))
+
+    footer_res = "".join(foot_link(l) for l in cfg["footer"]["resources"])
+    footer_docs = "".join('<a href="%s%s">%s</a>' % (root, by_id[a.area_id].url(lang), esc(a.title))
+                          for a in areas)
+    cr = cfg["home"][lang]["creator"]
+    footer_creator = (
+        '<div class="foot-me"><img src="%sassets/img/profile.jpg" alt="" width="44" height="44">'
+        '<div><strong>Enzo Schitini</strong><span>%s</span></div></div>'
+        '<a href="%s"%s>LinkedIn</a><a href="%s"%s>GitHub</a>'
+        % (root, esc(cr["short"]), esc(cfg["links"]["linkedin"]), ext(cfg["links"]["linkedin"]),
+           esc(cfg["links"]["profile"]), ext(cfg["links"]["profile"])))
 
     title_tag = (cfg["site"]["name"] if page.kind == "home"
                  else "%s | %s" % (page.title, cfg["site"]["name"]))
@@ -821,7 +842,7 @@ def page_html(page, lang, cfg, areas, pages, by_id, body, lead, status):
     document.documentElement.dataset.theme = t;
   })();
 </script>
-<link rel="stylesheet" href="%(root)s_design-system/css/design-system.css%(vCss)s">
+%(cssLinks)s
 </head>
 <body>
 <a class="skip" href="#main">%(skip)s</a>
@@ -886,12 +907,20 @@ def page_html(page, lang, cfg, areas, pages, by_id, body, lead, status):
       <aside class="toc" id="toc" data-toc aria-label="%(onThisPage)s"></aside>
     </div>
     <footer class="site-foot">
-      <div class="foot-brand">
-        <a class="brand" href="%(home)s"><span class="brand-name">%(brand)s</span><span class="brand-sub">%(brandsub)s</span></a>
-        <p>%(tagline)s</p>
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="%(home)s"><span class="brand-name">%(brand)s</span><span class="brand-sub">%(brandsub)s</span></a>
+          <p>%(tagline)s</p>
+          <a class="btn-soft" href="%(github)s"%(githubExt)s>%(codeIco)s%(footRepo)s</a>
+        </div>
+        <div class="foot-col"><h2>%(footDocs)s</h2>%(footerDocs)s</div>
+        <div class="foot-col"><h2>%(footRes)s</h2>%(footerRes)s</div>
+        <div class="foot-col"><h2>%(footCreator)s</h2>%(footerCreator)s</div>
       </div>
-      <div class="foot-col"><h2>%(footRes)s</h2>%(footerRes)s</div>
-      <div class="foot-col"><h2>%(footPlat)s</h2>%(footerPlat)s</div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 %(brand)s &middot; %(footLicense)s</span>
+        <span>%(footMadeBy)s <a href="%(linkedin)s"%(linkedinExt)s>Enzo Schitini</a></span>
+      </div>
     </footer>
   </div>
 </div>
@@ -965,11 +994,19 @@ def page_html(page, lang, cfg, areas, pages, by_id, body, lead, status):
         "tagline": esc(cfg["site"]["tagline"]),
         "footRes": esc(t["footRes"]),
         "footPlat": esc(t["footPlat"]),
+        "footDocs": esc(t["footDocs"]),
+        "footCreator": esc(t["footCreator"]),
+        "footRepo": esc(t["footRepo"]),
+        "footLicense": esc(t["footLicense"]),
+        "footMadeBy": esc(t["footMadeBy"]),
+        "footerDocs": footer_docs,
+        "footerCreator": footer_creator,
+        "linkedin": esc(cfg["links"]["linkedin"]),
+        "linkedinExt": ext(cfg["links"]["linkedin"]),
         "footerRes": footer_res,
-        "footerPlat": footer_plat,
         "banner": banner,
         "docs": json.dumps(docs_cfg, ensure_ascii=False),
-        "vCss": cfg.get("_assetv", {}).get("css", ""),
+        "cssLinks": css_links(root, cfg),
         "vDs": cfg.get("_assetv", {}).get("ds", ""),
         "vDocs": cfg.get("_assetv", {}).get("docs", ""),
     }
@@ -1036,7 +1073,10 @@ def build(repo: Path, out_dir: Path, cfg: dict, report: list):
     src_root = repo / SRC_DIR_NAME
     content_dir = repo / WEB_DIR_NAME / "_content"
     ds_dir = repo / WEB_DIR_NAME / "_design-system"
-    cfg["_assetv"] = {"css": asset_v(ds_dir / "css" / "design-system.css"),
+    entry = (ds_dir / "css" / "design-system.css").read_text(encoding="utf-8")
+    cfg["_cssurls"] = [u if u.startswith("http") else u + asset_v(ds_dir / "css" / u)
+                       for u in re.findall(r"@import\s+url\([\"']?([^\"')]+)", entry)]
+    cfg["_assetv"] = {
                       "ds": asset_v(ds_dir / "js" / "ds.js"),
                       "docs": asset_v(ds_dir / "js" / "docs.js")}
     areas, pages = build_tree(src_root, cfg)
