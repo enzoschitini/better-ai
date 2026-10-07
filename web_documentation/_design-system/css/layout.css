@@ -76,3 +76,11 @@
 .toc a:hover { color: var(--ink); }
 .toc a.lvl-3 { padding-left: 32px; }
 .toc a[aria-current="true"] { color: var(--primary); font-weight: 500; border-left-color: var(--primary); }
+.banner a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.profile { display: flex; flex-direction: column; gap: 14px; align-items: flex-start; padding: 20px; border: 1px solid var(--line, rgba(128,128,128,.25)); border-radius: 16px; }
+.profile img { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; flex: none; margin: 0; }
+.profile-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.profile-info span { opacity: .75; font-size: .9rem; }
+.profile-info p { margin: 4px 0; }
+.profile-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.profile-info strong { font-size: 1.5rem; line-height: 1.2; }
