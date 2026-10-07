@@ -125,6 +125,7 @@ ICON = {
     "boxes": '<path d="M12 3 4 7v10l8 4 8-4V7z"/><path d="m4 7 8 4 8-4M12 11v10"/>',
     "code": '<path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/>',
     "layout": '<rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 9h18M9 9v11"/>',
+    "user": '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
     "folder": '<path d="M3.5 7a2 2 0 0 1 2-2h4l2 2.5h7a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/>',
 }
 
@@ -588,16 +589,27 @@ def home_body(page, lang, cfg, areas, by_id):
                   for p in h["popular"] if p["id"] in by_id)
     hero = render_media('src="%sassets/img/betterai-cover.png" caption="%s"'
                         % (page.root_prefix(lang), cfg["site"]["tagline"]))
-    return (hero + "<p>%s</p><p>%s</p><ul>%s</ul>"
+    cr = h["creator"]
+    lk = lambda href, label, i: ('<a class="btn-soft" href="%s" target="_blank" rel="noopener">%s%s</a>'
+                                 % (esc(href), ico(i), label))
+    creator = ('<h2 id="criador">%s</h2><div class="profile">'
+               '<img src="%sassets/img/profile.jpg" alt="Enzo Schitini" width="96" height="96">'
+               '<div class="profile-info"><strong>Enzo Schitini</strong><span>%s</span><p>%s</p>'
+               '<div class="profile-links">%s%s</div></div></div>'
+               % (esc(cr["h"]), page.root_prefix(lang), esc(cr["role"]), cr["text"],
+                  lk(cfg["links"]["linkedin"], "LinkedIn", "user"),
+                  lk(cfg["links"]["profile"], "GitHub", "code")))
+    return (hero + "<p>%s</p>"
             "<h2 id=\"comece\">%s</h2><div class=\"cards one\">%s</div>"
             "<div class=\"callout\" data-kind=\"tip\"><p>%s</p></div>"
-            "<h2 id=\"areas\">%s</h2><div class=\"cards\">%s</div>"
+            "<p>%s</p><ul>%s</ul>"
+            "%s<h2 id=\"areas\">%s</h2><div class=\"cards\">%s</div>"
             "<h2 id=\"populares\">%s</h2><div class=\"cards\">%s</div>"
-            % (h["p1"], h["p2"], "".join("<li>%s</li>" % i for i in h["li"]),
-               esc(h["startH"]),
+            % (h["p1"], esc(h["startH"]),
                card_html(url(quick["id"]), quick["icon"], by_id[quick["id"]].title,
                          quick["text"], row=True),
-               h["tip"], esc(h["exploreH"]), cards, esc(t["popular"]), pop))
+               h["tip"], h["p2"], "".join("<li>%s</li>" % i for i in h["li"]),
+               creator, esc(h["exploreH"]), cards, esc(t["popular"]), pop))
 
 
 def overview_body(page, lang, cfg, by_id):
@@ -770,9 +782,11 @@ def page_html(page, lang, cfg, areas, pages, by_id, body, lead, status):
         edit = ('<a class="edit" href="%s"%s>%s%s</a>'
                 % (esc(edit_url), ext(edit_url), ico("edit"), esc(t["edit"])))
 
-    footer_res = "".join('<a href="%s"%s>%s</a>'
-                         % (esc(l["url"]), ext(l["url"]), esc(l["label"]))
-                         for l in cfg["footer"]["resources"])
+    footer_res = "".join(
+        '<a href="%s%s">%s</a>' % (root, by_id[l["page"]].url(lang), esc(by_id[l["page"]].title))
+        if "page" in l else
+        '<a href="%s"%s>%s</a>' % (esc(l["url"]), ext(l["url"]), esc(l["label"]))
+        for l in cfg["footer"]["resources"])
     footer_plat = "".join(
         '<a href="%s%s">%s</a>' % (root, by_id[pid].url(lang), esc(by_id[pid].title))
         for pid in cfg["footer"]["platform"] if pid in by_id)
@@ -784,9 +798,10 @@ def page_html(page, lang, cfg, areas, pages, by_id, body, lead, status):
     # ds.js ja cuida do botao de fechar via #banner button.
     banner_text = (t.get("banner") or "").strip()
     banner = ('  <div class="banner" id="banner">\n'
-              '    <span>%s</span>\n'
+              '    <span><a href="%s"%s>%s</a></span>\n'
               '    <button type="button" aria-label="%s">%s</button>\n'
-              '  </div>\n' % (esc(banner_text), esc(t.get("closeBanner", "")),
+              '  </div>\n' % (esc(cfg["links"]["linkedin"]), ext(cfg["links"]["linkedin"]),
+                              esc(banner_text), esc(t.get("closeBanner", "")),
                               ico("close"))) if banner_text else ""
 
     return """<!doctype html>
@@ -824,7 +839,7 @@ def page_html(page, lang, cfg, areas, pages, by_id, body, lead, status):
       </button>
       <div class="actions">
         <a class="btn-soft" href="%(github)s"%(githubExt)s>%(codeIco)sGitHub</a>
-        <a class="btn-cta" href="%(swagger)s"%(swaggerExt)s>Swagger UI%(chevIco)s</a>
+        <a class="btn-cta" href="%(quickstart)s">%(quickstartLbl)s%(chevIco)s</a>
         <div class="lang">
           <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
                   aria-expanded="false" aria-label="%(langLbl)s">%(globeIco)s<b>%(langUp)s</b></button>
@@ -925,8 +940,8 @@ def page_html(page, lang, cfg, areas, pages, by_id, body, lead, status):
         "copyIco": ico("copy"),
         "github": esc(cfg["links"].get("github", "#")),
         "githubExt": ext(cfg["links"].get("github", "#")),
-        "swagger": esc(cfg["links"].get("swagger", "#")),
-        "swaggerExt": ext(cfg["links"].get("swagger", "#")),
+        "quickstart": root + by_id["getting-started/quickstart"].url(lang),
+        "quickstartLbl": esc(by_id["getting-started/quickstart"].title),
         "langLbl": esc(t["langLbl"]),
         "langUp": lang.upper(),
         "langItems": lang_items,
