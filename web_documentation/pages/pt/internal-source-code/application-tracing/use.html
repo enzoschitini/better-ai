@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Use | BetterAI Docs</title>
-<meta name="description" content="Página de exemplo para Use, usada para validar o layout.">
+<meta name="description" content="Guia prático do ApplicationTracing: como criar o tracer, registrar eventos, controlar o que aparece no console e onde os registros são salvos.">
 <link rel="canonical" href="pages/pt/internal-source-code/application-tracing/use.html">
 <script>
   // Tema antes da pintura, para nao piscar.
@@ -66,7 +66,7 @@
 
 <div class="shell">
   <aside class="side-wrap" id="side" aria-label="Navegação da documentação">
-    <nav class="side"><div class="side-areas"><a href="../../../../pages/pt/index.html">Visão geral</a><a href="../../../../pages/pt/getting-started/index.html">Introduction</a><a href="../../../../pages/pt/agents/index.html">Agents</a><a href="../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/pt/api/index.html">API</a><a href="../../../../pages/pt/modules/index.html">Modules</a><a href="../../../../pages/pt/internal-source-code/index.html" aria-current="page">Internal Services</a></div><a class="side-link" href="../../../../pages/pt/internal-source-code/index.html"><span>Visão geral</span></a><div class="side-group"><p class="side-title">Application Tracing</p><ul><li><a class="side-link" href="../../../../pages/pt/internal-source-code/application-tracing/logger-engine.html"><span>Logger Engine</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/application-tracing/payload-builder.html"><span>Payload Builder</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/application-tracing/tracing-core.html"><span>Tracing Core</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/application-tracing/use.html" aria-current="page"><span>Use</span><span class="badge">vazio</span></a></li></ul></div><div class="side-group"><p class="side-title">Database</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>No SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/database/no-sql/local-manage.html"><span>Local Manage</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/database/no-sql/mongo-manager.html"><span>Mongo Manager</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/database/no-sql/router.html"><span>Router</span></a></li></ul></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/database/sql/supabase-database.html"><span>Supabase Database</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Storage</p><ul><li><a class="side-link" href="../../../../pages/pt/internal-source-code/storage/storage-menage-repository.html"><span>Storage Menage Repository</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Supabase</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/storage/supabase/storage-menager.html"><span>Storage Menager</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Token Calculate</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Exchange Rate</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/token-calculate/exchange-rate/bcb-exchange-rate-service.html"><span>BCB Exchange Rate Service</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/token-calculate/exchange-rate/exchange-rate-service.html"><span>Exchange Rate Service</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/token-calculate/model-pricing.html"><span>Model Pricing</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/token-calculate/token-counter.html"><span>Token Counter</span></a></li></ul></div><div class="side-group"><p class="side-title">Utils</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Load Request File</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/utils/load-request-file/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/utils/load-request-file/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/utils/loader-files.html"><span>Loader Files</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/utils/unique-id-factory.html"><span>Unique ID Factory</span></a></li></ul></div><div class="side-group"><p class="side-title">Vector Store</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Local Dynamic Embedding</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/vector-store/local-dynamic-embedding/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/vector-store/local-dynamic-embedding/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/vector-store/pinecone-client.html"><span>Pinecone Client</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/vector-store/pinecone-embedding.html"><span>Pinecone Embedding</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/vector-store/pinecone-retriever.html"><span>Pinecone Retriever</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/vector-store/retrieval-manager.html"><span>Retrieval Manager</span></a></li></ul></div></nav>
+    <nav class="side"><div class="side-areas"><a href="../../../../pages/pt/index.html">Visão geral</a><a href="../../../../pages/pt/getting-started/index.html">Introduction</a><a href="../../../../pages/pt/agents/index.html">Agents</a><a href="../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/pt/api/index.html">API</a><a href="../../../../pages/pt/modules/index.html">Modules</a><a href="../../../../pages/pt/internal-source-code/index.html" aria-current="page">Internal Services</a></div><a class="side-link" href="../../../../pages/pt/internal-source-code/index.html"><span>Visão geral</span></a><div class="side-group"><p class="side-title">Application Tracing</p><ul><li><a class="side-link" href="../../../../pages/pt/internal-source-code/application-tracing/logger-engine.html"><span>Logger Engine</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/application-tracing/payload-builder.html"><span>Payload Builder</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/application-tracing/tracing-core.html"><span>Tracing Core</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/application-tracing/use.html" aria-current="page"><span>Use</span></a></li></ul></div><div class="side-group"><p class="side-title">Database</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>No SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/database/no-sql/local-manage.html"><span>Local Manage</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/database/no-sql/mongo-manager.html"><span>Mongo Manager</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/database/no-sql/router.html"><span>Router</span></a></li></ul></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/database/sql/supabase-database.html"><span>Supabase Database</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Storage</p><ul><li><a class="side-link" href="../../../../pages/pt/internal-source-code/storage/storage-menage-repository.html"><span>Storage Menage Repository</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Supabase</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/storage/supabase/storage-menager.html"><span>Storage Menager</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Token Calculate</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Exchange Rate</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/token-calculate/exchange-rate/bcb-exchange-rate-service.html"><span>BCB Exchange Rate Service</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/token-calculate/exchange-rate/exchange-rate-service.html"><span>Exchange Rate Service</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/token-calculate/model-pricing.html"><span>Model Pricing</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/token-calculate/token-counter.html"><span>Token Counter</span></a></li></ul></div><div class="side-group"><p class="side-title">Utils</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Load Request File</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/utils/load-request-file/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/utils/load-request-file/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/utils/loader-files.html"><span>Loader Files</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/utils/unique-id-factory.html"><span>Unique ID Factory</span></a></li></ul></div><div class="side-group"><p class="side-title">Vector Store</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Local Dynamic Embedding</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/vector-store/local-dynamic-embedding/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/vector-store/local-dynamic-embedding/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/vector-store/pinecone-client.html"><span>Pinecone Client</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/vector-store/pinecone-embedding.html"><span>Pinecone Embedding</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/vector-store/pinecone-retriever.html"><span>Pinecone Retriever</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/vector-store/retrieval-manager.html"><span>Retrieval Manager</span></a></li></ul></div></nav>
   </aside>
   <div class="main">
     <div class="main-row">
@@ -79,38 +79,131 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copiar página</span></button>
             </div>
           </div>
-          <p class="lead">Página de exemplo para Use, usada para validar o layout.</p>
+          <p class="lead">Guia prático do ApplicationTracing: como criar o tracer, registrar eventos, controlar o que aparece no console e onde os registros são salvos.</p>
           <details class="toc-inline"><summary>Nesta página</summary><ul></ul></details>
         </header>
-        <div class="prose"><div class="callout" data-kind="warn"><p><strong>Fonte ainda vazia.</strong> O arquivo <code>ipynb_contents/Internal Source Code/Application Tracing/Use.ipynb</code> tem 0 bytes. O corpo abaixo é só um molde de layout.</p></div>
+        <div class="prose"><p>O <code>ApplicationTracing</code> é a porta de entrada do sistema de logs da BetterAI. Esta página mostra o uso no dia a dia; a referência completa de cada classe está em <a href="tracing-core.html">Tracing Core</a>, <a href="logger-engine.html">Logger Engine</a> e <a href="payload-builder.html">Payload Builder</a>.</p>
 
-  <h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão geral</h2>
-  <p>Use faz parte da plataforma BetterAI. Este parágrafo ocupa o lugar do texto que vem da fonte, para que o espaçamento, a medida de linha e o índice lateral possam ser conferidos.</p>
+  <h2 id="criar-o-tracer"><a class="anchor" href="#criar-o-tracer" aria-label="Link para esta seção">#</a>Criar o tracer</h2>
+  <p>No código da plataforma, cada módulo cria o seu tracer uma única vez, no topo do arquivo, e o reutiliza em todas as funções:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> src.tracing.tracing_core <span class="t-k">import</span> ApplicationTracing
 
-  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
-  <p>O bloco abaixo mostra a chamada típica, com realce de sintaxe:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> better_ai <span class="t-k">import</span> Use
+tracer = <span class="t-f">ApplicationTracing</span>(
+    flag=<span class="t-s">&quot;DocumentParse&quot;</span>,          <span class="t-c"># nome do logger e da coleção no banco</span>
+    file_name=<span class="t-s">&quot;document_parse.py&quot;</span>, <span class="t-c"># aparece em cada registro como file=</span>
+    log_file_name=<span class="t-s">&quot;parse&quot;</span>,         <span class="t-c"># arquivo logs/parse.log, quando save_logs está ativo</span>
+)</code></pre><button class="copy floating" type="button"></button></div></div>
+  <ul>
+    <li><code>flag</code>: identifica a origem dos registros. Vira o nome do logger no console e o nome da coleção quando o registro é salvo no banco. Padrão: <code>"ApplicationTracing"</code>.</li>
+    <li><code>file_name</code>: nome do arquivo de origem, anexado a cada mensagem.</li>
+    <li><code>log_file_name</code>: nome do arquivo <code>.log</code> em <code>logs/</code>. Padrão: <code>"app"</code>.</li>
+    <li><code>log_id</code>: identificador que acompanha todos os registros da instância. Se omitido, é gerado a partir do horário atual, no formato <code>log_1791458846159946500JItJ</code>. Passe um valor fixo para correlacionar registros de várias instâncias.</li>
+  </ul>
 
-client = <span class="t-f">Use</span>()
-result = client.<span class="t-f">run</span>(model_id=<span class="t-s">&quot;claude-sonnet-5-5&quot;</span>)
-<span class="t-f">print</span>(result)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h2 id="parametros"><a class="anchor" href="#parametros" aria-label="Link para esta seção">#</a>Parâmetros</h2>
-  <p>A tabela abaixo existe para validar o scroll horizontal em telas estreitas:</p>
+  <h2 id="registrar-eventos"><a class="anchor" href="#registrar-eventos" aria-label="Link para esta seção">#</a>Registrar eventos</h2>
+  <p>Os cinco níveis têm a mesma assinatura: <code>func_name</code>, <code>message</code> e um dicionário opcional <code>metadata</code>.</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">def</span> <span class="t-f">run</span>(job_id: str):
+    tracer.<span class="t-f">INFO</span>(func_name=<span class="t-s">&quot;run&quot;</span>, message=f<span class="t-s">&quot;Processing job {job_id}&quot;</span>)
+    <span class="t-k">try</span>:
+        ...
+    <span class="t-k">except</span> Exception <span class="t-k">as</span> exc:
+        <span class="t-c"># Dados estruturados vão em metadata, não no texto da mensagem</span>
+        tracer.<span class="t-f">ERROR</span>(
+            func_name=<span class="t-s">&quot;run&quot;</span>,
+            message=<span class="t-s">&quot;Failed to extract content&quot;</span>,
+            metadata={<span class="t-s">&quot;job_id&quot;</span>: job_id, <span class="t-s">&quot;error&quot;</span>: <span class="t-f">str</span>(exc)},
+        )
+        <span class="t-k">raise</span></code></pre><button class="copy floating" type="button"></button></div></div>
   <div class="table-wrap"><table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <thead><tr><th>Método</th><th>Quando usar</th><th>Exemplos</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificador do modelo a usar.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite em segundos para a resposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Devolve a resposta em pedaços.</td></tr>
+      <tr><td><code>INFO</code></td><td>Fluxo normal da aplicação.</td><td>Início de um processo, conclusão bem-sucedida de uma operação.</td></tr>
+      <tr><td><code>DEBUG</code></td><td>Diagnóstico detalhado, útil durante o desenvolvimento.</td><td>Valores de variáveis, entradas e saídas de funções.</td></tr>
+      <tr><td><code>WARNING</code></td><td>Situação inesperada que não interrompe a execução.</td><td>Uso obsoleto, lógica de fallback, dados opcionais ausentes.</td></tr>
+      <tr><td><code>ERROR</code></td><td>Uma operação falhou e afeta a funcionalidade esperada.</td><td>Chamada de API com falha, exceção capturada.</td></tr>
+      <tr><td><code>CRITICAL</code></td><td>Erro grave, que pode interromper a aplicação.</td><td>Dependência crítica indisponível, risco de corrupção de dados.</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="observacoes"><a class="anchor" href="#observacoes" aria-label="Link para esta seção">#</a>Observações</h2>
-  <p>Um aviso de exemplo, para conferir o estilo do callout de atenção:</p>
-  <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> Os valores acima são fictícios e não devem ser usados em produção.</p></div></div>
+  <h2 id="o-que-aparece-no-console"><a class="anchor" href="#o-que-aparece-no-console" aria-label="Link para esta seção">#</a>O que aparece no console</h2>
+  <p>Cada registro vira uma linha no <code>stderr</code>, com as partes separadas por <code>|</code>: horário, nível, <code>flag</code>, função, mensagem, metadados, arquivo e <code>log_id</code>.</p>
+  <div class="code"><div class="code-head"><span class="code-title">Console</span><button class="copy" type="button"></button></div><div class="code-body"><pre data-lang=""><code>2026-10-08 08:27:26,159 | ERROR | DocumentParse | run() | Failed to extract content | file=document_parse.py | log_id=log_1791458846159946500JItJ</code></pre></div></div>
+  <div class="callout" data-kind="warn"><p><strong>Por padrão, só <code>ERROR</code> e <code>CRITICAL</code> aparecem.</strong> Com <code>show_info_logs=False</code> (o padrão), o console descarta <code>INFO</code>, <code>DEBUG</code> e também <code>WARNING</code>. Ative <code>show_info_logs</code> para ver todos os níveis.</p></div>
+  <p>Os metadados só entram na linha com <code>show_metadata=True</code>; sem ele, ficam de fora mesmo em um <code>ERROR</code>:</p>
+  <div class="code"><div class="code-head"><span class="code-title">Console</span><button class="copy" type="button"></button></div><div class="code-body"><pre data-lang=""><code>2026-10-08 08:27:26,159 | INFO | DocumentParse | run() | Completed processing | metadata={'job_id': 'job_42'} | file=document_parse.py | log_id=log_1234</code></pre></div></div>
+  <p>Com <code>format_metadata=True</code>, os metadados saem como JSON indentado, em várias linhas, em vez do dicionário em uma linha só.</p>
+
+  <h2 id="salvar-os-registros"><a class="anchor" href="#salvar-os-registros" aria-label="Link para esta seção">#</a>Salvar os registros</h2>
+
+  <h3 id="em-arquivo"><a class="anchor" href="#em-arquivo" aria-label="Link para esta seção">#</a>Em arquivo</h3>
+  <p>Com <code>save_logs=True</code>, cada registro também é gravado em <code>logs/&lt;log_file_name&gt;.log</code>. A pasta <code>logs/</code> é criada no diretório de onde o processo foi iniciado. O arquivo recebe todos os níveis, independentemente de <code>show_info_logs</code>, e o texto é a mesma linha do console, sem as cores.</p>
+
+  <h3 id="no-banco-nosql"><a class="anchor" href="#no-banco-nosql" aria-label="Link para esta seção">#</a>No banco NoSQL</h3>
+  <p>Com <code>save_mongo=True</code>, cada registro também é enviado ao <a href="../database/no-sql/router.html">DocumentStore</a>, no banco <code>application_tracings</code>, numa coleção com o nome da <code>flag</code>. O backend é escolhido por <code>NOSQL_BACKEND</code>:</p>
+  <ul>
+    <li><code>mongo</code>: grava no MongoDB.</li>
+    <li><code>local</code> (padrão): grava em JSON, em <code>data/application_tracings/&lt;flag&gt;.json</code>.</li>
+  </ul>
+  <p>O documento salvo traz os metadados completos, mesmo com <code>show_metadata=False</code>:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+  <span class="t-f">&quot;log_id&quot;</span>: <span class="t-s">&quot;log_1234&quot;</span>,
+  <span class="t-f">&quot;level&quot;</span>: <span class="t-s">&quot;ERROR&quot;</span>,
+  <span class="t-f">&quot;flag&quot;</span>: <span class="t-s">&quot;DocumentParse&quot;</span>,
+  <span class="t-f">&quot;func_name&quot;</span>: <span class="t-s">&quot;run&quot;</span>,
+  <span class="t-f">&quot;message&quot;</span>: <span class="t-s">&quot;Failed to extract content&quot;</span>,
+  <span class="t-f">&quot;metadata&quot;</span>: {<span class="t-f">&quot;job_id&quot;</span>: <span class="t-s">&quot;job_42&quot;</span>},
+  <span class="t-f">&quot;file_name&quot;</span>: <span class="t-s">&quot;document_parse.py&quot;</span>,
+  <span class="t-f">&quot;time&quot;</span>: <span class="t-s">&quot;2026-10-08 08:27:26,159&quot;</span>
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>O backend <code>local</code> acrescenta os campos <code>_id</code> e <code>_created_at</code>.</p>
+
+  <h2 id="configurar-por-variaveis-de-ambiente"><a class="anchor" href="#configurar-por-variaveis-de-ambiente" aria-label="Link para esta seção">#</a>Configurar por variáveis de ambiente</h2>
+  <p>As opções de exibição e gravação também podem vir do <code>.env</code>, sem mudar o código:</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Variável</th><th>Parâmetro</th></tr></thead>
+    <tbody>
+      <tr><td><code>SHOW_INFO_LOGS</code></td><td><code>show_info_logs</code></td></tr>
+      <tr><td><code>SHOW_METADATA</code></td><td><code>show_metadata</code></td></tr>
+      <tr><td><code>SAVE_LOGS</code></td><td><code>save_logs</code></td></tr>
+      <tr><td><code>SAVE_MONGO</code></td><td><code>save_mongo</code></td></tr>
+      <tr><td><code>FORMAT_METADATA</code></td><td><code>format_metadata</code></td></tr>
+      <tr><td><code>NOSQL_BACKEND</code></td><td>Backend de <code>save_mongo</code>: <code>mongo</code> ou <code>local</code> (padrão).</td></tr>
+    </tbody>
+  </table></div>
+  <p>Quando a mesma opção é definida em mais de um lugar, vale a primeira desta lista:</p>
+  <ol>
+    <li>O argumento passado na chamada de log, só para aquela chamada.</li>
+    <li>O argumento <code>True</code> no construtor: ele ignora a variável de ambiente.</li>
+    <li>A variável de ambiente, quando o construtor recebeu <code>False</code> (o padrão).</li>
+    <li><code>False</code>, se nada foi definido.</li>
+  </ol>
+  <p>As variáveis <code>SHOW_*</code>, <code>SAVE_*</code> e <code>FORMAT_METADATA</code> são lidas uma vez, quando o tracer é criado: mudar o ambiente depois não afeta um tracer que já existe. <code>NOSQL_BACKEND</code> é lida a cada gravação.</p>
+  <div class="callout" data-kind="warn"><p><strong>Só <code>true</code> e <code>false</code>.</strong> Os valores aceitos são <code>true</code> e <code>false</code>, sem diferenciar maiúsculas. Qualquer outro valor, como <code>1</code> ou <code>yes</code>, gera <code>KeyError</code> na criação do tracer.</p></div>
+
+  <h2 id="sobrescrever-em-uma-chamada"><a class="anchor" href="#sobrescrever-em-uma-chamada" aria-label="Link para esta seção">#</a>Sobrescrever em uma chamada</h2>
+  <p>Os métodos de log aceitam <code>show_info_logs</code>, <code>show_metadata</code> e <code>save_logs</code>, que valem só para aquela chamada:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-c"># Mostra este INFO mesmo com show_info_logs=False na instância</span>
+tracer.<span class="t-f">INFO</span>(func_name=<span class="t-s">&quot;run&quot;</span>, message=<span class="t-s">&quot;Checkpoint&quot;</span>, show_info_logs=<span class="t-n">True</span>)
+
+<span class="t-c"># Grava só este registro em arquivo, com os metadados na linha</span>
+tracer.<span class="t-f">ERROR</span>(
+    func_name=<span class="t-s">&quot;process_payment&quot;</span>,
+    message=<span class="t-s">&quot;Payment failed&quot;</span>,
+    metadata={<span class="t-s">&quot;user_id&quot;</span>: <span class="t-n">123</span>},
+    save_logs=<span class="t-n">True</span>,
+    show_metadata=<span class="t-n">True</span>,
+)</code></pre><button class="copy floating" type="button"></button></div></div>
+  <div class="callout" data-kind="warn"><p><strong><code>save_mongo</code> não funciona por chamada.</strong> O parâmetro existe na assinatura dos métodos, mas a gravação no banco segue sempre o valor da instância: <code>save_mongo=True</code> numa chamada não grava, e <code>save_mongo=False</code> não impede a gravação.</p></div>
+
+  <h2 id="testar"><a class="anchor" href="#testar" aria-label="Link para esta seção">#</a>Testar</h2>
+  <p>O arquivo <code>src/tracing/tracing_test.py</code> emite um registro de cada nível. Rode a partir da raiz do projeto:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">python</span> <span class="t-n">-m</span> src.tracing.tracing_test</code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>Com a configuração padrão, só os registros <code>ERROR</code> e <code>CRITICAL</code> aparecem. Defina <code>SHOW_INFO_LOGS=true</code> no <code>.env</code> para ver os cinco.</p>
+
+  <h2 id="veja-tambem"><a class="anchor" href="#veja-tambem" aria-label="Link para esta seção">#</a>Veja também</h2>
+  <div class="cards"><a class="card" href="tracing-core.html"><span class="card-icon"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg></span><span class="card-title">Tracing Core</span><span class="card-text">A classe ApplicationTracing e a assinatura de cada nível.</span></a><a class="card" href="logger-engine.html"><span class="card-icon"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg></span><span class="card-title">Logger Engine</span><span class="card-text">O motor que resolve a configuração e emite os registros.</span></a><a class="card" href="payload-builder.html"><span class="card-icon"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg></span><span class="card-title">Payload Builder</span><span class="card-text">Como a linha do console e o documento do banco são montados.</span></a><a class="card" href="../database/no-sql/router.html"><span class="card-icon"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 7a2 2 0 0 1 2-2h4l2 2.5h7a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/></svg></span><span class="card-title">Router</span><span class="card-text">O DocumentStore e a escolha entre MongoDB e JSON local.</span></a></div></div>
         <div class="feedback"></div>
-        <p class="source">Fonte: <code>ipynb_contents/Internal Source Code/Application Tracing/Use.ipynb</code></p>
+        <p class="source">Fonte: <code>src/tracing/tracing_test.py</code></p>
         <nav class="pager" aria-label="Páginas vizinhas"><a class="pager-link prev" href="../../../../pages/pt/internal-source-code/application-tracing/tracing-core.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Anterior</small><span>Tracing Core</span></div></a><a class="pager-link next" href="../../../../pages/pt/internal-source-code/database/no-sql/local-manage.html"><div><small>Próxima</small><span>Local Manage</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
       </main>
       <aside class="toc" id="toc" data-toc aria-label="Nesta página"></aside>

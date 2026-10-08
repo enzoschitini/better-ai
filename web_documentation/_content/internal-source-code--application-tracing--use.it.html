@@ -1,31 +1,141 @@
-<page data-lead="Pagina di esempio per Use, usata per validare il layout.">
-  <div class="callout" data-kind="warn"><p><strong>Sorgente ancora vuota.</strong> Il file <code>ipynb_contents/Internal Source Code/Application Tracing/Use.ipynb</code> ha 0 byte. Il corpo qui sotto è solo uno stampo di layout.</p></div>
+<page data-lead="Guida pratica ad ApplicationTracing: come creare il tracer, registrare eventi, controllare cosa compare nella console e dove vengono salvati i record.">
+  <p><code>ApplicationTracing</code> è il punto d’ingresso del sistema di log di BetterAI. Questa pagina mostra l’uso quotidiano; il riferimento completo di ogni classe si trova in <a href="@/internal-source-code/application-tracing/tracing-core">Tracing Core</a>, <a href="@/internal-source-code/application-tracing/logger-engine">Logger Engine</a> e <a href="@/internal-source-code/application-tracing/payload-builder">Payload Builder</a>.</p>
 
-  <h2>Panoramica</h2>
-  <p>Use fa parte della piattaforma BetterAI. Questo paragrafo prende il posto del testo che arriva dalla sorgente, così da poter verificare spaziatura, misura di riga e indice laterale.</p>
-
-  <h2>Uso</h2>
-  <p>Il blocco qui sotto mostra la chiamata tipica, con evidenziazione della sintassi:</p>
+  <h2>Creare il tracer</h2>
+  <p>Nel codice della piattaforma, ogni modulo crea il proprio tracer una sola volta, in cima al file, e lo riutilizza in tutte le funzioni:</p>
   <pre data-lang="python"><code>
-from better_ai import Use
+from src.tracing.tracing_core import ApplicationTracing
 
-client = Use()
-result = client.run(model_id="claude-sonnet-5-5")
-print(result)
-  </code></pre>
+tracer = ApplicationTracing(
+    flag="DocumentParse",          # nome del logger e della collezione nel database
+    file_name="document_parse.py", # compare in ogni record come file=
+    log_file_name="parse",         # file logs/parse.log, quando save_logs è attivo
+)
+</code></pre>
+  <ul>
+    <li><code>flag</code>: identifica l’origine dei record. Diventa il nome del logger nella console e il nome della collezione quando il record viene salvato nel database. Predefinito: <code>"ApplicationTracing"</code>.</li>
+    <li><code>file_name</code>: nome del file di origine, aggiunto a ogni messaggio.</li>
+    <li><code>log_file_name</code>: nome del file <code>.log</code> in <code>logs/</code>. Predefinito: <code>"app"</code>.</li>
+    <li><code>log_id</code>: identificatore che accompagna tutti i record dell’istanza. Se omesso, viene generato dall’orario corrente, nel formato <code>log_1791458846159946500JItJ</code>. Passa un valore fisso per correlare i record di più istanze.</li>
+  </ul>
 
-  <h2>Parametri</h2>
-  <p>La tabella qui sotto serve a validare lo scorrimento orizzontale su schermi stretti:</p>
+  <h2>Registrare eventi</h2>
+  <p>I cinque livelli hanno la stessa firma: <code>func_name</code>, <code>message</code> e un dizionario opzionale <code>metadata</code>.</p>
+  <pre data-lang="python"><code>
+def run(job_id: str):
+    tracer.INFO(func_name="run", message=f"Processing job {job_id}")
+    try:
+        ...
+    except Exception as exc:
+        # I dati strutturati vanno in metadata, non nel testo del messaggio
+        tracer.ERROR(
+            func_name="run",
+            message="Failed to extract content",
+            metadata={"job_id": job_id, "error": str(exc)},
+        )
+        raise
+</code></pre>
   <table>
-    <thead><tr><th>Nome</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <thead><tr><th>Metodo</th><th>Quando usarlo</th><th>Esempi</th></tr></thead>
     <tbody>
-        <tr><td><code>model_id</code></td><td><code>str</code></td><td>Identificatore del modello da usare.</td></tr>
-        <tr><td><code>timeout</code></td><td><code>int</code></td><td>Limite in secondi per la risposta.</td></tr>
-        <tr><td><code>stream</code></td><td><code>bool</code></td><td>Restituisce la risposta a pezzi.</td></tr>
+      <tr><td><code>INFO</code></td><td>Flusso normale dell’applicazione.</td><td>Avvio di un processo, completamento riuscito di un’operazione.</td></tr>
+      <tr><td><code>DEBUG</code></td><td>Diagnostica dettagliata, utile durante lo sviluppo.</td><td>Valori di variabili, input e output di funzioni.</td></tr>
+      <tr><td><code>WARNING</code></td><td>Situazione inattesa che non interrompe l’esecuzione.</td><td>Uso deprecato, logica di fallback, dati opzionali mancanti.</td></tr>
+      <tr><td><code>ERROR</code></td><td>Un’operazione è fallita e compromette la funzionalità attesa.</td><td>Chiamata API fallita, eccezione catturata.</td></tr>
+      <tr><td><code>CRITICAL</code></td><td>Errore grave, che può interrompere l’applicazione.</td><td>Dipendenza critica non disponibile, rischio di corruzione dei dati.</td></tr>
     </tbody>
   </table>
 
-  <h2>Note</h2>
-  <p>Un avviso di esempio, per verificare lo stile del callout di attenzione:</p>
-  <div class="callout" data-kind="warn"><p><strong>Solo in sviluppo.</strong> I valori sopra sono fittizi e non devono essere usati in produzione.</p></div>
+  <h2>Cosa compare nella console</h2>
+  <p>Ogni record diventa una riga su <code>stderr</code>, con le parti separate da <code>|</code>: orario, livello, <code>flag</code>, funzione, messaggio, metadati, file e <code>log_id</code>.</p>
+  <pre data-title="Console"><code>
+2026-10-08 08:27:26,159 | ERROR | DocumentParse | run() | Failed to extract content | file=document_parse.py | log_id=log_1791458846159946500JItJ
+</code></pre>
+  <div class="callout" data-kind="warn"><p><strong>Per impostazione predefinita compaiono solo <code>ERROR</code> e <code>CRITICAL</code>.</strong> Con <code>show_info_logs=False</code> (il predefinito), la console scarta <code>INFO</code>, <code>DEBUG</code> e anche <code>WARNING</code>. Attiva <code>show_info_logs</code> per vedere tutti i livelli.</p></div>
+  <p>I metadati entrano nella riga solo con <code>show_metadata=True</code>; senza, restano fuori anche in un <code>ERROR</code>:</p>
+  <pre data-title="Console"><code>
+2026-10-08 08:27:26,159 | INFO | DocumentParse | run() | Completed processing | metadata={'job_id': 'job_42'} | file=document_parse.py | log_id=log_1234
+</code></pre>
+  <p>Con <code>format_metadata=True</code>, i metadati escono come JSON indentato, su più righe, invece del dizionario su una sola riga.</p>
+
+  <h2>Salvare i record</h2>
+
+  <h3>Su file</h3>
+  <p>Con <code>save_logs=True</code>, ogni record viene scritto anche in <code>logs/&lt;log_file_name&gt;.log</code>. La cartella <code>logs/</code> viene creata nella directory da cui è stato avviato il processo. Il file riceve tutti i livelli, indipendentemente da <code>show_info_logs</code>, e il testo è la stessa riga della console, senza colori.</p>
+
+  <h3>Nel database NoSQL</h3>
+  <p>Con <code>save_mongo=True</code>, ogni record viene inviato anche al <a href="@/internal-source-code/database/no-sql/router">DocumentStore</a>, nel database <code>application_tracings</code>, in una collezione con il nome della <code>flag</code>. Il backend è scelto da <code>NOSQL_BACKEND</code>:</p>
+  <ul>
+    <li><code>mongo</code>: scrive su MongoDB.</li>
+    <li><code>local</code> (predefinito): scrive in JSON, in <code>data/application_tracings/&lt;flag&gt;.json</code>.</li>
+  </ul>
+  <p>Il documento salvato contiene i metadati completi, anche con <code>show_metadata=False</code>:</p>
+  <pre data-lang="json"><code>
+{
+  "log_id": "log_1234",
+  "level": "ERROR",
+  "flag": "DocumentParse",
+  "func_name": "run",
+  "message": "Failed to extract content",
+  "metadata": {"job_id": "job_42"},
+  "file_name": "document_parse.py",
+  "time": "2026-10-08 08:27:26,159"
+}
+</code></pre>
+  <p>Il backend <code>local</code> aggiunge i campi <code>_id</code> e <code>_created_at</code>.</p>
+
+  <h2>Configurare tramite variabili d'ambiente</h2>
+  <p>Le opzioni di visualizzazione e salvataggio possono arrivare anche dal <code>.env</code>, senza modificare il codice:</p>
+  <table>
+    <thead><tr><th>Variabile</th><th>Parametro</th></tr></thead>
+    <tbody>
+      <tr><td><code>SHOW_INFO_LOGS</code></td><td><code>show_info_logs</code></td></tr>
+      <tr><td><code>SHOW_METADATA</code></td><td><code>show_metadata</code></td></tr>
+      <tr><td><code>SAVE_LOGS</code></td><td><code>save_logs</code></td></tr>
+      <tr><td><code>SAVE_MONGO</code></td><td><code>save_mongo</code></td></tr>
+      <tr><td><code>FORMAT_METADATA</code></td><td><code>format_metadata</code></td></tr>
+      <tr><td><code>NOSQL_BACKEND</code></td><td>Backend di <code>save_mongo</code>: <code>mongo</code> o <code>local</code> (predefinito).</td></tr>
+    </tbody>
+  </table>
+  <p>Quando la stessa opzione è definita in più punti, vale la prima di questo elenco:</p>
+  <ol>
+    <li>L’argomento passato nella chiamata di log, solo per quella chiamata.</li>
+    <li>L’argomento <code>True</code> nel costruttore: ignora la variabile d’ambiente.</li>
+    <li>La variabile d’ambiente, quando il costruttore ha ricevuto <code>False</code> (il predefinito).</li>
+    <li><code>False</code>, se non è stato definito nulla.</li>
+  </ol>
+  <p>Le variabili <code>SHOW_*</code>, <code>SAVE_*</code> e <code>FORMAT_METADATA</code> vengono lette una sola volta, quando il tracer viene creato: cambiare l’ambiente dopo non ha effetto su un tracer già esistente. <code>NOSQL_BACKEND</code> viene letta a ogni salvataggio.</p>
+  <div class="callout" data-kind="warn"><p><strong>Solo <code>true</code> e <code>false</code>.</strong> I valori accettati sono <code>true</code> e <code>false</code>, senza distinzione tra maiuscole e minuscole. Qualsiasi altro valore, come <code>1</code> o <code>yes</code>, genera <code>KeyError</code> alla creazione del tracer.</p></div>
+
+  <h2>Sovrascrivere in una chiamata</h2>
+  <p>I metodi di log accettano <code>show_info_logs</code>, <code>show_metadata</code> e <code>save_logs</code>, che valgono solo per quella chiamata:</p>
+  <pre data-lang="python"><code>
+# Mostra questo INFO anche con show_info_logs=False nell'istanza
+tracer.INFO(func_name="run", message="Checkpoint", show_info_logs=True)
+
+# Scrive su file solo questo record, con i metadati nella riga
+tracer.ERROR(
+    func_name="process_payment",
+    message="Payment failed",
+    metadata={"user_id": 123},
+    save_logs=True,
+    show_metadata=True,
+)
+</code></pre>
+  <div class="callout" data-kind="warn"><p><strong><code>save_mongo</code> non funziona per singola chiamata.</strong> Il parametro esiste nella firma dei metodi, ma il salvataggio nel database segue sempre il valore dell’istanza: <code>save_mongo=True</code> in una chiamata non salva, e <code>save_mongo=False</code> non impedisce il salvataggio.</p></div>
+
+  <h2>Provare</h2>
+  <p>Il file <code>src/tracing/tracing_test.py</code> emette un record per ogni livello. Eseguilo dalla radice del progetto:</p>
+  <pre data-lang="bash"><code>
+python -m src.tracing.tracing_test
+</code></pre>
+  <p>Con la configurazione predefinita compaiono solo i record <code>ERROR</code> e <code>CRITICAL</code>. Imposta <code>SHOW_INFO_LOGS=true</code> nel <code>.env</code> per vederli tutti e cinque.</p>
+
+  <h2>Vedi anche</h2>
+  <cards>
+    <card href="@/internal-source-code/application-tracing/tracing-core" icon="code" title="Tracing Core">La classe ApplicationTracing e la firma di ogni livello.</card>
+    <card href="@/internal-source-code/application-tracing/logger-engine" icon="code" title="Logger Engine">Il motore che risolve la configurazione ed emette i record.</card>
+    <card href="@/internal-source-code/application-tracing/payload-builder" icon="code" title="Payload Builder">Come vengono costruiti la riga della console e il documento del database.</card>
+    <card href="@/internal-source-code/database/no-sql/router" icon="folder" title="Router">Il DocumentStore e la scelta tra MongoDB e JSON locale.</card>
+  </cards>
 </page>

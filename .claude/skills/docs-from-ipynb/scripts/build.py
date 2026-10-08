@@ -783,10 +783,13 @@ def page_html(page, lang, cfg, areas, pages, by_id, body, lead, status):
                   % (root, nxt.url(lang), esc(t["next"]), esc(label(nxt)),
                      ico("chevron")))
 
+    # "Fonte:" aponta para o arquivo documentado em src/ quando config "sources" o mapeia;
+    # senao, para o notebook. O "Editar no GitHub" segue sempre o notebook.
     source = ""
-    if page.source_label:
+    source_file = cfg["sources"].get(page.page_id) or page.source_label
+    if source_file:
         source = ('<p class="source">%s <code>%s</code></p>'
-                  % (esc(t["source"]), esc(page.source_label)))
+                  % (esc(t["source"]), esc(source_file)))
 
     edit = ""
     if page.source_label and cfg["links"].get("repo"):
@@ -1082,7 +1085,8 @@ def build(repo: Path, out_dir: Path, cfg: dict, report: list):
     areas, pages = build_tree(src_root, cfg)
     by_id = {p.page_id: p for p in pages}
     counts = {"content": 0, "fallback": 0, "empty": 0, "generated": 0}
-    errors = []
+    errors = ["site.config.json: sources: unknown page id %r" % pid
+              for pid in cfg["sources"] if pid not in by_id]
 
     # A blank source file only counts as "empty" while _content holds no real text for
     # it. Pages documented straight from the code (no notebook) carry real content.
@@ -1349,6 +1353,8 @@ def default_config() -> dict:
         "areas": areas,
         "ui": ui,
         "home": home,
+        # page id -> arquivo documentado em src/, mostrado em "Fonte:" no lugar do notebook
+        "sources": {},
     }
 
 
