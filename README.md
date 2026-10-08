@@ -213,7 +213,7 @@ A flag `--reload` reinicia o servidor automaticamente a cada alteração no cód
 
 ```
 INFO:     Will watch for changes in these directories: ['C:\\Users\\user_name\\better-ai']
-INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Uvicorn running on http://localhost:8000 (Press CTRL+C to quit)
 INFO:     Started reloader process [24960] using StatReload
 INFO:     Router included: /agents
 INFO:     Router included: /davinci
@@ -258,7 +258,7 @@ INFO:     Application startup complete.
 Confirme que a API respondeu corretamente antes de seguir:
 
 ```
-curl -X GET "http://127.0.0.1:8000/health"
+curl -X GET "http://localhost:8000/health"
 ```
 
 **Endpoints principais**
