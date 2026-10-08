@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design System | BetterAI Docs</title>
+<script>
+  // Define o tema antes de pintar a página, para não piscar. Copie este bloco em toda página.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="css/design-system.css">
+<link rel="stylesheet" href="css/catalog.css">
+</head>
+<body>
+<a class="skip" href="#main">Ir para o conteúdo</a>
+
+<header class="header" id="header">
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="#">
+        <img src="../assets/img/logo-icon.png" alt="">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Design System</span>
+      </a>
+      <div class="actions">
+        <button class="icon-btn" type="button" data-theme-toggle></button>
+      </div>
+    </div>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false"><i data-ico="menu"></i><span>Design System</span></button>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Seções do catálogo">
+    <nav class="side">
+      <a class="side-link" href="#principios">Princípios</a>
+      <div class="side-group">
+        <p class="side-title">Fundamentos</p>
+        <ul>
+          <li><a class="side-link" href="#cores">Cores</a></li>
+          <li><a class="side-link" href="#tipografia">Tipografia</a></li>
+          <li><a class="side-link" href="#raios">Raios</a></li>
+        </ul>
+      </div>
+      <div class="side-group">
+        <p class="side-title">Navegação</p>
+        <ul>
+          <li><a class="side-link" href="#botoes">Botões e controles</a></li>
+          <li><a class="side-link" href="#idioma">Seletor de idioma</a></li>
+          <li><a class="side-link" href="#menu-lateral">Menu lateral</a></li>
+          <li><a class="side-link" href="#abas-area">Abas de área</a></li>
+          <li><a class="side-link" href="#busca">Busca</a></li>
+        </ul>
+      </div>
+      <div class="side-group">
+        <p class="side-title">Conteúdo</p>
+        <ul>
+          <li><a class="side-link" href="#cabecalho-pagina">Cabeçalho da página</a></li>
+          <li><a class="side-link" href="#prosa">Texto corrido</a></li>
+          <li><a class="side-link" href="#codigo">Código</a></li>
+          <li><a class="side-link" href="#tabelas">Tabelas</a></li>
+          <li><a class="side-link" href="#avisos">Avisos</a></li>
+          <li><a class="side-link" href="#cartoes">Cartões</a></li>
+          <li><a class="side-link" href="#endpoint">Endpoint</a></li>
+          <li><a class="side-link" href="#accordion">Accordion</a></li>
+          <li><a class="side-link" href="#midia">Moldura de mídia</a></li>
+          <li><a class="side-link" href="#vazio">Página em branco</a></li>
+          <li><a class="side-link" href="#fim-pagina">Fim da página</a></li>
+        </ul>
+      </div>
+      <div class="side-group">
+        <p class="side-title">Uso</p>
+        <ul>
+          <li><a class="side-link" href="#estrutura">Estrutura da página</a></li>
+          <li><a class="side-link" href="#regras">Regras</a></li>
+        </ul>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">BetterAI Docs</div>
+          <h1 class="page-title" tabindex="-1">Design System</h1>
+          <p class="lead">Os tokens, componentes e regras que mantêm todas as páginas da documentação com o mesmo visual.</p>
+        </header>
+
+        <div class="prose">
+          <h2 id="principios">Princípios</h2>
+          <p>Este catálogo é a fonte da verdade do visual da documentação. Ele usa os próprios componentes, então o que você vê aqui é o que as páginas entregam.</p>
+          <ul>
+            <li><strong>Conteúdo primeiro.</strong> Fundo branco, texto quase preto e uma coluna de leitura estreita. Nada compete com o que a pessoa veio ler.</li>
+            <li><strong>Uma cor de ação.</strong> O índigo da BetterAI aparece só em botão principal, link e destaque de seleção.</li>
+            <li><strong>Estrutura previsível.</strong> Toda página tem a mesma moldura: abas de área, menu lateral, artigo e índice da página.</li>
+            <li><strong>Claro e escuro por tokens.</strong> Nenhum componente define cor própria. Tudo vem de variáveis que trocam com o tema.</li>
+            <li><strong>Funciona em qualquer tela.</strong> Abaixo de 1024 px o menu vira gaveta, e abaixo de 1280 px o índice vira um bloco recolhido.</li>
+          </ul>
+          <div class="callout" data-kind="tip"><p>Para criar uma página nova, copie <code>templates/page-template.html</code>. Para mudar o visual, edite os tokens em <code>css/tokens.css</code>, nunca o CSS de uma página.</p></div>
+
+          <h2 id="cores">Cores</h2>
+          <p>Todas as cores são variáveis CSS definidas em <code>css/tokens.css</code>, com um valor para o tema claro e outro para o escuro. Alterne o tema no canto superior direito para ver os dois.</p>
+          <h3>Neutros</h3>
+          <div class="ds-grid" data-swatches="neutral"></div>
+          <h3>Marca e ação</h3>
+          <div class="ds-grid" data-swatches="brand"></div>
+          <h3>Avisos</h3>
+          <div class="ds-grid" data-swatches="alerts"></div>
+          <h3>Código</h3>
+          <div class="ds-grid" data-swatches="code"></div>
+
+          <h2 id="tipografia">Tipografia</h2>
+          <p>Três famílias, cada uma com um papel: <strong>Geist</strong> para títulos, <strong>Inter</strong> para texto e interface, <strong>IBM Plex Mono</strong> para código. A coluna de leitura tem 46 rem de largura máxima, em torno de 70 caracteres por linha.</p>
+          <div class="ds-type">
+            <div class="ds-type-row"><div class="meta"><b>Título da página</b>Geist 600, 36/40, -0,025em<br><code>.page-title</code></div><div class="sample"><h1 class="page-title" style="margin:0">Model Gateway</h1></div></div>
+            <div class="ds-type-row"><div class="meta"><b>Resumo</b>Inter 400, 18/28, cor ink-3<br><code>.lead</code></div><div class="sample"><p class="lead" style="margin:0">Uma fábrica única para criar modelos e agentes.</p></div></div>
+            <div class="ds-type-row"><div class="meta"><b>Título de seção</b>Geist 600, 24/32<br><code>.prose h2</code></div><div class="sample"><div class="prose" style="margin:0"><h2 style="margin:0">Fluxo de execução</h2></div></div></div>
+            <div class="ds-type-row"><div class="meta"><b>Subtítulo</b>Geist 600, 20/28<br><code>.prose h3</code></div><div class="sample"><div class="prose" style="margin:0"><h3 style="margin:0">create_model</h3></div></div></div>
+            <div class="ds-type-row"><div class="meta"><b>Texto</b>Inter 400, 16/28<br><code>.prose p</code></div><div class="sample"><div class="prose" style="margin:0"><p style="margin:0">A classe normaliza o nome do provedor e resolve o construtor correspondente.</p></div></div></div>
+            <div class="ds-type-row"><div class="meta"><b>Tabela e interface</b>Inter 400 e 500, 14/22</div><div class="sample" style="font-size:.875rem;line-height:1.5">Variável de ambiente, rótulo de botão, item de menu</div></div>
+            <div class="ds-type-row"><div class="meta"><b>Código</b>IBM Plex Mono 400, 14/24<br><code>.code pre</code></div><div class="sample" style="font:400 .875rem/1.5rem var(--font-mono)">gateway.create_model(provider="anthropic")</div></div>
+            <div class="ds-type-row"><div class="meta"><b>Categoria</b>Inter 600, 14, cor accent<br><code>.eyebrow</code></div><div class="sample"><div class="eyebrow" style="margin:0">Agents / Utils</div></div></div>
+          </div>
+
+          <h2 id="raios">Raios</h2>
+          <p>Cinco valores, definidos como tokens. Use o menor que combine com o tamanho do elemento: quanto maior a peça, maior o raio.</p>
+          <div class="ds-radii">
+            <div class="ds-radius"><div style="border-radius:var(--radius-xs)"></div><b>--radius-xs</b>6 px. Código inline</div>
+            <div class="ds-radius"><div style="border-radius:var(--radius-sm)"></div><b>--radius-sm</b>10 px. Botões pequenos</div>
+            <div class="ds-radius"><div style="border-radius:var(--radius-md)"></div><b>--radius-md</b>12 px. Botões e links do menu</div>
+            <div class="ds-radius"><div style="border-radius:var(--radius-lg)"></div><b>--radius-lg</b>16 px. Cartões, código e avisos</div>
+            <div class="ds-radius"><div style="border-radius:var(--radius-pill)"></div><b>--radius-pill</b>Campo de busca</div>
+          </div>
+
+          <h2 id="botoes">Botões e controles</h2>
+          <p>O botão principal (<code>.btn-cta</code>) é o único elemento preenchido com a cor de ação. Use um por área da tela.</p>
+          <div class="demo row" data-src>
+            <a class="btn-cta" href="#botoes">Swagger UI <i data-ico="chevron"></i></a>
+            <a class="btn-soft" href="#botoes"><i data-ico="code"></i>GitHub</a>
+            <button class="icon-btn" type="button" aria-label="Alternar tema claro e escuro"><i data-ico="moon"></i></button>
+            <button class="fb-btn" type="button"><i data-ico="up"></i>Sim</button>
+            <button class="fb-btn" type="button"><i data-ico="dn"></i>Não</button>
+          </div>
+
+          <h2 id="idioma">Seletor de idioma</h2>
+          <p>Fica ao lado do botão de tema. Mostra o código do idioma atual e abre um menu com o nome de cada idioma escrito na própria língua. Ao escolher, dispara o evento <code>ds:lang</code> no <code>document</code>; a troca do conteúdo é feita pelo site.</p>
+          <div class="demo row open" data-src>
+            <div class="lang">
+              <button class="lang-btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Idioma"><i data-ico="globe"></i><b>PT</b></button>
+              <ul class="lang-menu" role="menu" hidden>
+                <li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="false"><span>English</span><i class="ck" data-ico="check"></i></button></li>
+                <li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="false"><span>Italiano</span><i class="ck" data-ico="check"></i></button></li>
+                <li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="true"><span>Português</span><i class="ck" data-ico="check"></i></button></li>
+              </ul>
+            </div>
+          </div>
+
+          <h2 id="menu-lateral">Menu lateral</h2>
+          <p>Mostra só a área ativa. O título do grupo fica em Inter 600, 12 px. Pastas abrem e fecham, e subníveis recuam com uma linha à esquerda. A página atual usa <code>aria-current="page"</code>. O selo <code>.badge</code> marca páginas sem conteúdo.</p>
+          <div class="demo w-sm" data-src>
+            <nav class="side">
+              <a class="side-link" href="#menu-lateral">Visão geral</a>
+              <div class="side-group">
+                <p class="side-title">Agents</p>
+                <ul>
+                  <li>
+                    <button class="side-link side-folder" type="button" aria-expanded="true"><span>Utils</span><i class="chev" data-ico="chevron"></i></button>
+                    <ul class="side-sub">
+                      <li><a class="side-link" href="#menu-lateral">Database</a></li>
+                      <li><a class="side-link" href="#menu-lateral" aria-current="page">Model Gateway</a></li>
+                    </ul>
+                  </li>
+                  <li><a class="side-link" href="#menu-lateral"><span>Context Builder</span><span class="badge">vazio</span></a></li>
+                </ul>
+              </div>
+            </nav>
+          </div>
+
+          <h2 id="abas-area">Abas de área</h2>
+          <p>Uma aba por área da documentação, logo abaixo do cabeçalho. A aba ativa fica em negrito com um traço de 1,5 px embaixo. Em telas menores que 1024 px elas saem e o seletor de áreas passa para dentro da gaveta do menu.</p>
+          <div class="demo" data-src>
+            <nav class="tabs-row" aria-label="Áreas da documentação">
+              <a class="tab" href="#abas-area">Visão geral</a>
+              <a class="tab" href="#abas-area">Getting Started</a>
+              <a class="tab" href="#abas-area" aria-current="page">Modules</a>
+              <a class="tab" href="#abas-area">Internal Source Code</a>
+            </nav>
+          </div>
+
+          <h2 id="busca">Busca</h2>
+          <p>Abre em um diálogo centralizado com <kbd>Ctrl</kbd> <kbd>K</kbd> ou <kbd>/</kbd>. O resultado selecionado usa o mesmo preenchimento do item ativo do menu. Este exemplo é estático; a lógica de busca é de cada site.</p>
+          <div class="demo row" data-src>
+            <button class="search-trigger" type="button" data-open-search aria-label="Buscar na documentação" style="max-width:24rem"><i data-ico="search"></i><span>Buscar...</span><kbd>Ctrl K</kbd></button>
+          </div>
+
+          <h2 id="cabecalho-pagina">Cabeçalho da página</h2>
+          <p>Categoria em índigo, título, botão para copiar a página e um resumo de uma ou duas linhas. O resumo é obrigatório em páginas de conteúdo.</p>
+          <div class="demo" data-src>
+            <div class="eyebrow">Agents / Utils</div>
+            <div class="title-row">
+              <h1 class="page-title">Model Gateway</h1>
+              <div class="copy-page">
+                <button class="cp-main" type="button"><i data-ico="copy"></i><span>Copiar página</span></button>
+                <button class="cp-caret" type="button" aria-label="Mais opções"><i data-ico="down"></i></button>
+              </div>
+            </div>
+            <p class="lead">Uma fábrica única para criar modelos e agentes Agno de qualquer provedor, com os parâmetros validados antes da chamada.</p>
+          </div>
+
+          <h2 id="prosa">Texto corrido</h2>
+          <p>Todo o conteúdo do artigo vive dentro de <code>.prose</code>. Títulos de seção ganham um link <code>#</code> ao passar o mouse e alimentam o índice da página à direita.</p>
+          <div class="demo" data-src>
+            <div class="prose">
+              <h2 id="ex-secao">Visão geral</h2>
+              <p>A <code>ModelGateway</code> esconde as diferenças entre as APIs. Veja o <a href="#prosa">Quickstart</a> para <strong>começar</strong>.</p>
+              <ul>
+                <li><strong>Um ponto de entrada:</strong> o mesmo método cria modelos de qualquer provedor.</li>
+                <li><strong>Validação de parâmetros:</strong> argumentos inválidos geram erro antes da chamada.</li>
+              </ul>
+              <h3 id="ex-sub">Fluxo</h3>
+              <ol>
+                <li>Instancie a classe.</li>
+                <li>Chame <code>create_model</code>.</li>
+              </ol>
+            </div>
+          </div>
+
+          <h2 id="codigo">Código</h2>
+          <p>Três formas. O bloco simples leva só o botão de copiar. O bloco com título serve para arquivos. O bloco com abas agrupa variações do mesmo exemplo e já é a forma usada para provedores, sistemas operacionais e linguagens. Realce de sintaxe usa as classes <code>t-k</code> (palavra-chave), <code>t-s</code> (texto), <code>t-n</code> (número), <code>t-f</code> (função) e <code>t-c</code> (comentário).</p>
+          <h3>Simples</h3>
+          <div class="demo bare" data-src>
+            <div class="code plain">
+              <div class="code-body">
+                <pre><code>uvicorn web_services:app --reload</code></pre>
+                <button class="copy floating" type="button"></button>
+              </div>
+            </div>
+          </div>
+          <h3>Com título</h3>
+          <div class="demo bare" data-src>
+            <div class="code">
+              <div class="code-head"><span class="code-title">.env</span><button class="copy" type="button"></button></div>
+              <div class="code-body">
+                <pre><code><span class="t-c"># Regras de tracing</span>
+<span class="t-f">SAVE_LOGS</span>=false
+<span class="t-f">LOCAL</span>=false</code></pre>
+              </div>
+            </div>
+          </div>
+          <h3>Com abas</h3>
+          <div class="demo bare" data-src>
+            <div class="code" data-tabs>
+              <div class="code-head">
+                <div class="code-tabs" role="tablist">
+                  <button class="code-tab" type="button">Anthropic</button>
+                  <button class="code-tab" type="button">Google</button>
+                </div>
+                <button class="copy" type="button"></button>
+              </div>
+              <div class="code-body">
+                <pre><code><span class="t-k">from</span> src.agents.utils.model_gateway <span class="t-k">import</span> ModelGateway
+
+model = gateway.<span class="t-f">create_model</span>(
+    provider=<span class="t-s">"anthropic"</span>,
+    temperature=<span class="t-n">0.2</span>,
+)</code></pre>
+                <pre><code><span class="t-k">from</span> src.agents.utils.model_gateway <span class="t-k">import</span> ModelGateway
+
+model = gateway.<span class="t-f">create_model</span>(
+    provider=<span class="t-s">"google"</span>,
+    temperature=<span class="t-n">0.2</span>,
+)</code></pre>
+              </div>
+            </div>
+          </div>
+
+          <h2 id="tabelas">Tabelas</h2>
+          <p>Sem moldura e sem listras: só uma linha sob o cabeçalho e linhas finas entre as linhas. Envolva sempre a tabela em <code>.table-wrap</code> para ela rolar em telas estreitas. Nomes de variáveis, métodos e parâmetros vão em <code>code</code> e não quebram.</p>
+          <div class="demo" data-src>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Argumento</th><th>Tipo</th><th>Padrão</th><th>Descrição</th></tr></thead>
+                <tbody>
+                  <tr><td><code>provider</code></td><td><code>str</code></td><td>obrigatório</td><td>Nome ou apelido do provedor</td></tr>
+                  <tr><td><code>model_id</code></td><td><code>str | None</code></td><td><code>None</code></td><td>Identificador do modelo</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <h2 id="avisos">Avisos</h2>
+          <p>Cinco tipos. O ícone é inserido pelo script a partir de <code>data-kind</code>. Escolha pelo efeito para quem lê, não pela cor.</p>
+          <div class="demo bare" data-src>
+            <div class="callout" data-kind="info"><p><strong>Requisito.</strong> Use a versão do Python fixada em <code>.python-version</code>.</p></div>
+            <div class="callout" data-kind="tip"><p>Se o <code>/health</code> respondeu, a API está no ar.</p></div>
+            <div class="callout" data-kind="warn"><p><strong>Só em desenvolvimento.</strong> <code>LOCAL=true</code> desliga a autenticação.</p></div>
+            <div class="callout" data-kind="danger"><p><strong>Levanta <code>ValueError</code></strong> quando o provedor não é reconhecido.</p></div>
+            <div class="callout" data-kind="note"><p>Cada geração registra o custo em dólar e em real.</p></div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Tipo</th><th>Quando usar</th></tr></thead>
+              <tbody>
+                <tr><td><code>info</code></td><td>Contexto ou requisito que a pessoa precisa saber antes de seguir</td></tr>
+                <tr><td><code>tip</code></td><td>Atalho, confirmação de que deu certo ou próximo passo útil</td></tr>
+                <tr><td><code>warn</code></td><td>Algo que funciona, mas tem risco ou só vale em certo ambiente</td></tr>
+                <tr><td><code>danger</code></td><td>Erro, exceção ou ação que pode causar perda</td></tr>
+                <tr><td><code>note</code></td><td>Observação neutra, também usada para avisar que a página é de exemplo ou não está traduzida</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="cartoes">Cartões</h2>
+          <p>Cartões levam a outra página. Use em grade de duas colunas para áreas e seções, e na versão em linha (<code>.card.row</code>) para um único destaque, como o Quickstart.</p>
+          <h3>Grade</h3>
+          <div class="demo bare" data-src>
+            <div class="cards">
+              <a class="card" href="#cartoes"><span class="card-icon" data-ico="boxes"></span><span class="card-title">Model Gateway</span><span class="card-text">Crie modelos e agentes de qualquer provedor pela mesma chamada.</span></a>
+              <a class="card" href="#cartoes"><span class="card-icon" data-ico="code"></span><span class="card-title">Web Service Network</span><span class="card-text">Autenticação, formato das respostas e endpoints da API.</span></a>
+            </div>
+          </div>
+          <h3>Em linha</h3>
+          <div class="demo bare" data-src>
+            <div class="cards one">
+              <a class="card row" href="#cartoes">
+                <span class="card-icon" data-ico="bolt"></span>
+                <span><span class="card-title">Quickstart</span><span class="card-text">Do clone ao primeiro GET /health, em seis passos.</span></span>
+                <i class="card-go" data-ico="go"></i>
+              </a>
+            </div>
+          </div>
+
+          <h2 id="endpoint">Endpoint</h2>
+          <p>Mostra o método HTTP e o caminho. <code>GET</code> usa o verde de sucesso; os demais métodos usam o azul de informação.</p>
+          <div class="demo" data-src>
+            <div class="endpoint"><span class="method" data-m="POST">POST</span><span>/parse-content/document-parse</span></div>
+            <div class="endpoint"><span class="method" data-m="GET">GET</span><span>/health</span></div>
+          </div>
+
+          <h2 id="accordion">Accordion</h2>
+          <p>Para conteúdo longo que a maioria não precisa ler, como o modelo completo de um arquivo. O corpo é sempre um bloco de código.</p>
+          <div class="demo" data-src>
+            <div class="prose">
+              <details>
+                <summary>Ver o modelo completo do .env</summary>
+                <div class="code">
+                  <div class="code-head"><span class="code-title">.env</span><button class="copy" type="button"></button></div>
+                  <div class="code-body">
+                    <pre><code><span class="t-f">BETTERAI_API_KEY</span>=********************
+<span class="t-f">OPENAI_API_KEY</span>=********************
+<span class="t-f">LOCAL</span>=false</code></pre>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </div>
+
+          <h2 id="midia">Moldura de mídia</h2>
+          <p>Imagens e vídeos entram em uma moldura com fundo cinza e cantos de 18 px. Vídeos têm proporção 16:9. Use <code>figure</code> com <code>figcaption</code> quando houver legenda, e sempre escreva o texto alternativo.</p>
+          <div class="demo bare" data-src>
+            <figure class="frame">
+              <img src="../assets/img/frame-27346.png" alt="Pintura em tons de azul e verde com o nome BetterAI ao centro">
+              <figcaption>Exemplo de saída no estilo aquarela.</figcaption>
+            </figure>
+          </div>
+
+          <h2 id="vazio">Página em branco</h2>
+          <p>Para arquivos que existem, mas ainda não têm conteúdo. Explica o que acontece e, quando houver, leva para a próxima página.</p>
+          <div class="demo bare" data-src>
+            <div class="empty">
+              <i data-ico="blank"></i>
+              <p class="empty-title">Esta página ainda está em branco</p>
+              <p>O arquivo <code>doc/Modules/Image Generation/Module.ipynb</code> existe, mas não tem conteúdo. Quando ele for preenchido, o texto aparece aqui.</p>
+              <a class="btn-cta" href="#vazio">Ir para Image Generator Service</a>
+            </div>
+          </div>
+
+          <h2 id="fim-pagina">Fim da página</h2>
+          <p>Toda página termina com a pergunta de utilidade, o caminho do arquivo de origem e os links para a página anterior e a próxima.</p>
+          <div class="demo bare" data-src>
+            <div class="feedback">
+              <span class="q">Esta página foi útil?</span>
+              <button class="fb-btn" type="button"><i data-ico="up"></i>Sim</button>
+              <button class="fb-btn" type="button"><i data-ico="dn"></i>Não</button>
+              <a class="edit" href="#fim-pagina"><i data-ico="edit"></i>Editar no GitHub</a>
+            </div>
+            <p class="source">Fonte: <code>doc/Modules/Agents/Utils/Model Gateway.md</code></p>
+            <nav class="pager" aria-label="Páginas vizinhas">
+              <a class="pager-link prev" href="#fim-pagina"><i data-ico="chevron"></i><div><small>Anterior</small><span>Database</span></div></a>
+              <a class="pager-link next" href="#fim-pagina"><div><small>Próxima</small><span>Documentation</span></div><i data-ico="chevron"></i></a>
+            </nav>
+          </div>
+
+          <h2 id="estrutura">Estrutura da página</h2>
+          <p>Toda página usa a mesma moldura. O arquivo <code>templates/page-template.html</code> já vem montado assim; troque só o conteúdo de <code>.prose</code> e os textos do cabeçalho.</p>
+          <div class="code plain">
+            <div class="code-body">
+              <pre><code>body
+├─ a.skip                       link "Ir para o conteúdo"
+├─ header.header#header         fixo no topo
+│  ├─ div.banner#banner         aviso opcional
+│  └─ div.bar
+│     ├─ div.row1               logo, busca, botões, idioma, tema
+│     ├─ nav.tabs-row           uma aba por área
+│     └─ div.subbar             só no celular: botão do menu
+├─ div.shell
+│  ├─ aside.side-wrap#side      menu lateral da área
+│  └─ div.main
+│     ├─ div.main-row
+│     │  ├─ main.article        coluna de leitura (46 rem)
+│     │  │  ├─ header           eyebrow, título, resumo
+│     │  │  ├─ div.prose        o conteúdo
+│     │  │  └─ feedback, pager
+│     │  └─ aside.toc#toc       "Nesta página"
+│     └─ footer.site-foot
+├─ div.scrim                    fundo da gaveta no celular
+└─ dialog.search#search         busca</code></pre>
+              <button class="copy floating" type="button"></button>
+            </div>
+          </div>
+
+          <h2 id="regras">Regras</h2>
+          <div class="ds-rules">
+            <div class="callout" data-kind="tip"><div><strong>Faça</strong><ul>
+              <li>Comece pelo template e troque só o conteúdo.</li>
+              <li>Use variáveis de <code>tokens.css</code> para toda cor, raio e fonte.</li>
+              <li>Escreva títulos em frase, com a primeira letra maiúscula só no início.</li>
+              <li>Dê um resumo a toda página de conteúdo.</li>
+              <li>Use o tipo de aviso que combina com o efeito para quem lê.</li>
+              <li>Escreva texto alternativo em toda imagem.</li>
+            </ul></div></div>
+            <div class="callout" data-kind="danger"><div><strong>Não faça</strong><ul>
+              <li>Escrever cor em hexadecimal ou <code>rgb()</code> dentro de uma página.</li>
+              <li>Criar um componente parecido com um que já existe aqui.</li>
+              <li>Usar o índigo como fundo fora do botão principal.</li>
+              <li>Pular níveis de título: <code>h2</code> vai direto para <code>h3</code>.</li>
+              <li>Colocar mais de um botão principal na mesma área.</li>
+              <li>Estilizar com <code>style</code> no HTML, salvo valores de demonstração.</li>
+            </ul></div></div>
+          </div>
+        </div>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="Nesta página"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-brand">
+        <a class="brand" href="#"><span class="brand-name">BetterAI</span><span class="brand-sub">Design System</span></a>
+        <p>Where intelligence finds purpose.</p>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Buscar na documentação">
+  <div class="search-field">
+    <i data-ico="search"></i>
+    <input type="search" placeholder="Buscar páginas e seções" autocomplete="off" spellcheck="false">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" role="listbox" aria-label="Resultados">
+    <li class="results-label" role="presentation">Sugestões</li>
+    <li class="result" role="option" aria-selected="true"><a href="#busca"><span class="r-title">Quickstart</span><span class="r-path">Getting Started</span></a></li>
+    <li class="result" role="option" aria-selected="false"><a href="#busca"><span class="r-title">Model Gateway</span><span class="r-path">Modules / Agents / Utils</span></a></li>
+  </ul>
+  <div class="search-foot">
+    <span><kbd>↑</kbd><kbd>↓</kbd><span>navegar</span></span>
+    <span><kbd>Enter</kbd><span>abrir</span></span>
+  </div>
+</dialog>
+
+<script>
+(function () {
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+
+  /* "Ver HTML": captura o markup de cada exemplo antes de o ds.js preencher os ícones */
+  function dedent(t) {
+    var lines = t.replace(/^\n+|\s+$/g, '').split('\n');
+    var min = Math.min.apply(null, lines.filter(function (l) { return l.trim(); }).map(function (l) { return l.match(/^ */)[0].length; }).concat([99]));
+    return lines.map(function (l) { return l.slice(min); }).join('\n');
+  }
+  $$('[data-src]').forEach(function (demo, i) {
+    var src = dedent(demo.innerHTML);
+    var id = 'src-' + i;
+    var btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'ds-show'; btn.setAttribute('aria-expanded', 'false'); btn.setAttribute('aria-controls', id);
+    btn.textContent = 'Ver HTML';
+    var box = document.createElement('div');
+    box.className = 'ds-html'; box.id = id; box.hidden = true;
+    box.innerHTML = '<div class="code"><div class="code-head"><span class="code-title">HTML</span><button class="copy" type="button"></button></div><div class="code-body"><pre><code>' + esc(src) + '</code></pre></div></div>';
+    demo.after(btn, box);
+    btn.addEventListener('click', function () {
+      box.hidden = !box.hidden;
+      btn.setAttribute('aria-expanded', !box.hidden);
+      btn.textContent = box.hidden ? 'Ver HTML' : 'Ocultar HTML';
+    });
+  });
+
+  /* Amostras de cor lidas ao vivo das variáveis, para acompanhar o tema */
+  var GROUPS = {
+    neutral: [['--bg', 'Fundo da página'], ['--ink', 'Texto principal'], ['--ink-2', 'Texto secundário'], ['--ink-3', 'Texto de apoio, resumo'], ['--ink-4', 'Ícones discretos'], ['--line', 'Bordas de componentes'], ['--line-soft', 'Divisores'], ['--fill', 'Código inline, moldura'], ['--fill-soft', 'Campo de busca, botão suave']],
+    brand: [['--primary', 'Item ativo do menu, aba de código'], ['--primary-fill', 'Fundo do item ativo'], ['--accent', 'Links, categoria, foco'], ['--cta', 'Botão principal'], ['--cta-hover', 'Botão principal ao passar o mouse']],
+    alerts: [['--info-bg', 'Informação, fundo'], ['--info-bd', 'Informação, borda'], ['--info-ic', 'Informação, ícone'], ['--tip-bg', 'Dica, fundo'], ['--tip-bd', 'Dica, borda'], ['--tip-ic', 'Dica, ícone'], ['--warn-bg', 'Atenção, fundo'], ['--warn-bd', 'Atenção, borda'], ['--warn-ic', 'Atenção, ícone'], ['--danger-bg', 'Perigo, fundo'], ['--danger-bd', 'Perigo, borda'], ['--danger-ic', 'Perigo, ícone'], ['--note-bg', 'Nota, fundo'], ['--note-bd', 'Nota, borda'], ['--note-ic', 'Nota, ícone']],
+    code: [['--code-bg', 'Fundo do bloco'], ['--code-ink', 'Texto do código'], ['--t-k', 'Palavra-chave'], ['--t-s', 'Texto entre aspas'], ['--t-n', 'Número'], ['--t-f', 'Função e nome'], ['--t-c', 'Comentário']]
+  };
+  function swatches() {
+    var cs = getComputedStyle(document.documentElement);
+    $$('[data-swatches]').forEach(function (grid) {
+      grid.innerHTML = GROUPS[grid.dataset.swatches].map(function (v) {
+        return '<div class="ds-swatch"><div class="ds-chip" style="background:var(' + v[0] + ')"></div><div><b>' + v[0] + '</b><span>' + esc(cs.getPropertyValue(v[0]).trim()) + '</span><small>' + v[1] + '</small></div></div>';
+      }).join('');
+    });
+  }
+  swatches();
+  new MutationObserver(swatches).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+})();
+</script>
+<script src="js/ds.js"></script>
+</body>
+</html>

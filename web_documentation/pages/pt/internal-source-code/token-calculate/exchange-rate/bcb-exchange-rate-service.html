@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BCB Exchange Rate Service | BetterAI Docs</title>
+<meta name="description" content="A classe BCBExchangeRateService oferece um serviço para consultar a cotação do dólar em relação ao real diretamente da API oficial do Banco Central do Brasil (BCB).">
+<link rel="canonical" href="pages/pt/internal-source-code/token-calculate/exchange-rate/bcb-exchange-rate-service.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../../../../_design-system/css/tokens.css?v=7f43b250">
+<link rel="stylesheet" href="../../../../../_design-system/css/base.css?v=4a698b89">
+<link rel="stylesheet" href="../../../../../_design-system/css/layout.css?v=503e806e">
+<link rel="stylesheet" href="../../../../../_design-system/css/content.css?v=cfc5f8ef">
+<link rel="stylesheet" href="../../../../../_design-system/css/search.css?v=1ecf3252">
+<link rel="stylesheet" href="../../../../../_design-system/css/responsive.css?v=6efeec66">
+</head>
+<body>
+<a class="skip" href="#main">Ir para o conteúdo</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Criado por Enzo Schitini. Convido você a se conectar comigo no LinkedIn.</a></span>
+    <button type="button" aria-label="Fechar aviso"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../../pages/pt/index.html">
+        <img src="../../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Buscar na documentação">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Buscar...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="../../../../../pages/pt/getting-started/quickstart.html">Quickstart<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Idioma"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>PT</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="true"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="false"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="false"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Alternar tema claro e escuro"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Áreas da documentação"><a class="tab" href="../../../../../pages/pt/index.html">Visão geral</a><a class="tab" href="../../../../../pages/pt/getting-started/index.html">Introduction</a><a class="tab" href="../../../../../pages/pt/agents/index.html">Agents</a><a class="tab" href="../../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../../pages/pt/api/index.html">API</a><a class="tab" href="../../../../../pages/pt/modules/index.html">Modules</a><a class="tab" href="../../../../../pages/pt/internal-source-code/index.html" aria-current="page">Internal Services</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Internal Services</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">BCB Exchange Rate Service</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Navegação da documentação">
+    <nav class="side"><div class="side-areas"><a href="../../../../../pages/pt/index.html">Visão geral</a><a href="../../../../../pages/pt/getting-started/index.html">Introduction</a><a href="../../../../../pages/pt/agents/index.html">Agents</a><a href="../../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../../pages/pt/api/index.html">API</a><a href="../../../../../pages/pt/modules/index.html">Modules</a><a href="../../../../../pages/pt/internal-source-code/index.html" aria-current="page">Internal Services</a></div><a class="side-link" href="../../../../../pages/pt/internal-source-code/index.html"><span>Visão geral</span></a><div class="side-group"><p class="side-title">Application Tracing</p><ul><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/application-tracing/logger-engine.html"><span>Logger Engine</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/application-tracing/payload-builder.html"><span>Payload Builder</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/application-tracing/tracing-core.html"><span>Tracing Core</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/application-tracing/use.html"><span>Use</span></a></li></ul></div><div class="side-group"><p class="side-title">Database</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>No SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/database/no-sql/local-manage.html"><span>Local Manage</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/database/no-sql/mongo-manager.html"><span>Mongo Manager</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/database/no-sql/router.html"><span>Router</span></a></li></ul></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/database/sql/supabase-database.html"><span>Supabase Database</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Storage</p><ul><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/storage/storage-menage-repository.html"><span>Storage Menage Repository</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Supabase</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/storage/supabase/storage-menager.html"><span>Storage Menager</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Token Calculate</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="true"><span>Exchange Rate</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub"><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/token-calculate/exchange-rate/bcb-exchange-rate-service.html" aria-current="page"><span>BCB Exchange Rate Service</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/token-calculate/exchange-rate/exchange-rate-service.html"><span>Exchange Rate Service</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/token-calculate/model-pricing.html"><span>Model Pricing</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/token-calculate/token-counter.html"><span>Token Counter</span></a></li></ul></div><div class="side-group"><p class="side-title">Utils</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Load Request File</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/utils/load-request-file/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/utils/load-request-file/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/utils/loader-files.html"><span>Loader Files</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/utils/unique-id-factory.html"><span>Unique ID Factory</span></a></li></ul></div><div class="side-group"><p class="side-title">Vector Store</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Local Dynamic Embedding</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/vector-store/local-dynamic-embedding/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/vector-store/local-dynamic-embedding/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/vector-store/pinecone-client.html"><span>Pinecone Client</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/vector-store/pinecone-embedding.html"><span>Pinecone Embedding</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/vector-store/pinecone-retriever.html"><span>Pinecone Retriever</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/vector-store/retrieval-manager.html"><span>Retrieval Manager</span></a></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Token Calculate / Exchange Rate</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">BCB Exchange Rate Service</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copiar página</span></button>
+            </div>
+          </div>
+          <p class="lead">A classe BCBExchangeRateService oferece um serviço para consultar a cotação do dólar em relação ao real diretamente da API oficial do Banco Central do Brasil (BCB).</p>
+          <details class="toc-inline"><summary>Nesta página</summary><ul></ul></details>
+        </header>
+        <div class="prose"><h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão Geral</h2>
+  <p>A classe <code>BCBExchangeRateService</code> oferece um serviço para consultar a cotação do dólar em relação ao real diretamente da API oficial do Banco Central do Brasil (BCB). Este serviço é útil para desenvolvimento de aplicações financeiras, sistemas de câmbio, análise econômica e situações onde é necessário obter taxas de câmbio atualizadas de forma automática e programática.</p>
+  <p>A principal funcionalidade da classe é permitir a busca da taxa de câmbio do dólar para datas específicas, além de facilitar a recuperação da melhor cotação disponível dentro de um intervalo de dias passados, começando pela data atual. Isso garante flexibilidade para captar valores mesmo quando não há cotação em dias recentes, por exemplo, fins de semana ou feriados.</p>
+  <p>Na prática, um desenvolvedor pode instanciar a classe e chamar o método <code>get_latest_rate</code>, definindo quantos dias anteriores considerar na busca da cotação. O método retorna a melhor taxa e a data correspondente, facilitando integrações rápidas com dados oficiais.</p>
+
+  <h2 id="fluxo-de-execucao"><a class="anchor" href="#fluxo-de-execucao" aria-label="Link para esta seção">#</a>Fluxo de Execução</h2>
+  <ol>
+    <li><strong>Inicialização:</strong> O usuário cria uma instância de <code>BCBExchangeRateService</code>, podendo definir um tempo limite (timeout) para as requisições HTTP (padrão 10 segundos).</li>
+    <li><strong>Chamada do método <code>get_latest_rate</code>:</strong> Este método recebe um parâmetro opcional <code>max_days_back</code> que define a quantidade de dias anteriores para buscar a cotação.</li>
+    <li><strong>Busca iterativa:</strong> Para cada dia, começando pelo atual e retrocedendo até <code>max_days_back</code>, o método faz uma requisição GET na API do BCB usando o formato de URL construído para aquela data.</li>
+    <li><strong>Processamento da resposta:</strong> Se a API devolve dados válidos, o método extrai a cotação de venda e a data daquela cotação.</li>
+    <li><strong>Comparação e seleção:</strong> A cada cotação obtida, verifica se é a melhor (mais recente) encontrada até então e armazena essa informação.</li>
+    <li><strong>Atraso entre requisições:</strong> Há um pequeno delay de 0,2 segundos entre cada tentativa para não sobrecarregar a API.</li>
+    <li><strong>Retorno do resultado:</strong> Após percorrer os dias, retorna um dicionário com o valor da melhor cotação encontrada e sua respectiva data. Se ocorrer algum erro, retorna valores <code>None</code>.</li>
+    <li><strong>Logs:</strong> O processo imprime no console detalhes das tentativas, sucessos, falhas e resultado final.</li>
+  </ol>
+
+  <h2 id="tabela-de-metodos-da-classe"><a class="anchor" href="#tabela-de-metodos-da-classe" aria-label="Link para esta seção">#</a>Tabela de Métodos da Classe</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Método</th><th>Descrição</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Inicializa a instância definindo o timeout das requisições.</td></tr>
+      <tr><td><code>_build_url</code></td><td>Monta a URL da API para uma data específica.</td></tr>
+      <tr><td><code>_fetch_rate_for_date</code></td><td>Realiza a requisição HTTP para obter a cotação de uma data.</td></tr>
+      <tr><td><code>get_latest_rate</code></td><td>Busca a melhor cotação disponível dentro do intervalo definido.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="variaveis-de-ambiente"><a class="anchor" href="#variaveis-de-ambiente" aria-label="Link para esta seção">#</a>Variáveis de Ambiente</h2>
+  <p>Não há variáveis de ambiente utilizadas para o funcionamento desta classe.</p>
+
+  <h2 id="pontos-importantes-da-arquitetura-e-insights"><a class="anchor" href="#pontos-importantes-da-arquitetura-e-insights" aria-label="Link para esta seção">#</a>Pontos Importantes da Arquitetura e Insights</h2>
+  <ul>
+    <li><strong>Encapsulamento:</strong> A classe separa explicitamente a construção da URL (<code>_build_url</code>) e a obtenção dos dados (<code>_fetch_rate_for_date</code>) como métodos privados, mantendo a API pública limpa.</li>
+    <li><strong>Robustez:</strong> O código trata exceções em vários pontos para evitar que falhas em requisições comprometam a operação geral.</li>
+    <li><strong>Respeito à API:</strong> Uso de delays entre requisições evita sobrecarregar o serviço do BCB.</li>
+    <li><strong>Dependência externa:</strong> Utiliza a biblioteca <code>requests</code> para comunicação HTTP, garantindo facilidade e robustez nas chamadas.</li>
+    <li><strong>Boa prática temporal:</strong> Usa datas em UTC e formata data para o padrão esperado pela API.</li>
+    <li><strong>Retorno estruturado:</strong> Confere a consumibilidade by retornando um dicionário com <code>rate</code> e <code>date</code>, facilitando integrações.</li>
+  </ul>
+
+  <h2 id="descricao-da-classe-e-metodos"><a class="anchor" href="#descricao-da-classe-e-metodos" aria-label="Link para esta seção">#</a>Descrição da Classe e Métodos</h2>
+
+  <h2 id="classe-bcbexchangerateservice"><a class="anchor" href="#classe-bcbexchangerateservice" aria-label="Link para esta seção">#</a>Classe <code>BCBExchangeRateService</code></h2>
+  <h3 id="descricao"><a class="anchor" href="#descricao" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Esta classe é responsável por consultar cotações do dólar americano frente ao real brasileiro diretamente da API oficial do Banco Central do Brasil. Permite tanto consultar valores para datas específicas quanto buscar a melhor cotação dentro de um período, facilitando aplicações financeiras que necessitam de dados atualizados e confiáveis.</p>
+
+  <h3 id="argumentos-do-construtor"><a class="anchor" href="#argumentos-do-construtor" aria-label="Link para esta seção">#</a>Argumentos do Construtor</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argumento</th><th>Tipo</th><th>Descrição</th><th>Valor Padrão</th></tr></thead>
+    <tbody>
+      <tr><td><code>timeout</code></td><td>int</td><td>Tempo máximo em segundos para requisições HTTP</td><td>10</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Inicializa uma instância do serviço definindo o tempo máximo para respostas das requisições HTTP realizadas à API do BCB.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>timeout</code> (int): tempo limite em segundos para requisições.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>Não retorna valor.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>service = <span class="t-f">BCBExchangeRateService</span>(timeout=<span class="t-n">5</span>)  <span class="t-c"># Timeout menor para conexões lentas</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-build-url"><a class="anchor" href="#2-build-url" aria-label="Link para esta seção">#</a>2. <code>_build_url</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Método privado que constrói a URL de consulta da API do Banco Central para uma data específica, formatando a data no padrão exigido.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>date</code> (datetime): data que será consultada na API.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>str</code>: URL formatada para realizar a consulta.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> datetime <span class="t-k">import</span> datetime
+service = <span class="t-f">BCBExchangeRateService</span>()
+url = service.<span class="t-f">_build_url</span>(<span class="t-f">datetime</span>(<span class="t-n">2024</span>, <span class="t-n">6</span>, <span class="t-n">10</span>))
+<span class="t-f">print</span>(url)
+<span class="t-c"># Exemplo de saída:</span>
+<span class="t-c"># https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarDia(dataCotacao=@dataCotacao)?@dataCotacao='06-10-2024'&amp;$top=1&amp;$format=json</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-fetch-rate-for-date"><a class="anchor" href="#3-fetch-rate-for-date" aria-label="Link para esta seção">#</a>3. <code>_fetch_rate_for_date</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Método privado que tenta buscar a cotação do dólar para uma data específica utilizando a API do Banco Central. Retorna a cotação de venda e a data da cotação caso sucesso.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>date</code> (datetime): data para a qual a cotação será consultada.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>(float, datetime)</code>: uma tupla contendo o valor da cotação (float) e a data da cotação (datetime).</li>
+    <li><code>(None, None)</code>: caso não seja possível obter a cotação por erro ou ausência de dados.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nenhum explicitamente, mas possíveis exceções são capturadas internamente.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>service = <span class="t-f">BCBExchangeRateService</span>()
+rate, date = service.<span class="t-f">_fetch_rate_for_date</span>(<span class="t-f">datetime</span>(<span class="t-n">2024</span>, <span class="t-n">6</span>, <span class="t-n">10</span>))
+<span class="t-f">print</span>(rate, date)
+<span class="t-c"># Saída esperada (se houver cotação nessa data):</span>
+<span class="t-c"># 5.0892 2024-06-10 00:00:00</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-get-latest-rate"><a class="anchor" href="#4-get-latest-rate" aria-label="Link para esta seção">#</a>4. <code>get_latest_rate</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Busca a melhor cotação do dólar em relação ao real disponível nos últimos <code>max_days_back</code> dias a partir do momento da chamada, retornando o valor e a data da cotação mais recente encontrada.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>max_days_back</code> (int): número de dias anteriores para buscar a cotação (default: 5).</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>dict</code>: com as chaves:
+      <ul>
+        <li><code>rate</code> (float ou None): melhor cotação encontrada.</li>
+        <li><code>date</code> (datetime ou None): data dessa cotação.</li>
+      </ul>
+    </li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nenhum explicitamente, erros são tratados internamente.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>service = <span class="t-f">BCBExchangeRateService</span>()
+result = service.<span class="t-f">get_latest_rate</span>(<span class="t-n">3</span>)
+<span class="t-f">print</span>(f<span class="t-s">&quot;Cotação: {result['rate']} em {result['date']}&quot;</span>)
+<span class="t-c"># Saída possível:</span>
+<span class="t-c"># Cotação: 5.0892 em 2024-06-10 00:00:00</span>
+
+<span class="t-c"># python -m src.tokens_calculate.bcb</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <p>Assim, a classe <code>BCBExchangeRateService</code> é uma solução prática e confiável para obter cotações oficiais do dólar comercial, útil para qualquer sistema que necessite acesso facilitado e programático a esses dados.</p></div>
+        <div class="feedback"></div>
+        <p class="source">Fonte: <code>src/tokens_calculate/exchange_rate/bcb.py</code></p>
+        <nav class="pager" aria-label="Páginas vizinhas"><a class="pager-link prev" href="../../../../../pages/pt/internal-source-code/storage/supabase/storage-menager.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Anterior</small><span>Storage Menager</span></div></a><a class="pager-link next" href="../../../../../pages/pt/internal-source-code/token-calculate/exchange-rate/exchange-rate-service.html"><div><small>Próxima</small><span>Exchange Rate Service</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="Nesta página"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="../../../../../pages/pt/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+          <p>Where intelligence finds purpose.</p>
+          <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>Repositório no GitHub</a>
+        </div>
+        <div class="foot-col"><h2>Documentação</h2><a href="../../../../../pages/pt/getting-started/index.html">Introduction</a><a href="../../../../../pages/pt/agents/index.html">Agents</a><a href="../../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../../pages/pt/api/index.html">API</a><a href="../../../../../pages/pt/modules/index.html">Modules</a><a href="../../../../../pages/pt/internal-source-code/index.html">Internal Services</a></div>
+        <div class="foot-col"><h2>Recursos</h2><a href="../../../../../pages/pt/getting-started/quickstart.html">Quickstart</a><a href="../../../../../pages/pt/getting-started/licence.html">Licence</a><a href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener">Código-fonte</a><a href="https://github.com/enzoschitini/better-ai/issues" target="_blank" rel="noopener">Reportar um problema</a></div>
+        <div class="foot-col"><h2>Criador</h2><div class="foot-me"><img src="../../../../../assets/img/profile.jpg" alt="" width="44" height="44"><div><strong>Enzo Schitini</strong><span>Data Scientist &amp; AI Engineer</span></div></div><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/enzoschitini" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 BetterAI &middot; Licença MIT</span>
+        <span>Criado por <a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Enzo Schitini</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Buscar na documentação">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Buscar páginas e seções" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Resultados"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>navegar</span></span>
+    <span><kbd>Enter</kbd><span>abrir</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "pt", "root": "../../../../../", "index": "../../../../../search-pt.json", "alt": {"pt": "pages/pt/internal-source-code/token-calculate/exchange-rate/bcb-exchange-rate-service.html", "it": "pages/it/internal-source-code/token-calculate/exchange-rate/bcb-exchange-rate-service.html", "en": "pages/en/internal-source-code/token-calculate/exchange-rate/bcb-exchange-rate-service.html"}, "i": {"noResults": "Nada encontrado para “%s”. Tente o nome de um módulo, como “Pinecone”."}};</script>
+<script src="../../../../../_design-system/js/ds.js?v=9a5e2954"></script>
+<script src="../../../../../_design-system/js/docs.js?v=6f602c0a"></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<page data-lead="Valida os parâmetros de uma geração de imagem contra o catálogo de modelos antes de a chamada ser enviada ao provedor.">
+  <div class="callout" data-kind="note"><p><strong>Fonte:</strong> <code>src/image_generation/utils/params_validator.py</code>. O notebook original desta página estava vazio; o conteúdo foi escrito a partir do código.</p></div>
+
+  <h2>Visão geral</h2>
+  <p>A classe <code>ImageParamsValidator</code> recebe um catálogo opcional no construtor; sem ele, usa <code>IMAGE_MODELS_CATALOG</code> (veja <a href="@/modules/image-generation/utils/config">Config</a>). O método <code>validate()</code> não devolve nada: se tudo estiver correto, retorna em silêncio; caso contrário, levanta <code>ValueError</code>.</p>
+
+  <h2>Parâmetros de validate</h2>
+  <p>Todos são nomeados (keyword-only) e obrigatórios.</p>
+  <table>
+    <thead><tr><th>Parâmetro</th><th>Tipo</th><th>Regra</th></tr></thead>
+    <tbody>
+      <tr><td><code>model</code></td><td><code>str</code></td><td>Precisa existir no catálogo.</td></tr>
+      <tr><td><code>number_of_images</code></td><td><code>int</code></td><td>Deve ser maior ou igual a 1 e não pode passar de <code>max_output_images_per_prompt</code> do modelo.</td></tr>
+      <tr><td><code>output_mime_type</code></td><td><code>str</code></td><td>Precisa estar em <code>mime_types</code> do modelo.</td></tr>
+      <tr><td><code>aspect_ratio</code></td><td><code>str</code></td><td>Precisa estar em <code>supported_aspect_ratios</code> do modelo.</td></tr>
+      <tr><td><code>image_size</code></td><td><code>str</code></td><td>Precisa estar em <code>supported_resolutions</code> do modelo (por exemplo <code>1K</code>, <code>2K</code>).</td></tr>
+    </tbody>
+  </table>
+  <p>As verificações acontecem nesta ordem: modelo, quantidade de imagens, tipo MIME, proporção e resolução. A primeira que falhar interrompe a validação.</p>
+
+  <h2>Exemplo de uso</h2>
+  <pre data-lang="python"><code>
+from src.image_generation.utils.params_validator import ImageParamsValidator
+
+validator = ImageParamsValidator()
+
+# Passa em silêncio quando os parâmetros são válidos
+validator.validate(
+    model="imagen-4.0-fast-generate-001",
+    number_of_images=2,
+    output_mime_type="image/png",
+    aspect_ratio="16:9",
+    image_size="1K",
+)
+
+# Levanta ValueError: o modelo fast só aceita 1K
+validator.validate(
+    model="imagen-4.0-fast-generate-001",
+    number_of_images=2,
+    output_mime_type="image/png",
+    aspect_ratio="16:9",
+    image_size="2K",
+)
+</code></pre>
+
+  <h2>Observações</h2>
+  <div class="callout" data-kind="info"><p>As mensagens de erro de <code>validate()</code> estão em inglês e, nas falhas de tipo MIME, proporção e resolução, listam os valores aceitos pelo modelo.</p></div>
+  <p>O validador é usado por <code>TextToImage</code> em <code>generation.py</code>, antes de chamar <code>generate_images</code>.</p>
+</page>

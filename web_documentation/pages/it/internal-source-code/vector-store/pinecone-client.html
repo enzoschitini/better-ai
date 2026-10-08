@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pinecone Client | BetterAI Docs</title>
+<meta name="description" content="La classe PineconeClient è un'astrazione per gestire la connessione e le operazioni con il servizio Pinecone, una soluzione di archiviazione e ricerca vettoriale ad alte prestazioni.">
+<link rel="canonical" href="pages/it/internal-source-code/vector-store/pinecone-client.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../../../_design-system/css/tokens.css?v=7f43b250">
+<link rel="stylesheet" href="../../../../_design-system/css/base.css?v=4a698b89">
+<link rel="stylesheet" href="../../../../_design-system/css/layout.css?v=503e806e">
+<link rel="stylesheet" href="../../../../_design-system/css/content.css?v=cfc5f8ef">
+<link rel="stylesheet" href="../../../../_design-system/css/search.css?v=1ecf3252">
+<link rel="stylesheet" href="../../../../_design-system/css/responsive.css?v=6efeec66">
+</head>
+<body>
+<a class="skip" href="#main">Vai al contenuto</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Creato da Enzo Schitini. Ti invito a connetterti con me su LinkedIn.</a></span>
+    <button type="button" aria-label="Chiudi avviso"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../pages/it/index.html">
+        <img src="../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Cerca nella documentazione">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Cerca...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="../../../../pages/it/getting-started/quickstart.html">Quickstart<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Lingua"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>IT</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="false"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="true"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="false"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Cambia tema chiaro o scuro"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Aree della documentazione"><a class="tab" href="../../../../pages/it/index.html">Panoramica</a><a class="tab" href="../../../../pages/it/getting-started/index.html">Introduction</a><a class="tab" href="../../../../pages/it/agents/index.html">Agents</a><a class="tab" href="../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../pages/it/api/index.html">API</a><a class="tab" href="../../../../pages/it/modules/index.html">Modules</a><a class="tab" href="../../../../pages/it/internal-source-code/index.html" aria-current="page">Internal Services</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Internal Services</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Pinecone Client</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Navigazione della documentazione">
+    <nav class="side"><div class="side-areas"><a href="../../../../pages/it/index.html">Panoramica</a><a href="../../../../pages/it/getting-started/index.html">Introduction</a><a href="../../../../pages/it/agents/index.html">Agents</a><a href="../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/it/api/index.html">API</a><a href="../../../../pages/it/modules/index.html">Modules</a><a href="../../../../pages/it/internal-source-code/index.html" aria-current="page">Internal Services</a></div><a class="side-link" href="../../../../pages/it/internal-source-code/index.html"><span>Panoramica</span></a><div class="side-group"><p class="side-title">Application Tracing</p><ul><li><a class="side-link" href="../../../../pages/it/internal-source-code/application-tracing/logger-engine.html"><span>Logger Engine</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/application-tracing/payload-builder.html"><span>Payload Builder</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/application-tracing/tracing-core.html"><span>Tracing Core</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/application-tracing/use.html"><span>Use</span></a></li></ul></div><div class="side-group"><p class="side-title">Database</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>No SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/internal-source-code/database/no-sql/local-manage.html"><span>Local Manage</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/database/no-sql/mongo-manager.html"><span>Mongo Manager</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/database/no-sql/router.html"><span>Router</span></a></li></ul></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/internal-source-code/database/sql/supabase-database.html"><span>Supabase Database</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Storage</p><ul><li><a class="side-link" href="../../../../pages/it/internal-source-code/storage/storage-menage-repository.html"><span>Storage Menage Repository</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Supabase</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/internal-source-code/storage/supabase/storage-menager.html"><span>Storage Menager</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Token Calculate</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Exchange Rate</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/internal-source-code/token-calculate/exchange-rate/bcb-exchange-rate-service.html"><span>BCB Exchange Rate Service</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/token-calculate/exchange-rate/exchange-rate-service.html"><span>Exchange Rate Service</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/token-calculate/model-pricing.html"><span>Model Pricing</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/token-calculate/token-counter.html"><span>Token Counter</span></a></li></ul></div><div class="side-group"><p class="side-title">Utils</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Load Request File</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/internal-source-code/utils/load-request-file/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/utils/load-request-file/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/utils/loader-files.html"><span>Loader Files</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/utils/unique-id-factory.html"><span>Unique ID Factory</span></a></li></ul></div><div class="side-group"><p class="side-title">Vector Store</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Local Dynamic Embedding</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/internal-source-code/vector-store/local-dynamic-embedding/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/vector-store/local-dynamic-embedding/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/vector-store/pinecone-client.html" aria-current="page"><span>Pinecone Client</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/vector-store/pinecone-embedding.html"><span>Pinecone Embedding</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/vector-store/pinecone-retriever.html"><span>Pinecone Retriever</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/vector-store/retrieval-manager.html"><span>Retrieval Manager</span></a></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Vector Store</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Pinecone Client</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copia pagina</span></button>
+            </div>
+          </div>
+          <p class="lead">La classe PineconeClient è un'astrazione per gestire la connessione e le operazioni con il servizio Pinecone, una soluzione di archiviazione e ricerca vettoriale ad alte prestazioni.</p>
+          <details class="toc-inline"><summary>In questa pagina</summary><ul></ul></details>
+        </header>
+        <div class="prose"><h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
+  <p>La classe <code>PineconeClient</code> è un'astrazione per gestire la connessione e le operazioni con il servizio Pinecone, una soluzione di archiviazione e ricerca vettoriale ad alte prestazioni. Facilita l'integrazione con API esterne (Pinecone e OpenAI), occupandosi della configurazione delle chiavi API, della definizione dei namespace e dell'inizializzazione del modello di embedding per lavorare con vettori di testo.</p>
+  <p>Questa classe risolve il problema della configurazione manuale e ripetitiva di queste integrazioni, fornendo un'interfaccia unificata e sicura per creare e manipolare vector store usando namespace personalizzati e modelli di embedding specifici. In pratica, può essere usata per archiviare e cercare vettori generati a partire da testi, fondamentale per sistemi come la ricerca semantica, la raccomandazione basata sulla similarità e l'NLP.</p>
+
+  <h2 id="flusso-di-esecuzione"><a class="anchor" href="#flusso-di-esecuzione" aria-label="Link para esta seção">#</a>Flusso di Esecuzione</h2>
+  <ol>
+    <li><strong>Inizializzazione del Client:</strong>
+      <ul>
+        <li>Alla creazione di un'istanza di <code>PineconeClient</code>, le chiavi API di OpenAI e Pinecone vengono caricate dalle variabili d'ambiente.</li>
+        <li>Vengono definiti <code>index_name</code>, <code>main_namespace</code> e <code>global_namespace</code> sia tramite i parametri del costruttore sia tramite variabili d'ambiente o configurazione predefinita.</li>
+        <li>Il modello di embedding da usare viene selezionato allo stesso modo.</li>
+        <li>Inizializza internamente la connessione con Pinecone e il modello di embedding OpenAI.</li>
+      </ul>
+    </li>
+    <li><strong>Configurazione delle Connessioni:</strong>
+      <ul>
+        <li><code>_init_pinecone</code> crea il client Pinecone e istanzia l'index specificato.</li>
+        <li><code>_init_embeddings</code> inizializza il modello di embedding OpenAI in base alla configurazione.</li>
+      </ul>
+    </li>
+    <li><strong>Risoluzione del Namespace:</strong>
+      <ul>
+        <li>Il metodo <code>get_namespace()</code> restituisce il namespace da usare nelle operazioni, dando priorità a un valore passato al metodo, se fornito, oppure al namespace principale dell'istanza.</li>
+      </ul>
+    </li>
+    <li><strong>Creazione della Vector Store:</strong>
+      <ul>
+        <li><code>create_vector_store()</code> costruisce l'istanza di <code>PineconeVectorStore</code>, associando l'index e il modello di embedding appropriati al namespace desiderato.</li>
+        <li>L'oggetto restituito permette di eseguire operazioni di similarità vettoriale.</li>
+      </ul>
+    </li>
+  </ol>
+
+  <h2 id="tabella-dei-metodi-della-classe"><a class="anchor" href="#tabella-dei-metodi-della-classe" aria-label="Link para esta seção">#</a>Tabella dei Metodi della Classe</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Metodo</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Inizializza il client Pinecone, caricando configurazioni e chiavi</td></tr>
+      <tr><td><code>_init_pinecone</code></td><td>Stabilisce la connessione con Pinecone e istanzia l'index</td></tr>
+      <tr><td><code>_init_embeddings</code></td><td>Inizializza il modello di embedding OpenAI</td></tr>
+      <tr><td><code>get_namespace</code></td><td>Restituisce il namespace risolto per le operazioni</td></tr>
+      <tr><td><code>create_vector_store</code></td><td>Restituisce un'istanza configurata di PineconeVectorStore</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="variabili-d-ambiente"><a class="anchor" href="#variabili-d-ambiente" aria-label="Link para esta seção">#</a>Variabili d'Ambiente</h2>
+  <ul>
+    <li><code>OPENAI_API_KEY</code>: Chiave API OpenAI per la generazione degli embedding.</li>
+    <li><code>PINECONE_API_KEY</code>: Chiave API Pinecone per l'accesso al servizio.</li>
+    <li><code>PINECONE_INDEX_NAME</code>: Nome dell'indice Pinecone da utilizzare.</li>
+    <li><code>PINECONE_NAMESPACE</code>: Namespace principale predefinito per archiviare i vettori.</li>
+    <li><code>PINECONE_GLOBAL_NAMESPACE</code>: Namespace globale opzionale per vettori condivisi.</li>
+    <li><code>OPENAI_EMBEDDING_MODEL</code>: Nome del modello di embedding OpenAI da usare.</li>
+  </ul>
+
+  <h2 id="punti-importanti-dell-architettura-e-insight"><a class="anchor" href="#punti-importanti-dell-architettura-e-insight" aria-label="Link para esta seção">#</a>Punti Importanti dell'Architettura e Insight</h2>
+  <ul>
+    <li>La classe usa l'incapsulamento per nascondere i dettagli di inizializzazione di Pinecone e del modello di embedding.</li>
+    <li>L'uso di variabili d'ambiente con fallback sui parametri del costruttore aumenta flessibilità e riuso.</li>
+    <li>Il pattern di "dependency injection" è presente nella creazione della vector store, permettendo di sovrascrivere embedding e namespace nella chiamata.</li>
+    <li>Integrazione con moduli esterni specializzati (<code>langchain_openai</code>, <code>langchain_pinecone</code>), a dimostrazione dell'uso della composizione.</li>
+    <li>La classe utilizza un sistema di tracing personalizzato (<code>ApplicationTracing</code>) per facilitare debug e monitoraggio, generando log dettagliati in ogni fase.</li>
+    <li>Netta separazione tra configurazione, inizializzazione e creazione della vector store, a favore di manutenzione e test.</li>
+  </ul>
+
+  <h2 id="descrizione-della-classe-e-dei-metodi"><a class="anchor" href="#descrizione-della-classe-e-dei-metodi" aria-label="Link para esta seção">#</a>Descrizione della Classe e dei Metodi</h2>
+
+  <h3 id="classe-pineconeclient"><a class="anchor" href="#classe-pineconeclient" aria-label="Link para esta seção">#</a>Classe <code>PineconeClient</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Classe per il controllo e la facilitazione della connessione con il servizio Pinecone e per la gestione dei vettori archiviati. Integra le API di Pinecone e OpenAI per creare una base vettoriale personalizzata, che può essere interrogata o aggiornata a partire dai modelli di embedding forniti. Permette di configurare namespace e modelli in modo flessibile, semplificando le operazioni vettoriali nelle applicazioni.</p>
+  <p><strong>Argomenti del Costruttore</strong></p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argomento</th><th>Tipo</th><th>Descrizione</th><th>Valore Predefinito</th></tr></thead>
+    <tbody>
+      <tr><td><code>index_name</code></td><td><code>Optional[str]</code></td><td>Nome dell'indice Pinecone da utilizzare</td><td><code>None</code></td></tr>
+      <tr><td><code>main_namespace</code></td><td><code>Optional[str]</code></td><td>Namespace primario per archiviare i vettori</td><td><code>None</code></td></tr>
+      <tr><td><code>global_namespace</code></td><td><code>Optional[str]</code></td><td>Namespace globale opzionale per vettori condivisi</td><td><code>None</code></td></tr>
+      <tr><td><code>embedding_model</code></td><td><code>Optional[str]</code></td><td>Nome del modello OpenAI per gli embedding</td><td><code>None</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Inizializza il client Pinecone caricando le chiavi API e le configurazioni, definendo i namespace e il modello di embedding, oltre a stabilire le connessioni.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>index_name</code> (Optional[str]): nome dell'indice Pinecone (opzionale)</li>
+    <li><code>main_namespace</code> (Optional[str]): namespace primario (opzionale)</li>
+    <li><code>global_namespace</code> (Optional[str]): namespace globale (opzionale)</li>
+    <li><code>embedding_model</code> (Optional[str]): nome del modello OpenAI (opzionale)</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>EnvironmentError</code>: se le chiavi API non sono definite.</li>
+    <li><code>ValueError</code>: se <code>index_name</code> non è definito.</li>
+    <li><code>RuntimeError</code>: per errori generici di inizializzazione.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>client = <span class="t-f">PineconeClient</span>(index_name=<span class="t-s">&quot;meu_indice&quot;</span>, main_namespace=<span class="t-s">&quot;app_namespace&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-init-pinecone"><a class="anchor" href="#2-init-pinecone" aria-label="Link para esta seção">#</a>2. <code>_init_pinecone</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Stabilisce la connessione con il servizio Pinecone e istanzia l'indice con il nome configurato.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>client.<span class="t-f">_init_pinecone</span>()
+<span class="t-c"># Internamente conecta ao Pinecone e configura o index para operações</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-init-embeddings"><a class="anchor" href="#3-init-embeddings" aria-label="Link para esta seção">#</a>3. <code>_init_embeddings</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Inizializza il modello OpenAI per la generazione degli embedding, potendo usare un nome di modello personalizzato.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>model_name</code> (Optional[str]): nome del modello di embedding (opzionale)</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>client.<span class="t-f">_init_embeddings</span>(<span class="t-s">&quot;text-embedding-ada-002&quot;</span>)
+<span class="t-c"># Atualiza o modelo de embedding usado pelo cliente</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-get-namespace"><a class="anchor" href="#4-get-namespace" aria-label="Link para esta seção">#</a>4. <code>get_namespace</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Restituisce il namespace da usare per le operazioni, dando priorità all'argomento passato, oppure restituendo quello principale configurato.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>namespace</code> (Optional[str]): namespace opzionale sostitutivo.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>str</code>: namespace risolto per l'uso.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>ns = client.<span class="t-f">get_namespace</span>()  <span class="t-c"># retorna o main_namespace configurado</span>
+ns2 = client.<span class="t-f">get_namespace</span>(<span class="t-s">&quot;namespace_alternativo&quot;</span>)  <span class="t-c"># retorna &quot;namespace_alternativo&quot;</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="5-create-vector-store"><a class="anchor" href="#5-create-vector-store" aria-label="Link para esta seção">#</a>5. <code>create_vector_store</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Crea e restituisce un'istanza <code>PineconeVectorStore</code> configurata con l'indice, l'embedding e il namespace selezionati.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>namespace</code> (Optional[str]): namespace per la store (opzionale).</li>
+    <li><code>embedding_model</code> (Optional[OpenAIEmbeddings]): istanza del modello di embedding (opzionale).</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>PineconeVectorStore</code>: oggetto per la manipolazione dell'archiviazione vettoriale.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>vector_store = client.<span class="t-f">create_vector_store</span>()
+<span class="t-c"># Usa main_namespace e modelo configurado</span>
+
+vector_store_custom = client.<span class="t-f">create_vector_store</span>(namespace=<span class="t-s">&quot;ns_custom&quot;</span>)
+<span class="t-c"># Cria store com namespace customizado</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">if</span> __name__ == <span class="t-s">&quot;__main__&quot;</span>:
+    client = <span class="t-f">PineconeClient</span>()
+    vector_store = client.<span class="t-f">create_vector_store</span>()
+    <span class="t-f">print</span>(<span class="t-s">&quot;Pinecone Client initialized and VectorStore created successfully.&quot;</span>)
+
+<span class="t-c"># python -m src.vector_store.pinecone.client</span></code></pre><button class="copy floating" type="button"></button></div></div></div>
+        <div class="feedback"></div>
+        <p class="source">Fonte: <code>src/vector_store/pinecone/client.py</code></p>
+        <nav class="pager" aria-label="Pagine vicine"><a class="pager-link prev" href="../../../../pages/it/internal-source-code/vector-store/local-dynamic-embedding/use.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Precedente</small><span>Use</span></div></a><a class="pager-link next" href="../../../../pages/it/internal-source-code/vector-store/pinecone-embedding.html"><div><small>Successiva</small><span>Pinecone Embedding</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="In questa pagina"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="../../../../pages/it/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+          <p>Where intelligence finds purpose.</p>
+          <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>Repository su GitHub</a>
+        </div>
+        <div class="foot-col"><h2>Documentazione</h2><a href="../../../../pages/it/getting-started/index.html">Introduction</a><a href="../../../../pages/it/agents/index.html">Agents</a><a href="../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/it/api/index.html">API</a><a href="../../../../pages/it/modules/index.html">Modules</a><a href="../../../../pages/it/internal-source-code/index.html">Internal Services</a></div>
+        <div class="foot-col"><h2>Risorse</h2><a href="../../../../pages/it/getting-started/quickstart.html">Quickstart</a><a href="../../../../pages/it/getting-started/licence.html">Licence</a><a href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener">Codice sorgente</a><a href="https://github.com/enzoschitini/better-ai/issues" target="_blank" rel="noopener">Segnala un problema</a></div>
+        <div class="foot-col"><h2>Creatore</h2><div class="foot-me"><img src="../../../../assets/img/profile.jpg" alt="" width="44" height="44"><div><strong>Enzo Schitini</strong><span>Data Scientist &amp; AI Engineer</span></div></div><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/enzoschitini" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 BetterAI &middot; Licenza MIT</span>
+        <span>Creato da <a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Enzo Schitini</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Cerca nella documentazione">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Cerca pagine e sezioni" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Risultati"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>naviga</span></span>
+    <span><kbd>Enter</kbd><span>apri</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "it", "root": "../../../../", "index": "../../../../search-it.json", "alt": {"pt": "pages/pt/internal-source-code/vector-store/pinecone-client.html", "it": "pages/it/internal-source-code/vector-store/pinecone-client.html", "en": "pages/en/internal-source-code/vector-store/pinecone-client.html"}, "i": {"noResults": "Nessun risultato per “%s”. Prova con il nome di un modulo, come “Pinecone”."}};</script>
+<script src="../../../../_design-system/js/ds.js?v=9a5e2954"></script>
+<script src="../../../../_design-system/js/docs.js?v=6f602c0a"></script>
+</body>
+</html>

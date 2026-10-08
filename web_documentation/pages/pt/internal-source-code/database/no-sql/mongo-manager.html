@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mongo Manager | BetterAI Docs</title>
+<meta name="description" content="Esta é uma documentação detalhada e didática da classe MongoDBManager, projetada para facilitar o entendimento de desenvolvedores que integrarão esta ferramenta em seus projetos.">
+<link rel="canonical" href="pages/pt/internal-source-code/database/no-sql/mongo-manager.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../../../../_design-system/css/tokens.css?v=7f43b250">
+<link rel="stylesheet" href="../../../../../_design-system/css/base.css?v=4a698b89">
+<link rel="stylesheet" href="../../../../../_design-system/css/layout.css?v=503e806e">
+<link rel="stylesheet" href="../../../../../_design-system/css/content.css?v=cfc5f8ef">
+<link rel="stylesheet" href="../../../../../_design-system/css/search.css?v=1ecf3252">
+<link rel="stylesheet" href="../../../../../_design-system/css/responsive.css?v=6efeec66">
+</head>
+<body>
+<a class="skip" href="#main">Ir para o conteúdo</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Criado por Enzo Schitini. Convido você a se conectar comigo no LinkedIn.</a></span>
+    <button type="button" aria-label="Fechar aviso"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../../pages/pt/index.html">
+        <img src="../../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Buscar na documentação">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Buscar...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="../../../../../pages/pt/getting-started/quickstart.html">Quickstart<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Idioma"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>PT</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="true"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="false"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="false"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Alternar tema claro e escuro"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Áreas da documentação"><a class="tab" href="../../../../../pages/pt/index.html">Visão geral</a><a class="tab" href="../../../../../pages/pt/getting-started/index.html">Introduction</a><a class="tab" href="../../../../../pages/pt/agents/index.html">Agents</a><a class="tab" href="../../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../../pages/pt/api/index.html">API</a><a class="tab" href="../../../../../pages/pt/modules/index.html">Modules</a><a class="tab" href="../../../../../pages/pt/internal-source-code/index.html" aria-current="page">Internal Services</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Internal Services</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Mongo Manager</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Navegação da documentação">
+    <nav class="side"><div class="side-areas"><a href="../../../../../pages/pt/index.html">Visão geral</a><a href="../../../../../pages/pt/getting-started/index.html">Introduction</a><a href="../../../../../pages/pt/agents/index.html">Agents</a><a href="../../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../../pages/pt/api/index.html">API</a><a href="../../../../../pages/pt/modules/index.html">Modules</a><a href="../../../../../pages/pt/internal-source-code/index.html" aria-current="page">Internal Services</a></div><a class="side-link" href="../../../../../pages/pt/internal-source-code/index.html"><span>Visão geral</span></a><div class="side-group"><p class="side-title">Application Tracing</p><ul><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/application-tracing/logger-engine.html"><span>Logger Engine</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/application-tracing/payload-builder.html"><span>Payload Builder</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/application-tracing/tracing-core.html"><span>Tracing Core</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/application-tracing/use.html"><span>Use</span></a></li></ul></div><div class="side-group"><p class="side-title">Database</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="true"><span>No SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub"><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/database/no-sql/local-manage.html"><span>Local Manage</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/database/no-sql/mongo-manager.html" aria-current="page"><span>Mongo Manager</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/database/no-sql/router.html"><span>Router</span></a></li></ul></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/database/sql/supabase-database.html"><span>Supabase Database</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Storage</p><ul><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/storage/storage-menage-repository.html"><span>Storage Menage Repository</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Supabase</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/storage/supabase/storage-menager.html"><span>Storage Menager</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Token Calculate</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Exchange Rate</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/token-calculate/exchange-rate/bcb-exchange-rate-service.html"><span>BCB Exchange Rate Service</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/token-calculate/exchange-rate/exchange-rate-service.html"><span>Exchange Rate Service</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/token-calculate/model-pricing.html"><span>Model Pricing</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/token-calculate/token-counter.html"><span>Token Counter</span></a></li></ul></div><div class="side-group"><p class="side-title">Utils</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Load Request File</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/utils/load-request-file/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/utils/load-request-file/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/utils/loader-files.html"><span>Loader Files</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/utils/unique-id-factory.html"><span>Unique ID Factory</span></a></li></ul></div><div class="side-group"><p class="side-title">Vector Store</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Local Dynamic Embedding</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/vector-store/local-dynamic-embedding/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/vector-store/local-dynamic-embedding/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/vector-store/pinecone-client.html"><span>Pinecone Client</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/vector-store/pinecone-embedding.html"><span>Pinecone Embedding</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/vector-store/pinecone-retriever.html"><span>Pinecone Retriever</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/vector-store/retrieval-manager.html"><span>Retrieval Manager</span></a></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Database / No SQL</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Mongo Manager</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copiar página</span></button>
+            </div>
+          </div>
+          <p class="lead">Esta é uma documentação detalhada e didática da classe MongoDBManager, projetada para facilitar o entendimento de desenvolvedores que integrarão esta ferramenta em seus projetos.</p>
+          <details class="toc-inline"><summary>Nesta página</summary><ul></ul></details>
+        </header>
+        <div class="prose"><h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão Geral</h2>
+  <p>A classe <code>MongoDBManager</code> atua como um <strong>Wrapper</strong> (ou facilitadora) para a biblioteca <code>pymongo</code>. Seu principal objetivo é simplificar a interação com bancos de dados MongoDB, abstraindo a complexidade de gerenciar conexões e garantindo que operações comuns de <strong>CRUD</strong> (Create, Read, Update, Delete) sejam realizadas de forma padronizada.</p>
+  <p>Ela é ideal para aplicações que precisam de persistência de dados flexível, lidando automaticamente com metadados como datas de criação e atualização.</p>
+
+  <h2 id="fluxo-de-execucao"><a class="anchor" href="#fluxo-de-execucao" aria-label="Link para esta seção">#</a>Fluxo de Execução</h2>
+  <p>O funcionamento da classe segue uma lógica de <strong>Lazy Loading</strong> (carregamento tardio):</p>
+  <ol>
+    <li><strong>Instanciação:</strong> Ao criar o objeto, ele apenas armazena a URI de conexão. O banco ainda não é acessado.</li>
+    <li><strong>Primeira Chamada:</strong> Quando qualquer método de operação (como <code>save_payload</code>) é invocado, ele chama internamente o método <code>connect()</code>.</li>
+    <li><strong>Conexão Persistente:</strong> O <code>MongoClient</code> é criado e armazenado no atributo <code>self.client</code>. Todas as chamadas subsequentes reutilizam essa mesma conexão para economizar recursos.</li>
+    <li><strong>Processamento:</strong> O método executa a lógica solicitada (inserção, busca, etc.).</li>
+    <li><strong>Tratamento de Erros:</strong> Se algo falhar, a conexão é encerrada preventivamente para evitar vazamentos de memória ou conexões "presas".</li>
+  </ol>
+
+  <h2 id="tabela-de-metodos"><a class="anchor" href="#tabela-de-metodos" aria-label="Link para esta seção">#</a>Tabela de Métodos</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Método</th><th>Descrição Breve</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Configura a URI de conexão (via argumento ou variável de ambiente).</td></tr>
+      <tr><td><code>connect</code></td><td>Estabelece ou reaproveita a conexão com o servidor MongoDB.</td></tr>
+      <tr><td><code>close_connection</code></td><td>Finaliza a conexão ativa e limpa o cliente.</td></tr>
+      <tr><td><code>save_payload</code></td><td>Insere um novo documento com timestamp de criação.</td></tr>
+      <tr><td><code>fetch_documents</code></td><td>Busca documentos com filtros e opção de limite.</td></tr>
+      <tr><td><code>update_documents</code></td><td>Atualiza um ou vários registros, adicionando timestamp de edição.</td></tr>
+      <tr><td><code>delete_documents</code></td><td>Remove registros do banco de forma definitiva.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="arquitetura-e-insights"><a class="anchor" href="#arquitetura-e-insights" aria-label="Link para esta seção">#</a>Arquitetura e Insights</h2>
+  <ul>
+    <li><strong>Gerenciamento de Estado:</strong> A classe utiliza o padrão <em>Singleton-like</em> para a conexão dentro da instância, garantindo que você não abra centenas de conexões desnecessárias.</li>
+    <li><strong>Segurança de Dados:</strong> No método de atualização, o código remove explicitamente a chave <code>_id</code> do payload de atualização (<code>new_values.pop("_id", None)</code>). Isso evita erros comuns do MongoDB onde se tenta sobrescrever o ID imutável de um documento.</li>
+    <li><strong>Rastreabilidade:</strong> A inclusão automática de <code>_created_at</code> e <code>updated_at</code> transforma documentos simples em registros auditáveis, facilitando a depuração e análise de dados posterior.</li>
+    <li><strong>Tratamento de Erros:</strong> O uso de <code>RuntimeError</code> encapsula erros de rede complexos em mensagens legíveis para o desenvolvedor da aplicação.</li>
+  </ul>
+
+  <h2 id="detalhamento-da-classe"><a class="anchor" href="#detalhamento-da-classe" aria-label="Link para esta seção">#</a>Detalhamento da Classe</h2>
+
+  <h2 id="classe-mongodbmanager"><a class="anchor" href="#classe-mongodbmanager" aria-label="Link para esta seção">#</a>Classe MongoDBManager</h2>
+  <p><strong>Descrição</strong></p>
+  <p>Gerenciador central de persistência MongoDB que encapsula o ciclo de vida da conexão e operações CRUD, garantindo a reutilização de recursos e padronização de metadados.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>mongo_uri</code> (str, opcional): String de conexão. Se omitida, busca em <code>os.getenv("MONGO_URI")</code> ou usa o padrão local.</li>
+  </ul>
+
+  <h2 id="metodos"><a class="anchor" href="#metodos" aria-label="Link para esta seção">#</a>Métodos</h2>
+
+  <h2 id="1-connect"><a class="anchor" href="#1-connect" aria-label="Link para esta seção">#</a>1. connect</h2>
+  <p><strong>Descrição:</strong> Garante que exista uma conexão ativa com o banco.</p>
+  <p><strong>Argumentos:</strong> Nenhum.</p>
+  <p><strong>Retornos:</strong> <code>MongoClient</code> (objeto de conexão do pymongo).</p>
+  <p><strong>Raises:</strong> <code>Exception</code> em caso de falha na rede ou credenciais.</p>
+  <p><strong>Exemplos:</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>manager = <span class="t-f">MongoDBManager</span>()
+client = manager.<span class="t-f">connect</span>()</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="2-save-payload"><a class="anchor" href="#2-save-payload" aria-label="Link para esta seção">#</a>2. save_payload</h2>
+  <p><strong>Descrição:</strong> Insere um dicionário no banco de dados e adiciona a data de criação.</p>
+  <p><strong>Argumentos:</strong></p>
+  <ul>
+    <li><code>database_name</code> (str): Nome do banco.</li>
+    <li><code>collection_name</code> (str): Nome da coleção.</li>
+    <li><code>payload</code> (dict): Dados a serem salvos.</li>
+  </ul>
+  <p><strong>Retornos:</strong> <code>dict</code> contendo o status e o ID gerado.</p>
+  <p><strong>Raises:</strong> <code>RuntimeError</code> se a inserção falhar.</p>
+  <p><strong>Exemplos:</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>manager.<span class="t-f">save_payload</span>(<span class="t-s">&quot;log_db&quot;</span>, <span class="t-s">&quot;events&quot;</span>, {<span class="t-s">&quot;event&quot;</span>: <span class="t-s">&quot;login_success&quot;</span>})</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-fetch-documents"><a class="anchor" href="#3-fetch-documents" aria-label="Link para esta seção">#</a>3. fetch_documents</h3>
+  <p><strong>Descrição:</strong> Localiza documentos que correspondam aos critérios informados.</p>
+  <p><strong>Argumentos:</strong></p>
+  <ul>
+    <li><code>database_name</code> (str): Nome do banco.</li>
+    <li><code>collection_name</code> (str): Nome da coleção.</li>
+    <li><code>filter</code> (dict): Filtro de busca (ex: <code>{"status": "active"}</code>).</li>
+    <li><code>limit</code> (int): Quantidade máxima de resultados.</li>
+  </ul>
+  <p><strong>Retornos:</strong> <code>List[dict]</code> (Lista de documentos encontrados).</p>
+  <p><strong>Raises:</strong> <code>RuntimeError</code>.</p>
+  <p><strong>Exemplos:</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>users = manager.<span class="t-f">fetch_documents</span>(<span class="t-s">&quot;app&quot;</span>, <span class="t-s">&quot;users&quot;</span>, {<span class="t-s">&quot;age&quot;</span>: {<span class="t-s">&quot;$gt&quot;</span>: <span class="t-n">18</span>}}, limit=<span class="t-n">10</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="4-update-documents"><a class="anchor" href="#4-update-documents" aria-label="Link para esta seção">#</a>4. update_documents</h2>
+  <p><strong>Descrição:</strong> Modifica documentos existentes e registra a data da alteração.</p>
+  <p><strong>Argumentos:</strong></p>
+  <ul>
+    <li><code>filter</code> (dict): Critério para encontrar os documentos.</li>
+    <li><code>new_values</code> (dict): Dados a serem atualizados.</li>
+    <li><code>multi</code> (bool): Se <code>True</code>, atualiza todos os documentos encontrados; se <code>False</code>, apenas o primeiro.</li>
+  </ul>
+  <p><strong>Retornos:</strong> <code>dict</code> com métricas (<code>matched_count</code>, <code>modified_count</code>).</p>
+  <p><strong>Raises:</strong> <code>RuntimeError</code>.</p>
+  <p><strong>Exemplos:</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>manager.<span class="t-f">update_documents</span>(<span class="t-s">&quot;app&quot;</span>, <span class="t-s">&quot;users&quot;</span>, {<span class="t-s">&quot;id&quot;</span>: <span class="t-n">1</span>}, {<span class="t-s">&quot;status&quot;</span>: <span class="t-s">&quot;premium&quot;</span>})</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="5-delete-documents"><a class="anchor" href="#5-delete-documents" aria-label="Link para esta seção">#</a>5. delete_documents</h2>
+  <p><strong>Descrição:</strong> Remove permanentemente documentos da coleção.</p>
+  <p><strong>Argumentos:</strong></p>
+  <ul>
+    <li><code>filter</code> (dict): Critério de exclusão.</li>
+    <li><code>multi</code> (bool): Define se apaga um ou todos os registros encontrados.</li>
+  </ul>
+  <p><strong>Retornos:</strong> <code>dict</code> com <code>deleted_count</code>.</p>
+  <p><strong>Raises:</strong> <code>RuntimeError</code>.</p>
+  <p><strong>Exemplos:</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>manager.<span class="t-f">delete_documents</span>(<span class="t-s">&quot;app&quot;</span>, <span class="t-s">&quot;temp_data&quot;</span>, {<span class="t-s">&quot;expired&quot;</span>: <span class="t-n">True</span>}, multi=<span class="t-n">True</span>)</code></pre><button class="copy floating" type="button"></button></div></div></div>
+        <div class="feedback"></div>
+        <p class="source">Fonte: <code>src/database/no_relational_db/mongo_manager.py</code></p>
+        <nav class="pager" aria-label="Páginas vizinhas"><a class="pager-link prev" href="../../../../../pages/pt/internal-source-code/database/no-sql/local-manage.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Anterior</small><span>Local Manage</span></div></a><a class="pager-link next" href="../../../../../pages/pt/internal-source-code/database/no-sql/router.html"><div><small>Próxima</small><span>Router</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="Nesta página"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="../../../../../pages/pt/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+          <p>Where intelligence finds purpose.</p>
+          <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>Repositório no GitHub</a>
+        </div>
+        <div class="foot-col"><h2>Documentação</h2><a href="../../../../../pages/pt/getting-started/index.html">Introduction</a><a href="../../../../../pages/pt/agents/index.html">Agents</a><a href="../../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../../pages/pt/api/index.html">API</a><a href="../../../../../pages/pt/modules/index.html">Modules</a><a href="../../../../../pages/pt/internal-source-code/index.html">Internal Services</a></div>
+        <div class="foot-col"><h2>Recursos</h2><a href="../../../../../pages/pt/getting-started/quickstart.html">Quickstart</a><a href="../../../../../pages/pt/getting-started/licence.html">Licence</a><a href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener">Código-fonte</a><a href="https://github.com/enzoschitini/better-ai/issues" target="_blank" rel="noopener">Reportar um problema</a></div>
+        <div class="foot-col"><h2>Criador</h2><div class="foot-me"><img src="../../../../../assets/img/profile.jpg" alt="" width="44" height="44"><div><strong>Enzo Schitini</strong><span>Data Scientist &amp; AI Engineer</span></div></div><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/enzoschitini" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 BetterAI &middot; Licença MIT</span>
+        <span>Criado por <a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Enzo Schitini</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Buscar na documentação">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Buscar páginas e seções" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Resultados"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>navegar</span></span>
+    <span><kbd>Enter</kbd><span>abrir</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "pt", "root": "../../../../../", "index": "../../../../../search-pt.json", "alt": {"pt": "pages/pt/internal-source-code/database/no-sql/mongo-manager.html", "it": "pages/it/internal-source-code/database/no-sql/mongo-manager.html", "en": "pages/en/internal-source-code/database/no-sql/mongo-manager.html"}, "i": {"noResults": "Nada encontrado para “%s”. Tente o nome de um módulo, como “Pinecone”."}};</script>
+<script src="../../../../../_design-system/js/ds.js?v=9a5e2954"></script>
+<script src="../../../../../_design-system/js/docs.js?v=6f602c0a"></script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<page data-lead="">
+  <h2>Visão Geral</h2>
+  <p>A classe <code>LoadRequestFile</code> foi desenvolvida para facilitar o processo de carregamento e validação de arquivos enviados em requisições através do FastAPI. Ela garante que o arquivo recebido possua uma extensão e tipo MIME permitidos, além de verificar se seu tamanho está dentro de um limite configurado, evitando problemas como uploads indevidos ou arquivos muito grandes que possam comprometer o sistema.</p>
+  <p>Na prática, essa classe pode ser utilizada para controlar de forma segura quais arquivos uma aplicação aceita para processamento, protegendo o backend contra entradas inesperadas ou maliciosas. Por exemplo, pode ser usada em APIs onde usuários fazem upload de imagens, documentos ou outros arquivos, assegurando compliance com as regras definidas.</p>
+
+  <h2>Fluxo de Execução</h2>
+  <ol>
+    <li>Uma instância da classe é criada passando o objeto <code>UploadFile</code> da requisição e, opcionalmente, listas com extensões e tipos MIME permitidos, além do tamanho máximo permitido.</li>
+    <li>O método <code>load()</code> é chamado assincronamente para ler o conteúdo do arquivo da requisição.</li>
+    <li>Durante o carregamento, a classe calcula o tamanho do arquivo em bytes e megabytes e mantém uma cópia do conteúdo em um objeto <code>BytesIO</code>, facilitando acesso futuro.</li>
+    <li>Em sequência, o arquivo é validado contra as listas de extensões e tipos MIME permitidos, além de verificar se seu tamanho não excede o limite configurado.</li>
+    <li>Caso alguma validação falhe, uma exceção HTTP 400 é levantada com uma mensagem clara sobre o motivo.</li>
+    <li>Se todas as validações passarem, a instância com as informações e conteúdo do arquivo é retornada, pronta para uso posterior no fluxo da aplicação.</li>
+  </ol>
+
+  <h2>Tabela de Métodos da Classe</h2>
+  <table>
+    <thead><tr><th>Método</th><th>Descrição</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Inicializa a instância com arquivo, configurações e dados básicos.</td></tr>
+      <tr><td><code>load</code></td><td>Carrega o conteúdo do arquivo, calcula metadados e realiza validações.</td></tr>
+      <tr><td><code>to_dict</code></td><td>Retorna um dicionário com informações do arquivo carregado.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Pontos Importantes da Arquitetura e Insights</h2>
+  <ul>
+    <li>A classe encapsula completamente a lógica de carregamento e validação, promovendo reutilização e separação clara de responsabilidades.</li>
+    <li>O uso do módulo <code>BytesIO</code> permite trabalhar com o conteúdo do arquivo em memória sem a necessidade de salvar no disco, aumentando a eficiência.</li>
+    <li>O design usa validações específicas e levantam exceções HTTP diretamente, integrando-se facilmente ao fluxo de tratamento de erros do FastAPI.</li>
+    <li>Ela depende de configurações externas para as extensões e MIME types permitidos, dando flexibilidade para ajustes sem alteração do código fonte.</li>
+    <li>A arquitetura modular permite extensão simples, por exemplo, adicionando outras validações sem alterar a interface pública.</li>
+  </ul>
+
+  <h2>Descrição da Classe e Métodos</h2>
+
+  <h2>Classe <code>LoadRequestFile</code></h2>
+  <h3>Descrição</h3>
+  <p>A <code>LoadRequestFile</code> representa um utilitário para manipular arquivos enviados via requisição HTTP com FastAPI. Ela é responsável por carregar o arquivo recebido, extrair informações como extensão, MIME type e tamanho, além de validar se o arquivo está dentro dos padrões permitidos configurados para o sistema.</p>
+  <h3>Argumentos do Construtor</h3>
+  <table>
+    <thead><tr><th>Argumento</th><th>Tipo</th><th>Descrição</th><th>Valor Padrão</th></tr></thead>
+    <tbody>
+      <tr><td><code>file</code></td><td><code>UploadFile</code></td><td>Arquivo enviado na requisição a ser carregado e validado.</td><td>Nenhum (obrigatório)</td></tr>
+      <tr><td><code>allowed_extensions</code></td><td><code>list[str]</code></td><td>Lista de extensões permitidas para validação.</td><td><code>ALLOWED_EXTENSIONS</code></td></tr>
+      <tr><td><code>allowed_mimetypes</code></td><td><code>list[str]</code></td><td>Lista de tipos MIME permitidos para validação.</td><td><code>ALL_MIMETYPES</code></td></tr>
+      <tr><td><code>max_size_mb</code></td><td><code>float</code></td><td>Tamanho máximo permitido para o arquivo em megabytes.</td><td>10</td></tr>
+    </tbody>
+  </table>
+  <h3>Métodos</h3>
+
+  <h3>1. <code>__init__</code></h3>
+  <h3>Descrição</h3>
+  <p>Inicializa uma instância da classe com o arquivo recebido e as configurações de validação, preparando atributos para carregamento e validações futuras.</p>
+  <h3>Argumentos</h3>
+  <ul>
+    <li><code>file</code> (<code>UploadFile</code>): Arquivo enviado na requisição.</li>
+    <li><code>allowed_extensions</code> (<code>list[str]</code>): Extensões permitidas. Default: <code>ALLOWED_EXTENSIONS</code>.</li>
+    <li><code>allowed_mimetypes</code> (<code>list[str]</code>): MIME types permitidos. Default: <code>ALL_MIMETYPES</code>.</li>
+    <li><code>max_size_mb</code> (<code>float</code>): Tamanho máximo permitido (em MB). Default: 10.</li>
+  </ul>
+  <h3>Retornos</h3>
+  <ul>
+    <li>Não retorna valor.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <h3>Exemplos</h3>
+  <pre data-lang="python"><code>
+# Criar uma instância para validar arquivo recebido e configurar limites
+loader = LoadRequestFile(file, max_size_mb=5)
+</code></pre>
+
+  <h3>2. <code>load</code></h3>
+  <h3>Descrição</h3>
+  <p>Método assíncrono que carrega o conteúdo integral do arquivo, calcula seu tamanho em bytes e megabytes, armazena os dados em memória e realiza todas as validações estabelecidas (extensão, MIME type e tamanho).</p>
+  <h3>Argumentos</h3>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <h3>Retornos</h3>
+  <ul>
+    <li><code>LoadRequestFile</code>: retorna a própria instância com dados carregados e validados.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li><code>HTTPException</code>: se alguma validação falhar, com status 400 e mensagem informativa.</li>
+  </ul>
+  <h3>Exemplos</h3>
+  <pre data-lang="python"><code>
+# Uso assíncrono: carregar e validar arquivo recebido na requisição
+loader = await LoadRequestFile(file).load()
+print(loader.to_dict())
+# Exemplo de saída:
+# {
+#   "filename": "photo.jpg",
+#   "extension": "jpg",
+#   "mimetype": "image/jpeg",
+#   "size_bytes": 152000,
+#   "size_mb": 0.15
+# }
+</code></pre>
+
+  <h3>3. <code>to_dict</code></h3>
+  <h3>Descrição</h3>
+  <p>Gera um dicionário com os principais metadados do arquivo carregado, facilitando inspeção e eventual registro ou resposta à API.</p>
+  <h3>Argumentos</h3>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <h3>Retornos</h3>
+  <ul>
+    <li><code>dict</code>: contendo <code>filename</code>, <code>extension</code>, <code>mimetype</code>, <code>size_bytes</code> e <code>size_mb</code> arredondado.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <h3>Exemplos</h3>
+  <pre data-lang="python"><code>
+# Obter informações resumidas sobre o arquivo carregado
+info = loader.to_dict()
+print(info["filename"])  # ex: "document.pdf"
+print(info["size_mb"])   # ex: 2.45
+</code></pre>
+</page>

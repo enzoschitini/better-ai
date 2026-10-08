@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Document Parse | BetterAI Docs</title>
+<meta name="description" content="La classe DocumentParse ha come obiettivo orchestrare l'intera pipeline di elaborazione dei documenti, dall'estrazione del contenuto grezzo del file fino al salvataggio dei dati elaborati in un database NoSQL.">
+<link rel="canonical" href="pages/it/modules/content-parse/document-parse.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../../../_design-system/css/tokens.css?v=7f43b250">
+<link rel="stylesheet" href="../../../../_design-system/css/base.css?v=4a698b89">
+<link rel="stylesheet" href="../../../../_design-system/css/layout.css?v=503e806e">
+<link rel="stylesheet" href="../../../../_design-system/css/content.css?v=cfc5f8ef">
+<link rel="stylesheet" href="../../../../_design-system/css/search.css?v=1ecf3252">
+<link rel="stylesheet" href="../../../../_design-system/css/responsive.css?v=6efeec66">
+</head>
+<body>
+<a class="skip" href="#main">Vai al contenuto</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Creato da Enzo Schitini. Ti invito a connetterti con me su LinkedIn.</a></span>
+    <button type="button" aria-label="Chiudi avviso"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../pages/it/index.html">
+        <img src="../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Cerca nella documentazione">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Cerca...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="../../../../pages/it/getting-started/quickstart.html">Quickstart<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Lingua"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>IT</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="false"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="true"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="false"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Cambia tema chiaro o scuro"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Aree della documentazione"><a class="tab" href="../../../../pages/it/index.html">Panoramica</a><a class="tab" href="../../../../pages/it/getting-started/index.html">Introduction</a><a class="tab" href="../../../../pages/it/agents/index.html">Agents</a><a class="tab" href="../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../pages/it/api/index.html">API</a><a class="tab" href="../../../../pages/it/modules/index.html" aria-current="page">Modules</a><a class="tab" href="../../../../pages/it/internal-source-code/index.html">Internal Services</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Modules</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Document Parse</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Navigazione della documentazione">
+    <nav class="side"><div class="side-areas"><a href="../../../../pages/it/index.html">Panoramica</a><a href="../../../../pages/it/getting-started/index.html">Introduction</a><a href="../../../../pages/it/agents/index.html">Agents</a><a href="../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/it/api/index.html">API</a><a href="../../../../pages/it/modules/index.html" aria-current="page">Modules</a><a href="../../../../pages/it/internal-source-code/index.html">Internal Services</a></div><a class="side-link" href="../../../../pages/it/modules/index.html"><span>Panoramica</span></a><div class="side-group"><p class="side-title">Content Parse</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Content Parsing Agent</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/modules/content-parse/content-parsing-agent/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/content-parse/content-parsing-agent/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/it/modules/content-parse/document-parse.html" aria-current="page"><span>Document Parse</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/content-parse/field-metadata-parser.html"><span>Field Metadata Parser</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/content-parse/generate-pydantic-schema.html"><span>Generate Pydantic Schema</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/content-parse/json-to-pydantic.html"><span>Json To Pydantic</span></a></li></ul></div><div class="side-group"><p class="side-title">Deep Research</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Tavily Research</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/modules/deep-research/tavily-research/context-builder.html"><span>Context Builder</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/deep-research/tavily-research/tavily-core.html"><span>Tavily Core</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Image Generation</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Cost Calculator</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/modules/image-generation/cost-calculator/cost-calculator.html"><span>Cost Calculator</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/image-generation/cost-calculator/pricing-table.html"><span>Pricing Table</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/it/modules/image-generation/image-generator-service.html"><span>Image Generator Service</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/image-generation/module.html"><span>Module</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Utils</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/modules/image-generation/utils/config.html"><span>Config</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/image-generation/utils/gemini-client.html"><span>Gemini Client</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/image-generation/utils/params-validator.html"><span>Params Validator</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/image-generation/utils/payload-builder.html"><span>Payload Builder</span></a></li></ul></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Content Parse</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Document Parse</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copia pagina</span></button>
+            </div>
+          </div>
+          <p class="lead">La classe DocumentParse ha come obiettivo orchestrare l'intera pipeline di elaborazione dei documenti, dall'estrazione del contenuto grezzo del file fino al salvataggio dei dati elaborati in un database NoSQL.</p>
+          <details class="toc-inline"><summary>In questa pagina</summary><ul></ul></details>
+        </header>
+        <div class="prose"><h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
+  <p>La classe <code>DocumentParse</code> ha come obiettivo orchestrare l'intera pipeline di elaborazione dei documenti, dall'estrazione del contenuto grezzo del file fino al salvataggio dei dati elaborati in un database NoSQL. È responsabile di far convergere diverse fasi fondamentali per trasformare i file digitali in dati strutturati pronti all'uso, automatizzando il flusso di parsing con validazioni, calcoli dei costi e integrazione con i sistemi di archiviazione.</p>
+  <p>Questo componente è fondamentale nei sistemi che devono interpretare documenti elettronici (come PDF, TXT, ecc.) ed estrarre informazioni specifiche secondo uno schema predefinito. In pratica, può essere utilizzato in pipeline di machine learning, API di conversione di documenti e applicazioni che dipendono dall'estrazione automatizzata di dati.</p>
+  <p>Con questa classe, lo sviluppatore può inviare un job contenente un file e le sue configurazioni, e ricevere in cambio i dati strutturati del documento con i costi computazionali calcolati, oltre ad avere il risultato archiviato per consultazioni future.</p>
+
+  <h2 id="flusso-di-esecuzione"><a class="anchor" href="#flusso-di-esecuzione" aria-label="Link para esta seção">#</a>Flusso di Esecuzione</h2>
+  <ol>
+    <li><strong>Creazione dell'istanza della classe:</strong> Inizializzazione con job_id, metadata JSON, schema JSON, contenuto del file (in byte), estensione del file e configurazioni opzionali per il parsing.</li>
+    <li><strong>Chiamata del metodo <code>run()</code>:</strong> Questo metodo esegue l'intero flusso interno, ed è responsabile del coordinamento delle fasi.</li>
+    <li><strong>Caricamento e validazione dei dati:</strong> Il metodo privato <code>_load_schema_and_config()</code> deserializza i JSON di metadata e schema, oltre a unire le configurazioni predefinite e quelle personalizzate.</li>
+    <li><strong>Estrazione del contenuto del file:</strong> <code>_extract_file_content()</code> utilizza <code>FileContentExtractor</code> per ottenere il testo grezzo del file in base alla sua estensione.</li>
+    <li><strong>Parsing del contenuto estratto:</strong> <code>_parse_content()</code> invoca <code>ContentParsingAgent</code>, che mappa il testo estratto nella struttura definita dallo schema.</li>
+    <li><strong>Calcolo dei costi:</strong> <code>_calculate_costs()</code> determina il costo di elaborazione in base al modello di linguaggio usato e ai token consumati, convertendo i valori nella valuta locale.</li>
+    <li><strong>Costruzione della risposta:</strong> <code>_build_response()</code> crea il payload che verrà inviato dall'API e il payload che verrà salvato nel database.</li>
+    <li><strong>Persistenza dei risultati:</strong> <code>_save()</code> salva i dati elaborati nel database NoSQL configurato.</li>
+    <li><strong>Valore di ritorno:</strong> <code>run()</code> restituisce la risposta pronta per l'API contenente il contenuto estratto e strutturato.</li>
+  </ol>
+
+  <h2 id="tabella-dei-metodi-della-classe"><a class="anchor" href="#tabella-dei-metodi-della-classe" aria-label="Link para esta seção">#</a>Tabella dei Metodi della Classe</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Metodo</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Inizializza il job di parsing con i dati e le configurazioni forniti</td></tr>
+      <tr><td><code>run</code></td><td>Esegue la pipeline completa di parsing del documento</td></tr>
+      <tr><td><code>_load_schema_and_config</code></td><td>Valida e carica metadata, schema e configurazione JSON</td></tr>
+      <tr><td><code>_extract_file_content</code></td><td>Estrae il testo grezzo del file usando l'extractor</td></tr>
+      <tr><td><code>_parse_content</code></td><td>Esegue l'agente che formatta il contenuto secondo lo schema</td></tr>
+      <tr><td><code>_calculate_costs</code></td><td>Calcola i costi dei token usati e converte i valori</td></tr>
+      <tr><td><code>_build_response</code></td><td>Costruisce i payload per l'API e il database</td></tr>
+      <tr><td><code>_save</code></td><td>Salva il risultato elaborato nel database NoSQL</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="variabili-d-ambiente"><a class="anchor" href="#variabili-d-ambiente" aria-label="Link para esta seção">#</a>Variabili d'Ambiente</h2>
+  <p>Nessuna variabile d'ambiente esplicita è richiesta direttamente in questa classe. La configurazione predefinita e le informazioni del database sono ottenute tramite <code>DocumentParseConfig</code>, che può avere una propria gestione delle ENV (non mostrata qui).</p>
+
+  <h2 id="punti-importanti-dell-architettura-e-insights"><a class="anchor" href="#punti-importanti-dell-architettura-e-insights" aria-label="Link para esta seção">#</a>Punti Importanti dell'Architettura e Insights</h2>
+  <ul>
+    <li><strong>Incapsulamento e netta separazione delle responsabilità:</strong> La classe organizza ogni fase del flusso in metodi privati, facilitando manutenzione e test.</li>
+    <li><strong>Uso della composizione:</strong> La classe utilizza altre classi per responsabilità specifiche, come <code>FileContentExtractor</code> per l'estrazione, <code>ContentParsingAgent</code> per il parsing e <code>DocumentStore</code> per la persistenza, seguendo il principio di responsabilità unica.</li>
+    <li><strong>Gestione robusta degli errori:</strong> Usa eccezioni HTTP per validare i JSON forniti, garantendo che il flusso prosegua solo con dati validi.</li>
+    <li><strong>Calcolo dinamico dei costi:</strong> Si integra con servizi esterni per il calcolo del costo basato sui token elaborati e sulla conversione di cambio attuale, adatto a sistemi a pagamento in base all'uso.</li>
+    <li><strong>Flessibilità nella configurazione:</strong> Consente una configurazione personalizzata tramite JSON che viene unita alla configurazione predefinita per adattare il comportamento del parsing.</li>
+  </ul>
+
+  <h2 id="descrizione-della-classe-e-dei-metodi"><a class="anchor" href="#descrizione-della-classe-e-dei-metodi" aria-label="Link para esta seção">#</a>Descrizione della Classe e dei Metodi</h2>
+
+  <h2 id="classe-documentparse"><a class="anchor" href="#classe-documentparse" aria-label="Link para esta seção">#</a>Classe <code>DocumentParse</code></h2>
+
+  <h3 id="descrizione"><a class="anchor" href="#descrizione" aria-label="Link para esta seção">#</a>Descrizione</h3>
+  <p>Classe che gestisce l'elaborazione completa dei documenti per l'estrazione di contenuto strutturato. Riceve il contenuto del file, i metadati, lo schema e le configurazioni. Esegue l'estrazione del testo, il parsing secondo lo schema, il calcolo dei costi operativi e l'archiviazione del risultato elaborato. Fornisce una risposta pronta per l'uso da parte delle API.</p>
+
+  <h3 id="argomenti-del-costruttore"><a class="anchor" href="#argomenti-del-costruttore" aria-label="Link para esta seção">#</a>Argomenti del Costruttore</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argomento</th><th>Tipo</th><th>Descrizione</th><th>Valore Predefinito</th></tr></thead>
+    <tbody>
+      <tr><td><code>job_id</code></td><td>str</td><td>Identificatore univoco del job di elaborazione</td><td>-</td></tr>
+      <tr><td><code>metadata</code></td><td>dict/str JSON</td><td>Metadati associati al documento (è attesa una stringa JSON)</td><td>-</td></tr>
+      <tr><td><code>schema</code></td><td>str</td><td>Stringa JSON che definisce lo schema dei dati attesi</td><td>-</td></tr>
+      <tr><td><code>file_bytes</code></td><td>BytesIO</td><td>Contenuto binario del file da elaborare</td><td>-</td></tr>
+      <tr><td><code>file_extension</code></td><td>str</td><td>Estensione del file (esempio: '.pdf', '.txt')</td><td>-</td></tr>
+      <tr><td><code>config</code></td><td>Optional[str]</td><td>Stringa JSON contenente la configurazione personalizzata per il parsing</td><td>None</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Inizializza l'oggetto <code>DocumentParse</code> con le informazioni essenziali per l'elaborazione del documento, configurando i parametri e caricando le configurazioni predefinite del sistema.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>job_id (str): Identificatore del job di elaborazione.</li>
+    <li>metadata (dict/str): Metadati in formato stringa JSON.</li>
+    <li>schema (str): Schema JSON per la strutturazione dei dati.</li>
+    <li>file_bytes (BytesIO): Byte del file.</li>
+    <li>file_extension (str): Estensione del file.</li>
+    <li>config (Optional[str]): Configurazione personalizzata come stringa JSON (opzionale).</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nessuna.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>document_parse = <span class="t-f">DocumentParse</span>(
+    job_id=<span class="t-s">&quot;job123&quot;</span>,
+    metadata=<span class="t-s">'{&quot;author&quot;: &quot;John Doe&quot;}'</span>,
+    schema=<span class="t-s">'{&quot;type&quot;: &quot;object&quot;, &quot;properties&quot;: {&quot;title&quot;: {&quot;type&quot;: &quot;string&quot;}}}'</span>,
+    file_bytes=<span class="t-f">BytesIO</span>(b<span class="t-s">&quot;conteudo do arquivo&quot;</span>),
+    file_extension=<span class="t-s">&quot;.txt&quot;</span>,
+    config=<span class="t-n">None</span>
+)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-run"><a class="anchor" href="#2-run" aria-label="Link para esta seção">#</a>2. <code>run</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Esegue la pipeline completa di elaborazione del documento, dalla validazione dei dati all'estrazione, al parsing, ai calcoli e all'archiviazione, restituendo il risultato finale pronto per l'API.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>dict: Risposta formattata per l'API contenente il job_id e il contenuto elaborato.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>HTTPException: in caso di JSON non validi nei dati forniti.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>response = document_parse.<span class="t-f">run</span>()
+<span class="t-f">print</span>(response)
+<span class="t-c"># Exemplo de saída:</span>
+<span class="t-c"># {</span>
+<span class="t-c">#   &quot;job_id&quot;: &quot;job123&quot;,</span>
+<span class="t-c">#   &quot;content&quot;: {...dados extraídos e formatados...}</span>
+<span class="t-c"># }</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-load-schema-and-config"><a class="anchor" href="#3-load-schema-and-config" aria-label="Link para esta seção">#</a>3. <code>_load_schema_and_config</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Esegue il parsing e la validazione dei JSON di metadata, schema e configurazione, fondendo la configurazione predefinita con quella personalizzata quando fornita.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>HTTPException: se metadata, schema o config sono JSON non validi.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>document_parse.<span class="t-f">_load_schema_and_config</span>()
+<span class="t-c"># Inicializa self.metadata_data, self.schema_data e self.config_data com os valores carregados.</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-extract-file-content"><a class="anchor" href="#4-extract-file-content" aria-label="Link para esta seção">#</a>4. <code>_extract_file_content</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Usa la classe <code>FileContentExtractor</code> per estrarre il contenuto testuale grezzo del file in base alla sua estensione.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>document_parse.<span class="t-f">_extract_file_content</span>()
+<span class="t-f">print</span>(document_parse.result_extract)
+<span class="t-c"># Exemplo de saída:</span>
+<span class="t-c"># {'response': 'Texto extraído do arquivo'}</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="5-parse-content"><a class="anchor" href="#5-parse-content" aria-label="Link para esta seção">#</a>5. <code>_parse_content</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Esegue l'agente di parsing <code>ContentParsingAgent</code>, che elabora il testo estratto e lo struttura secondo lo schema atteso, preparando una risposta formattata.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>document_parse.<span class="t-f">_parse_content</span>()
+<span class="t-f">print</span>(document_parse.agent_response)
+<span class="t-c"># Exemplo:</span>
+<span class="t-c"># {'content': {...dados estruturados...}, 'metadata': {...informações de processamento...}}</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="6-calculate-costs"><a class="anchor" href="#6-calculate-costs" aria-label="Link para esta seção">#</a>6. <code>_calculate_costs</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Calcola il costo dell'elaborazione in base ai token di input e output usati dal modello, utilizzando il tasso di cambio attuale per la conversione nella valuta locale (BRL).</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>document_parse.<span class="t-f">_calculate_costs</span>()
+<span class="t-f">print</span>(document_parse.input_cost, document_parse.output_cost, document_parse.rate)
+<span class="t-c"># Valores numéricos representando os custos</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="7-build-response"><a class="anchor" href="#7-build-response" aria-label="Link para esta seção">#</a>7. <code>_build_response</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Costruisce i payload che verranno restituiti dall'API e salvati nel database, consolidando il contenuto estratto e le informazioni di costo e di processo.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>document_parse.<span class="t-f">_build_response</span>()
+<span class="t-f">print</span>(document_parse.api_response)
+<span class="t-c"># {'job_id': 'job123', 'content': {...dados extraídos...}}</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="8-save"><a class="anchor" href="#8-save" aria-label="Link para esta seção">#</a>8. <code>_save</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Salva i dati elaborati nel database NoSQL configurato, usando la classe <code>DocumentStore</code>.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>document_parse.<span class="t-f">_save</span>()
+<span class="t-c"># Dados persistidos no banco conforme configuração automática da classe</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="uso"><a class="anchor" href="#uso" aria-label="Link para esta seção">#</a>Uso</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">if</span> __name__ == <span class="t-s">&quot;__main__&quot;</span>:
+    <span class="t-c"># Exemplo de uso</span>
+    job_id = <span class="t-s">&quot;job_123&quot;</span>
+    metadata = <span class="t-s">&quot;&quot;</span><span class="t-s">&quot;{&quot;</span>user_id<span class="t-s">&quot;: &quot;</span>user_456<span class="t-s">&quot;}&quot;</span><span class="t-s">&quot;&quot;</span>
+
+    schema = <span class="t-s">&quot;&quot;</span>&quot;
+    {
+    <span class="t-s">&quot;summary&quot;</span>: {
+        <span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>,
+        <span class="t-s">&quot;description&quot;</span>: <span class="t-s">&quot;Resumo do conteúdo do arquivo&quot;</span>
+    }
+    }
+    <span class="t-s">&quot;&quot;</span>&quot;
+    config = <span class="t-s">&quot;&quot;</span>&quot;
+    {
+    <span class="t-s">&quot;model_provider&quot;</span>: <span class="t-s">&quot;OpenAI&quot;</span>,
+    <span class="t-s">&quot;model_id&quot;</span>: <span class="t-s">&quot;gpt-4.1-mini&quot;</span>,
+    <span class="t-s">&quot;max_input_tokens&quot;</span>: <span class="t-n">1000000</span>,
+    <span class="t-s">&quot;debug_mode&quot;</span>: true,
+    <span class="t-s">&quot;instructions&quot;</span>: <span class="t-s">&quot;Extraia dados do texto&quot;</span>,
+    <span class="t-s">&quot;description&quot;</span>: <span class="t-s">&quot;Leia o texto e extraia as informações relevantes conforme o esquema definido. Retorne um JSON estruturado com os dados extraídos. Caso não encontre alguma informação, retorne null para aquele campo.&quot;</span>
+    }
+    <span class="t-s">&quot;&quot;</span>&quot;
+
+    <span class="t-k">with</span> <span class="t-f">open</span>(<span class="t-s">&quot;src\\content_parse\\module\\example.pdf&quot;</span>, <span class="t-s">&quot;rb&quot;</span>) <span class="t-k">as</span> f:
+        file_bytes = <span class="t-f">BytesIO</span>(f.<span class="t-f">read</span>())
+
+    parser = <span class="t-f">DocumentParse</span>(
+        job_id=job_id,
+        metadata=metadata,
+        schema=schema,
+        config=config,
+        file_bytes=file_bytes,
+        file_extension=<span class="t-s">&quot;pdf&quot;</span>
+    )
+
+    response = parser.<span class="t-f">run</span>()
+
+    <span class="t-f">print</span>(<span class="t-s">&quot;\nResposta do parser:&quot;</span>)
+    <span class="t-f">print</span>(json.<span class="t-f">dumps</span>(response, indent=<span class="t-n">2</span>))
+
+<span class="t-c"># python -m src.content_parse.module.document_parse</span></code></pre><button class="copy floating" type="button"></button></div></div></div>
+        <div class="feedback"></div>
+        <p class="source">Fonte: <code>src/content_parse/module/document_parse.py</code></p>
+        <nav class="pager" aria-label="Pagine vicine"><a class="pager-link prev" href="../../../../pages/it/modules/content-parse/content-parsing-agent/use.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Precedente</small><span>Use</span></div></a><a class="pager-link next" href="../../../../pages/it/modules/content-parse/field-metadata-parser.html"><div><small>Successiva</small><span>Field Metadata Parser</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="In questa pagina"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="../../../../pages/it/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+          <p>Where intelligence finds purpose.</p>
+          <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>Repository su GitHub</a>
+        </div>
+        <div class="foot-col"><h2>Documentazione</h2><a href="../../../../pages/it/getting-started/index.html">Introduction</a><a href="../../../../pages/it/agents/index.html">Agents</a><a href="../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/it/api/index.html">API</a><a href="../../../../pages/it/modules/index.html">Modules</a><a href="../../../../pages/it/internal-source-code/index.html">Internal Services</a></div>
+        <div class="foot-col"><h2>Risorse</h2><a href="../../../../pages/it/getting-started/quickstart.html">Quickstart</a><a href="../../../../pages/it/getting-started/licence.html">Licence</a><a href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener">Codice sorgente</a><a href="https://github.com/enzoschitini/better-ai/issues" target="_blank" rel="noopener">Segnala un problema</a></div>
+        <div class="foot-col"><h2>Creatore</h2><div class="foot-me"><img src="../../../../assets/img/profile.jpg" alt="" width="44" height="44"><div><strong>Enzo Schitini</strong><span>Data Scientist &amp; AI Engineer</span></div></div><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/enzoschitini" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 BetterAI &middot; Licenza MIT</span>
+        <span>Creato da <a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Enzo Schitini</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Cerca nella documentazione">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Cerca pagine e sezioni" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Risultati"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>naviga</span></span>
+    <span><kbd>Enter</kbd><span>apri</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "it", "root": "../../../../", "index": "../../../../search-it.json", "alt": {"pt": "pages/pt/modules/content-parse/document-parse.html", "it": "pages/it/modules/content-parse/document-parse.html", "en": "pages/en/modules/content-parse/document-parse.html"}, "i": {"noResults": "Nessun risultato per “%s”. Prova con il nome di un modulo, come “Pinecone”."}};</script>
+<script src="../../../../_design-system/js/ds.js?v=9a5e2954"></script>
+<script src="../../../../_design-system/js/docs.js?v=6f602c0a"></script>
+</body>
+</html>

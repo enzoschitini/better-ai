@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Supabase Database | BetterAI Docs</title>
+<meta name="description" content="Esta documentação detalha a arquitetura e o funcionamento do motor de persistência de dados criado para interagir com o Supabase, utilizando uma abordagem híbrida entre a API REST (via cliente oficial) e o acesso direto ao PostgreSQL (via psycopg2).">
+<link rel="canonical" href="pages/pt/internal-source-code/database/sql/supabase-database.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../../../../_design-system/css/tokens.css?v=7f43b250">
+<link rel="stylesheet" href="../../../../../_design-system/css/base.css?v=4a698b89">
+<link rel="stylesheet" href="../../../../../_design-system/css/layout.css?v=503e806e">
+<link rel="stylesheet" href="../../../../../_design-system/css/content.css?v=cfc5f8ef">
+<link rel="stylesheet" href="../../../../../_design-system/css/search.css?v=1ecf3252">
+<link rel="stylesheet" href="../../../../../_design-system/css/responsive.css?v=6efeec66">
+</head>
+<body>
+<a class="skip" href="#main">Ir para o conteúdo</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Criado por Enzo Schitini. Convido você a se conectar comigo no LinkedIn.</a></span>
+    <button type="button" aria-label="Fechar aviso"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../../pages/pt/index.html">
+        <img src="../../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Buscar na documentação">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Buscar...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="../../../../../pages/pt/getting-started/quickstart.html">Quickstart<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Idioma"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>PT</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="true"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="false"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="false"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Alternar tema claro e escuro"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Áreas da documentação"><a class="tab" href="../../../../../pages/pt/index.html">Visão geral</a><a class="tab" href="../../../../../pages/pt/getting-started/index.html">Introduction</a><a class="tab" href="../../../../../pages/pt/agents/index.html">Agents</a><a class="tab" href="../../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../../pages/pt/api/index.html">API</a><a class="tab" href="../../../../../pages/pt/modules/index.html">Modules</a><a class="tab" href="../../../../../pages/pt/internal-source-code/index.html" aria-current="page">Internal Services</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Internal Services</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Supabase Database</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Navegação da documentação">
+    <nav class="side"><div class="side-areas"><a href="../../../../../pages/pt/index.html">Visão geral</a><a href="../../../../../pages/pt/getting-started/index.html">Introduction</a><a href="../../../../../pages/pt/agents/index.html">Agents</a><a href="../../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../../pages/pt/api/index.html">API</a><a href="../../../../../pages/pt/modules/index.html">Modules</a><a href="../../../../../pages/pt/internal-source-code/index.html" aria-current="page">Internal Services</a></div><a class="side-link" href="../../../../../pages/pt/internal-source-code/index.html"><span>Visão geral</span></a><div class="side-group"><p class="side-title">Application Tracing</p><ul><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/application-tracing/logger-engine.html"><span>Logger Engine</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/application-tracing/payload-builder.html"><span>Payload Builder</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/application-tracing/tracing-core.html"><span>Tracing Core</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/application-tracing/use.html"><span>Use</span></a></li></ul></div><div class="side-group"><p class="side-title">Database</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>No SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/database/no-sql/local-manage.html"><span>Local Manage</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/database/no-sql/mongo-manager.html"><span>Mongo Manager</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/database/no-sql/router.html"><span>Router</span></a></li></ul></li><li><button class="side-link side-folder" type="button" aria-expanded="true"><span>SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub"><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/database/sql/supabase-database.html" aria-current="page"><span>Supabase Database</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Storage</p><ul><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/storage/storage-menage-repository.html"><span>Storage Menage Repository</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Supabase</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/storage/supabase/storage-menager.html"><span>Storage Menager</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Token Calculate</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Exchange Rate</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/token-calculate/exchange-rate/bcb-exchange-rate-service.html"><span>BCB Exchange Rate Service</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/token-calculate/exchange-rate/exchange-rate-service.html"><span>Exchange Rate Service</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/token-calculate/model-pricing.html"><span>Model Pricing</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/token-calculate/token-counter.html"><span>Token Counter</span></a></li></ul></div><div class="side-group"><p class="side-title">Utils</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Load Request File</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/utils/load-request-file/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/utils/load-request-file/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/utils/loader-files.html"><span>Loader Files</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/utils/unique-id-factory.html"><span>Unique ID Factory</span></a></li></ul></div><div class="side-group"><p class="side-title">Vector Store</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Local Dynamic Embedding</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/vector-store/local-dynamic-embedding/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/vector-store/local-dynamic-embedding/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/vector-store/pinecone-client.html"><span>Pinecone Client</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/vector-store/pinecone-embedding.html"><span>Pinecone Embedding</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/vector-store/pinecone-retriever.html"><span>Pinecone Retriever</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/vector-store/retrieval-manager.html"><span>Retrieval Manager</span></a></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Database / SQL</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Supabase Database</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copiar página</span></button>
+            </div>
+          </div>
+          <p class="lead">Esta documentação detalha a arquitetura e o funcionamento do motor de persistência de dados criado para interagir com o Supabase, utilizando uma abordagem híbrida entre a API REST (via cliente oficial) e o acesso direto ao PostgreSQL (via psycopg2).</p>
+          <details class="toc-inline"><summary>Nesta página</summary><ul></ul></details>
+        </header>
+        <div class="prose"><h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão Geral</h2>
+  <p>O código implementa uma camada de abstração de banco de dados dividida em duas responsabilidades principais: <strong>Gerenciamento de Conexão</strong> e <strong>Motor de Consultas (Query Engine)</strong>.</p>
+  <p>Diferente de abordagens que dependem apenas de bibliotecas de alto nível, este projeto foca na performance e no controle transacional robusto, permitindo execuções SQL puras, manipulação de JSONB e operações em lote (bulk operations) com segurança.</p>
+
+  <h2 id="fluxo-de-execucao"><a class="anchor" href="#fluxo-de-execucao" aria-label="Link para esta seção">#</a>Fluxo de Execução</h2>
+  <p>O fluxo de uma operação comum segue estes passos:</p>
+  <ol>
+    <li><strong>Inicialização:</strong> O <code>SupabaseConnection</code> carrega as variáveis de ambiente e valida as credenciais.</li>
+    <li><strong>Lazy Loading:</strong> A conexão com o banco PostgreSQL só é aberta no momento em que a primeira query é solicitada.</li>
+    <li><strong>Injeção de Dependência:</strong> O <code>SupabaseQueryEngineer</code> recebe o método de conexão.</li>
+    <li><strong>Execução &amp; Contexto:</strong> O motor de consulta abre um cursor, executa o SQL e, em caso de sucesso, realiza o <code>commit</code>.</li>
+    <li><strong>Tratamento de Erro:</strong> Se algo falhar, um <code>rollback</code> automático é acionado para manter a integridade dos dados.</li>
+  </ol>
+
+  <h2 id="tabela-de-metodos"><a class="anchor" href="#tabela-de-metodos" aria-label="Link para esta seção">#</a>Tabela de Métodos</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Classe</th><th>Método</th><th>Descrição Breve</th></tr></thead>
+    <tbody>
+      <tr><td><strong>SupabaseConnection</strong></td><td><code>get_connection()</code></td><td>Retorna uma conexão ativa, reconectando se necessário.</td></tr>
+      <tr><td><strong>SupabaseConnection</strong></td><td><code>close()</code></td><td>Encerra a conexão física com o banco de dados.</td></tr>
+      <tr><td><strong>SupabaseQueryEngineer</strong></td><td><code>select()</code></td><td>Executa consultas de leitura e retorna uma lista de dicionários.</td></tr>
+      <tr><td><strong>SupabaseQueryEngineer</strong></td><td><code>execute()</code></td><td>Executa comandos de escrita (Insert, Update, Delete).</td></tr>
+      <tr><td><strong>SupabaseQueryEngineer</strong></td><td><code>execute_many()</code></td><td>Executa o mesmo comando SQL para uma lista de múltiplos parâmetros.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="arquitetura-e-insights"><a class="anchor" href="#arquitetura-e-insights" aria-label="Link para esta seção">#</a>Arquitetura e Insights</h2>
+  <ul>
+    <li><strong>Resiliência (Auto-reconexão):</strong> O método <code>get_connection</code> realiza um "ping" (<code>SELECT 1</code>) no banco. Isso evita erros comuns de "broken pipe" em ambientes serverless ou quando a conexão fica ociosa por muito tempo.</li>
+    <li><strong>Resultados Tipados:</strong> O uso do <code>RealDictCursor</code> transforma as linhas do banco em dicionários Python nativos, facilitando o uso em APIs e manipulação de dados.</li>
+    <li><strong>Segurança (SQL Injection):</strong> O sistema utiliza parametrização (<code>%s</code>), delegando ao driver a limpeza dos dados, o que previne ataques de injeção de SQL.</li>
+  </ul>
+
+  <h2 id="documentacao-detalhada-das-classes"><a class="anchor" href="#documentacao-detalhada-das-classes" aria-label="Link para esta seção">#</a>Documentação Detalhada das Classes</h2>
+
+  <h2 id="classe-supabaseconnection"><a class="anchor" href="#classe-supabaseconnection" aria-label="Link para esta seção">#</a>Classe SupabaseConnection</h2>
+  <p><strong>Descrição</strong></p>
+  <p>Gerencia o ciclo de vida da conexão com o ecossistema Supabase. Ela valida se o ambiente está configurado corretamente e fornece uma interface para obter conexões PostgreSQL estáveis através do protocolo TCP.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>Não possui argumentos de inicialização (lê diretamente de <code>.env</code>).</li>
+  </ul>
+
+  <h2 id="metodos"><a class="anchor" href="#metodos" aria-label="Link para esta seção">#</a>Metodos</h2>
+  <p><strong>1. get_connection</strong></p>
+  <ul>
+    <li><strong>Descrição:</strong> Fornece uma instância de conexão <code>psycopg2</code>. Implementa o padrão Lazy Initialization.</li>
+    <li><strong>Argumentos:</strong> Nenhum.</li>
+    <li><strong>Retornos:</strong> <code>psycopg2.extensions.connection</code></li>
+    <li><strong>Raises:</strong> <code>Exception</code> se as credenciais estiverem incorretas ou o banco estiver inacessível.</li>
+    <li><strong>Exemplos:</strong> <code>conn = connection.get_connection()</code></li>
+  </ul>
+
+  <h2 id="classe-supabasequeryengineer"><a class="anchor" href="#classe-supabasequeryengineer" aria-label="Link para esta seção">#</a>Classe SupabaseQueryEngineer</h2>
+  <p><strong>Descrição</strong></p>
+  <p>O "cérebro" das operações de banco de dados. Esta classe isola a complexidade do SQL, gerenciando cursores e transações (Commit/Rollback) de forma transparente para o desenvolvedor.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>get_connection</code> (Callable): Uma função ou método que retorne uma conexão ativa.</li>
+  </ul>
+
+  <h2 id="metodos-2"><a class="anchor" href="#metodos-2" aria-label="Link para esta seção">#</a>Metodos</h2>
+  <p><strong>1. select</strong></p>
+  <ul>
+    <li><strong>Descrição:</strong> Executa queries de busca de dados.</li>
+    <li><strong>Argumentos:</strong>
+      <ul>
+        <li><code>query</code> (str): Comando SQL SELECT.</li>
+        <li><code>params</code> (tuple, opcional): Valores para substituir os placeholders <code>%s</code>.</li>
+      </ul>
+    </li>
+    <li><strong>Retornos:</strong> <code>List[Dict[str, Any]]</code> - Uma lista onde cada item é uma linha da tabela.</li>
+    <li><strong>Raises:</strong> <code>Exception</code> em caso de erro de sintaxe SQL ou falha de conexão.</li>
+    <li><strong>Exemplos:</strong> <code>engine.select("SELECT * FROM users WHERE name = %s", ("Enzo",))</code></li>
+  </ul>
+
+  <p><strong>2. execute</strong></p>
+  <ul>
+    <li><strong>Descrição:</strong> Executa comandos que alteram o estado do banco de dados (DDL ou DML).</li>
+    <li><strong>Argumentos:</strong>
+      <ul>
+        <li><code>query</code> (str): Comando SQL (INSERT, UPDATE, DELETE, CREATE, etc).</li>
+        <li><code>params</code> (tuple, opcional): Parâmetros da query.</li>
+      </ul>
+    </li>
+    <li><strong>Retornos:</strong> <code>None</code></li>
+    <li><strong>Raises:</strong> <code>Exception</code> com rollback automático em caso de falha.</li>
+    <li><strong>Exemplos:</strong> <code>engine.execute("UPDATE users SET name = %s", ("Novo Nome",))</code></li>
+  </ul>
+
+  <p><strong>3. execute_many</strong></p>
+  <ul>
+    <li><strong>Descrição:</strong> Otimiza a inserção ou atualização de grandes volumes de dados.</li>
+    <li><strong>Argumentos:</strong>
+      <ul>
+        <li><code>query</code> (str): Comando SQL parametrizado.</li>
+        <li><code>params_list</code> (List[tuple]): Lista contendo as tuplas de parâmetros para cada repetição.</li>
+      </ul>
+    </li>
+    <li><strong>Retornos:</strong> <code>None</code></li>
+    <li><strong>Raises:</strong> <code>Exception</code> se qualquer uma das operações falhar (anula o lote inteiro).</li>
+    <li><strong>Exemplos:</strong> <code>engine.execute_many("INSERT INTO logs (msg) VALUES (%s)", [("Erro 1",), ("Erro 2",)])</code></li>
+  </ul></div>
+        <div class="feedback"></div>
+        <p class="source">Fonte: <code>src/database/relational_db/supabase_database.py</code></p>
+        <nav class="pager" aria-label="Páginas vizinhas"><a class="pager-link prev" href="../../../../../pages/pt/internal-source-code/database/no-sql/router.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Anterior</small><span>Router</span></div></a><a class="pager-link next" href="../../../../../pages/pt/internal-source-code/storage/storage-menage-repository.html"><div><small>Próxima</small><span>Storage Menage Repository</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="Nesta página"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="../../../../../pages/pt/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+          <p>Where intelligence finds purpose.</p>
+          <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>Repositório no GitHub</a>
+        </div>
+        <div class="foot-col"><h2>Documentação</h2><a href="../../../../../pages/pt/getting-started/index.html">Introduction</a><a href="../../../../../pages/pt/agents/index.html">Agents</a><a href="../../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../../pages/pt/api/index.html">API</a><a href="../../../../../pages/pt/modules/index.html">Modules</a><a href="../../../../../pages/pt/internal-source-code/index.html">Internal Services</a></div>
+        <div class="foot-col"><h2>Recursos</h2><a href="../../../../../pages/pt/getting-started/quickstart.html">Quickstart</a><a href="../../../../../pages/pt/getting-started/licence.html">Licence</a><a href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener">Código-fonte</a><a href="https://github.com/enzoschitini/better-ai/issues" target="_blank" rel="noopener">Reportar um problema</a></div>
+        <div class="foot-col"><h2>Criador</h2><div class="foot-me"><img src="../../../../../assets/img/profile.jpg" alt="" width="44" height="44"><div><strong>Enzo Schitini</strong><span>Data Scientist &amp; AI Engineer</span></div></div><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/enzoschitini" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 BetterAI &middot; Licença MIT</span>
+        <span>Criado por <a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Enzo Schitini</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Buscar na documentação">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Buscar páginas e seções" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Resultados"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>navegar</span></span>
+    <span><kbd>Enter</kbd><span>abrir</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "pt", "root": "../../../../../", "index": "../../../../../search-pt.json", "alt": {"pt": "pages/pt/internal-source-code/database/sql/supabase-database.html", "it": "pages/it/internal-source-code/database/sql/supabase-database.html", "en": "pages/en/internal-source-code/database/sql/supabase-database.html"}, "i": {"noResults": "Nada encontrado para “%s”. Tente o nome de um módulo, como “Pinecone”."}};</script>
+<script src="../../../../../_design-system/js/ds.js?v=9a5e2954"></script>
+<script src="../../../../../_design-system/js/docs.js?v=6f602c0a"></script>
+</body>
+</html>

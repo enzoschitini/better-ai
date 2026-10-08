@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cost Calculator | BetterAI Docs</title>
+<meta name="description" content="Calcola in dollari il costo di una generazione a partire dai token usati, dal numero di immagini e dalla tabella dei prezzi del modello.">
+<link rel="canonical" href="pages/it/modules/image-generation/cost-calculator/cost-calculator.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../../../../_design-system/css/tokens.css?v=7f43b250">
+<link rel="stylesheet" href="../../../../../_design-system/css/base.css?v=4a698b89">
+<link rel="stylesheet" href="../../../../../_design-system/css/layout.css?v=503e806e">
+<link rel="stylesheet" href="../../../../../_design-system/css/content.css?v=cfc5f8ef">
+<link rel="stylesheet" href="../../../../../_design-system/css/search.css?v=1ecf3252">
+<link rel="stylesheet" href="../../../../../_design-system/css/responsive.css?v=6efeec66">
+</head>
+<body>
+<a class="skip" href="#main">Vai al contenuto</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Creato da Enzo Schitini. Ti invito a connetterti con me su LinkedIn.</a></span>
+    <button type="button" aria-label="Chiudi avviso"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../../pages/it/index.html">
+        <img src="../../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Cerca nella documentazione">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Cerca...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="../../../../../pages/it/getting-started/quickstart.html">Quickstart<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Lingua"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>IT</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="false"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="true"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="false"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Cambia tema chiaro o scuro"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Aree della documentazione"><a class="tab" href="../../../../../pages/it/index.html">Panoramica</a><a class="tab" href="../../../../../pages/it/getting-started/index.html">Introduction</a><a class="tab" href="../../../../../pages/it/agents/index.html">Agents</a><a class="tab" href="../../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../../pages/it/api/index.html">API</a><a class="tab" href="../../../../../pages/it/modules/index.html" aria-current="page">Modules</a><a class="tab" href="../../../../../pages/it/internal-source-code/index.html">Internal Services</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Modules</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Cost Calculator</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Navigazione della documentazione">
+    <nav class="side"><div class="side-areas"><a href="../../../../../pages/it/index.html">Panoramica</a><a href="../../../../../pages/it/getting-started/index.html">Introduction</a><a href="../../../../../pages/it/agents/index.html">Agents</a><a href="../../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../../pages/it/api/index.html">API</a><a href="../../../../../pages/it/modules/index.html" aria-current="page">Modules</a><a href="../../../../../pages/it/internal-source-code/index.html">Internal Services</a></div><a class="side-link" href="../../../../../pages/it/modules/index.html"><span>Panoramica</span></a><div class="side-group"><p class="side-title">Content Parse</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Content Parsing Agent</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/it/modules/content-parse/content-parsing-agent/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../../pages/it/modules/content-parse/content-parsing-agent/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/it/modules/content-parse/document-parse.html"><span>Document Parse</span></a></li><li><a class="side-link" href="../../../../../pages/it/modules/content-parse/field-metadata-parser.html"><span>Field Metadata Parser</span></a></li><li><a class="side-link" href="../../../../../pages/it/modules/content-parse/generate-pydantic-schema.html"><span>Generate Pydantic Schema</span></a></li><li><a class="side-link" href="../../../../../pages/it/modules/content-parse/json-to-pydantic.html"><span>Json To Pydantic</span></a></li></ul></div><div class="side-group"><p class="side-title">Deep Research</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Tavily Research</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/it/modules/deep-research/tavily-research/context-builder.html"><span>Context Builder</span></a></li><li><a class="side-link" href="../../../../../pages/it/modules/deep-research/tavily-research/tavily-core.html"><span>Tavily Core</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Image Generation</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="true"><span>Cost Calculator</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub"><li><a class="side-link" href="../../../../../pages/it/modules/image-generation/cost-calculator/cost-calculator.html" aria-current="page"><span>Cost Calculator</span></a></li><li><a class="side-link" href="../../../../../pages/it/modules/image-generation/cost-calculator/pricing-table.html"><span>Pricing Table</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/it/modules/image-generation/image-generator-service.html"><span>Image Generator Service</span></a></li><li><a class="side-link" href="../../../../../pages/it/modules/image-generation/module.html"><span>Module</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Utils</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/it/modules/image-generation/utils/config.html"><span>Config</span></a></li><li><a class="side-link" href="../../../../../pages/it/modules/image-generation/utils/gemini-client.html"><span>Gemini Client</span></a></li><li><a class="side-link" href="../../../../../pages/it/modules/image-generation/utils/params-validator.html"><span>Params Validator</span></a></li><li><a class="side-link" href="../../../../../pages/it/modules/image-generation/utils/payload-builder.html"><span>Payload Builder</span></a></li></ul></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Image Generation / Cost Calculator</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Cost Calculator</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copia pagina</span></button>
+            </div>
+          </div>
+          <p class="lead">Calcola in dollari il costo di una generazione a partire dai token usati, dal numero di immagini e dalla tabella dei prezzi del modello.</p>
+          <details class="toc-inline"><summary>In questa pagina</summary><ul></ul></details>
+        </header>
+        <div class="prose"><div class="callout" data-kind="note"><p><strong>Fonte:</strong> <code>src/image_generation/cost_calculator/cost_calculator.py</code>. Il notebook originale di questa pagina era vuoto; il contenuto è stato scritto a partire dal codice.</p></div>
+
+  <h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
+  <p>La classe <code>CostCalculator</code> riceve una tabella dei prezzi nel costruttore (per impostazione predefinita, <code>PricingTable</code>; vedi <a href="pricing-table.html">Pricing Table</a>) e offre due metodi: <code>merge_cost_information</code> e <code>calculate</code>.</p>
+
+  <h2 id="merge-cost-information"><a class="anchor" href="#merge-cost-information" aria-label="Link para esta seção">#</a>merge_cost_information</h2>
+  <p>Somma <code>prompt_tokens</code>, <code>output_tokens</code> e <code>total_tokens</code> di una lista di record d'uso, usata quando una generazione fa più chiamate al modello.</p>
+  <div class="callout" data-kind="warn"><p><strong>Minimo di due record.</strong> Con una lista vuota o con meno di due elementi, il metodo solleva <code>ValueError</code> ("You must provide at least two cost_information objects."). <code>PayloadBuilder</code> lo chiama solo quando c'è più di un record.</p></div>
+
+  <h2 id="calculate"><a class="anchor" href="#calculate" aria-label="Link para esta seção">#</a>calculate</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Parametro</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>model</code></td><td><code>str</code></td><td>Modello usato, cercato in <code>PricingTable</code>.</td></tr>
+      <tr><td><code>prompt_tokens</code></td><td><code>int</code></td><td>Token di input.</td></tr>
+      <tr><td><code>output_tokens</code></td><td><code>int</code></td><td>Token di output.</td></tr>
+      <tr><td><code>total_tokens</code></td><td><code>int</code></td><td>Totale dei token. Viene solo riportato nel risultato; non entra nel calcolo.</td></tr>
+      <tr><td><code>num_images</code></td><td><code>int</code></td><td>Numero di immagini (predefinito <code>0</code>).</td></tr>
+      <tr><td><code>cached_prompt_tokens</code></td><td><code>int</code></td><td>Token di input letti dalla cache (predefinito <code>0</code>).</td></tr>
+      <tr><td><code>cache_storage_tokens</code></td><td><code>int</code></td><td>Token mantenuti in cache (predefinito <code>0</code>).</td></tr>
+      <tr><td><code>cache_storage_hours</code></td><td><code>float</code></td><td>Ore di archiviazione in cache (predefinito <code>0.0</code>).</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="formule"><a class="anchor" href="#formule" aria-label="Link para esta seção">#</a>Formule</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Voce</th><th>Calcolo</th></tr></thead>
+    <tbody>
+      <tr><td>Input</td><td><code>prompt_tokens / 1_000_000 * input_per_million_tokens</code></td></tr>
+      <tr><td>Output</td><td><code>output_tokens / 1_000_000 * output_per_million_tokens</code>, solo se il prezzo e i token sono diversi da zero</td></tr>
+      <tr><td>Immagini</td><td><code>num_images * image_price_per_unit</code>, solo se il prezzo e la quantità sono diversi da zero</td></tr>
+      <tr><td>Cache di input</td><td><code>cached_prompt_tokens / 1_000_000 * cache_input_per_million_tokens</code></td></tr>
+      <tr><td>Archiviazione della cache</td><td><code>cache_storage_tokens / 1_000_000 * cache_storage_per_million_tokens_per_hour * cache_storage_hours</code></td></tr>
+    </tbody>
+  </table></div>
+  <p>Il totale è la somma delle cinque voci.</p>
+
+  <h3 id="valore-di-ritorno"><a class="anchor" href="#valore-di-ritorno" aria-label="Link para esta seção">#</a>Valore di ritorno</h3>
+  <p>Un dizionario con i token ricevuti e i valori in dollari arrotondati a 6 cifre decimali:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+  <span class="t-f">&quot;prompt_tokens&quot;</span>: <span class="t-n">1174</span>,
+  <span class="t-f">&quot;output_tokens&quot;</span>: <span class="t-n">2633</span>,
+  <span class="t-f">&quot;total_tokens&quot;</span>: <span class="t-n">3807</span>,
+  <span class="t-f">&quot;prompt_usd&quot;</span>: <span class="t-n">0.000352</span>,
+  <span class="t-f">&quot;output_usd&quot;</span>: <span class="t-n">0.0</span>,
+  <span class="t-f">&quot;images_usd&quot;</span>: <span class="t-n">0.078</span>,
+  <span class="t-f">&quot;total_usd&quot;</span>: <span class="t-n">0.078352</span>
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="esempio-d-uso"><a class="anchor" href="#esempio-d-uso" aria-label="Link para esta seção">#</a>Esempio d'uso</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> src.image_generation.cost_calculator.cost_calculator <span class="t-k">import</span> CostCalculator
+
+calculator = <span class="t-f">CostCalculator</span>()
+
+<span class="t-c"># Calcola il costo di due immagini generate con gemini-2.5-flash-image</span>
+cost = calculator.<span class="t-f">calculate</span>(
+    model=<span class="t-s">&quot;gemini-2.5-flash-image&quot;</span>,
+    prompt_tokens=<span class="t-n">1174</span>,
+    output_tokens=<span class="t-n">2633</span>,
+    total_tokens=<span class="t-n">3807</span>,
+    num_images=<span class="t-n">2</span>,
+)
+<span class="t-f">print</span>(cost[<span class="t-s">&quot;total_usd&quot;</span>])</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="osservazioni"><a class="anchor" href="#osservazioni" aria-label="Link para esta seção">#</a>Osservazioni</h2>
+  <div class="callout" data-kind="warn"><p><strong>Modello senza prezzo.</strong> Se il modello non è in <code>PricingTable</code>, <code>PricingTable.get</code> solleva <code>ValueError</code> ("Modelo sem precificação cadastrada") e la generazione fallisce durante la costruzione dei payload.</p></div></div>
+        <div class="feedback"></div>
+        <p class="source">Fonte: <code>src/image_generation/cost_calculator/cost_calculator.py</code></p>
+        <nav class="pager" aria-label="Pagine vicine"><a class="pager-link prev" href="../../../../../pages/it/modules/deep-research/tavily-research/tavily-core.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Precedente</small><span>Tavily Core</span></div></a><a class="pager-link next" href="../../../../../pages/it/modules/image-generation/cost-calculator/pricing-table.html"><div><small>Successiva</small><span>Pricing Table</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="In questa pagina"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="../../../../../pages/it/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+          <p>Where intelligence finds purpose.</p>
+          <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>Repository su GitHub</a>
+        </div>
+        <div class="foot-col"><h2>Documentazione</h2><a href="../../../../../pages/it/getting-started/index.html">Introduction</a><a href="../../../../../pages/it/agents/index.html">Agents</a><a href="../../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../../pages/it/api/index.html">API</a><a href="../../../../../pages/it/modules/index.html">Modules</a><a href="../../../../../pages/it/internal-source-code/index.html">Internal Services</a></div>
+        <div class="foot-col"><h2>Risorse</h2><a href="../../../../../pages/it/getting-started/quickstart.html">Quickstart</a><a href="../../../../../pages/it/getting-started/licence.html">Licence</a><a href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener">Codice sorgente</a><a href="https://github.com/enzoschitini/better-ai/issues" target="_blank" rel="noopener">Segnala un problema</a></div>
+        <div class="foot-col"><h2>Creatore</h2><div class="foot-me"><img src="../../../../../assets/img/profile.jpg" alt="" width="44" height="44"><div><strong>Enzo Schitini</strong><span>Data Scientist &amp; AI Engineer</span></div></div><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/enzoschitini" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 BetterAI &middot; Licenza MIT</span>
+        <span>Creato da <a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Enzo Schitini</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Cerca nella documentazione">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Cerca pagine e sezioni" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Risultati"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>naviga</span></span>
+    <span><kbd>Enter</kbd><span>apri</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "it", "root": "../../../../../", "index": "../../../../../search-it.json", "alt": {"pt": "pages/pt/modules/image-generation/cost-calculator/cost-calculator.html", "it": "pages/it/modules/image-generation/cost-calculator/cost-calculator.html", "en": "pages/en/modules/image-generation/cost-calculator/cost-calculator.html"}, "i": {"noResults": "Nessun risultato per “%s”. Prova con il nome di un modulo, come “Pinecone”."}};</script>
+<script src="../../../../../_design-system/js/ds.js?v=9a5e2954"></script>
+<script src="../../../../../_design-system/js/docs.js?v=6f602c0a"></script>
+</body>
+</html>

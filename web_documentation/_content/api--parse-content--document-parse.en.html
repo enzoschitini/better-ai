@@ -1,0 +1,81 @@
+<page data-lead="Receives a file and a JSON schema to extract and structure its content via LLM.">
+  <h2>Document Parse - <code>/parse-content/document-parse</code></h2>
+  <endpoint method="POST" path="/parse-content/document-parse"></endpoint>
+  <p>Receives a file and a JSON schema to extract and structure its content via LLM. Use it when you need to turn unstructured documents (PDFs, Word, text) into organized data ready for consumption.</p>
+
+  <h3>Parameters</h3>
+  <table>
+    <thead><tr><th>Parameter</th><th>Type</th><th>Description</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><code>metadata</code></td><td><code>string</code> (JSON)</td><td>Auxiliary metadata of the document, free for the client to use.</td><td><code>{"client": "Acme", "doc_type": "contract"}</code></td></tr>
+      <tr><td><code>document_schema</code></td><td><code>string</code> (JSON)</td><td>Schema that defines the fields to extract. Each key takes <code>type</code> and <code>description</code>.</td><td><code>{"summary": {"type": "str", "description": "Resumo do documento"}}</code></td></tr>
+      <tr><td><code>file</code></td><td><code>file</code> (upload)</td><td>File to be processed. Accepted formats: <code>txt</code>, <code>md</code>, <code>pdf</code>, <code>docx</code>. Limit: 50MB.</td><td><code>contrato.pdf</code></td></tr>
+      <tr><td><code>config</code></td><td><code>string</code> (JSON) — optional</td><td>Parser settings: LLM model, custom instructions and debug mode.</td><td><code>{"model_provider": "OpenAI", "model_id": "gpt-4.1-mini", "debug_mode": false}</code></td></tr>
+    </tbody>
+  </table>
+  <p>Note: the <code>job_id</code> is generated automatically by the server and returned in the response.</p>
+  <p>Schema formats: https://github.com/enzoschitini/better-ai/blob/production/doc/Modules/Content%20Parse/Json%20To%20Pydantic.md</p>
+
+  <h3>Config (explanation of each parameter)</h3>
+  <p>The <code>config</code> field is optional. When not sent, the API uses the parser's internal <code>default_config</code>.</p>
+  <table>
+    <thead><tr><th>Field</th><th>Type</th><th>What it does</th><th>Default</th><th>When to adjust</th></tr></thead>
+    <tbody>
+      <tr><td><code>model_provider</code></td><td><code>string</code></td><td>Defines the language model provider. Currently the main flows use <code>OpenAI</code> and <code>Groq</code>.</td><td><code>"OpenAI"</code></td><td>Change it when you want to switch provider because of cost, latency or availability.</td></tr>
+      <tr><td><code>model_id</code></td><td><code>string</code></td><td>Identifies the model used for extraction (<code>gpt-4.1-mini</code>, for example).</td><td><code>"gpt-4.1-mini"</code></td><td>Adjust it when you need higher quality, lower cost or a different context window.</td></tr>
+      <tr><td><code>max_input_tokens</code></td><td><code>integer</code></td><td>Limit of input tokens allowed to validate the size of the context before execution.</td><td><code>1000000</code></td><td>Lower it to impose a cost limit or raise it in scenarios with very long documents.</td></tr>
+      <tr><td><code>debug_mode</code></td><td><code>boolean</code></td><td>Turns on logs and debugging information of the parsing agent.</td><td><code>false</code></td><td>Use <code>true</code> for troubleshooting and go back to <code>false</code> in production.</td></tr>
+      <tr><td><code>instructions</code></td><td><code>string</code></td><td>Operational instructions on how to extract the data (style, rules, focus).</td><td><code>"Extraia dados do texto"</code></td><td>Customize it to guide the model toward formats and criteria specific to your domain.</td></tr>
+      <tr><td><code>description</code></td><td><code>string</code></td><td>Role/expected behavior of the agent, reinforcing the response format and the fallback with <code>null</code>.</td><td><code>"Leia o texto e extraia as informações relevantes conforme o esquema definido..."</code></td><td>Adjust it for business scenarios with their own filling and validation policies.</td></tr>
+    </tbody>
+  </table>
+  <p>Complete <code>config</code> example:</p>
+  <pre data-lang="json"><code>
+{
+  "model_provider": "OpenAI",
+  "model_id": "gpt-4.1-mini",
+  "max_input_tokens": 1000000,
+  "debug_mode": false,
+  "instructions": "Extraia dados do texto",
+  "description": "Leia o texto e extraia as informações relevantes conforme o esquema definido. Retorne um JSON estruturado com os dados extraídos. Caso não encontre alguma informação, retorne null para aquele campo."
+}
+</code></pre>
+
+  <h3>Request</h3>
+  <pre data-lang="bash"><code>
+curl --location 'http://localhost:8000/parse-content/document-parse' \
+--header 'X-API-Key: ******' \
+--form 'metadata="{\"value1\": \"value3\"}"' \
+--form 'document_schema="{
+  \"summary\": {
+    \"type\": \"str\",
+    \"description\": \"Resumo do conteúdo do arquivo\"
+  }
+}"' \
+--form 'config="{
+  \"model_provider\": \"OpenAI\",
+  \"model_id\": \"gpt-4.1-mini\",
+  \"debug_mode\": true,
+  \"instructions\": \"Extraia dados do texto\",
+  \"description\": \"Leia o texto e extraia as informações relevantes conforme o esquema definido. Retorne um JSON estruturado com os dados extraídos. Caso não encontre alguma informação, retorne null para aquele campo.\"
+}"' \
+--form 'file=@"/path/to/file"'
+</code></pre>
+
+  <h3>Response</h3>
+  <pre data-lang="json"><code>
+{
+    "job_id": "job_1788198742619260200fKBY",
+    "status": "success",
+    "status_code": 200,
+    "content": {
+        "summary": "..."
+    },
+    "time": {
+        "start": "2026-08-31 14:52:22",
+        "end": "2026-08-31 14:52:30",
+        "duration_seconds": 8.0
+    }
+}
+</code></pre>
+</page>

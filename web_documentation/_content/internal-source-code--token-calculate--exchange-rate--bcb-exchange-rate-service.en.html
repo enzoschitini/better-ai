@@ -1,0 +1,159 @@
+<page data-lead="The BCBExchangeRateService class offers a service to query the dollar exchange rate against the real directly from the official API of the Central Bank of Brazil (BCB).">
+  <h2>Overview</h2>
+  <p>The <code>BCBExchangeRateService</code> class offers a service to query the dollar exchange rate against the real directly from the official API of the Central Bank of Brazil (BCB). This service is useful for developing financial applications, currency exchange systems, economic analysis and situations where up-to-date exchange rates need to be obtained automatically and programmatically.</p>
+  <p>The main feature of the class is to allow looking up the dollar exchange rate for specific dates, as well as making it easier to retrieve the best available rate within a range of past days, starting from the current date. This provides flexibility to capture values even when there is no rate on recent days, for example weekends or holidays.</p>
+  <p>In practice, a developer can instantiate the class and call the <code>get_latest_rate</code> method, defining how many previous days to consider when searching for the rate. The method returns the best rate and the corresponding date, making quick integrations with official data easier.</p>
+
+  <h2>Execution Flow</h2>
+  <ol>
+    <li><strong>Initialization:</strong> The user creates an instance of <code>BCBExchangeRateService</code>, and can set a timeout for HTTP requests (default 10 seconds).</li>
+    <li><strong>Call to the <code>get_latest_rate</code> method:</strong> This method receives an optional <code>max_days_back</code> parameter that defines how many previous days to search for the rate.</li>
+    <li><strong>Iterative search:</strong> For each day, starting from the current one and going back up to <code>max_days_back</code>, the method makes a GET request to the BCB API using the URL format built for that date.</li>
+    <li><strong>Response processing:</strong> If the API returns valid data, the method extracts the selling rate and the date of that rate.</li>
+    <li><strong>Comparison and selection:</strong> For each rate obtained, it checks whether it is the best (most recent) found so far and stores that information.</li>
+    <li><strong>Delay between requests:</strong> There is a small delay of 0.2 seconds between attempts so as not to overload the API.</li>
+    <li><strong>Returning the result:</strong> After going through the days, it returns a dictionary with the value of the best rate found and its date. If an error occurs, it returns <code>None</code> values.</li>
+    <li><strong>Logs:</strong> The process prints details of attempts, successes, failures and the final result to the console.</li>
+  </ol>
+
+  <h2>Class Methods Table</h2>
+  <table>
+    <thead><tr><th>Method</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Initializes the instance by setting the request timeout.</td></tr>
+      <tr><td><code>_build_url</code></td><td>Builds the API URL for a specific date.</td></tr>
+      <tr><td><code>_fetch_rate_for_date</code></td><td>Performs the HTTP request to obtain the rate for a date.</td></tr>
+      <tr><td><code>get_latest_rate</code></td><td>Searches for the best available rate within the defined range.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Environment Variables</h2>
+  <p>No environment variables are used for this class to work.</p>
+
+  <h2>Key Architecture Points and Insights</h2>
+  <ul>
+    <li><strong>Encapsulation:</strong> The class explicitly separates URL building (<code>_build_url</code>) and data retrieval (<code>_fetch_rate_for_date</code>) as private methods, keeping the public API clean.</li>
+    <li><strong>Robustness:</strong> The code handles exceptions at several points to prevent request failures from compromising the overall operation.</li>
+    <li><strong>Respect for the API:</strong> Using delays between requests avoids overloading the BCB service.</li>
+    <li><strong>External dependency:</strong> Uses the <code>requests</code> library for HTTP communication, ensuring ease and robustness in the calls.</li>
+    <li><strong>Good time practice:</strong> Uses UTC dates and formats the date to the standard expected by the API.</li>
+    <li><strong>Structured return value:</strong> Ensures consumability by returning a dictionary with <code>rate</code> and <code>date</code>, making integrations easier.</li>
+  </ul>
+
+  <h2>Class and Methods Description</h2>
+
+  <h2><code>BCBExchangeRateService</code> Class</h2>
+  <h3>Description</h3>
+  <p>This class is responsible for querying US dollar exchange rates against the Brazilian real directly from the official API of the Central Bank of Brazil. It allows both querying values for specific dates and searching for the best rate within a period, supporting financial applications that need up-to-date and reliable data.</p>
+
+  <h3>Constructor Arguments</h3>
+  <table>
+    <thead><tr><th>Argument</th><th>Type</th><th>Description</th><th>Default Value</th></tr></thead>
+    <tbody>
+      <tr><td><code>timeout</code></td><td>int</td><td>Maximum time in seconds for HTTP requests</td><td>10</td></tr>
+    </tbody>
+  </table>
+
+  <h3>1. <code>__init__</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Initializes an instance of the service by setting the maximum time for responses to the HTTP requests made to the BCB API.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>timeout</code> (int): time limit in seconds for requests.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>Returns no value.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+service = BCBExchangeRateService(timeout=5)  # Timeout menor para conexões lentas
+</code></pre>
+
+  <h3>2. <code>_build_url</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Private method that builds the query URL of the Central Bank API for a specific date, formatting the date in the required standard.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>date</code> (datetime): date that will be queried in the API.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>str</code>: URL formatted to perform the query.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+from datetime import datetime
+service = BCBExchangeRateService()
+url = service._build_url(datetime(2024, 6, 10))
+print(url)
+# Exemplo de saída:
+# https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarDia(dataCotacao=@dataCotacao)?@dataCotacao='06-10-2024'&amp;$top=1&amp;$format=json
+</code></pre>
+
+  <h3>3. <code>_fetch_rate_for_date</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Private method that tries to fetch the dollar rate for a specific date using the Central Bank API. It returns the selling rate and the date of the rate on success.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>date</code> (datetime): date for which the rate will be queried.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>(float, datetime)</code>: a tuple containing the rate value (float) and the date of the rate (datetime).</li>
+    <li><code>(None, None)</code>: if the rate cannot be obtained due to an error or lack of data.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>None explicitly, but possible exceptions are caught internally.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+service = BCBExchangeRateService()
+rate, date = service._fetch_rate_for_date(datetime(2024, 6, 10))
+print(rate, date)
+# Saída esperada (se houver cotação nessa data):
+# 5.0892 2024-06-10 00:00:00
+</code></pre>
+
+  <h3>4. <code>get_latest_rate</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Searches for the best dollar rate against the real available in the last <code>max_days_back</code> days from the moment of the call, returning the value and the date of the most recent rate found.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>max_days_back</code> (int): number of previous days to search for the rate (default: 5).</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>dict</code>: with the keys:
+      <ul>
+        <li><code>rate</code> (float or None): best rate found.</li>
+        <li><code>date</code> (datetime or None): date of that rate.</li>
+      </ul>
+    </li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>None explicitly, errors are handled internally.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+service = BCBExchangeRateService()
+result = service.get_latest_rate(3)
+print(f"Cotação: {result['rate']} em {result['date']}")
+# Saída possível:
+# Cotação: 5.0892 em 2024-06-10 00:00:00
+
+# python -m src.tokens_calculate.bcb
+</code></pre>
+
+  <p>Thus, the <code>BCBExchangeRateService</code> class is a practical and reliable solution for obtaining official commercial dollar rates, useful for any system that needs easy, programmatic access to this data.</p>
+</page>

@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quickstart | BetterAI Docs</title>
+<meta name="description" content="Guida rapida per configurare l'ambiente, installare le dipendenze ed eseguire i servizi di BetterAI per la prima volta.">
+<link rel="canonical" href="pages/it/getting-started/quickstart.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../../_design-system/css/tokens.css?v=7f43b250">
+<link rel="stylesheet" href="../../../_design-system/css/base.css?v=4a698b89">
+<link rel="stylesheet" href="../../../_design-system/css/layout.css?v=503e806e">
+<link rel="stylesheet" href="../../../_design-system/css/content.css?v=cfc5f8ef">
+<link rel="stylesheet" href="../../../_design-system/css/search.css?v=1ecf3252">
+<link rel="stylesheet" href="../../../_design-system/css/responsive.css?v=6efeec66">
+</head>
+<body>
+<a class="skip" href="#main">Vai al contenuto</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Creato da Enzo Schitini. Ti invito a connetterti con me su LinkedIn.</a></span>
+    <button type="button" aria-label="Chiudi avviso"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../pages/it/index.html">
+        <img src="../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Cerca nella documentazione">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Cerca...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="../../../pages/it/getting-started/quickstart.html">Quickstart<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Lingua"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>IT</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="false"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="true"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="false"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Cambia tema chiaro o scuro"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Aree della documentazione"><a class="tab" href="../../../pages/it/index.html">Panoramica</a><a class="tab" href="../../../pages/it/getting-started/index.html" aria-current="page">Introduction</a><a class="tab" href="../../../pages/it/agents/index.html">Agents</a><a class="tab" href="../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../pages/it/api/index.html">API</a><a class="tab" href="../../../pages/it/modules/index.html">Modules</a><a class="tab" href="../../../pages/it/internal-source-code/index.html">Internal Services</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Introduction</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Quickstart</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Navigazione della documentazione">
+    <nav class="side"><div class="side-areas"><a href="../../../pages/it/index.html">Panoramica</a><a href="../../../pages/it/getting-started/index.html" aria-current="page">Introduction</a><a href="../../../pages/it/agents/index.html">Agents</a><a href="../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../pages/it/api/index.html">API</a><a href="../../../pages/it/modules/index.html">Modules</a><a href="../../../pages/it/internal-source-code/index.html">Internal Services</a></div><a class="side-link" href="../../../pages/it/getting-started/index.html"><span>Panoramica</span></a><div class="side-group"><p class="side-title">Primi passi</p><ul><li><a class="side-link" href="../../../pages/it/getting-started/quickstart.html" aria-current="page"><span>Quickstart</span></a></li><li><a class="side-link" href="../../../pages/it/getting-started/dependences.html"><span>Dependences</span></a></li><li><a class="side-link" href="../../../pages/it/getting-started/licence.html"><span>Licence</span></a></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Primi passi</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Quickstart</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copia pagina</span></button>
+            </div>
+          </div>
+          <p class="lead">Guida rapida per configurare l'ambiente, installare le dipendenze ed eseguire i servizi di BetterAI per la prima volta.</p>
+          <details class="toc-inline"><summary>In questa pagina</summary><ul></ul></details>
+        </header>
+        <div class="prose"><h2 id="1-aggiorna-il-progetto"><a class="anchor" href="#1-aggiorna-il-progetto" aria-label="Link para esta seção">#</a>1. Aggiorna il Progetto</h2>
+  <p>Per prima cosa, assicurati di essere sul branch corretto e che il tuo codice sia aggiornato:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">git</span> checkout production
+<span class="t-f">git</span> pull
+<span class="t-f">git</span> checkout <span class="t-n">-b</span> nome-da-sua-branch</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="2-crea-l-ambiente-virtuale"><a class="anchor" href="#2-crea-l-ambiente-virtuale" aria-label="Link para esta seção">#</a>2. Crea l'Ambiente Virtuale</h2>
+  <div class="callout" data-kind="info"><p><strong>Requisito:</strong> Python 3.14 o superiore (versione fissata in <code>.python-version</code>).</p></div>
+  <p>Crea un ambiente virtuale per isolare le dipendenze del progetto:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">python</span> <span class="t-n">-m</span> venv .venv</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="3-attiva-l-ambiente-virtuale"><a class="anchor" href="#3-attiva-l-ambiente-virtuale" aria-label="Link para esta seção">#</a>3. Attiva l'Ambiente Virtuale</h2>
+  <div class="code" data-tabs><div class="code-head"><div class="code-tabs" role="tablist"><button class="code-tab" type="button" role="tab" aria-selected="true">PowerShell</button><button class="code-tab" type="button" role="tab" aria-selected="false">CMD</button></div><button class="copy" type="button"></button></div><div class="code-body"><pre data-lang="bash"><code><span class="t-f">.\.venv\Scripts\Activate.ps1</span></code></pre><pre data-lang="bash" hidden><code><span class="t-f">.venv\Scripts\activate.bat</span></code></pre></div></div>
+  <p>Dopo l'attivazione, il tuo terminale dovrebbe apparire così:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang=""><code>(.venv) PS C:\Users\nome_do_usuario\better-ai&gt;</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="4-installa-le-dipendenze"><a class="anchor" href="#4-installa-le-dipendenze" aria-label="Link para esta seção">#</a>4. Installa le Dipendenze</h2>
+  <p>Puoi installare le dipendenze in due modi:</p>
+  <h3 id="usando-uv-consigliato"><a class="anchor" href="#usando-uv-consigliato" aria-label="Link para esta seção">#</a>Usando uv (consigliato)</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">uv</span> sync</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="5-configura-le-variabili-d-ambiente"><a class="anchor" href="#5-configura-le-variabili-d-ambiente" aria-label="Link para esta seção">#</a>5. Configura le Variabili d'Ambiente</h2>
+  <p>Crea un file <code>.env</code> nella radice del progetto con le seguenti variabili:</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Variabile</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>BETTERAI_API_KEY</code></td><td>Chiave API interna di BetterAI</td></tr>
+      <tr><td><code>OPENAI_API_KEY</code></td><td>Chiave API di OpenAI</td></tr>
+      <tr><td><code>OPENAI_EMBEDDING_MODEL</code></td><td>Modello di embeddings di OpenAI utilizzato</td></tr>
+      <tr><td><code>GEMINI_API_KEY</code></td><td>Chiave API di Google Gemini</td></tr>
+      <tr><td><code>GROQ_API_KEY</code></td><td>Chiave API di Groq</td></tr>
+      <tr><td><code>ANTHROPIC_API_KEY</code></td><td>Chiave API di Anthropic (Claude)</td></tr>
+      <tr><td><code>TAVILY_API_KEY</code></td><td>Chiave API di Tavily (ricerca web)</td></tr>
+      <tr><td><code>FAL_API_KEY</code></td><td>Chiave API di Fal (generazione di media)</td></tr>
+      <tr><td><code>EXCHANGE_RATE_API_KEY</code></td><td>Chiave API per le quotazioni di cambio</td></tr>
+      <tr><td><code>HUGGINGFACEHUB_API_TOKEN</code></td><td>Token di accesso a Hugging Face Hub</td></tr>
+      <tr><td><code>PINECONE_API_KEY</code></td><td>Chiave API di Pinecone (base vettoriale)</td></tr>
+      <tr><td><code>PINECONE_ENVIRONMENT</code></td><td>Regione/ambiente di Pinecone</td></tr>
+      <tr><td><code>PINECONE_INDEX_NAME</code></td><td>Nome dell'indice vettoriale in Pinecone</td></tr>
+      <tr><td><code>PINECONE_NAMESPACE</code></td><td>Namespace della knowledge base</td></tr>
+      <tr><td><code>PINECONE_GLOBAL_NAMESPACE</code></td><td>Namespace globale della knowledge base</td></tr>
+      <tr><td><code>MONGO_URI</code></td><td>Stringa di connessione completa di MongoDB</td></tr>
+      <tr><td><code>MONGO_USER</code></td><td>Utente di MongoDB</td></tr>
+      <tr><td><code>MONGO_PASSWORD</code></td><td>Password di MongoDB</td></tr>
+      <tr><td><code>MONGO_HOST</code></td><td>Host di MongoDB</td></tr>
+      <tr><td><code>MONGO_PORT</code></td><td>Porta di MongoDB</td></tr>
+      <tr><td><code>NOSQL_BACKEND</code></td><td>Backend NoSQL utilizzato (<code>local</code> o remoto)</td></tr>
+      <tr><td><code>SUPABASE_URL</code></td><td>URL del progetto Supabase</td></tr>
+      <tr><td><code>SUPABASE_SECRET_KEY</code></td><td>Chiave segreta di servizio di Supabase</td></tr>
+      <tr><td><code>SUPABASE_DATABASE_URL</code></td><td>Stringa di connessione del database Postgres di Supabase</td></tr>
+      <tr><td><code>SUPABASE_PROJECT_NAME</code></td><td>Nome del progetto Supabase</td></tr>
+      <tr><td><code>SUPABASE_PROJECT_HOST</code></td><td>Host del progetto Supabase</td></tr>
+      <tr><td><code>SUPABASE_DATABASE_PASSWORD</code></td><td>Password del database Supabase</td></tr>
+      <tr><td><code>SHOW_INFO_LOGS</code></td><td>Mostra i log informativi (<code>true</code>/<code>false</code>)</td></tr>
+      <tr><td><code>SHOW_METADATA</code></td><td>Mostra i metadati nelle risposte (<code>true</code>/<code>false</code>)</td></tr>
+      <tr><td><code>FORMAT_METADATA</code></td><td>Formatta i metadati mostrati (<code>true</code>/<code>false</code>)</td></tr>
+      <tr><td><code>SAVE_LOGS</code></td><td>Salva i log di esecuzione (<code>true</code>/<code>false</code>)</td></tr>
+      <tr><td><code>SAVE_MONGO</code></td><td>Salva i dati di esecuzione in MongoDB (<code>true</code>/<code>false</code>)</td></tr>
+      <tr><td><code>LOCAL</code></td><td>Flag per l'esecuzione locale (<code>true</code>/<code>false</code>)</td></tr>
+    </tbody>
+  </table></div>
+  <details>
+    <summary>Vedi il modello completo del .env</summary>
+    <div class="code"><div class="code-head"><span class="code-title">.env</span><button class="copy" type="button"></button></div><div class="code-body"><pre data-lang="env"><code><span class="t-c"># BetterAI</span>
+<span class="t-f">BETTERAI_API_KEY</span>=********************
+
+<span class="t-c"># LLM's</span>
+<span class="t-f">OPENAI_API_KEY</span>=********************
+<span class="t-f">OPENAI_EMBEDDING_MODEL</span>=text-embedding-3-large
+
+<span class="t-f">GEMINI_API_KEY</span>=********************
+<span class="t-f">GROQ_API_KEY</span>=********************
+<span class="t-f">ANTHROPIC_API_KEY</span>=********************
+
+<span class="t-c"># Tools</span>
+<span class="t-f">TAVILY_API_KEY</span>=********************
+<span class="t-f">FAL_API_KEY</span>=********************
+<span class="t-f">EXCHANGE_RATE_API_KEY</span>=********************
+<span class="t-f">HUGGINGFACEHUB_API_TOKEN</span>=********************
+
+<span class="t-c"># Database</span>
+
+<span class="t-c"># Pinecone</span>
+<span class="t-f">PINECONE_API_KEY</span>=********************
+<span class="t-f">PINECONE_ENVIRONMENT</span>=us-east-1
+<span class="t-f">PINECONE_INDEX_NAME</span>=backai-vectorstore
+<span class="t-f">PINECONE_NAMESPACE</span>=knowledge_base
+<span class="t-f">PINECONE_GLOBAL_NAMESPACE</span>=global_knowledge_base
+
+<span class="t-c"># MongoDB</span>
+<span class="t-f">MONGO_URI</span>=********************
+<span class="t-f">MONGO_USER</span>=********************
+<span class="t-f">MONGO_PASSWORD</span>=********************
+<span class="t-f">MONGO_HOST</span>=********************
+<span class="t-f">MONGO_PORT</span>=********************
+
+<span class="t-f">NOSQL_BACKEND</span>=local
+
+<span class="t-c"># Supabase</span>
+<span class="t-f">SUPABASE_URL</span>=********************
+<span class="t-f">SUPABASE_SECRET_KEY</span>=********************
+<span class="t-f">SUPABASE_DATABASE_URL</span>=********************
+<span class="t-f">SUPABASE_PROJECT_NAME</span>=better-ai-bucket-storage
+<span class="t-f">SUPABASE_PROJECT_HOST</span>=********************
+<span class="t-f">SUPABASE_DATABASE_PASSWORD</span>=********************
+
+<span class="t-c"># Application Tracing Rules</span>
+<span class="t-f">SHOW_INFO_LOGS</span>=false
+<span class="t-f">SHOW_METADATA</span>=false
+<span class="t-f">FORMAT_METADATA</span>=false
+<span class="t-f">SAVE_LOGS</span>=false
+<span class="t-f">SAVE_MONGO</span>=false
+
+<span class="t-f">LOCAL</span>=false</code></pre></div></div>
+  </details>
+
+  <h2 id="6-esegui-l-applicazione"><a class="anchor" href="#6-esegui-l-applicazione" aria-label="Link para esta seção">#</a>6. Esegui l'applicazione</h2>
+  <p>Il progetto espone <strong>due servizi indipendenti</strong>, che possono essere eseguiti separatamente o in parallelo (in terminali distinti):</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Servizio</th><th>Comando</th><th>Porta</th><th>Quando usarlo</th></tr></thead>
+    <tbody>
+      <tr><td>API (FastAPI)</td><td><code>uvicorn web_services:app --reload</code></td><td><code>8000</code></td><td>Consumo programmatico dei moduli di IA via HTTP</td></tr>
+      <tr><td>Interfaccia (Streamlit)</td><td><code>streamlit run web_app.py</code></td><td><code>8501</code></td><td>Uso visuale delle applicazioni (Acquarello, Content Generator)</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout" data-kind="info"><p><strong>Prerequisiti:</strong> ambiente virtuale attivato (passo 3), dipendenze installate (passo 4) e file <code>.env</code> configurato (passo 5).</p></div>
+
+  <h3 id="6-1-api-fastapi-uvicorn"><a class="anchor" href="#6-1-api-fastapi-uvicorn" aria-label="Link para esta seção">#</a>6.1. API (FastAPI + Uvicorn)</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">uvicorn</span> web_services:app <span class="t-n">--reload</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>Il flag <code>--reload</code> riavvia il server automaticamente a ogni modifica del codice — consigliato solo in sviluppo.</p>
+  <div class="code plain"><div class="code-body"><pre data-lang=""><code>INFO:     Will watch for changes in these directories: ['C:\\Users\\user_name\\better-ai']
+INFO:     Uvicorn running on http://localhost:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [24960] using StatReload
+INFO:     Router included: /agents
+INFO:     Router included: /davinci
+INFO:     Router included: /deep-research
+INFO:     Router included: /parse-content
+INFO:     Router included: /vector-store
+INFO:     Started server process [4748]
+INFO:     Waiting for application startup.
+INFO:
+
+    ╔═══════════════════════════════════════════════════════════════════════╗
+
+        ██████╗ ███████╗████████╗████████╗███████╗██████╗      █████╗ ██╗ ✦
+        ██╔══██╗██╔════╝╚══██╔══╝╚══██╔══╝██╔════╝██╔══██╗    ██╔══██╗██║
+        ██████╔╝█████╗     ██║      ██║   █████╗  ██████╔╝    ███████║██║
+        ██╔══██╗██╔══╝     ██║      ██║   ██╔══╝  ██╔══██╗    ██╔══██║██║
+        ██████╔╝███████╗   ██║      ██║   ███████╗██║  ██║    ██║  ██║██║
+        ╚═════╝ ╚══════╝   ╚═╝      ╚═╝   ╚══════╝╚═╝  ╚═╝    ╚═╝  ╚═╝╚═╝
+
+    ╚═══════════════════════════════════════════════════════════════════════╝
+
+                        ✦ Where intelligence finds purpose. ✦
+
+INFO:     BetterAI Web Service Network initialized successfully at 2026-08-17 08:55:20.
+INFO:     Version: 1.0.0
+INFO:     API_DOMAIN: http://localhost:8000
+INFO:     Health check available at: http://localhost:8000/health
+INFO:     Documentation available at: http://localhost:8000/docs
+INFO:     Application startup complete.</code></pre><button class="copy floating" type="button"></button></div></div>
+  <p><strong>Indirizzi disponibili</strong></p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Risorsa</th><th>URL</th></tr></thead>
+    <tbody>
+      <tr><td>Base URL</td><td><a href="http://localhost:8000">http://localhost:8000</a></td></tr>
+      <tr><td>Health check</td><td><a href="http://localhost:8000/health">http://localhost:8000/health</a></td></tr>
+      <tr><td>Documentazione interattiva (Swagger UI)</td><td><a href="http://localhost:8000/docs">http://localhost:8000/docs</a></td></tr>
+    </tbody>
+  </table></div>
+  <p><strong>Convalida l'avvio</strong></p>
+  <p>Conferma che l'API abbia risposto correttamente prima di proseguire:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">curl</span> <span class="t-n">-X</span> GET <span class="t-s">&quot;http://localhost:8000/health&quot;</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <p><strong>Endpoint principali</strong></p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Endpoint</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>GET /health</code></td><td>Verifica della disponibilità del servizio</td></tr>
+      <tr><td><code>GET /health-authorization</code></td><td>Verifica della disponibilità con autenticazione</td></tr>
+      <tr><td><code>POST /deep-research/context-builder</code></td><td>Costruzione del contesto a partire da una ricerca approfondita</td></tr>
+      <tr><td><code>POST /parse-content/document-parse</code></td><td>Estrazione e strutturazione del contenuto dei documenti</td></tr>
+      <tr><td><code>POST /davinci/image-generation</code></td><td>Generazione di immagini</td></tr>
+    </tbody>
+  </table></div>
+  <p>Ogni risposta segue un formato standardizzato con <code>job_id</code>, <code>status</code>, <code>result</code> e metriche del tempo di esecuzione. I parametri e gli esempi completi di request/response si trovano in <a href="../api/web-service-network-api/use.html">Web Service Network - API.ipynb</a>.</p>
+
+  <h3 id="6-2-interfaccia-streamlit"><a class="anchor" href="#6-2-interfaccia-streamlit" aria-label="Link para esta seção">#</a>6.2. Interfaccia Streamlit</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">streamlit</span> run web_app.py</code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>L'applicazione sarà disponibile su <a href="http://localhost:8501">http://localhost:8501</a>, con le seguenti pagine:</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Applicazione</th><th>URL</th><th>Documentazione</th></tr></thead>
+    <tbody>
+      <tr><td>Acquarello</td><td><a href="http://localhost:8501/acquarello">http://localhost:8501/acquarello</a></td><td><a href="../streamlit-applications/acquarello.html">Acquarello.ipynb</a></td></tr>
+      <tr><td>Content Generator</td><td><a href="http://localhost:8501/content_generator">http://localhost:8501/content_generator</a></td><td><a href="../streamlit-applications/content-generator.html">Content Generator.ipynb</a></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="6-3-risoluzione-dei-problemi"><a class="anchor" href="#6-3-risoluzione-dei-problemi" aria-label="Link para esta seção">#</a>6.3. Risoluzione dei problemi</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Sintomo</th><th>Causa probabile</th><th>Cosa fare</th></tr></thead>
+    <tbody>
+      <tr><td><code>ModuleNotFoundError</code> all'avvio</td><td>Ambiente virtuale non attivato o dipendenze mancanti</td><td>Riattiva il <code>.venv</code> (passo 3) ed esegui <code>uv sync</code> (passo 4)</td></tr>
+      <tr><td>Errore di autenticazione nei provider di IA</td><td>Chiavi mancanti o non valide nel <code>.env</code></td><td>Rivedi il passo 5 e conferma i valori delle chiavi</td></tr>
+      <tr><td>Errore di connessione a MongoDB/Supabase/Pinecone</td><td>Credenziali o host errati nel <code>.env</code></td><td>Verifica le variabili del database e la connettività di rete</td></tr>
+      <tr><td>Porta già in uso</td><td>Un'altra istanza del servizio è attiva</td><td>Termina il processo precedente o usa un'altra porta (<code>--port</code>)</td></tr>
+    </tbody>
+  </table></div>
+  <p>Se l'ambiente virtuale diventa inconsistente, ricrealo da zero:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">deactivate</span>
+<span class="t-f">Remove-Item</span> <span class="t-n">-Recurse</span> <span class="t-n">-Force</span> .\.venv
+<span class="t-f">python</span> <span class="t-n">-m</span> venv .venv</code></pre><button class="copy floating" type="button"></button></div></div></div>
+        <div class="feedback"></div>
+        <nav class="pager" aria-label="Pagine vicine"><a class="pager-link prev" href="../../../pages/it/getting-started/index.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Precedente</small><span>Introduction: panoramica</span></div></a><a class="pager-link next" href="../../../pages/it/getting-started/dependences.html"><div><small>Successiva</small><span>Dependences</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="In questa pagina"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="../../../pages/it/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+          <p>Where intelligence finds purpose.</p>
+          <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>Repository su GitHub</a>
+        </div>
+        <div class="foot-col"><h2>Documentazione</h2><a href="../../../pages/it/getting-started/index.html">Introduction</a><a href="../../../pages/it/agents/index.html">Agents</a><a href="../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../pages/it/api/index.html">API</a><a href="../../../pages/it/modules/index.html">Modules</a><a href="../../../pages/it/internal-source-code/index.html">Internal Services</a></div>
+        <div class="foot-col"><h2>Risorse</h2><a href="../../../pages/it/getting-started/quickstart.html">Quickstart</a><a href="../../../pages/it/getting-started/licence.html">Licence</a><a href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener">Codice sorgente</a><a href="https://github.com/enzoschitini/better-ai/issues" target="_blank" rel="noopener">Segnala un problema</a></div>
+        <div class="foot-col"><h2>Creatore</h2><div class="foot-me"><img src="../../../assets/img/profile.jpg" alt="" width="44" height="44"><div><strong>Enzo Schitini</strong><span>Data Scientist &amp; AI Engineer</span></div></div><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/enzoschitini" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 BetterAI &middot; Licenza MIT</span>
+        <span>Creato da <a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Enzo Schitini</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Cerca nella documentazione">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Cerca pagine e sezioni" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Risultati"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>naviga</span></span>
+    <span><kbd>Enter</kbd><span>apri</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "it", "root": "../../../", "index": "../../../search-it.json", "alt": {"pt": "pages/pt/getting-started/quickstart.html", "it": "pages/it/getting-started/quickstart.html", "en": "pages/en/getting-started/quickstart.html"}, "i": {"noResults": "Nessun risultato per “%s”. Prova con il nome di un modulo, come “Pinecone”."}};</script>
+<script src="../../../_design-system/js/ds.js?v=9a5e2954"></script>
+<script src="../../../_design-system/js/docs.js?v=6f602c0a"></script>
+</body>
+</html>

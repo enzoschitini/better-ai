@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Storage Menager | BetterAI Docs</title>
+<meta name="description" content="Questa è una documentazione dettagliata e didattica per il modulo di integrazione con Supabase Storage. Il codice è stato progettato seguendo i principi della Programmazione Orientata agli Oggetti (OOP) per facilitare la manutenzione e il riuso delle connessioni.">
+<link rel="canonical" href="pages/it/internal-source-code/storage/supabase/storage-menager.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../../../../_design-system/css/tokens.css?v=7f43b250">
+<link rel="stylesheet" href="../../../../../_design-system/css/base.css?v=4a698b89">
+<link rel="stylesheet" href="../../../../../_design-system/css/layout.css?v=503e806e">
+<link rel="stylesheet" href="../../../../../_design-system/css/content.css?v=cfc5f8ef">
+<link rel="stylesheet" href="../../../../../_design-system/css/search.css?v=1ecf3252">
+<link rel="stylesheet" href="../../../../../_design-system/css/responsive.css?v=6efeec66">
+</head>
+<body>
+<a class="skip" href="#main">Vai al contenuto</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Creato da Enzo Schitini. Ti invito a connetterti con me su LinkedIn.</a></span>
+    <button type="button" aria-label="Chiudi avviso"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../../pages/it/index.html">
+        <img src="../../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Cerca nella documentazione">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Cerca...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="../../../../../pages/it/getting-started/quickstart.html">Quickstart<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Lingua"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>IT</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="false"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="true"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="false"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Cambia tema chiaro o scuro"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Aree della documentazione"><a class="tab" href="../../../../../pages/it/index.html">Panoramica</a><a class="tab" href="../../../../../pages/it/getting-started/index.html">Introduction</a><a class="tab" href="../../../../../pages/it/agents/index.html">Agents</a><a class="tab" href="../../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../../pages/it/api/index.html">API</a><a class="tab" href="../../../../../pages/it/modules/index.html">Modules</a><a class="tab" href="../../../../../pages/it/internal-source-code/index.html" aria-current="page">Internal Services</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Internal Services</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Storage Menager</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Navigazione della documentazione">
+    <nav class="side"><div class="side-areas"><a href="../../../../../pages/it/index.html">Panoramica</a><a href="../../../../../pages/it/getting-started/index.html">Introduction</a><a href="../../../../../pages/it/agents/index.html">Agents</a><a href="../../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../../pages/it/api/index.html">API</a><a href="../../../../../pages/it/modules/index.html">Modules</a><a href="../../../../../pages/it/internal-source-code/index.html" aria-current="page">Internal Services</a></div><a class="side-link" href="../../../../../pages/it/internal-source-code/index.html"><span>Panoramica</span></a><div class="side-group"><p class="side-title">Application Tracing</p><ul><li><a class="side-link" href="../../../../../pages/it/internal-source-code/application-tracing/logger-engine.html"><span>Logger Engine</span></a></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/application-tracing/payload-builder.html"><span>Payload Builder</span></a></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/application-tracing/tracing-core.html"><span>Tracing Core</span></a></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/application-tracing/use.html"><span>Use</span></a></li></ul></div><div class="side-group"><p class="side-title">Database</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>No SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/it/internal-source-code/database/no-sql/local-manage.html"><span>Local Manage</span></a></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/database/no-sql/mongo-manager.html"><span>Mongo Manager</span></a></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/database/no-sql/router.html"><span>Router</span></a></li></ul></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/it/internal-source-code/database/sql/supabase-database.html"><span>Supabase Database</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Storage</p><ul><li><a class="side-link" href="../../../../../pages/it/internal-source-code/storage/storage-menage-repository.html"><span>Storage Menage Repository</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="true"><span>Supabase</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub"><li><a class="side-link" href="../../../../../pages/it/internal-source-code/storage/supabase/storage-menager.html" aria-current="page"><span>Storage Menager</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Token Calculate</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Exchange Rate</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/it/internal-source-code/token-calculate/exchange-rate/bcb-exchange-rate-service.html"><span>BCB Exchange Rate Service</span></a></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/token-calculate/exchange-rate/exchange-rate-service.html"><span>Exchange Rate Service</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/token-calculate/model-pricing.html"><span>Model Pricing</span></a></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/token-calculate/token-counter.html"><span>Token Counter</span></a></li></ul></div><div class="side-group"><p class="side-title">Utils</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Load Request File</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/it/internal-source-code/utils/load-request-file/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/utils/load-request-file/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/utils/loader-files.html"><span>Loader Files</span></a></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/utils/unique-id-factory.html"><span>Unique ID Factory</span></a></li></ul></div><div class="side-group"><p class="side-title">Vector Store</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Local Dynamic Embedding</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/it/internal-source-code/vector-store/local-dynamic-embedding/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/vector-store/local-dynamic-embedding/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/vector-store/pinecone-client.html"><span>Pinecone Client</span></a></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/vector-store/pinecone-embedding.html"><span>Pinecone Embedding</span></a></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/vector-store/pinecone-retriever.html"><span>Pinecone Retriever</span></a></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/vector-store/retrieval-manager.html"><span>Retrieval Manager</span></a></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Storage / Supabase</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Storage Menager</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copia pagina</span></button>
+            </div>
+          </div>
+          <p class="lead">Questa è una documentazione dettagliata e didattica per il modulo di integrazione con Supabase Storage. Il codice è stato progettato seguendo i principi della Programmazione Orientata agli Oggetti (OOP) per facilitare la manutenzione e il riuso delle connessioni.</p>
+          <details class="toc-inline"><summary>In questa pagina</summary><ul></ul></details>
+        </header>
+        <div class="prose"><h2 id="1-panoramica"><a class="anchor" href="#1-panoramica" aria-label="Link para esta seção">#</a>1. Panoramica</h2>
+  <p>Il modulo è composto da due classi principali che lavorano insieme per astrarre la complessità dell'API di Supabase. L'idea centrale è separare la <strong>configurazione della connessione</strong> (infrastruttura) dalla <strong>manipolazione dei file</strong> (logica di business).</p>
+  <ul>
+    <li><strong>SupabaseConnection</strong>: Garantisce che la connessione con il server venga stabilita correttamente usando le variabili d'ambiente.</li>
+    <li><strong>StorageManager</strong>: Offre un'interfaccia semplificata per inviare, eliminare e recuperare i link dei file all'interno di uno specifico "bucket" (secchio/repository).</li>
+  </ul>
+
+  <h2 id="2-flusso-di-esecuzione"><a class="anchor" href="#2-flusso-di-esecuzione" aria-label="Link para esta seção">#</a>2. Flusso di Esecuzione</h2>
+  <p>Per capire come interagiscono le classi, immagina il seguente flusso:</p>
+  <ol>
+    <li><strong>Caricamento dell'Ambiente</strong>: Lo script legge il file <code>.env</code> per acquisire l'URL e la Chiave del progetto.</li>
+    <li><strong>Istanziazione</strong>: Quando crei uno <code>StorageManager</code>, questo verifica se hai già una connessione. In caso contrario, chiama automaticamente la <code>SupabaseConnection</code>.</li>
+    <li><strong>Accesso al Bucket</strong>: Il client si connette allo specifico bucket indicato all'inizio.</li>
+    <li><strong>Operazione</strong>: Chiami metodi semplici (come <code>upload_bytes</code>), e la classe gestisce la logica interna della libreria ufficiale di Supabase.</li>
+  </ol>
+
+  <h2 id="3-riepilogo-dei-metodi"><a class="anchor" href="#3-riepilogo-dei-metodi" aria-label="Link para esta seção">#</a>3. Riepilogo dei Metodi</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Metodo</th><th>Classe</th><th>Breve Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td><code>SupabaseConnection</code></td><td>Valida le credenziali e crea il client <code>Client</code>.</td></tr>
+      <tr><td><code>__init__</code></td><td><code>StorageManager</code></td><td>Definisce il bucket di destinazione e garantisce l'esistenza di un client attivo.</td></tr>
+      <tr><td><code>upload_bytes</code></td><td><code>StorageManager</code></td><td>Esegue l'upload di file binari (bytes) nello storage.</td></tr>
+      <tr><td><code>delete_files</code></td><td><code>StorageManager</code></td><td>Rimuove una lista di file in una sola volta.</td></tr>
+      <tr><td><code>get_url</code></td><td><code>StorageManager</code></td><td>Genera il link pubblico per visualizzare il file.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="4-architettura-e-insight"><a class="anchor" href="#4-architettura-e-insight" aria-label="Link para esta seção">#</a>4. Architettura e Insight</h2>
+  <ul>
+    <li><strong>Singleton Implicito vs Dependency Injection</strong>: La classe <code>StorageManager</code> accetta un <code>supabase_client</code> opzionale. Questo è ottimo per i test unitari o per riutilizzare una connessione già aperta in un'altra parte del sistema, evitando connessioni multiple non necessarie.</li>
+    <li><strong>Gestione degli errori</strong>: L'uso di blocchi <code>try/except</code> nei metodi di scrittura (upload/delete) evita che l'applicazione si blocchi in caso di errore di rete o di permessi.</li>
+    <li><strong>Sicurezza</strong>: L'uso di <code>dotenv</code> e <code>os.getenv</code> garantisce che le chiavi sensibili non siano mai esposte direttamente nel codice sorgente.</li>
+  </ul>
+
+  <h2 id="5-documentazione-dettagliata"><a class="anchor" href="#5-documentazione-dettagliata" aria-label="Link para esta seção">#</a>5. Documentazione Dettagliata</h2>
+
+  <h3 id="classe-supabaseconnection"><a class="anchor" href="#classe-supabaseconnection" aria-label="Link para esta seção">#</a>Classe SupabaseConnection</h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Responsabile di centralizzare l'autenticazione. Funge da "fabbrica" di connessioni, garantendo che il client di Supabase sia correttamente configurato prima di qualsiasi operazione.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li>Non ha argomenti diretti (utilizza le variabili d'ambiente <code>.env</code>).</li>
+  </ul>
+  <p><strong>Metodi</strong></p>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <ul>
+    <li><strong>Descrizione</strong>: Individua le variabili <code>SUPABASE_URL</code> e <code>SUPABASE_SECRET_KEY</code>, validandole prima di istanziare il client ufficiale.</li>
+    <li><strong>Argomenti</strong>: Nessuno.</li>
+    <li><strong>Valori di ritorno</strong>: Nessuno (inizializza l'attributo <code>self.client</code>).</li>
+    <li><strong>Raises</strong>: <code>ValueError</code> se le chiavi non vengono trovate nell'ambiente.</li>
+    <li><strong>Esempi</strong>:</li>
+  </ul>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>conn = <span class="t-f">SupabaseConnection</span>()
+client = conn.client <span class="t-c"># Cliente pronto para uso</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="classe-storagemanager"><a class="anchor" href="#classe-storagemanager" aria-label="Link para esta seção">#</a>Classe StorageManager</h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Incapsula la logica di manipolazione dei bucket. È la classe "front-end" che lo sviluppatore userà per la maggior parte del tempo per gestire i file.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>bucket_name</code> (str): Il nome della cartella/repository in Supabase.</li>
+    <li><code>supabase_client</code> (Optional[Client]): Un'istanza esistente del client Supabase.</li>
+  </ul>
+  <p><strong>Metodi</strong></p>
+
+  <h3 id="1-upload-bytes"><a class="anchor" href="#1-upload-bytes" aria-label="Link para esta seção">#</a>1. <code>upload_bytes</code></h3>
+  <ul>
+    <li><strong>Descrizione</strong>: Invia un file allo storage a partire da dati in memoria (bytes).</li>
+    <li><strong>Argomenti</strong>:
+      <ul>
+        <li><code>path_on_storage</code> (str): Percorso/nome del file nella destinazione.</li>
+        <li><code>file_bytes</code> (bytes): Il contenuto binario del file.</li>
+        <li><code>content_type</code> (str): Tipo di file (es: <code>image/png</code>).</li>
+      </ul>
+    </li>
+    <li><strong>Valori di ritorno</strong>: <code>dict</code> con i metadati dell'upload o <code>None</code> in caso di errore.</li>
+    <li><strong>Raises</strong>: Cattura le eccezioni generiche e le stampa sulla console.</li>
+    <li><strong>Esempi</strong>:</li>
+  </ul>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>manager.<span class="t-f">upload_bytes</span>(<span class="t-s">&quot;docs/perfil.jpg&quot;</span>, foto_bytes, <span class="t-s">&quot;image/jpeg&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-delete-files"><a class="anchor" href="#2-delete-files" aria-label="Link para esta seção">#</a>2. <code>delete_files</code></h3>
+  <ul>
+    <li><strong>Descrizione</strong>: Elimina uno o più file contemporaneamente.</li>
+    <li><strong>Argomenti</strong>:
+      <ul>
+        <li><code>paths</code> (List[str]): Lista di percorsi (es: <code>["img1.jpg", "img2.jpg"]</code>).</li>
+      </ul>
+    </li>
+    <li><strong>Valori di ritorno</strong>: <code>dict</code> con lo stato della rimozione o <code>None</code>.</li>
+    <li><strong>Raises</strong>: Cattura le eccezioni di rete o di permessi.</li>
+    <li><strong>Esempi</strong>:</li>
+  </ul>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>manager.<span class="t-f">delete_files</span>([<span class="t-s">&quot;velho/foto1.png&quot;</span>, <span class="t-s">&quot;velho/foto2.png&quot;</span>])</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-get-url"><a class="anchor" href="#3-get-url" aria-label="Link para esta seção">#</a>3. <code>get_url</code></h3>
+  <ul>
+    <li><strong>Descrizione</strong>: Ottiene l'indirizzo web pubblico per accedere a un file.</li>
+    <li><strong>Argomenti</strong>:
+      <ul>
+        <li><code>path</code> (str): Percorso del file all'interno del bucket.</li>
+      </ul>
+    </li>
+    <li><strong>Valori di ritorno</strong>: <code>str</code> contenente l'URL completo.</li>
+    <li><strong>Raises</strong>: <code>ValueError</code> se il percorso è vuoto.</li>
+    <li><strong>Esempi</strong>:</li>
+  </ul>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>link = manager.<span class="t-f">get_url</span>(<span class="t-s">&quot;produtos/celular.png&quot;</span>)
+<span class="t-f">print</span>(link) <span class="t-c"># https://xyz.supabase.co/storage/v1/object/public/...</span></code></pre><button class="copy floating" type="button"></button></div></div></div>
+        <div class="feedback"></div>
+        <p class="source">Fonte: <code>src/storage/supabase/storage_menager.py</code></p>
+        <nav class="pager" aria-label="Pagine vicine"><a class="pager-link prev" href="../../../../../pages/it/internal-source-code/storage/storage-menage-repository.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Precedente</small><span>Storage Menage Repository</span></div></a><a class="pager-link next" href="../../../../../pages/it/internal-source-code/token-calculate/exchange-rate/bcb-exchange-rate-service.html"><div><small>Successiva</small><span>BCB Exchange Rate Service</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="In questa pagina"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="../../../../../pages/it/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+          <p>Where intelligence finds purpose.</p>
+          <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>Repository su GitHub</a>
+        </div>
+        <div class="foot-col"><h2>Documentazione</h2><a href="../../../../../pages/it/getting-started/index.html">Introduction</a><a href="../../../../../pages/it/agents/index.html">Agents</a><a href="../../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../../pages/it/api/index.html">API</a><a href="../../../../../pages/it/modules/index.html">Modules</a><a href="../../../../../pages/it/internal-source-code/index.html">Internal Services</a></div>
+        <div class="foot-col"><h2>Risorse</h2><a href="../../../../../pages/it/getting-started/quickstart.html">Quickstart</a><a href="../../../../../pages/it/getting-started/licence.html">Licence</a><a href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener">Codice sorgente</a><a href="https://github.com/enzoschitini/better-ai/issues" target="_blank" rel="noopener">Segnala un problema</a></div>
+        <div class="foot-col"><h2>Creatore</h2><div class="foot-me"><img src="../../../../../assets/img/profile.jpg" alt="" width="44" height="44"><div><strong>Enzo Schitini</strong><span>Data Scientist &amp; AI Engineer</span></div></div><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/enzoschitini" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 BetterAI &middot; Licenza MIT</span>
+        <span>Creato da <a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Enzo Schitini</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Cerca nella documentazione">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Cerca pagine e sezioni" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Risultati"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>naviga</span></span>
+    <span><kbd>Enter</kbd><span>apri</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "it", "root": "../../../../../", "index": "../../../../../search-it.json", "alt": {"pt": "pages/pt/internal-source-code/storage/supabase/storage-menager.html", "it": "pages/it/internal-source-code/storage/supabase/storage-menager.html", "en": "pages/en/internal-source-code/storage/supabase/storage-menager.html"}, "i": {"noResults": "Nessun risultato per “%s”. Prova con il nome di un modulo, come “Pinecone”."}};</script>
+<script src="../../../../../_design-system/js/ds.js?v=9a5e2954"></script>
+<script src="../../../../../_design-system/js/docs.js?v=6f602c0a"></script>
+</body>
+</html>

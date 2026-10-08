@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documentation | BetterAI Docs</title>
+<meta name="description" content="A classe ContentParsingAgent é um agente dedicado a processar dados estruturados de entrada e saída, gerando automaticamente esquemas Pydantic para validação desses dados, além de orquestrar a execução de modelos de linguagem configuráveis para processar o conteúdo conforme instruções fornecidas.">
+<link rel="canonical" href="pages/pt/modules/content-parse/content-parsing-agent/documentation.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../../../../_design-system/css/tokens.css?v=7f43b250">
+<link rel="stylesheet" href="../../../../../_design-system/css/base.css?v=4a698b89">
+<link rel="stylesheet" href="../../../../../_design-system/css/layout.css?v=503e806e">
+<link rel="stylesheet" href="../../../../../_design-system/css/content.css?v=cfc5f8ef">
+<link rel="stylesheet" href="../../../../../_design-system/css/search.css?v=1ecf3252">
+<link rel="stylesheet" href="../../../../../_design-system/css/responsive.css?v=6efeec66">
+</head>
+<body>
+<a class="skip" href="#main">Ir para o conteúdo</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Criado por Enzo Schitini. Convido você a se conectar comigo no LinkedIn.</a></span>
+    <button type="button" aria-label="Fechar aviso"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../../pages/pt/index.html">
+        <img src="../../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Buscar na documentação">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Buscar...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="../../../../../pages/pt/getting-started/quickstart.html">Quickstart<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Idioma"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>PT</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="true"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="false"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="false"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Alternar tema claro e escuro"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Áreas da documentação"><a class="tab" href="../../../../../pages/pt/index.html">Visão geral</a><a class="tab" href="../../../../../pages/pt/getting-started/index.html">Introduction</a><a class="tab" href="../../../../../pages/pt/agents/index.html">Agents</a><a class="tab" href="../../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../../pages/pt/api/index.html">API</a><a class="tab" href="../../../../../pages/pt/modules/index.html" aria-current="page">Modules</a><a class="tab" href="../../../../../pages/pt/internal-source-code/index.html">Internal Services</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Modules</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Documentation</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Navegação da documentação">
+    <nav class="side"><div class="side-areas"><a href="../../../../../pages/pt/index.html">Visão geral</a><a href="../../../../../pages/pt/getting-started/index.html">Introduction</a><a href="../../../../../pages/pt/agents/index.html">Agents</a><a href="../../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../../pages/pt/api/index.html">API</a><a href="../../../../../pages/pt/modules/index.html" aria-current="page">Modules</a><a href="../../../../../pages/pt/internal-source-code/index.html">Internal Services</a></div><a class="side-link" href="../../../../../pages/pt/modules/index.html"><span>Visão geral</span></a><div class="side-group"><p class="side-title">Content Parse</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="true"><span>Content Parsing Agent</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub"><li><a class="side-link" href="../../../../../pages/pt/modules/content-parse/content-parsing-agent/documentation.html" aria-current="page"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/content-parse/content-parsing-agent/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/pt/modules/content-parse/document-parse.html"><span>Document Parse</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/content-parse/field-metadata-parser.html"><span>Field Metadata Parser</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/content-parse/generate-pydantic-schema.html"><span>Generate Pydantic Schema</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/content-parse/json-to-pydantic.html"><span>Json To Pydantic</span></a></li></ul></div><div class="side-group"><p class="side-title">Deep Research</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Tavily Research</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/modules/deep-research/tavily-research/context-builder.html"><span>Context Builder</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/deep-research/tavily-research/tavily-core.html"><span>Tavily Core</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Image Generation</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Cost Calculator</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/cost-calculator/cost-calculator.html"><span>Cost Calculator</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/cost-calculator/pricing-table.html"><span>Pricing Table</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/image-generator-service.html"><span>Image Generator Service</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/module.html"><span>Module</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Utils</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/utils/config.html"><span>Config</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/utils/gemini-client.html"><span>Gemini Client</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/utils/params-validator.html"><span>Params Validator</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/utils/payload-builder.html"><span>Payload Builder</span></a></li></ul></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Content Parse / Content Parsing Agent</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Documentation</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copiar página</span></button>
+            </div>
+          </div>
+          <p class="lead">A classe ContentParsingAgent é um agente dedicado a processar dados estruturados de entrada e saída, gerando automaticamente esquemas Pydantic para validação desses dados, além de orquestrar a execução de modelos de linguagem configuráveis para processar o conteúdo conforme instruções fornecidas.</p>
+          <details class="toc-inline"><summary>Nesta página</summary><ul></ul></details>
+        </header>
+        <div class="prose"><h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão Geral</h2>
+  <p>A classe <code>ContentParsingAgent</code> é um agente dedicado a processar dados estruturados de entrada e saída, gerando automaticamente esquemas Pydantic para validação desses dados, além de orquestrar a execução de modelos de linguagem configuráveis para processar o conteúdo conforme instruções fornecidas. Isso permite uma integração fluida entre os dados utilizados e os modelos de inteligência artificial, garantindo consistência e validação rigorosa das informações.</p>
+  <p>Ela resolve o problema de converter dados brutos em modelos tipados e validados, além de facilitar a execução e o controle de modelos de linguagem com diferentes provedores, como OpenAI ou Groq, sem que o usuário precise lidar diretamente com detalhes internos desses modelos. Na prática, a classe pode ser usada para automatizar pipelines de processamento de dados textuais e geração de conteúdos baseados em regras e configurações definidas, tudo garantindo confiabilidade e rastreabilidade do fluxo.</p>
+
+  <h2 id="fluxo-de-execucao"><a class="anchor" href="#fluxo-de-execucao" aria-label="Link para esta seção">#</a>Fluxo de Execução</h2>
+  <ol>
+    <li><strong>Inicialização</strong>: O usuário cria uma instância do <code>ContentParsingAgent</code> passando os dados de entrada e saída como dicionários, além de configurações opcionais.</li>
+    <li><strong>Geração de Schemas</strong>: Internamente, a classe gera esquemas Pydantic dos dados de input, output e configuração para garantir a validade e tipagem dessas informações.</li>
+    <li><strong>Configuração do Modelo</strong>: Baseado na configuração, a classe seleciona um modelo de linguagem adequado (ex: OpenAI ou Groq).</li>
+    <li><strong>Execução do Agente</strong>: Com as instruções, descrição, configurações e schemas prontos, o agente executa o modelo sobre os dados de entrada.</li>
+    <li><strong>Formatação da Resposta</strong>: A resposta bruta do modelo é formatada para um dicionário estruturado contendo o conteúdo processado, metadados do modelo e métricas da execução, facilitando seu uso ou publicação.</li>
+  </ol>
+
+  <h2 id="tabela-de-metodos-da-classe"><a class="anchor" href="#tabela-de-metodos-da-classe" aria-label="Link para esta seção">#</a>Tabela de Métodos da Classe</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Método</th><th>Descrição</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Inicializa o agente com dados de entrada, saída e config.</td></tr>
+      <tr><td><code>get_schemas</code></td><td>Retorna os schemas Pydantic gerados para input, output e configuração.</td></tr>
+      <tr><td><code>run_agent</code></td><td>Executa o agente com o modelo configurado e retorna a resposta gerada.</td></tr>
+      <tr><td><code>format_response</code></td><td>Formata a resposta bruta do agente em um dicionário estruturado.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="variaveis-de-ambiente"><a class="anchor" href="#variaveis-de-ambiente" aria-label="Link para esta seção">#</a>Variáveis de Ambiente</h2>
+  <ul>
+    <li>Nenhuma variável de ambiente específica é diretamente mencionada, porém a presença do <code>load_dotenv()</code> sugere que variáveis podem ser carregadas externamente para configurações (exemplo: chaves de API).</li>
+  </ul>
+
+  <h2 id="pontos-importantes-da-arquitetura-e-insights"><a class="anchor" href="#pontos-importantes-da-arquitetura-e-insights" aria-label="Link para esta seção">#</a>Pontos Importantes da Arquitetura e Insights</h2>
+  <ul>
+    <li><strong>Geração Automática de Schemas</strong>: Utiliza classes específicas (<code>JsonToPydantic</code>, <code>GeneratePydanticSchema</code>) para converter dados genéricos em modelos Pydantic, garantindo validação e tipagem consistente ao longo do fluxo.</li>
+    <li><strong>Flexibilidade no Modelo de Linguagem</strong>: Adota uma abordagem de fábrica simples para retornar diferentes implementações de modelo (OpenAI, Groq) com base nas configurações, o que facilita a extensão para outros provedores.</li>
+    <li><strong>Encapsulamento e Tratamento de Erros</strong>: Centraliza operações críticas (geração de schemas, execução do agente, formatação de resposta) com blocos try-except que convertem erros variados em exceções específicas, aumentando a robustez.</li>
+    <li><strong>Dependências Externas</strong>: Interage com classes externas para modelos (<code>Agent</code>, <code>OpenAIResponses</code>, <code>Groq</code>) e parsing (<code>Config</code>, <code>JsonToPydantic</code>, <code>GeneratePydanticSchema</code>), delegando responsabilidades e mantendo a classe focada no fluxo principal.</li>
+  </ul>
+
+  <h2 id="descricao-da-classe-e-metodos"><a class="anchor" href="#descricao-da-classe-e-metodos" aria-label="Link para esta seção">#</a>Descrição da Classe e Métodos</h2>
+
+  <h2 id="classe-contentparsingagent"><a class="anchor" href="#classe-contentparsingagent" aria-label="Link para esta seção">#</a>Classe <code>ContentParsingAgent</code></h2>
+
+  <h3 id="descricao"><a class="anchor" href="#descricao" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Esta classe funciona como um agente intermediário para processar dados estruturados, convertendo-os em modelos Pydantic validados e utilizando modelos de linguagem configurados para processar dados textuais conforme instruções específicas. Ela oferece um pipeline integrado que cobre desde a validação até a execução e formatação da resposta, facilitando integrações com sistemas de IA de maneira segura e modular.</p>
+
+  <h3 id="argumentos-do-construtor"><a class="anchor" href="#argumentos-do-construtor" aria-label="Link para esta seção">#</a>Argumentos do Construtor</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argumento</th><th>Tipo</th><th>Descrição</th><th>Valor Padrão</th></tr></thead>
+    <tbody>
+      <tr><td>input_data</td><td>Dict[str, Any]</td><td>Dicionário com os dados de entrada a serem validados e processados.</td><td>Nenhum</td></tr>
+      <tr><td>output_data</td><td>Dict[str, Any]</td><td>Dicionário com os dados de saída esperados após o processamento.</td><td>Nenhum</td></tr>
+      <tr><td>config_data</td><td>Optional[Dict[str,Any]]</td><td>Dicionário opcional contendo configurações do agente.</td><td>None</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Inicializa o agente com os dados de entrada, saída e configurações opcionais, e imediatamente gera os schemas Pydantic necessários para validar esses dados.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>input_data</code> (Dict[str, Any]): Dados de entrada a serem processados.</li>
+    <li><code>output_data</code> (Dict[str, Any]): Dados de saída desejados.</li>
+    <li><code>config_data</code> (Optional[Dict[str, Any]]): Configurações adicionais para o agente (opcional).</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>Não retorna valor.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nenhum explicitamente, mas pode levantar RuntimeError durante a geração dos schemas.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>agent = <span class="t-f">ContentParsingAgent</span>(
+    input_data={<span class="t-s">&quot;nome&quot;</span>: <span class="t-s">&quot;João&quot;</span>, <span class="t-s">&quot;idade&quot;</span>: <span class="t-n">30</span>},
+    output_data={<span class="t-s">&quot;resultado&quot;</span>: <span class="t-s">&quot;string&quot;</span>},
+    config_data={<span class="t-s">&quot;model_provider&quot;</span>: <span class="t-s">&quot;openai&quot;</span>, <span class="t-s">&quot;model_id&quot;</span>: <span class="t-s">&quot;gpt-4&quot;</span>}
+)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-get-schemas"><a class="anchor" href="#2-get-schemas" aria-label="Link para esta seção">#</a>2. <code>get_schemas</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Retorna os schemas Pydantic correspondentes aos dados de entrada, saída e configuração gerados pelo agente.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>dict: Dicionário com as chaves <code>"input"</code>, <code>"output"</code> e <code>"config"</code> contendo seus respectivos schemas.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>schemas = agent.<span class="t-f">get_schemas</span>()
+<span class="t-f">print</span>(schemas[<span class="t-s">&quot;input&quot;</span>])
+<span class="t-f">print</span>(schemas[<span class="t-s">&quot;output&quot;</span>])
+<span class="t-f">print</span>(schemas[<span class="t-s">&quot;config&quot;</span>])</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-run-agent"><a class="anchor" href="#3-run-agent" aria-label="Link para esta seção">#</a>3. <code>run_agent</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Executa o agente utilizando o modelo configurado e as instruções definidas para processar os dados de entrada, retornando a resposta gerada.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>Objeto da resposta gerada pelo modelo, geralmente contendo conteúdo e métricas.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>RuntimeError: Caso ocorra um erro durante a execução do modelo.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>response = agent.<span class="t-f">run_agent</span>()
+<span class="t-f">print</span>(response)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-format-response"><a class="anchor" href="#4-format-response" aria-label="Link para esta seção">#</a>4. <code>format_response</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Formata a resposta bruta obtida na execução do agente em um dicionário estruturado, extraindo o conteúdo útil, metadados do modelo e estatísticas da execução para fácil consumo.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>raw_response</code>: Objeto de resposta bruta retornado pelo agente.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>dict: Dicionário estruturado com as chaves <code>"content"</code> (dados processados) e <code>"metadata"</code> (informações do modelo e métricas).</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>RuntimeError: Caso ocorra erro durante a formatação da resposta.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>formatted = agent.<span class="t-f">format_response</span>(response)
+<span class="t-f">print</span>(formatted[<span class="t-s">&quot;content&quot;</span>])
+<span class="t-f">print</span>(formatted[<span class="t-s">&quot;metadata&quot;</span>][<span class="t-s">&quot;model&quot;</span>])
+<span class="t-f">print</span>(formatted[<span class="t-s">&quot;metadata&quot;</span>][<span class="t-s">&quot;tokens&quot;</span>])
+
+<span class="t-c"># python -m src.content_parse.content_parsing_agent</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>Essa documentação apresenta o <code>ContentParsingAgent</code> de maneira didática e estruturada para facilitar o entendimento e uso por desenvolvedores, evidenciando os pontos chave do seu funcionamento e exemplos práticos de aplicação.</p></div>
+        <div class="feedback"></div>
+        <p class="source">Fonte: <code>src/content_parse/content_parsing_agent.py</code></p>
+        <nav class="pager" aria-label="Páginas vizinhas"><a class="pager-link prev" href="../../../../../pages/pt/modules/index.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Anterior</small><span>Modules: visão geral</span></div></a><a class="pager-link next" href="../../../../../pages/pt/modules/content-parse/content-parsing-agent/use.html"><div><small>Próxima</small><span>Use</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="Nesta página"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="../../../../../pages/pt/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+          <p>Where intelligence finds purpose.</p>
+          <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>Repositório no GitHub</a>
+        </div>
+        <div class="foot-col"><h2>Documentação</h2><a href="../../../../../pages/pt/getting-started/index.html">Introduction</a><a href="../../../../../pages/pt/agents/index.html">Agents</a><a href="../../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../../pages/pt/api/index.html">API</a><a href="../../../../../pages/pt/modules/index.html">Modules</a><a href="../../../../../pages/pt/internal-source-code/index.html">Internal Services</a></div>
+        <div class="foot-col"><h2>Recursos</h2><a href="../../../../../pages/pt/getting-started/quickstart.html">Quickstart</a><a href="../../../../../pages/pt/getting-started/licence.html">Licence</a><a href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener">Código-fonte</a><a href="https://github.com/enzoschitini/better-ai/issues" target="_blank" rel="noopener">Reportar um problema</a></div>
+        <div class="foot-col"><h2>Criador</h2><div class="foot-me"><img src="../../../../../assets/img/profile.jpg" alt="" width="44" height="44"><div><strong>Enzo Schitini</strong><span>Data Scientist &amp; AI Engineer</span></div></div><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/enzoschitini" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 BetterAI &middot; Licença MIT</span>
+        <span>Criado por <a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Enzo Schitini</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Buscar na documentação">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Buscar páginas e seções" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Resultados"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>navegar</span></span>
+    <span><kbd>Enter</kbd><span>abrir</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "pt", "root": "../../../../../", "index": "../../../../../search-pt.json", "alt": {"pt": "pages/pt/modules/content-parse/content-parsing-agent/documentation.html", "it": "pages/it/modules/content-parse/content-parsing-agent/documentation.html", "en": "pages/en/modules/content-parse/content-parsing-agent/documentation.html"}, "i": {"noResults": "Nada encontrado para “%s”. Tente o nome de um módulo, como “Pinecone”."}};</script>
+<script src="../../../../../_design-system/js/ds.js?v=9a5e2954"></script>
+<script src="../../../../../_design-system/js/docs.js?v=6f602c0a"></script>
+</body>
+</html>

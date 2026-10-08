@@ -1,0 +1,422 @@
+{
+  "site": {
+    "name": "BetterAI Docs",
+    "brand": "BetterAI",
+    "brandSub": "Docs",
+    "tagline": "Where intelligence finds purpose.",
+    "baseUrl": ""
+  },
+  "links": {
+    "github": "https://github.com/enzoschitini/better-ai",
+    "repo": "",
+    "linkedin": "https://www.linkedin.com/in/enzoschitini",
+    "profile": "https://github.com/enzoschitini"
+  },
+  "sources": {
+    "agents/agno-agents/agnoui": "src/dev_tools/AgnoUI.bat",
+    "agents/agno-agents/utils/database": "src/agents/utils/database.py",
+    "agents/agno-agents/utils/model-gateway": "src/agents/utils/model_gateway.py",
+    "internal-source-code/application-tracing/use": "src/tracing/tracing_test.py",
+    "streamlit-applications/acquarello": "src/web_applications/applications/acquarello.py",
+    "streamlit-applications/content-generator": "src/web_applications/applications/content_generator.py"
+  },
+  "footer": {
+    "resources": [
+      {
+        "page": "getting-started/quickstart"
+      },
+      {
+        "page": "getting-started/licence"
+      },
+      {
+        "label": {
+          "pt": "Código-fonte",
+          "it": "Codice sorgente",
+          "en": "Source code"
+        },
+        "url": "https://github.com/enzoschitini/better-ai"
+      },
+      {
+        "label": {
+          "pt": "Reportar um problema",
+          "it": "Segnala un problema",
+          "en": "Report an issue"
+        },
+        "url": "https://github.com/enzoschitini/better-ai/issues"
+      }
+    ],
+    "platform": [
+      "api/web-service-network-api/use",
+      "streamlit-applications/acquarello",
+      "streamlit-applications/content-generator"
+    ]
+  },
+  "areas": [
+    {
+      "dir": "Getting Started",
+      "icon": "bolt",
+      "about": {
+        "pt": "Instalação, dependências e licença. Do clone ao primeiro request.",
+        "it": "Installazione, dipendenze e licenza. Dal clone alla prima richiesta.",
+        "en": "Installation, dependencies and license. From clone to first request."
+      },
+      "loose": {
+        "pt": "Primeiros passos",
+        "it": "Primi passi",
+        "en": "First steps"
+      },
+      "title": "Introduction"
+    },
+    {
+      "dir": "Agents",
+      "icon": "bolt",
+      "about": {
+        "pt": "Os agentes da plataforma construídos sobre o Agno: utilitários de banco de dados e gateway de modelos, e o AgnoUI.",
+        "it": "Gli agenti della piattaforma costruiti su Agno: utilità per database e gateway dei modelli, e AgnoUI.",
+        "en": "The platform’s agents built on Agno: database and model gateway utilities, and AgnoUI."
+      },
+      "loose": {
+        "pt": "Geral",
+        "it": "Generale",
+        "en": "General"
+      }
+    },
+    {
+      "dir": "Streamlit Applications",
+      "icon": "layout",
+      "about": {
+        "pt": "Acquarello e Content Generator, as duas aplicações que rodam sobre a plataforma.",
+        "it": "Acquarello e Content Generator, le due applicazioni che girano sulla piattaforma.",
+        "en": "Acquarello and Content Generator, the two applications that run on the platform."
+      },
+      "loose": {
+        "pt": "Aplicações",
+        "it": "Applicazioni",
+        "en": "Applications"
+      }
+    },
+    {
+      "dir": "API",
+      "icon": "globe",
+      "about": {
+        "pt": "A Web Service Network: a API FastAPI em produção, suas rotas e o compilador de CURL.",
+        "it": "La Web Service Network: l’API FastAPI in produzione, le sue rotte e il compilatore di CURL.",
+        "en": "The Web Service Network: the FastAPI service in production, its routes and the CURL compiler."
+      },
+      "loose": {
+        "pt": "Ferramentas",
+        "it": "Strumenti",
+        "en": "Tools"
+      }
+    },
+    {
+      "dir": "Modules",
+      "icon": "boxes",
+      "about": {
+        "pt": "Os serviços de IA da plataforma: agentes, parsing de documentos, deep research e imagens.",
+        "it": "I servizi di IA della piattaforma: agenti, parsing di documenti, deep research e immagini.",
+        "en": "The platform’s AI services: agents, document parsing, deep research and images."
+      },
+      "loose": {
+        "pt": "Geral",
+        "it": "Generale",
+        "en": "General"
+      }
+    },
+    {
+      "dir": "Internal Source Code",
+      "icon": "code",
+      "about": {
+        "pt": "A infraestrutura por baixo: tracing, bancos de dados, storage, base vetorial, embeddings, custo por token e utilitários.",
+        "it": "L’infrastruttura sottostante: tracing, database, storage, base vettoriale, embedding, costo per token e utilità.",
+        "en": "The infrastructure underneath: tracing, databases, storage, vector store, embeddings, token cost and utilities."
+      },
+      "loose": {
+        "pt": "Geral",
+        "it": "Generale",
+        "en": "General"
+      },
+      "title": "Internal Services"
+    }
+  ],
+  "ui": {
+    "pt": {
+      "skip": "Ir para o conteúdo",
+      "searchLbl": "Buscar na documentação",
+      "searchPh": "Buscar...",
+      "dlgPh": "Buscar páginas e seções",
+      "results": "Resultados",
+      "navigate": "navegar",
+      "open": "abrir",
+      "themeLbl": "Alternar tema claro e escuro",
+      "langLbl": "Idioma",
+      "tabsLbl": "Áreas da documentação",
+      "navLbl": "Navegação da documentação",
+      "onThisPage": "Nesta página",
+      "footRes": "Recursos",
+      "footPlat": "Plataforma",
+      "overview": "Visão geral",
+      "areas": "Áreas",
+      "popular": "Mais consultadas",
+      "suggestions": "Sugestões",
+      "areaOverview": "Visão geral da área",
+      "overviewOf": "%s: visão geral",
+      "badge": "vazio",
+      "copyPage": "Copiar página",
+      "helpful": "Esta página foi útil?",
+      "edit": "Editar no GitHub",
+      "source": "Fonte:",
+      "prev": "Anterior",
+      "next": "Próxima",
+      "pagerLbl": "Páginas vizinhas",
+      "noResults": "Nada encontrado para “%s”. Tente o nome de um módulo, como “Pinecone”.",
+      "untranslated": "Esta página ainda não foi traduzida. Você está vendo a versão em português.",
+      "homeTitle": "Documentação da BetterAI",
+      "homeLead": "Múltiplos modelos de IA, um único back-end unificado.",
+      "sections": "Seções",
+      "more": " e mais %d",
+      "blankCard": "Página ainda em branco.",
+      "pageCard": "Página da documentação.",
+      "emptyTitle": "Esta página ainda está em branco",
+      "emptySourceBlank": "O arquivo <code>%s</code> existe, mas não tem conteúdo. Quando ele for preenchido, o texto aparece aqui.",
+      "emptyPending": "O conteúdo de <code>%s</code> ainda não foi publicado nesta documentação.",
+      "goTo": "Ir para %s",
+      "banner": "Criado por Enzo Schitini. Convido você a se conectar comigo no LinkedIn.",
+      "closeBanner": "Fechar aviso",
+      "footDocs": "Documentação",
+      "footCreator": "Criador",
+      "footRepo": "Repositório no GitHub",
+      "footLicense": "Licença MIT",
+      "footMadeBy": "Criado por"
+    },
+    "it": {
+      "skip": "Vai al contenuto",
+      "searchLbl": "Cerca nella documentazione",
+      "searchPh": "Cerca...",
+      "dlgPh": "Cerca pagine e sezioni",
+      "results": "Risultati",
+      "navigate": "naviga",
+      "open": "apri",
+      "themeLbl": "Cambia tema chiaro o scuro",
+      "langLbl": "Lingua",
+      "tabsLbl": "Aree della documentazione",
+      "navLbl": "Navigazione della documentazione",
+      "onThisPage": "In questa pagina",
+      "footRes": "Risorse",
+      "footPlat": "Piattaforma",
+      "overview": "Panoramica",
+      "areas": "Aree",
+      "popular": "Più consultate",
+      "suggestions": "Suggerimenti",
+      "areaOverview": "Panoramica dell’area",
+      "overviewOf": "%s: panoramica",
+      "badge": "vuota",
+      "copyPage": "Copia pagina",
+      "helpful": "Questa pagina ti è stata utile?",
+      "edit": "Modifica su GitHub",
+      "source": "Fonte:",
+      "prev": "Precedente",
+      "next": "Successiva",
+      "pagerLbl": "Pagine vicine",
+      "noResults": "Nessun risultato per “%s”. Prova con il nome di un modulo, come “Pinecone”.",
+      "untranslated": "Questa pagina non è ancora stata tradotta. Stai vedendo la versione in portoghese.",
+      "homeTitle": "Documentazione di BetterAI",
+      "homeLead": "Più modelli di IA, un unico back-end unificato.",
+      "sections": "Sezioni",
+      "more": " e altre %d",
+      "blankCard": "Pagina ancora vuota.",
+      "pageCard": "Pagina della documentazione.",
+      "emptyTitle": "Questa pagina è ancora vuota",
+      "emptySourceBlank": "Il file <code>%s</code> esiste, ma non ha contenuto. Quando verrà compilato, il testo comparirà qui.",
+      "emptyPending": "Il contenuto di <code>%s</code> non è ancora stato pubblicato in questa documentazione.",
+      "goTo": "Vai a %s",
+      "banner": "Creato da Enzo Schitini. Ti invito a connetterti con me su LinkedIn.",
+      "closeBanner": "Chiudi avviso",
+      "footDocs": "Documentazione",
+      "footCreator": "Creatore",
+      "footRepo": "Repository su GitHub",
+      "footLicense": "Licenza MIT",
+      "footMadeBy": "Creato da"
+    },
+    "en": {
+      "skip": "Skip to content",
+      "searchLbl": "Search the documentation",
+      "searchPh": "Search...",
+      "dlgPh": "Search pages and sections",
+      "results": "Results",
+      "navigate": "navigate",
+      "open": "open",
+      "themeLbl": "Toggle light and dark theme",
+      "langLbl": "Language",
+      "tabsLbl": "Documentation areas",
+      "navLbl": "Documentation navigation",
+      "onThisPage": "On this page",
+      "footRes": "Resources",
+      "footPlat": "Platform",
+      "overview": "Overview",
+      "areas": "Areas",
+      "popular": "Most visited",
+      "suggestions": "Suggestions",
+      "areaOverview": "Area overview",
+      "overviewOf": "%s: overview",
+      "badge": "empty",
+      "copyPage": "Copy page",
+      "helpful": "Was this page helpful?",
+      "edit": "Edit on GitHub",
+      "source": "Source:",
+      "prev": "Previous",
+      "next": "Next",
+      "pagerLbl": "Neighboring pages",
+      "noResults": "Nothing found for “%s”. Try a module name, such as “Pinecone”.",
+      "untranslated": "This page has not been translated yet. You are seeing the Portuguese version.",
+      "homeTitle": "BetterAI documentation",
+      "homeLead": "Multiple AI models, one unified back end.",
+      "sections": "Sections",
+      "more": " and %d more",
+      "blankCard": "Page still blank.",
+      "pageCard": "Documentation page.",
+      "emptyTitle": "This page is still blank",
+      "emptySourceBlank": "The file <code>%s</code> exists but has no content. Once it is filled in, the text will show up here.",
+      "emptyPending": "The content of <code>%s</code> has not been published to this documentation yet.",
+      "goTo": "Go to %s",
+      "banner": "Created by Enzo Schitini. I invite you to connect with me on LinkedIn.",
+      "closeBanner": "Dismiss notice",
+      "footDocs": "Documentation",
+      "footCreator": "Creator",
+      "footRepo": "Repository on GitHub",
+      "footLicense": "MIT License",
+      "footMadeBy": "Created by"
+    }
+  },
+  "home": {
+    "pt": {
+      "p1": "A BetterAI é um back-end de IA modular, escrito em Python, que coloca OpenAI, Anthropic, Google Gemini e Groq atrás da mesma interface. Sobre essa base rodam o FastAPI e o Streamlit, que expõem a plataforma em produção.",
+      "p2": "A plataforma faz hoje o seguinte:",
+      "li": [
+        "<strong>Parsing de documentos:</strong> converte <code>txt</code>, <code>md</code>, <code>pdf</code> e <code>docx</code> em dados estruturados, conforme o schema de quem chama.",
+        "<strong>Deep research:</strong> busca web profunda via Tavily, devolvida como contexto em markdown.",
+        "<strong>Base vetorial:</strong> ingestão, busca semântica e exclusão no Pinecone.",
+        "<strong>Embeddings locais:</strong> chunking e recuperação em FAISS na memória.",
+        "<strong>Geração de imagens:</strong> o serviço Da-Vinci gera e edita imagens a partir de texto e de referências visuais."
+      ],
+      "startH": "Comece por aqui",
+      "quick": {
+        "id": "getting-started/quickstart",
+        "icon": "bolt",
+        "text": "Do clone ao primeiro GET /health, em seis passos."
+      },
+      "tip": "Com a API no ar, a documentação interativa dos endpoints fica em <code>http://localhost:8000/docs</code>.",
+      "exploreH": "Explore por área",
+      "popular": [
+        {
+          "id": "getting-started/quickstart",
+          "icon": "bolt",
+          "text": "Instalação, dependências e licença."
+        },
+        {
+          "id": "streamlit-applications",
+          "icon": "layout",
+          "text": "Aplicações Streamlit da plataforma."
+        },
+        {
+          "id": "api",
+          "icon": "globe",
+          "text": "Autenticação, formato das respostas e endpoints."
+        }
+      ],
+      "creator": {
+        "h": "Criador do projeto",
+        "text": "Nos projetos de IA que desenvolvi, percebi uma lacuna clara: faltavam pilares sólidos para sustentar um Backend-AI confiável. Foi isso que me motivou a criar uma arquitetura eficiente, segura e escalável, pensada para empresas. Minha missão é simplificar o complexo e entregar estrutura real para quem quer inovar com IA.</p><p>Se o projeto é útil para você, vale conversar comigo.",
+        "role": "Data Scientist & Data Analyst • AI Engineer @stefanini • SQL",
+        "gh": "Perfil e projetos de código aberto.",
+        "short": "Data Scientist & AI Engineer"
+      }
+    },
+    "it": {
+      "p1": "BetterAI è un back-end di IA modulare, scritto in Python, che mette OpenAI, Anthropic, Google Gemini e Groq dietro la stessa interfaccia. Su questa base girano FastAPI e Streamlit, che espongono la piattaforma in produzione.",
+      "p2": "Oggi la piattaforma fa quanto segue:",
+      "li": [
+        "<strong>Parsing di documenti:</strong> converte file <code>txt</code>, <code>md</code>, <code>pdf</code> e <code>docx</code> in dati strutturati, secondo lo schema di chi chiama.",
+        "<strong>Deep research:</strong> ricerca web approfondita tramite Tavily, restituita come contesto in markdown.",
+        "<strong>Base vettoriale:</strong> ingestione, ricerca semantica ed eliminazione su Pinecone.",
+        "<strong>Embedding locali:</strong> chunking e recupero in memoria con FAISS.",
+        "<strong>Generazione di immagini:</strong> il servizio Da-Vinci genera e modifica immagini a partire da testo e riferimenti visivi."
+      ],
+      "startH": "Parti da qui",
+      "quick": {
+        "id": "getting-started/quickstart",
+        "icon": "bolt",
+        "text": "Dal clone al primo GET /health, in sei passi."
+      },
+      "tip": "Con l’API attiva, la documentazione interattiva degli endpoint si trova su <code>http://localhost:8000/docs</code>.",
+      "exploreH": "Esplora per area",
+      "popular": [
+        {
+          "id": "getting-started/quickstart",
+          "icon": "bolt",
+          "text": "Installazione, dipendenze e licenza."
+        },
+        {
+          "id": "streamlit-applications",
+          "icon": "layout",
+          "text": "Le applicazioni Streamlit della piattaforma."
+        },
+        {
+          "id": "api",
+          "icon": "globe",
+          "text": "Autenticazione, formato delle risposte ed endpoint."
+        }
+      ],
+      "creator": {
+        "h": "Creatore del progetto",
+        "text": "Nei progetti di IA che ho sviluppato ho notato una lacuna evidente: mancavano pilastri solidi per sostenere un Backend-AI affidabile. È questo che mi ha spinto a creare un’architettura efficiente, sicura e scalabile, pensata per le aziende. La mia missione è semplificare il complesso e offrire una struttura reale a chi vuole innovare con l’IA.</p><p>Se il progetto ti è utile, parliamone.",
+        "role": "Data Scientist & Data Analyst • AI Engineer @stefanini • SQL",
+        "gh": "Profilo e progetti open source.",
+        "short": "Data Scientist & AI Engineer"
+      }
+    },
+    "en": {
+      "p1": "BetterAI is a modular AI back end written in Python that puts OpenAI, Anthropic, Google Gemini and Groq behind the same interface. On top of it run FastAPI and Streamlit, which expose the platform in production.",
+      "p2": "Today the platform does the following:",
+      "li": [
+        "<strong>Document parsing:</strong> turns <code>txt</code>, <code>md</code>, <code>pdf</code> and <code>docx</code> files into structured data, following the caller’s schema.",
+        "<strong>Deep research:</strong> deep web search through Tavily, returned as markdown context.",
+        "<strong>Vector store:</strong> ingestion, semantic search and deletion on Pinecone.",
+        "<strong>Local embeddings:</strong> in-memory chunking and retrieval with FAISS.",
+        "<strong>Image generation:</strong> the Da-Vinci service generates and edits images from text and visual references."
+      ],
+      "startH": "Start here",
+      "quick": {
+        "id": "getting-started/quickstart",
+        "icon": "bolt",
+        "text": "From clone to your first GET /health, in six steps."
+      },
+      "tip": "With the API running, the interactive endpoint docs are at <code>http://localhost:8000/docs</code>.",
+      "exploreH": "Explore by area",
+      "popular": [
+        {
+          "id": "getting-started/quickstart",
+          "icon": "bolt",
+          "text": "Installation, dependencies and license."
+        },
+        {
+          "id": "streamlit-applications",
+          "icon": "layout",
+          "text": "The platform’s Streamlit applications."
+        },
+        {
+          "id": "api",
+          "icon": "globe",
+          "text": "Authentication, response format and endpoints."
+        }
+      ],
+      "creator": {
+        "h": "Project creator",
+        "text": "In the AI projects I have built, I noticed a clear gap: there were no solid pillars to support a reliable AI backend. That is what motivated me to create an efficient, secure and scalable architecture designed for companies. My mission is to simplify the complex and deliver real structure to those who want to innovate with AI.</p><p>If the project is useful to you, let’s talk.",
+        "role": "Data Scientist & Data Analyst • AI Engineer @stefanini • SQL",
+        "gh": "Profile and open source projects.",
+        "short": "Data Scientist & AI Engineer"
+      }
+    }
+  }
+}

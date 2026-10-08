@@ -1,0 +1,72 @@
+<page data-lead="Calcola in dollari il costo di una generazione a partire dai token usati, dal numero di immagini e dalla tabella dei prezzi del modello.">
+  <div class="callout" data-kind="note"><p><strong>Fonte:</strong> <code>src/image_generation/cost_calculator/cost_calculator.py</code>. Il notebook originale di questa pagina era vuoto; il contenuto è stato scritto a partire dal codice.</p></div>
+
+  <h2>Panoramica</h2>
+  <p>La classe <code>CostCalculator</code> riceve una tabella dei prezzi nel costruttore (per impostazione predefinita, <code>PricingTable</code>; vedi <a href="@/modules/image-generation/cost-calculator/pricing-table">Pricing Table</a>) e offre due metodi: <code>merge_cost_information</code> e <code>calculate</code>.</p>
+
+  <h2>merge_cost_information</h2>
+  <p>Somma <code>prompt_tokens</code>, <code>output_tokens</code> e <code>total_tokens</code> di una lista di record d'uso, usata quando una generazione fa più chiamate al modello.</p>
+  <div class="callout" data-kind="warn"><p><strong>Minimo di due record.</strong> Con una lista vuota o con meno di due elementi, il metodo solleva <code>ValueError</code> ("You must provide at least two cost_information objects."). <code>PayloadBuilder</code> lo chiama solo quando c'è più di un record.</p></div>
+
+  <h2>calculate</h2>
+  <table>
+    <thead><tr><th>Parametro</th><th>Tipo</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>model</code></td><td><code>str</code></td><td>Modello usato, cercato in <code>PricingTable</code>.</td></tr>
+      <tr><td><code>prompt_tokens</code></td><td><code>int</code></td><td>Token di input.</td></tr>
+      <tr><td><code>output_tokens</code></td><td><code>int</code></td><td>Token di output.</td></tr>
+      <tr><td><code>total_tokens</code></td><td><code>int</code></td><td>Totale dei token. Viene solo riportato nel risultato; non entra nel calcolo.</td></tr>
+      <tr><td><code>num_images</code></td><td><code>int</code></td><td>Numero di immagini (predefinito <code>0</code>).</td></tr>
+      <tr><td><code>cached_prompt_tokens</code></td><td><code>int</code></td><td>Token di input letti dalla cache (predefinito <code>0</code>).</td></tr>
+      <tr><td><code>cache_storage_tokens</code></td><td><code>int</code></td><td>Token mantenuti in cache (predefinito <code>0</code>).</td></tr>
+      <tr><td><code>cache_storage_hours</code></td><td><code>float</code></td><td>Ore di archiviazione in cache (predefinito <code>0.0</code>).</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Formule</h3>
+  <table>
+    <thead><tr><th>Voce</th><th>Calcolo</th></tr></thead>
+    <tbody>
+      <tr><td>Input</td><td><code>prompt_tokens / 1_000_000 * input_per_million_tokens</code></td></tr>
+      <tr><td>Output</td><td><code>output_tokens / 1_000_000 * output_per_million_tokens</code>, solo se il prezzo e i token sono diversi da zero</td></tr>
+      <tr><td>Immagini</td><td><code>num_images * image_price_per_unit</code>, solo se il prezzo e la quantità sono diversi da zero</td></tr>
+      <tr><td>Cache di input</td><td><code>cached_prompt_tokens / 1_000_000 * cache_input_per_million_tokens</code></td></tr>
+      <tr><td>Archiviazione della cache</td><td><code>cache_storage_tokens / 1_000_000 * cache_storage_per_million_tokens_per_hour * cache_storage_hours</code></td></tr>
+    </tbody>
+  </table>
+  <p>Il totale è la somma delle cinque voci.</p>
+
+  <h3>Valore di ritorno</h3>
+  <p>Un dizionario con i token ricevuti e i valori in dollari arrotondati a 6 cifre decimali:</p>
+  <pre data-lang="json"><code>
+{
+  "prompt_tokens": 1174,
+  "output_tokens": 2633,
+  "total_tokens": 3807,
+  "prompt_usd": 0.000352,
+  "output_usd": 0.0,
+  "images_usd": 0.078,
+  "total_usd": 0.078352
+}
+</code></pre>
+
+  <h2>Esempio d'uso</h2>
+  <pre data-lang="python"><code>
+from src.image_generation.cost_calculator.cost_calculator import CostCalculator
+
+calculator = CostCalculator()
+
+# Calcola il costo di due immagini generate con gemini-2.5-flash-image
+cost = calculator.calculate(
+    model="gemini-2.5-flash-image",
+    prompt_tokens=1174,
+    output_tokens=2633,
+    total_tokens=3807,
+    num_images=2,
+)
+print(cost["total_usd"])
+</code></pre>
+
+  <h2>Osservazioni</h2>
+  <div class="callout" data-kind="warn"><p><strong>Modello senza prezzo.</strong> Se il modello non è in <code>PricingTable</code>, <code>PricingTable.get</code> solleva <code>ValueError</code> ("Modelo sem precificação cadastrada") e la generazione fallisce durante la costruzione dei payload.</p></div>
+</page>

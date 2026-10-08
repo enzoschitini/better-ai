@@ -1,0 +1,201 @@
+<page data-lead="Módulo para gerar embeddings de texto localmente com uma API fluente (encadeável), troca dinâmica de provedor e recuperação por similaridade.">
+  <p>Módulo para gerar <em>embeddings</em> de texto localmente com uma <strong>API fluente</strong> (encadeável), troca dinâmica de provedor e recuperação por similaridade.</p>
+  <p>O fluxo típico é: <strong>configurar → processar texto → acessar chunks → recuperar por similaridade → exportar</strong>.</p>
+
+  <h2>Como executar</h2>
+  <p>O módulo usa <em>imports</em> relativos (<code>EmbeddingFactory</code>), então precisa ser rodado como módulo, com a flag <code>-m</code>:</p>
+  <pre data-lang="bash"><code>
+python -m src.embedding.modules.local_embedding
+</code></pre>
+  <p>Rodar o arquivo direto (<code>python arquivo.py</code>) quebra por causa do import relativo.</p>
+
+  <h2>Início rápido</h2>
+  <pre data-lang="python"><code>
+from src.embedding.modules.local_embedding.module import (
+    LocalDynamicEmbedding,
+    EmbeddingFactory,
+)
+
+# Monta o pipeline (encadeando as configurações)
+pipeline = (
+    LocalDynamicEmbedding()
+    .with_fake_embeddings(size=384)          # embeddings falsos p/ testes
+    .with_splitter(chunk_size=120, chunk_overlap=20)
+    .with_top_k(3)
+)
+
+# Processa um texto e recebe a quantidade de chunks gerados
+qtd = pipeline.process_text("seu texto...", metadata={"fonte": "exemplo"})
+
+# Recupera os trechos mais similares a uma consulta
+resultados = pipeline.retrieve("sua pergunta?", include_embedding=True)
+</code></pre>
+
+  <h2>Provedores disponíveis</h2>
+  <pre data-lang="python"><code>
+EmbeddingFactory.available()   # -> lista os provedores registrados
+</code></pre>
+  <p>Use para descobrir quais backends de embedding estão instalados/registrados no ambiente.</p>
+
+  <h2>Construindo o pipeline (API fluente)</h2>
+  <p>Cada método <code>with_*</code> retorna a própria instância, permitindo encadeamento. Se você <strong>não</strong> definir um provedor de embeddings, a classe cai no <code>fake</code> automaticamente.</p>
+  <table>
+    <thead><tr><th>Método</th><th>Efeito</th><th>Parâmetros</th></tr></thead>
+    <tbody>
+      <tr><td><code>.with_fake_embeddings(size=384)</code></td><td>Usa embeddings falsos (vetores de dimensão <code>size</code>) — ideal para testes sem dependências externas</td><td><code>size</code>: dimensão do vetor</td></tr>
+      <tr><td><code>.with_splitter(chunk_size, chunk_overlap)</code></td><td>Configura como o texto é dividido em chunks</td><td><code>chunk_size</code>: tamanho do chunk; <code>chunk_overlap</code>: sobreposição entre chunks</td></tr>
+      <tr><td><code>.with_top_k(k)</code></td><td>Define o número padrão de resultados retornados na recuperação</td><td><code>k</code>: quantidade de resultados</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Construtores de fábrica (troca de provedor em 1 linha)</h3>
+  <p>Para usar um provedor real, existem construtores alternativos, por exemplo:</p>
+  <pre data-lang="python"><code>
+pipeline_openai = LocalDynamicEmbedding.from_openai_embeddings(
+    model="text-embedding-3-large",
+    chunk_size=3000,
+    chunk_overlap=300,
+    top_k=5,
+)
+</code></pre>
+  <div class="callout" data-kind="info"><p>Requer as dependências do provedor (ex.: OpenAI) instaladas e configuradas.</p></div>
+
+  <h2>Processando texto</h2>
+  <pre data-lang="python"><code>
+qtd = pipeline.process_text(texto, metadata={"fonte": "apostila_energia"})
+</code></pre>
+  <ul>
+    <li><strong>Retorno:</strong> número de chunks gerados <strong>nesta chamada</strong> (<code>int</code>).</li>
+    <li><strong><code>metadata</code></strong> (opcional): dicionário anexado a cada chunk gerado a partir desse texto.</li>
+    <li>Pode ser chamado várias vezes; os chunks se acumulam.</li>
+  </ul>
+  <pre data-lang="python"><code>
+pipeline.total_chunks   # total acumulado de chunks em todas as chamadas
+</code></pre>
+
+  <h2>Acessando os chunks</h2>
+  <p><code>pipeline.chunks</code> é a lista de objetos chunk. Cada chunk expõe:</p>
+  <table>
+    <thead><tr><th>Atributo</th><th>Descrição</th></tr></thead>
+    <tbody>
+      <tr><td><code>chunk.index</code></td><td>Índice do chunk</td></tr>
+      <tr><td><code>chunk.content</code></td><td>Texto do chunk</td></tr>
+      <tr><td><code>chunk.length</code></td><td>Comprimento do texto</td></tr>
+      <tr><td><code>chunk.dim</code></td><td>Dimensão do vetor de embedding</td></tr>
+      <tr><td><code>chunk.metadata</code></td><td>Metadados associados</td></tr>
+      <tr><td><code>chunk.embedding</code></td><td>Vetor de embedding (lista de floats)</td></tr>
+    </tbody>
+  </table>
+  <p>Exemplo:</p>
+  <pre data-lang="python"><code>
+for chunk in pipeline.chunks:
+    preview = chunk.content[:60].replace("\n", " ")
+    print(f"[{chunk.index}] len={chunk.length} dim={chunk.dim} meta={chunk.metadata}")
+    print(f"     texto: {preview}...")
+    print(f"     embedding[:3]: {chunk.embedding[:3]}")
+</code></pre>
+
+  <h2>Recuperação por similaridade</h2>
+  <pre data-lang="python"><code>
+resultados = pipeline.retrieve("como gerar eletricidade a partir do vento?",
+                               include_embedding=True)
+</code></pre>
+  <ul>
+    <li><strong>Retorno:</strong> lista de dicionários ordenados por relevância. Cada item contém:
+      <ul>
+        <li><code>score</code> — pontuação de similaridade (<code>float</code>)</li>
+        <li><code>content</code> — texto do trecho recuperado</li>
+        <li><code>embedding</code> — vetor do trecho (somente se <code>include_embedding=True</code>)</li>
+      </ul>
+    </li>
+    <li>A quantidade de resultados segue o <code>top_k</code> configurado.</li>
+  </ul>
+  <pre data-lang="python"><code>
+for i, r in enumerate(pipeline.retrieve(consulta, include_embedding=True), 1):
+    print(f"#{i} score={r['score']:.4f} | dim={len(r['embedding'])}")
+    print(f"   {r['content'][:70]}...")
+</code></pre>
+
+  <h2>Exportando os chunks (pronto para JSON)</h2>
+  <pre data-lang="python"><code>
+dados = pipeline.get_chunks(include_embedding=False)
+</code></pre>
+  <ul>
+    <li><strong>Retorno:</strong> lista de dicionários serializáveis (ideal para <code>json.dumps</code>).</li>
+    <li>Use <code>include_embedding=False</code> para omitir os vetores e gerar uma saída enxuta.</li>
+  </ul>
+  <pre data-lang="python"><code>
+import json
+exemplo = pipeline.get_chunks(include_embedding=False)[0]
+print(json.dumps(exemplo, ensure_ascii=False, indent=2))
+</code></pre>
+
+  <h2>Exemplo completo</h2>
+  <pre data-lang="python"><code>
+from src.embedding.modules.local_embedding.module import (
+    LocalDynamicEmbedding, EmbeddingFactory,
+)
+import json
+
+print("Provedores disponíveis:", EmbeddingFactory.available())
+
+texto = (
+    "A energia solar é uma fonte renovável...\n\n"
+    "A energia eólica aproveita a força dos ventos...\n\n"
+    "Já os combustíveis fósseis são fontes não renováveis...\n\n"
+    "O uso de baterias é essencial para armazenar energia..."
+)
+
+# 1) Configuração (sem embeddings -> usa fake automaticamente)
+pipeline = (
+    LocalDynamicEmbedding()
+    .with_fake_embeddings(size=384)
+    .with_splitter(chunk_size=120, chunk_overlap=20)
+    .with_top_k(3)
+)
+
+# 2) Processamento
+qtd = pipeline.process_text(texto, metadata={"fonte": "apostila_energia"})
+print(f"Chunks gerados: {qtd} | total: {pipeline.total_chunks}")
+
+# 3) Inspeção dos chunks
+for chunk in pipeline.chunks:
+    print(f"[{chunk.index}] dim={chunk.dim} meta={chunk.metadata}")
+
+# 4) Recuperação
+for i, r in enumerate(pipeline.retrieve("energia do vento?", include_embedding=True), 1):
+    print(f"#{i} score={r['score']:.4f} -> {r['content'][:60]}...")
+
+# 5) Exportação JSON
+print(json.dumps(pipeline.get_chunks(include_embedding=False)[0],
+                 ensure_ascii=False, indent=2))
+</code></pre>
+
+  <h2>Referência rápida da API</h2>
+  <p><strong><code>EmbeddingFactory</code></strong></p>
+  <ul>
+    <li><code>EmbeddingFactory.available()</code> → lista de provedores</li>
+  </ul>
+  <p><strong><code>LocalDynamicEmbedding</code></strong></p>
+  <ul>
+    <li><code>LocalDynamicEmbedding()</code> → instância vazia (fallback: fake)</li>
+    <li><code>.with_fake_embeddings(size=384)</code> → <em>self</em></li>
+    <li><code>.with_splitter(chunk_size, chunk_overlap)</code> → <em>self</em></li>
+    <li><code>.with_top_k(k)</code> → <em>self</em></li>
+    <li><code>.from_openai_embeddings(model, chunk_size, chunk_overlap, top_k)</code> → nova instância (classmethod)</li>
+    <li><code>.process_text(texto, metadata=None)</code> → <code>int</code> (chunks gerados)</li>
+    <li><code>.total_chunks</code> → <code>int</code> (acumulado)</li>
+    <li><code>.chunks</code> → lista de objetos chunk (<code>.index</code>, <code>.content</code>, <code>.length</code>, <code>.dim</code>, <code>.metadata</code>, <code>.embedding</code>)</li>
+    <li><code>.retrieve(consulta, include_embedding=False)</code> → lista de dicts (<code>score</code>, <code>content</code>, [<code>embedding</code>])</li>
+    <li><code>.get_chunks(include_embedding=False)</code> → lista de dicts serializáveis</li>
+  </ul>
+
+  <h2>Observações</h2>
+  <ul>
+    <li>Sem provedor configurado, o pipeline usa <strong>fake embeddings</strong> — perfeito para testar o fluxo sem depender de APIs externas.</li>
+    <li>Trocar de provedor é uma única linha (via construtor de fábrica), sem mudar o restante do código.</li>
+    <li>Sempre execute como módulo (<code>python -m ...</code>) por causa dos imports relativos.</li>
+  </ul>
+
+  <div class="callout" data-kind="note"><p>Esta documentação descreve a <strong>API pública observável</strong> a partir do arquivo de demonstração. Detalhes internos de implementação (algoritmo de similaridade, formato exato do splitter, provedores registrados) dependem do código-fonte do módulo. Se quiser, me envie <code>module.py</code> e eu complemento com esses detalhes.</p></div>
+</page>

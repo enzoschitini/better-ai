@@ -1,0 +1,61 @@
+<page data-lead="Service that orchestrates image generation and editing with Gemini: builds the multimodal prompt, configures the generation, calls the model and parses the responses.">
+  <div class="callout" data-kind="note"><p><strong>Source:</strong> <code>src/image_generation/image_generator_service.py</code>. This page's original notebook was empty; the content was written from the code.</p></div>
+
+  <h2>Overview</h2>
+  <p>The <code>ImageGeneratorService</code> class covers four steps, in this order: building the parts (text and images), configuring the generation, calling the model and parsing the responses (images, text and usage metrics).</p>
+
+  <h2>Constructor</h2>
+  <table>
+    <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>client</code></td><td><code>genai.Client</code> (optional)</td><td>Gemini client already initialized. If <code>None</code>, a new one is created with <code>GeminiClient().get_client()</code>.</td></tr>
+      <tr><td><code>content_config</code></td><td><code>dict</code> (optional)</td><td>Overrides values of <code>DEFAULT_CONTENT_CONFIG</code> (model, <code>temperature</code>, <code>top_p</code>, <code>aspect_ratio</code>, <code>number_of_images</code>, etc.).</td></tr>
+    </tbody>
+  </table>
+  <p>The final configuration is the merge of <code>DEFAULT_CONTENT_CONFIG</code> with <code>content_config</code>: missing keys inherit the default value. Any failure during initialization raises <code>RuntimeError</code>.</p>
+
+  <h2>Methods</h2>
+  <h3>build_parts</h3>
+  <p>Builds the list of <code>types.Part</code> sent to Gemini. The text is made of <code>BASE_PROMPT</code>, followed by <code>[TASK]</code> with the <code>user_prompt</code> and, if <code>instructions</code> is set, by <code>[USER_CONTEXT]</code>. Each reference image in <code>images</code> is appended as a bytes part.</p>
+  <p>An empty <code>user_prompt</code>, or one that is not a <code>str</code>, raises an error (<code>ValueError</code>, re-raised as <code>RuntimeError</code>). The method also stores the prompt, the instructions and the image count in <code>self.text_input</code>, for later use in <code>parse_responses</code>.</p>
+
+  <h3>generate_config</h3>
+  <p>Returns a <code>types.GenerateContentConfig</code> with <code>temperature</code>, <code>top_p</code> and <code>max_output_tokens</code> from the configuration, <code>response_modalities</code> equal to <code>["IMAGE", "TEXT"]</code> and <code>ImageConfig</code> with the <code>aspect_ratio</code>.</p>
+
+  <h3>call_model</h3>
+  <p>Calls <code>client.models.generate_content</code> once for each requested image, with the same prompt, and returns the list of responses. The number of calls is <code>content_config["number_of_images"]</code>.</p>
+  <div class="callout" data-kind="warn"><p><strong>Cost and limits.</strong> The current Gemini SDK does not configure the number of images per call; this is why generating several images is done with several calls. Avoid high values of <code>number_of_images</code> to avoid exceeding rate limits or raising the cost.</p></div>
+
+  <h3>parse_responses</h3>
+  <p>Walks through the responses and aggregates the result into a single dictionary:</p>
+  <table>
+    <thead><tr><th>Key</th><th>Content</th></tr></thead>
+    <tbody>
+      <tr><td><code>text_input</code></td><td>Prompt, instructions and image count (only present after <code>build_parts</code>).</td></tr>
+      <tr><td><code>text_responses</code></td><td>List with the texts returned by the model.</td></tr>
+      <tr><td><code>images</code></td><td>List of dictionaries with <code>mime_type</code> and <code>data</code> (bytes).</td></tr>
+      <tr><td><code>generate_config</code></td><td>The final configuration used for the generation.</td></tr>
+      <tr><td><code>usage_metadata</code></td><td>One entry per response, with <code>prompt_tokens</code>, <code>output_tokens</code> and <code>total_tokens</code>, or <code>None</code> when the response carries no metrics.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Usage example</h2>
+  <pre data-lang="python"><code>
+from src.image_generation.image_generator_service import ImageGeneratorService
+
+# Create the service with a partial configuration
+service = ImageGeneratorService(content_config={"number_of_images": 2})
+
+# 1. Build the parts, 2. configure, 3. call the model, 4. parse
+parts = service.build_parts(user_prompt="Um grifo renascentista")
+config = service.generate_config()
+responses = service.call_model(parts, config)
+result = service.parse_responses(responses)
+
+print(len(result["images"]))
+</code></pre>
+
+  <h2>Notes</h2>
+  <div class="callout" data-kind="warn"><p><strong>Input image type.</strong> In <code>build_parts</code>, all reference images are sent with <code>mime_type</code> <code>image/jpeg</code>, even when the original file is a PNG.</p></div>
+  <p>See also <a href="@/modules/image-generation/utils/config">Config</a>, <a href="@/modules/image-generation/utils/gemini-client">Gemini Client</a> and <a href="@/modules/image-generation/module">Module</a>.</p>
+</page>

@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pinecone Retriever | BetterAI Docs</title>
+<meta name="description" content="The PineconeRetriever class is a specialized implementation for interacting with the Pinecone vector search service, making it easier to efficiently retrieve documents based on vector similarity and metadata filters.">
+<link rel="canonical" href="pages/en/internal-source-code/vector-store/pinecone-retriever.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../../../_design-system/css/tokens.css?v=7f43b250">
+<link rel="stylesheet" href="../../../../_design-system/css/base.css?v=4a698b89">
+<link rel="stylesheet" href="../../../../_design-system/css/layout.css?v=503e806e">
+<link rel="stylesheet" href="../../../../_design-system/css/content.css?v=cfc5f8ef">
+<link rel="stylesheet" href="../../../../_design-system/css/search.css?v=1ecf3252">
+<link rel="stylesheet" href="../../../../_design-system/css/responsive.css?v=6efeec66">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Created by Enzo Schitini. I invite you to connect with me on LinkedIn.</a></span>
+    <button type="button" aria-label="Dismiss notice"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../pages/en/index.html">
+        <img src="../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Search the documentation">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Search...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="../../../../pages/en/getting-started/quickstart.html">Quickstart<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Language"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>EN</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="false"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="false"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="true"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light and dark theme"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Documentation areas"><a class="tab" href="../../../../pages/en/index.html">Overview</a><a class="tab" href="../../../../pages/en/getting-started/index.html">Introduction</a><a class="tab" href="../../../../pages/en/agents/index.html">Agents</a><a class="tab" href="../../../../pages/en/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../pages/en/api/index.html">API</a><a class="tab" href="../../../../pages/en/modules/index.html">Modules</a><a class="tab" href="../../../../pages/en/internal-source-code/index.html" aria-current="page">Internal Services</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Internal Services</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Pinecone Retriever</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Documentation navigation">
+    <nav class="side"><div class="side-areas"><a href="../../../../pages/en/index.html">Overview</a><a href="../../../../pages/en/getting-started/index.html">Introduction</a><a href="../../../../pages/en/agents/index.html">Agents</a><a href="../../../../pages/en/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/en/api/index.html">API</a><a href="../../../../pages/en/modules/index.html">Modules</a><a href="../../../../pages/en/internal-source-code/index.html" aria-current="page">Internal Services</a></div><a class="side-link" href="../../../../pages/en/internal-source-code/index.html"><span>Overview</span></a><div class="side-group"><p class="side-title">Application Tracing</p><ul><li><a class="side-link" href="../../../../pages/en/internal-source-code/application-tracing/logger-engine.html"><span>Logger Engine</span></a></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/application-tracing/payload-builder.html"><span>Payload Builder</span></a></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/application-tracing/tracing-core.html"><span>Tracing Core</span></a></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/application-tracing/use.html"><span>Use</span></a></li></ul></div><div class="side-group"><p class="side-title">Database</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>No SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/en/internal-source-code/database/no-sql/local-manage.html"><span>Local Manage</span></a></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/database/no-sql/mongo-manager.html"><span>Mongo Manager</span></a></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/database/no-sql/router.html"><span>Router</span></a></li></ul></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/en/internal-source-code/database/sql/supabase-database.html"><span>Supabase Database</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Storage</p><ul><li><a class="side-link" href="../../../../pages/en/internal-source-code/storage/storage-menage-repository.html"><span>Storage Menage Repository</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Supabase</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/en/internal-source-code/storage/supabase/storage-menager.html"><span>Storage Menager</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Token Calculate</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Exchange Rate</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/en/internal-source-code/token-calculate/exchange-rate/bcb-exchange-rate-service.html"><span>BCB Exchange Rate Service</span></a></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/token-calculate/exchange-rate/exchange-rate-service.html"><span>Exchange Rate Service</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/token-calculate/model-pricing.html"><span>Model Pricing</span></a></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/token-calculate/token-counter.html"><span>Token Counter</span></a></li></ul></div><div class="side-group"><p class="side-title">Utils</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Load Request File</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/en/internal-source-code/utils/load-request-file/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/utils/load-request-file/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/utils/loader-files.html"><span>Loader Files</span></a></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/utils/unique-id-factory.html"><span>Unique ID Factory</span></a></li></ul></div><div class="side-group"><p class="side-title">Vector Store</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Local Dynamic Embedding</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/en/internal-source-code/vector-store/local-dynamic-embedding/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/vector-store/local-dynamic-embedding/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/vector-store/pinecone-client.html"><span>Pinecone Client</span></a></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/vector-store/pinecone-embedding.html"><span>Pinecone Embedding</span></a></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/vector-store/pinecone-retriever.html" aria-current="page"><span>Pinecone Retriever</span></a></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/vector-store/retrieval-manager.html"><span>Retrieval Manager</span></a></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Vector Store</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Pinecone Retriever</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copy page</span></button>
+            </div>
+          </div>
+          <p class="lead">The PineconeRetriever class is a specialized implementation for interacting with the Pinecone vector search service, making it easier to efficiently retrieve documents based on vector similarity and metadata filters.</p>
+          <details class="toc-inline"><summary>On this page</summary><ul></ul></details>
+        </header>
+        <div class="prose"><h2 id="overview"><a class="anchor" href="#overview" aria-label="Link para esta seção">#</a>Overview</h2>
+  <p>The <code>PineconeRetriever</code> class is a specialized implementation for interacting with the Pinecone vector search service, making it easier to efficiently retrieve documents based on vector similarity and metadata filters. It encapsulates the connection to the Pinecone index and the embedding model, providing methods to run text similarity searches and complex paginated queries that filter documents by specific criteria.</p>
+  <p>The main problem it solves is abstracting the complexity of manipulating Pinecone directly, making it simple to run vector searches with filters, while also ensuring proper handling of embeddings and pagination in the results. In practice, it can be used for smart search over large document bases, recommendation systems or any application that depends on efficient semantic retrieval.</p>
+  <p>For example, imagine an application that needs to find documents related to a question asked by the user, filtering by categories or other metadata – this class eases that interaction with Pinecone, taking care of everything from generating the vectors to extracting the relevant documents, without the user having to master Pinecone's query protocol.</p>
+
+  <h2 id="execution-flow"><a class="anchor" href="#execution-flow" aria-label="Link para esta seção">#</a>Execution Flow</h2>
+  <ol>
+    <li><strong>Initialization of the <code>PineconeRetriever</code> object</strong>:
+      <ul>
+        <li>Receives an optional <code>PineconeClient</code> instance. If not provided, it internally creates a new default instance.</li>
+        <li>Retrieves default settings, such as batch size and vector dimension.</li>
+        <li>Initializes connections to the Pinecone index and the embedding model, as well as the namespace used.</li>
+      </ul>
+    </li>
+    <li><strong>Running a similarity search (<code>similarity_search</code>)</strong>:
+      <ul>
+        <li>Receives the query text, the maximum number of results (k) and an optional metadata filter.</li>
+        <li>Validates the parameters, converting the query text into an embedding vector using the associated model.</li>
+        <li>Builds the filter query for Pinecone, compatible with search by equality or by multiple values (<code>$eq</code> and <code>$in</code>).</li>
+        <li>Runs the query on the index, requesting metadata for each result.</li>
+        <li>Formats the returned documents, removing the "text" field from the metadata and computing the similarity score.</li>
+      </ul>
+    </li>
+    <li><strong>Retrieving documents by metadata (<code>get_all_docs_by_metadata</code>)</strong>:
+      <ul>
+        <li>Allows searching for all documents that have a given value or list of values in a metadata key, handling large volumes through automatic pagination.</li>
+        <li>Defines a dummy vector (zero vector) to run the query, since the focus is filtering by metadata.</li>
+        <li>Iterates over the result pages until there are no more pagination tokens, aggregating the documents.</li>
+        <li>Returns the full list of documents found, each with id, metadata and score.</li>
+      </ul>
+    </li>
+  </ol>
+
+  <h2 id="class-methods-table"><a class="anchor" href="#class-methods-table" aria-label="Link para esta seção">#</a>Class Methods Table</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Method</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Initializes the retriever with a Pinecone client instance.</td></tr>
+      <tr><td><code>similarity_search</code></td><td>Runs a vector similarity search with an optional filter.</td></tr>
+      <tr><td><code>get_all_docs_by_metadata</code></td><td>Retrieves documents filtered by metadata with pagination.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="environment-variables"><a class="anchor" href="#environment-variables" aria-label="Link para esta seção">#</a>Environment Variables</h2>
+  <p>No environment variable is used directly in this class.</p>
+
+  <h2 id="key-architecture-points-and-insights"><a class="anchor" href="#key-architecture-points-and-insights" aria-label="Link para esta seção">#</a>Key Architecture Points and Insights</h2>
+  <ul>
+    <li>Using the <em>Dependency Injection</em> pattern by allowing an external <code>PineconeClient</code> to be received makes testing and reuse of the Pinecone connection easier.</li>
+    <li>Internally it applies strong encapsulation, hiding the details of configuration, embedding generation and the Pinecone query protocol.</li>
+    <li>Careful exception handling in all methods ensures errors are easily identified and properly reported.</li>
+    <li>Supports filters in the Pinecone format (<code>$eq</code> and <code>$in</code>), which widens the expressiveness of searches without increasing the user's complexity.</li>
+    <li>Implements explicit pagination in the metadata query, making it possible to work with very large indexes without running out of memory.</li>
+    <li>Uses an embedding operation for text queries that is offloaded to the client, keeping the focus on orchestrating the flow.</li>
+    <li>The class depends on others: <code>PineconeClient</code>, <code>PineconeVectorStoreConfig</code> and <code>ApplicationTracing</code>, following a modular design.</li>
+  </ul>
+
+  <h2 id="class-and-methods-description"><a class="anchor" href="#class-and-methods-description" aria-label="Link para esta seção">#</a>Class and Methods Description</h2>
+
+  <h3 id="class-pineconeretriever"><a class="anchor" href="#class-pineconeretriever" aria-label="Link para esta seção">#</a>Class <code>PineconeRetriever</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Class that manages the interaction with the Pinecone service to run vector searches based on text embeddings and metadata filters. It provides methods for simple similarity search and paginated retrieval of documents by metadata, using customizable settings for batch size, vector dimension and namespace.</p>
+  <p><strong>Constructor Arguments</strong></p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argument</th><th>Type</th><th>Description</th><th>Default Value</th></tr></thead>
+    <tbody>
+      <tr><td><code>client</code></td><td><code>Optional[PineconeClient]</code></td><td>Pinecone client instance for indexing and embedding.</td><td><code>None</code></td></tr>
+    </tbody>
+  </table></div>
+  <p><strong>Methods</strong></p>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Initializes the <code>PineconeRetriever</code> object, configuring the Pinecone client, the vector configuration (dimension and batch size), the index and the namespace for queries.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>client</code> (Optional[PineconeClient]): Custom Pinecone client.</li>
+    <li>If not provided, creates a new default client.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>Does not return a value.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: If initialization fails because of any exception.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>retriever = <span class="t-f">PineconeRetriever</span>()  <span class="t-c"># Cria retriever com configuração padrão</span>
+custom_client = <span class="t-f">PineconeClient</span>(...)
+retriever_custom = <span class="t-f">PineconeRetriever</span>(custom_client)  <span class="t-c"># Usa client personalizado</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-similarity-search"><a class="anchor" href="#2-similarity-search" aria-label="Link para esta seção">#</a>2. <code>similarity_search</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Runs a vector similarity search based on a text query, returning the <code>k</code> most relevant documents. It accepts metadata filters to refine the results.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>query</code> (str): Query text for the vector search.</li>
+    <li><code>k</code> (int): Maximum number of results to return.</li>
+    <li><code>filter_search</code> (Optional[Dict[str, Any]]): Dictionary with the metadata filter (e.g. <code>{"category": ["finance","tech"]}</code>).</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>List[Dict[str, Any]]</code>: List of documents containing <code>id</code>, <code>text</code>, <code>metadata</code> (without the <code>text</code> field) and <code>score</code> (similarity).</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: If <code>query</code> is empty or <code>k</code> is less than or equal to zero.</li>
+    <li><code>ValueError</code>: If the <code>filter_search</code> filter is invalid.</li>
+    <li><code>RuntimeError</code>: If an error occurs in embedding generation or in the Pinecone query.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>results = retriever.<span class="t-f">similarity_search</span>(
+    query=<span class="t-s">&quot;How to bake a cake?&quot;</span>,
+    k=<span class="t-n">3</span>,
+    filter_search={<span class="t-s">&quot;category&quot;</span>: <span class="t-s">&quot;recipes&quot;</span>}
+)
+<span class="t-k">for</span> doc <span class="t-k">in</span> results:
+    <span class="t-f">print</span>(doc[<span class="t-s">&quot;id&quot;</span>], doc[<span class="t-s">&quot;score&quot;</span>])</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-get-all-docs-by-metadata"><a class="anchor" href="#3-get-all-docs-by-metadata" aria-label="Link para esta seção">#</a>3. <code>get_all_docs_by_metadata</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Gets all documents in the Pinecone index that contain a specific value or set of values for a metadata key, using pagination to handle large volumes.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>batch_size</code> (int | None): Number of documents per page (configured default).</li>
+    <li><code>dimension</code> (int | None): Dimension of the dummy vector used in the query (configured default).</li>
+    <li><code>target_key</code> (str): Metadata key for the filter (e.g. "file_id").</li>
+    <li><code>target_value</code> (Union[str, List[str]]): Value or list of values to look for in the key.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>List[Dict[str, Any]]</code>: List of documents containing <code>id</code>, <code>metadata</code> and <code>score</code>.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: If <code>target_value</code> is not provided.</li>
+    <li><code>RuntimeError</code>: If the Pinecone query fails.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>all_pdfs = retriever.<span class="t-f">get_all_docs_by_metadata</span>(
+    batch_size=<span class="t-n">20</span>,
+    target_key=<span class="t-s">&quot;file_extension&quot;</span>,
+    target_value=<span class="t-s">&quot;pdf&quot;</span>
+)
+<span class="t-f">print</span>(f<span class="t-s">&quot;Found {len(all_pdfs)} PDF documents&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="usage"><a class="anchor" href="#usage" aria-label="Link para esta seção">#</a>Usage</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">if</span> __name__ == <span class="t-s">&quot;__main__&quot;</span>:
+    <span class="t-k">import</span> json
+
+    pine_client = <span class="t-f">PineconeClient</span>(
+        index_name=<span class="t-s">&quot;backai-vectorstore&quot;</span>,
+        main_namespace=<span class="t-s">&quot;betterai-embeddings-dev&quot;</span>,
+    )
+
+    retriver = <span class="t-f">PineconeRetriever</span>(pine_client)
+
+    <span class="t-c"># Similarity search</span>
+    similarity_results = retriver.<span class="t-f">similarity_search</span>(
+        query=<span class="t-s">&quot;What is the capital of France?&quot;</span>,
+        k=<span class="t-n">5</span>
+    )
+
+    <span class="t-f">print</span>(<span class="t-s">&quot;Similarity Search Results:&quot;</span>)
+    <span class="t-f">print</span>(json.<span class="t-f">dumps</span>(similarity_results, indent=<span class="t-n">2</span>))
+
+    <span class="t-c"># Metadata search</span>
+    metadata_results = retriver.<span class="t-f">get_all_docs_by_metadata</span>(
+        target_key=<span class="t-s">&quot;file_extension&quot;</span>,
+        target_value=<span class="t-s">&quot;pdf&quot;</span>,
+        batch_size=<span class="t-n">10</span>
+    )
+
+    <span class="t-f">print</span>(<span class="t-s">&quot;\nMetadata Search Results:&quot;</span>)
+    <span class="t-f">print</span>(json.<span class="t-f">dumps</span>(metadata_results, indent=<span class="t-n">2</span>))
+
+<span class="t-c"># python -m src.vector_store.pinecone.retriever</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <p>This documentation aims to make it easier to understand and use the <code>PineconeRetriever</code> class in projects that need vector searches integrated with Pinecone, with practical examples and essential details for seamless integration.</p></div>
+        <div class="feedback"></div>
+        <p class="source">Source: <code>src/vector_store/pinecone/retriever.py</code></p>
+        <nav class="pager" aria-label="Neighboring pages"><a class="pager-link prev" href="../../../../pages/en/internal-source-code/vector-store/pinecone-embedding.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Previous</small><span>Pinecone Embedding</span></div></a><a class="pager-link next" href="../../../../pages/en/internal-source-code/vector-store/retrieval-manager.html"><div><small>Next</small><span>Retrieval Manager</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="On this page"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="../../../../pages/en/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+          <p>Where intelligence finds purpose.</p>
+          <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>Repository on GitHub</a>
+        </div>
+        <div class="foot-col"><h2>Documentation</h2><a href="../../../../pages/en/getting-started/index.html">Introduction</a><a href="../../../../pages/en/agents/index.html">Agents</a><a href="../../../../pages/en/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/en/api/index.html">API</a><a href="../../../../pages/en/modules/index.html">Modules</a><a href="../../../../pages/en/internal-source-code/index.html">Internal Services</a></div>
+        <div class="foot-col"><h2>Resources</h2><a href="../../../../pages/en/getting-started/quickstart.html">Quickstart</a><a href="../../../../pages/en/getting-started/licence.html">Licence</a><a href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener">Source code</a><a href="https://github.com/enzoschitini/better-ai/issues" target="_blank" rel="noopener">Report an issue</a></div>
+        <div class="foot-col"><h2>Creator</h2><div class="foot-me"><img src="../../../../assets/img/profile.jpg" alt="" width="44" height="44"><div><strong>Enzo Schitini</strong><span>Data Scientist &amp; AI Engineer</span></div></div><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/enzoschitini" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 BetterAI &middot; MIT License</span>
+        <span>Created by <a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Enzo Schitini</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Search the documentation">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Search pages and sections" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Results"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>navigate</span></span>
+    <span><kbd>Enter</kbd><span>open</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "en", "root": "../../../../", "index": "../../../../search-en.json", "alt": {"pt": "pages/pt/internal-source-code/vector-store/pinecone-retriever.html", "it": "pages/it/internal-source-code/vector-store/pinecone-retriever.html", "en": "pages/en/internal-source-code/vector-store/pinecone-retriever.html"}, "i": {"noResults": "Nothing found for “%s”. Try a module name, such as “Pinecone”."}};</script>
+<script src="../../../../_design-system/js/ds.js?v=9a5e2954"></script>
+<script src="../../../../_design-system/js/docs.js?v=6f602c0a"></script>
+</body>
+</html>

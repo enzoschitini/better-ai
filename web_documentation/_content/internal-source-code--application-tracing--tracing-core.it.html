@@ -1,0 +1,121 @@
+<page data-lead="Questa è una documentazione dettagliata e didattica della classe ApplicationTracing, progettata per facilitare l'implementazione dell'osservabilità nei sistemi Python.">
+  <h2>Panoramica</h2>
+  <p>La classe <code>ApplicationTracing</code> agisce come una <strong>Facciata (Facade)</strong> per la gestione dei log. Invece di occuparsi direttamente di librerie complesse o configurazioni di basso livello, lo sviluppatore usa questa classe per standardizzare come i messaggi vengono registrati, mostrati e archiviati.</p>
+  <p>L'obiettivo principale è garantire che tutti i log dell'applicazione seguano la stessa struttura, facilitando la ricerca dei guasti (troubleshooting) e l'analisi dei dati in strumenti come MongoDB o visualizzatori di file di log.</p>
+
+  <h2>Flusso di Esecuzione</h2>
+  <p>Il flusso di funzionamento della classe segue queste fasi:</p>
+  <ol>
+    <li><strong>Istanziazione</strong>: Lo sviluppatore crea l'oggetto definendo le configurazioni globali (es: se salvare in MongoDB, se mostrare i metadati sulla console).</li>
+    <li><strong>Incapsulamento</strong>: Il costruttore inizializza internamente il <code>LoggerEngine</code>, che è il vero motore di elaborazione.</li>
+    <li><strong>Chiamata di Metodo</strong>: Quando chiami un metodo come <code>.INFO()</code> o <code>.ERROR()</code>, i parametri passati (messaggio, metadati) vengono inviati al motore.</li>
+    <li><strong>Sovrascrittura Dinamica</strong>: Ogni metodo di log permette di sovrascrivere momentaneamente le configurazioni globali (es: il sistema non salva i log INFO per impostazione predefinita, ma puoi forzare il salvataggio di un log specifico).</li>
+    <li><strong>Uscita Multicanale</strong>: Il log viene elaborato e inviato contemporaneamente alla console, al file locale o al database, secondo la configurazione.</li>
+  </ol>
+
+  <h2>Tabella dei Metodi</h2>
+  <table>
+    <thead><tr><th>Metodo</th><th>Livello di Gravità</th><th>Uso Consigliato</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>N/A</td><td>Configurazione iniziale e setup dei driver di uscita.</td></tr>
+      <tr><td><code>INFO</code></td><td>Informativo</td><td>Traguardi di successo e flusso normale (es: "Elaborazione completata").</td></tr>
+      <tr><td><code>DEBUG</code></td><td>Basso</td><td>Dettagli tecnici per gli sviluppatori (es: valori di variabili).</td></tr>
+      <tr><td><code>WARNING</code></td><td>Medio</td><td>Situazioni inattese che non impediscono l'esecuzione (es: "API lenta").</td></tr>
+      <tr><td><code>ERROR</code></td><td>Alto</td><td>Errori in funzionalità specifiche (es: "Invio e-mail non riuscito").</td></tr>
+      <tr><td><code>CRITICAL</code></td><td>Urgente</td><td>Problemi che possono far cadere il sistema (es: "Database offline").</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Architettura e Spunti</h2>
+  <ul>
+    <li><strong>Separazione delle Responsabilità</strong>: La classe non sa <em>come</em> scrivere in MongoDB; delega questa responsabilità al <code>LoggerEngine</code>. Questo facilita la manutenzione futura.</li>
+    <li><strong>Flessibilità Granulare</strong>: Il design permette di avere un comportamento globale, ma piena flessibilità su ogni riga di codice tramite gli argomenti opzionali dei metodi.</li>
+    <li><strong>Osservabilità Strutturata</strong>: L'uso dell'argomento <code>metadata</code> (dizionario) incoraggia il log strutturato (JSON), molto più facile da indicizzare e cercare rispetto a semplici stringhe di testo.</li>
+    <li><strong>Tracciabilità</strong>: Il parametro <code>log_id</code> permette di correlare i log di una stessa transazione che attraversa funzioni o file diversi.</li>
+  </ul>
+
+  <h2>Documentazione Tecnica</h2>
+
+  <h2>Classe <code>ApplicationTracing</code></h2>
+  <h3>Descrizione</h3>
+  <p>Classe responsabile di astrarre e standardizzare l'uso dei log all'interno dell'applicazione. Incapsula la logica complessa del logging e fornisce un'interfaccia semplificata allo sviluppatore.</p>
+  <h3>Argomenti del Costruttore</h3>
+  <ul>
+    <li><code>log_id</code> (str): ID univoco per il tracciamento del flusso.</li>
+    <li><code>flag</code> (str): Marcatore per categorizzare i log.</li>
+    <li><code>file_name</code> (str): Contesto del file di origine.</li>
+    <li><code>log_file_name</code> (str): Nome del file <code>.log</code> di destinazione.</li>
+    <li><code>show_info_logs</code> (bool): Abilita/Disabilita i log di livello INFO sulla console.</li>
+    <li><code>show_metadata</code> (bool): Definisce se i dettagli tecnici compaiono sulla console.</li>
+    <li><code>save_logs</code> (bool): Se <code>True</code>, scrive su file fisico.</li>
+    <li><code>save_mongo</code> (bool): Se <code>True</code>, rende persistente nel database.</li>
+    <li><code>format_metadata</code> (bool): Applica una formattazione visiva ai metadati.</li>
+  </ul>
+
+  <h2>Metodi</h2>
+
+  <h2>1. INFO / DEBUG / WARNING / ERROR / CRITICAL</h2>
+  <p><em>(I metodi condividono la stessa firma per mantenere la coerenza)</em></p>
+  <p><strong>Descrizione</strong></p>
+  <p>Registrano un messaggio al livello di gravità corrispondente, gestendo l'archiviazione e la visualizzazione secondo le regole definite nell'istanza.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>func_name</code> (Optional[str]): Nome della funzione in cui è avvenuto l'evento.</li>
+    <li><code>message</code> (Optional[str]): Testo esplicativo del log.</li>
+    <li><code>metadata</code> (Optional[Dict]): Dizionario con dati extra (es: <code>{"user_id": 123}</code>).</li>
+    <li><code>save_logs</code> (Optional[bool]): Sovrascrive la configurazione globale di salvataggio su file.</li>
+    <li><code>save_mongo</code> (Optional[bool]): Sovrascrive la configurazione globale di salvataggio in MongoDB.</li>
+    <li><code>show_info_logs</code> (Optional[bool]): Forza la visualizzazione o l'occultamento dei log INFO.</li>
+    <li><code>show_metadata</code> (Optional[bool]): Forza la visualizzazione o l'occultamento dei metadati.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>None</code>: Il metodo esegue la registrazione (effetto collaterale) e non restituisce dati.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>Exception</code>: Può propagare errori di connessione al database o di permesso di scrittura su disco originati nel <code>LoggerEngine</code>.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+from src.tracing.tracing_core import ApplicationTracing
+
+# Inicialização
+tracer = ApplicationTracing(save_logs=True, log_id="TR-9952")
+
+# Uso simples
+tracer.INFO(
+    func_name="create_user",
+    message="App Init"
+)
+
+tracer.DEBUG(
+    func_name="create_user",
+    message="User created",
+    metadata={"user": "Enzo"},
+    #save_logs=False
+    #show_metadata=False
+)
+
+tracer.WARNING(
+    func_name="create_user",
+    message="User created",
+    metadata={"user": "Enzo"},
+)
+
+tracer.ERROR(
+    func_name="create_user",
+    message="User created",
+    metadata={"user": "Enzo"},
+)
+
+tracer.CRITICAL(
+    func_name="create_user",
+    message="User created",
+    metadata={"user": "Enzo"},
+)
+
+# Debug forçando salvamento no Mongo apenas para esta linha
+tracer.DEBUG(message="Checkpont técnico", save_mongo=True)
+</code></pre>
+</page>

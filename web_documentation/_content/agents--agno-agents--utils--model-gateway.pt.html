@@ -1,0 +1,445 @@
+<page data-lead="">
+  <h2>Visão Geral</h2>
+  <p>A classe <code>ModelGateway</code> atua como uma fábrica unificada e consciente dos provedores para os modelos da biblioteca Agno. Seu principal propósito é abstrair a complexidade das diferentes APIs dos provedores de modelos de linguagem, oferecendo uma interface simples, consistente e segura para criar instâncias desses modelos e agentes que os utilize.</p>
+  <p>Ela resolve o problema da dispersão e variação nas interfaces dos modelos de diferentes provedores (Anthropic, Google, Groq, OpenAI e variantes OpenAI), permitindo que o desenvolvedor selecione o modelo desejado por meio de uma única classe, que gerencia a criação e validação automática dos parâmetros. Assim, o uso prático da classe simplifica a integração com múltiplos modelos sem a necessidade de conhecer detalhes específicos de cada um.</p>
+  <p>Na prática, você pode criar um modelo ou agente especificando apenas o nome do provedor e parâmetros relevantes, enquanto a <code>ModelGateway</code> lida com o mapeamento para a classe correta e valida os argumentos de forma opcional, evitando erros comuns e promovendo maior produtividade e segurança no desenvolvimento.</p>
+
+  <h2>Fluxo de Execução</h2>
+  <ol>
+    <li><strong>Instanciar a classe</strong> <code>ModelGateway</code>, opcionalmente definindo se deseja validação estrita dos parâmetros (padrão é <code>True</code>).</li>
+    <li><strong>Chamar o método</strong> <code>create_model</code> passando o nome do <code>provider</code>, opcionalmente o <code>model_id</code>, a variante <code>openai_variant</code> (se aplicável), e quaisquer outros parâmetros do modelo.</li>
+    <li>A classe <strong>resolve internamente qual construtor usar</strong> mapeando o provider e, se for OpenAI, também a variante, para a classe apropriada do modelo.</li>
+    <li>Se a validação estrita estiver habilitada, a <code>ModelGateway</code> <strong>valida se todos os parâmetros fornecidos são válidos</strong>, baseando-se na assinatura do construtor da classe de modelo.</li>
+    <li>A instância do modelo é criada e retornada, pronta para uso.</li>
+    <li>Opcionalmente, pode-se criar um agente com <code>create_agent</code>, que chama internamente <code>create_model</code> e instancia um objeto <code>Agent</code> da biblioteca Agno, configurado com o modelo selecionado e parâmetros adicionais.</li>
+    <li>Para facilitar, existem métodos de conveniência para cada provedor e variante mais comuns, como <code>anthropic()</code>, <code>google()</code>, <code>openai_chat()</code>, entre outros, permitindo criar modelos direto sem precisar especificar o provider manualmente.</li>
+  </ol>
+
+  <h2>Tabela de Métodos da Classe</h2>
+  <table>
+    <thead><tr><th>Método</th><th>Descrição</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Inicializa a instância com controle de validação.</td></tr>
+      <tr><td><code>supported_providers</code></td><td>Retorna os provedores suportados.</td></tr>
+      <tr><td><code>supported_openai_variants</code></td><td>Retorna as variantes OpenAI suportadas.</td></tr>
+      <tr><td><code>supported_parameters</code></td><td>Retorna parâmetros válidos para o modelo.</td></tr>
+      <tr><td><code>create_model</code></td><td>Cria e retorna uma instância do modelo escolhido.</td></tr>
+      <tr><td><code>create_agent</code></td><td>Cria um agente configurado com o modelo selecionado.</td></tr>
+      <tr><td><code>anthropic</code></td><td>Cria uma instância do modelo Anthropic Claude.</td></tr>
+      <tr><td><code>google</code></td><td>Cria uma instância do modelo Google Gemini.</td></tr>
+      <tr><td><code>groq</code></td><td>Cria uma instância do modelo Groq.</td></tr>
+      <tr><td><code>openai_chat</code></td><td>Cria uma instância do modelo OpenAIChat.</td></tr>
+      <tr><td><code>openai_responses</code></td><td>Cria uma instância do modelo OpenAIResponses.</td></tr>
+      <tr><td><code>open_responses</code></td><td>Cria uma instância do modelo OpenResponses.</td></tr>
+      <tr><td><code>openai_like</code></td><td>Cria uma instância do modelo OpenAILike.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Variáveis de Ambiente</h2>
+  <p>Este módulo importa e chama <code>load_dotenv()</code> no início, indicando que ele carrega variáveis de ambiente definidas em um arquivo <code>.env</code>. Embora a classe em si não use diretamente variáveis de ambiente, os modelos subjacentes provavelmente dependem de chaves API e configurações que são configuradas via ENV. Exemplo comum:</p>
+  <ul>
+    <li><code>OPENAI_API_KEY</code>: chave API para autenticação com modelos OpenAI.</li>
+    <li><code>ANTHROPIC_API_KEY</code>: chave para Anthropic.</li>
+    <li><code>GEMINI_API_KEY</code>: credenciais para o serviço Google.</li>
+    <li>Outras específicas de cada provedor.</li>
+  </ul>
+
+  <h2>Pontos Importantes da Arquitetura e Insights</h2>
+  <ul>
+    <li><strong>Design Factory:</strong> A classe utiliza o padrão factory para criar instâncias dos modelos com base em chaves normalizadas, promovendo extensibilidade e centralização da criação.</li>
+    <li><strong>Alias e Normalização:</strong> Usa dicionários para permitir múltiplos nomes para o mesmo provedor ou variantes OpenAI, melhorando a usabilidade.</li>
+    <li><strong>Validação de Parâmetros:</strong> Inspeciona a assinatura do construtor dos modelos para validar os argumentos recebidos, evitando erros silenciosos.</li>
+    <li><strong>Separação entre Modelo e Agente:</strong> Embora crie modelos, suporta diretamente criar agentes configurados com esses modelos, desacoplando responsabilidades.</li>
+    <li><strong>Dependência da Biblioteca Agno:</strong> Utiliza classes do pacote <code>agno.models</code> e <code>agno.agent.Agent</code>, portanto é um wrapper especializado para essa stack.</li>
+  </ul>
+
+  <h2>Descrição da Classe e Métodos</h2>
+
+  <h2>Classe <code>ModelGateway</code></h2>
+  <h3>Descrição</h3>
+  <p>Responsável por unificar a criação de modelos de diferentes provedores de forma segura e simples. Permite especificar o provedor e variantes (no caso do OpenAI) e criar tanto instâncias de modelos quanto agentes que os utilizam, garantindo que os parâmetros estejam corretos e alinhados com as implementações específicas de cada modelo.</p>
+  <h3>Argumentos do Construtor</h3>
+  <table>
+    <thead><tr><th>Argumento</th><th>Tipo</th><th>Descrição</th><th>Valor Padrão</th></tr></thead>
+    <tbody>
+      <tr><td><code>strict_validation</code></td><td>bool</td><td>Flag que habilita validação estrita de parâmetros. Se <code>True</code>, parâmetros inválidos causam erro.</td><td>True</td></tr>
+    </tbody>
+  </table>
+  <h3>Métodos</h3>
+
+  <h3>1. <code>__init__</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Inicializa a instância da classe definindo o comportamento de validação dos parâmetros para a criação dos modelos.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>strict_validation</code> (bool): Ativa/desativa a validação rigorosa dos parâmetros. Padrão <code>True</code>.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>Não retorna valor.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+gateway = ModelGateway(strict_validation=False)
+</code></pre>
+
+  <h3>2. <code>supported_providers</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Retorna uma lista dos provedores de modelos suportados pela classe.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>Sequence[str]</code>: Sequência de nomes dos provedores suportados, ex: <code>("anthropic", "google", "groq", "openai")</code>.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+print(ModelGateway.supported_providers())
+# ('anthropic', 'google', 'groq', 'openai')
+</code></pre>
+
+  <h3>3. <code>supported_openai_variants</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Retorna as variantes específicas do OpenAI suportadas para seleção de modelo.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>Sequence[str]</code>: Sequência de variantes OpenAI suportadas, exemplo <code>("chat", "responses", "open_responses", "like")</code>.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+print(ModelGateway.supported_openai_variants())
+# ('chat', 'responses', 'open_responses', 'like')
+</code></pre>
+
+  <h3>4. <code>supported_parameters</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Retorna a lista dos nomes dos parâmetros válidos para o construtor de determinado modelo/provedor.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>provider</code> (str): Nome do provedor (ex. "openai", "google", "anthropic").</li>
+    <li><code>openai_variant</code> (str): Variante do OpenAI. Padrão <code>"chat"</code>.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>List[str]</code>: Lista dos nomes dos parâmetros aceitos pelo construtor do modelo.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: Se o provedor ou variante for inválido.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+params = gateway.supported_parameters(provider="openai", openai_variant="like")
+print("temperature" in params)
+# True (se for parâmetro válido)
+</code></pre>
+
+  <h3>5. <code>create_model</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Cria e retorna uma instância do modelo correspondente ao provedor e variante, passando os parâmetros necessários para o construtor. Realiza validação dos argumentos se habilitado.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>provider</code> (str): Nome do provedor - <code>"anthropic"</code>, <code>"google"</code>, <code>"groq"</code> ou <code>"openai"</code>.</li>
+    <li><code>model_id</code> (Optional[str]): ID do modelo para sobrescrever o parâmetro <code>id</code> do construtor.</li>
+    <li><code>openai_variant</code> (str, keyword-only): Variante OpenAI a ser usada, padrão <code>"chat"</code>.</li>
+    <li><code>strict_validation</code> (Optional[bool], keyword-only): Override para validação estrita no método, ignorando configuração da instância.</li>
+    <li><code>**kwargs</code> (Any): Todos os parâmetros adicionais aceitos pelo construtor do modelo.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>Instância específica do modelo solicitado.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: Se parâmetros inválidos forem passados (quando validação ativada).</li>
+    <li><code>ValueError</code>: Se provedor ou variante OpenAI forem inválidos.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+model = gateway.create_model(
+    provider="openai",
+    openai_variant="chat",
+    model_id="gpt-4.1-mini",
+    temperature=0.2,
+)
+</code></pre>
+
+  <h3>6. <code>create_agent</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Cria um objeto <code>Agent</code> configurado com o modelo criado de acordo com o provedor e variante, incluindo parâmetros específicos para o modelo e para o agente.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>provider</code> (str): Nome do provedor.</li>
+    <li><code>model_id</code> (Optional[str]): ID do modelo (opcional).</li>
+    <li><code>openai_variant</code> (str, keyword-only): Variante OpenAI, padrão <code>"chat"</code>.</li>
+    <li><code>model_kwargs</code> (Optional[Dict[str, Any]]): Dicionário de parâmetros para o modelo.</li>
+    <li><code>**agent_kwargs</code> (Any): Parâmetros extras encaminhados para o construtor do agente.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>Agent</code>: Instância da classe <code>Agent</code> configurada com o modelo e parâmetros fornecidos.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Igual a <code>create_model</code> para a criação do modelo.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+agent = gateway.create_agent(
+    provider="openai",
+    openai_variant="chat",
+    model_kwargs={"id": "gpt-4.1-mini", "temperature": 0.2},
+    markdown=True,
+)
+</code></pre>
+
+  <h3>7. <code>anthropic</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Convenience method para criar modelo Anthropic Claude com parâmetros opcionais.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>model_id</code> (Optional[str]): ID do modelo.</li>
+    <li><code>**kwargs</code> (Any): Parâmetros para o construtor do Claude.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>Claude</code>: Instância do modelo Claude.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Igual a <code>create_model</code>.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+claude = gateway.anthropic(model_id="claude-v1", temperature=0.5)
+</code></pre>
+
+  <h3>8. <code>google</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Convenience method para criar modelo Google Gemini com parâmetros opcionais.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>model_id</code> (Optional[str]): ID do modelo.</li>
+    <li><code>**kwargs</code> (Any): Parâmetros para o construtor do Gemini.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>Gemini</code>: Instância do modelo Gemini.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Igual a <code>create_model</code>.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+gemini = gateway.google(model_id="gemini-pro", max_tokens=1000)
+</code></pre>
+
+  <h3>9. <code>groq</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Convenience method para criar modelo Groq com parâmetros opcionais.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>model_id</code> (Optional[str]): ID do modelo.</li>
+    <li><code>**kwargs</code> (Any): Parâmetros para o construtor do Groq.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>Groq</code>: Instância do modelo Groq.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Igual a <code>create_model</code>.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+groq_model = gateway.groq(model_id="groq-xyz")
+</code></pre>
+
+  <h3>10. <code>openai_chat</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Convenience method para criar modelo OpenAIChat com parâmetros opcionais.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>model_id</code> (Optional[str]): ID do modelo.</li>
+    <li><code>**kwargs</code> (Any): Parâmetros para o construtor do OpenAIChat.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>OpenAIChat</code>: Instância do modelo OpenAIChat.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Igual a <code>create_model</code>.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+chat = gateway.openai_chat(model_id="gpt-4")
+</code></pre>
+
+  <h3>11. <code>openai_responses</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Convenience method para criar modelo OpenAIResponses com parâmetros opcionais.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>model_id</code> (Optional[str]): ID do modelo.</li>
+    <li><code>**kwargs</code> (Any): Parâmetros para o construtor do OpenAIResponses.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>OpenAIResponses</code>: Instância do modelo OpenAIResponses.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Igual a <code>create_model</code>.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+responses = gateway.openai_responses(model_id="some-id")
+</code></pre>
+
+  <h3>12. <code>open_responses</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Convenience method para criar modelo OpenResponses com parâmetros opcionais.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>model_id</code> (Optional[str]): ID do modelo.</li>
+    <li><code>**kwargs</code> (Any): Parâmetros para o construtor do OpenResponses.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>OpenResponses</code>: Instância do modelo OpenResponses.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Igual a <code>create_model</code>.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+open_resp = gateway.open_responses(model_id="openresp-1")
+</code></pre>
+
+  <h3>13. <code>openai_like</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Convenience method para criar modelo OpenAILike com parâmetros opcionais.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>model_id</code> (Optional[str]): ID do modelo.</li>
+    <li><code>**kwargs</code> (Any): Parâmetros para o construtor do OpenAILike.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>OpenAILike</code>: Instância do modelo OpenAILike.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Igual a <code>create_model</code>.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+like_model = gateway.openai_like(model_id="like-1")
+</code></pre>
+
+  <h3>14. <code>_resolve_factory_key</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Resolve a chave interna usada para acessar o construtor do modelo dado o nome do provedor e variante (se OpenAI).</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>provider</code> (str): Nome do provedor.</li>
+    <li><code>openai_variant</code> (str): Variante OpenAI. Padrão <code>"chat"</code>.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>str</code>: Chave do dicionário de fábricas para obter o construtor.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: Se provedor ou variante forem inválidos.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+key = gateway._resolve_factory_key("openai", "like")
+print(key)  # "openai.like"
+</code></pre>
+
+  <h3>15. <code>_get_constructor_param_names</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Retorna nomes dos parâmetros do construtor da classe de modelo associada a uma chave de fábrica.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>factory_key</code> (str): Chave do construtor do modelo.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>List[str]</code>: Lista de nomes dos parâmetros, exceto <code>self</code>.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+params = gateway._get_constructor_param_names("openai.chat")
+print("temperature" in params)
+</code></pre>
+
+  <h3>16. <code>_validate_kwargs</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Valida se as chaves do dicionário de parâmetros são válidas para o construtor do modelo.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>factory_key</code> (str): Chave do construtor.</li>
+    <li><code>kwargs</code> (Dict[str, Any]): Parâmetros a validar.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: Se encontrar parâmetros inválidos.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+gateway._validate_kwargs("openai.chat", {"temperature": 0.7, "foo": 123})
+# Gera ValueError: parâmetro 'foo' inválido
+</code></pre>
+
+  <h2>Exemplos Reais de Uso</h2>
+  <pre data-lang="python"><code>
+if __name__ == "__main__":
+    gateway = ModelGateway(strict_validation=True)
+
+    # Criando um modelo OpenAI Chat com ID e temperatura ajustada
+    chat_model = gateway.create_model(
+        provider="openai",
+        openai_variant="chat",
+        model_id="gpt-4.1-mini",
+        temperature=0.2,
+    )
+
+    # Criando um agente com o mesmo modelo e opção markdown ativada
+    agent = gateway.create_agent(
+        provider="openai",
+        openai_variant="chat",
+        model_kwargs={"id": "gpt-4.1-mini", "temperature": 0.2},
+        markdown=True,
+    )
+
+    _ = chat_model
+    agent.print_response("Hello!")
+
+    # python -m src.agents.utils.model_gateway
+</code></pre>
+  <p>Essa documentação permite que desenvolvedores integrem rapidamente modelos de múltiplos provedores de forma segura, robusta e intuitiva usando a abstração poderosa oferecida pela classe <code>ModelGateway</code>.</p>
+</page>

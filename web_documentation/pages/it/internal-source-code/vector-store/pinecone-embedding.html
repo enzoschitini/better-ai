@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pinecone Embedding | BetterAI Docs</title>
+<meta name="description" content="La classe PineconeEmbedding è un'implementazione pensata per facilitare il lavoro con vettori di embedding basati sulla libreria Pinecone, molto utilizzata per archiviare e cercare vettori su larga scala.">
+<link rel="canonical" href="pages/it/internal-source-code/vector-store/pinecone-embedding.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../../../_design-system/css/tokens.css?v=7f43b250">
+<link rel="stylesheet" href="../../../../_design-system/css/base.css?v=4a698b89">
+<link rel="stylesheet" href="../../../../_design-system/css/layout.css?v=503e806e">
+<link rel="stylesheet" href="../../../../_design-system/css/content.css?v=cfc5f8ef">
+<link rel="stylesheet" href="../../../../_design-system/css/search.css?v=1ecf3252">
+<link rel="stylesheet" href="../../../../_design-system/css/responsive.css?v=6efeec66">
+</head>
+<body>
+<a class="skip" href="#main">Vai al contenuto</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Creato da Enzo Schitini. Ti invito a connetterti con me su LinkedIn.</a></span>
+    <button type="button" aria-label="Chiudi avviso"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../pages/it/index.html">
+        <img src="../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Cerca nella documentazione">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Cerca...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="../../../../pages/it/getting-started/quickstart.html">Quickstart<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Lingua"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>IT</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="false"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="true"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="false"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Cambia tema chiaro o scuro"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Aree della documentazione"><a class="tab" href="../../../../pages/it/index.html">Panoramica</a><a class="tab" href="../../../../pages/it/getting-started/index.html">Introduction</a><a class="tab" href="../../../../pages/it/agents/index.html">Agents</a><a class="tab" href="../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../pages/it/api/index.html">API</a><a class="tab" href="../../../../pages/it/modules/index.html">Modules</a><a class="tab" href="../../../../pages/it/internal-source-code/index.html" aria-current="page">Internal Services</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Internal Services</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Pinecone Embedding</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Navigazione della documentazione">
+    <nav class="side"><div class="side-areas"><a href="../../../../pages/it/index.html">Panoramica</a><a href="../../../../pages/it/getting-started/index.html">Introduction</a><a href="../../../../pages/it/agents/index.html">Agents</a><a href="../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/it/api/index.html">API</a><a href="../../../../pages/it/modules/index.html">Modules</a><a href="../../../../pages/it/internal-source-code/index.html" aria-current="page">Internal Services</a></div><a class="side-link" href="../../../../pages/it/internal-source-code/index.html"><span>Panoramica</span></a><div class="side-group"><p class="side-title">Application Tracing</p><ul><li><a class="side-link" href="../../../../pages/it/internal-source-code/application-tracing/logger-engine.html"><span>Logger Engine</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/application-tracing/payload-builder.html"><span>Payload Builder</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/application-tracing/tracing-core.html"><span>Tracing Core</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/application-tracing/use.html"><span>Use</span></a></li></ul></div><div class="side-group"><p class="side-title">Database</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>No SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/internal-source-code/database/no-sql/local-manage.html"><span>Local Manage</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/database/no-sql/mongo-manager.html"><span>Mongo Manager</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/database/no-sql/router.html"><span>Router</span></a></li></ul></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/internal-source-code/database/sql/supabase-database.html"><span>Supabase Database</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Storage</p><ul><li><a class="side-link" href="../../../../pages/it/internal-source-code/storage/storage-menage-repository.html"><span>Storage Menage Repository</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Supabase</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/internal-source-code/storage/supabase/storage-menager.html"><span>Storage Menager</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Token Calculate</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Exchange Rate</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/internal-source-code/token-calculate/exchange-rate/bcb-exchange-rate-service.html"><span>BCB Exchange Rate Service</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/token-calculate/exchange-rate/exchange-rate-service.html"><span>Exchange Rate Service</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/token-calculate/model-pricing.html"><span>Model Pricing</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/token-calculate/token-counter.html"><span>Token Counter</span></a></li></ul></div><div class="side-group"><p class="side-title">Utils</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Load Request File</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/internal-source-code/utils/load-request-file/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/utils/load-request-file/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/utils/loader-files.html"><span>Loader Files</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/utils/unique-id-factory.html"><span>Unique ID Factory</span></a></li></ul></div><div class="side-group"><p class="side-title">Vector Store</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Local Dynamic Embedding</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/internal-source-code/vector-store/local-dynamic-embedding/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/vector-store/local-dynamic-embedding/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/vector-store/pinecone-client.html"><span>Pinecone Client</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/vector-store/pinecone-embedding.html" aria-current="page"><span>Pinecone Embedding</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/vector-store/pinecone-retriever.html"><span>Pinecone Retriever</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/vector-store/retrieval-manager.html"><span>Retrieval Manager</span></a></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Vector Store</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Pinecone Embedding</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copia pagina</span></button>
+            </div>
+          </div>
+          <p class="lead">La classe PineconeEmbedding è un'implementazione pensata per facilitare il lavoro con vettori di embedding basati sulla libreria Pinecone, molto utilizzata per archiviare e cercare vettori su larga scala.</p>
+          <details class="toc-inline"><summary>In questa pagina</summary><ul></ul></details>
+        </header>
+        <div class="prose"><h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
+  <p>La classe <code>PineconeEmbedding</code> è un'implementazione pensata per facilitare il lavoro con vettori di embedding basati sulla libreria Pinecone, molto utilizzata per archiviare e cercare vettori su larga scala. Offre funzionalità per dividere i testi in pezzi più piccoli, trasformare questi pezzi in documenti strutturati con metadati, generare vettori di embedding a partire dai testi e gestire l'archiviazione di questi vettori negli indici Pinecone.</p>
+  <p>Questo servizio è ideale per applicazioni che gestiscono grandi volumi di dati testuali e devono eseguire ricerche semantiche o raccomandazioni basate sugli embedding. L'uso tipico comprende l'elaborazione di testo grezzo, la generazione di embedding tramite OpenAI, l'archiviazione ordinata ed efficiente di questi vettori, oltre alla possibilità di manutenzione tramite la rimozione di vettori specifici.</p>
+
+  <h2 id="flusso-di-esecuzione"><a class="anchor" href="#flusso-di-esecuzione" aria-label="Link para esta seção">#</a>Flusso di Esecuzione</h2>
+  <ol>
+    <li><strong>Inizializzazione della Classe</strong>: La classe viene istanziata con un client Pinecone personalizzato o predefinito, configurando modelli di embedding, dimensioni dei chunk, namespace e altri parametri di configurazione caricati tramite ambiente o file.</li>
+    <li><strong>Generazione dei Vettori</strong>:
+      <ul>
+        <li>Riceve un testo completo e i metadati associati (es: <code>file_id</code>).</li>
+        <li>Il testo viene diviso in pezzi più piccoli nel rispetto dei limiti di dimensione e di sovrapposizione.</li>
+        <li>Ogni pezzo diventa un documento con metadati.</li>
+        <li>I documenti vengono trasformati in vettori di embedding a lotti (batch).</li>
+        <li>I vettori vengono salvati nel namespace principale di Pinecone, con salvataggio opzionale nel namespace globale per il riutilizzo.</li>
+      </ul>
+    </li>
+    <li><strong>Eliminazione dei Vettori</strong>:
+      <ul>
+        <li>Permette di cancellare vettori da Pinecone filtrando per un campo metadata e un valore, nel namespace specificato.</li>
+        <li>Gestione delle eliminazioni a lotti per efficienza.</li>
+        <li>Garantisce rollback e logging per evitare incoerenze in caso di errori.</li>
+      </ul>
+    </li>
+    <li><strong>Monitoraggio e Log</strong>:
+      <ul>
+        <li>Integrazione con il sistema di tracing (<code>ApplicationTracing</code>) per un debug dettagliato delle fasi.</li>
+        <li>Gestione accurata delle eccezioni per segnalare gli errori avvenuti nel processo.</li>
+      </ul>
+    </li>
+  </ol>
+
+  <h2 id="tabella-dei-metodi-della-classe"><a class="anchor" href="#tabella-dei-metodi-della-classe" aria-label="Link para esta seção">#</a>Tabella dei Metodi della Classe</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Metodo</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Inizializza il servizio, configura client e parametri.</td></tr>
+      <tr><td><code>embedding_document</code></td><td>Crea e salva gli embedding di un testo diviso in chunk.</td></tr>
+      <tr><td><code>delete_documents</code></td><td>Elimina vettori in Pinecone in base a filtri sui metadata.</td></tr>
+      <tr><td><code>split_text</code></td><td>Divide un testo lungo in più pezzi.</td></tr>
+      <tr><td><code>build_documents</code></td><td>Crea oggetti Document con contenuto e metadati. (metodo statico)</td></tr>
+      <tr><td><code>generate_embeddings</code></td><td>Genera le rappresentazioni vettoriali a partire dai testi.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="variabili-d-ambiente"><a class="anchor" href="#variabili-d-ambiente" aria-label="Link para esta seção">#</a>Variabili d'Ambiente</h2>
+  <ul>
+    <li><code>OPENAI_EMBEDDING_MODEL</code>: Definisce il modello di embedding di OpenAI da utilizzare per generare i vettori in caso di mancata indicazione esplicita.</li>
+  </ul>
+
+  <h2 id="punti-importanti-dell-architettura-e-insight"><a class="anchor" href="#punti-importanti-dell-architettura-e-insight" aria-label="Link para esta seção">#</a>Punti Importanti dell'Architettura e Insight</h2>
+  <ul>
+    <li><strong>Ereditarietà e Riuso</strong>: <code>PineconeEmbedding</code> eredita da <code>EmbeddingHelpers</code>, separando la logica di manipolazione del testo e di generazione degli embedding dal flusso di livello più alto di archiviazione e gestione.</li>
+    <li><strong>Batching Intelligente</strong>: La generazione e l'eliminazione degli embedding vengono elaborate in lotti configurabili per bilanciare prestazioni e uso delle risorse.</li>
+    <li><strong>Namespace Separati</strong>: La distinzione tra namespace principale e globale permette l'organizzazione dei dati, rendendo possibili scenari di ambito isolato e condiviso.</li>
+    <li><strong>Logging e Tracing Approfonditi</strong>: Integrazione con un sistema di tracing personalizzato che permette un debug granulare e un monitoraggio dettagliato delle operazioni.</li>
+    <li><strong>Gestione Robusta degli Errori</strong>: Il rollback esplicito in caso di errori nell'inserimento a lotti garantisce la coerenza dell'indice Pinecone.</li>
+    <li><strong>Uso di OpenAIEmbeddings</strong>: Astrazione della generazione degli embedding tramite un modello OpenAI che può essere cambiato facilmente tramite variabile d'ambiente o argomento.</li>
+    <li><strong>Dipendenze Esterne</strong>: La classe dipende dall'implementazione del client Pinecone (<code>PineconeClient</code>), dalla configurazione (<code>PineconeVectorStoreConfig</code>) e dalla libreria LangChain per la manipolazione di documenti ed embedding.</li>
+  </ul>
+
+  <h2 id="descrizione-della-classe-e-dei-metodi"><a class="anchor" href="#descrizione-della-classe-e-dei-metodi" aria-label="Link para esta seção">#</a>Descrizione della Classe e dei Metodi</h2>
+
+  <h3 id="classe-pineconeembedding"><a class="anchor" href="#classe-pineconeembedding" aria-label="Link para esta seção">#</a>Classe <code>PineconeEmbedding</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Classe per gestire la creazione, l'archiviazione e la rimozione di embedding testuali utilizzando Pinecone come servizio di vector search. Divide i testi in pezzi, genera embedding tramite OpenAI e permette di rendere persistenti questi vettori in namespace configurabili, facilitando le integrazioni in sistemi che richiedono ricerca semantica.</p>
+  <p><strong>Argomenti del Costruttore</strong></p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argomento</th><th>Tipo</th><th>Descrizione</th><th>Valore Predefinito</th></tr></thead>
+    <tbody>
+      <tr><td><code>vector_client</code></td><td><code>Optional[PineconeClient]</code></td><td>Client Pinecone personalizzato per le operazioni sui vettori. Se non fornito, ne crea uno predefinito.</td><td><code>None</code></td></tr>
+      <tr><td><code>embedding_model_name</code></td><td><code>str</code></td><td>Nome del modello di embedding usato. Se None, cerca la variabile d'ambiente <code>OPENAI_EMBEDDING_MODEL</code> o il valore predefinito della config.</td><td><code>None</code></td></tr>
+      <tr><td><code>dimensions</code></td><td><code>int</code></td><td>Dimensionalità dei vettori; se non indicata usa la configurazione predefinita.</td><td><code>None</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Inizializza il servizio di embedding, configurando il client Pinecone, parametri come chunk size, namespace e modello di embedding, e crea le store Pinecone globali e principali.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>vector_client</code> (Optional[PineconeClient]): client Pinecone per le operazioni.</li>
+    <li><code>embedding_model_name</code> (str): nome del modello di embedding.</li>
+    <li><code>dimensions</code> (int): dimensione dei vettori.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Nessuno.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: In caso di errori durante l'inizializzazione.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>service = <span class="t-f">PineconeEmbedding</span>()
+<span class="t-c"># ou com cliente customizado e modelo definido</span>
+service_custom = <span class="t-f">PineconeEmbedding</span>(
+    vector_client=my_pinecone_client,
+    embedding_model_name=<span class="t-s">&quot;text-embedding-ada-002&quot;</span>,
+    dimensions=<span class="t-n">1536</span>
+)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-embedding-document"><a class="anchor" href="#2-embedding-document" aria-label="Link para esta seção">#</a>2. <code>embedding_document</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Elabora testi lunghi, li divide in chunk, crea documenti associando i metadati, genera gli embedding di questi chunk a batch e salva i vettori in Pinecone. Può salvare copie nel namespace globale per il riutilizzo.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>text</code> (str): testo completo da cui generare i vettori.</li>
+    <li><code>metadata</code> (dict): metadati da associare ai documenti vettoriali.</li>
+    <li><code>save_global</code> (bool): flag per salvare i vettori anche nel namespace globale.</li>
+    <li><code>batch_size</code> (int | None): dimensione del lotto per la generazione degli embedding.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>dict</code>: Risultato con stato, messaggi e informazioni dettagliate sugli embedding salvati, inclusi id e conteggio.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Non direttamente: gli errori vengono catturati e riportati nel valore di ritorno con rollback.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>response = service.<span class="t-f">embedding_document</span>(
+    text=<span class="t-s">&quot;Um texto muito longo que precisa ser dividido e vetorizado...&quot;</span>,
+    metadata={<span class="t-s">&quot;file_id&quot;</span>: <span class="t-s">&quot;doc_001&quot;</span>},
+    save_global=<span class="t-n">True</span>,
+    batch_size=<span class="t-n">50</span>
+)
+<span class="t-k">if</span> response[<span class="t-s">&quot;status&quot;</span>] == <span class="t-s">&quot;success&quot;</span>:
+    <span class="t-f">print</span>(f<span class="t-s">&quot;Vetores salvos, batches: {response['embedding_informations']['batch_count']}&quot;</span>)
+<span class="t-k">else</span>:
+    <span class="t-f">print</span>(<span class="t-s">&quot;Erro:&quot;</span>, response[<span class="t-s">&quot;message&quot;</span>])</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-delete-documents"><a class="anchor" href="#3-delete-documents" aria-label="Link para esta seção">#</a>3. <code>delete_documents</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Rimuove vettori dall'indice Pinecone filtrando per il valore di un campo metadata, all'interno del namespace specificato. Esegue le eliminazioni a batch per prestazioni e sicurezza.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>target_feature</code> (str): campo metadata usato per il filtro (es: "file_id").</li>
+    <li><code>target_id</code> (str): valore che identifica i vettori da eliminare.</li>
+    <li><code>namespace</code> (str): namespace Pinecone in cui eseguire la rimozione.</li>
+    <li><code>features</code> (list): lista opzionale di feature valide per la validazione del filtro.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>dict</code>: Informazioni sul numero di vettori eliminati e sul namespace.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: se <code>target_feature</code> non è nella lista <code>features</code> quando questa è fornita.</li>
+    <li><code>RuntimeError</code>: in caso di errore durante la rimozione.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>result = service.<span class="t-f">delete_documents</span>(
+    target_feature=<span class="t-s">&quot;file_id&quot;</span>,
+    target_id=<span class="t-s">&quot;doc_001&quot;</span>,
+    namespace=<span class="t-s">&quot;embedding_file&quot;</span>
+)
+<span class="t-f">print</span>(f<span class="t-s">&quot;Vectors deleted: {result['deleted_vectors']}&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-split-text"><a class="anchor" href="#4-split-text" aria-label="Link para esta seção">#</a>4. <code>split_text</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Divide un testo in più pezzi più piccoli, rispettando i limiti di dimensione e di sovrapposizione per facilitare l'elaborazione e la generazione degli embedding.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>text</code> (str): testo da dividere.</li>
+    <li><code>chunk_size</code> (int | None): dimensione desiderata del chunk (opzionale).</li>
+    <li><code>chunk_overlap</code> (int | None): sovrapposizione tra i chunk (opzionale).</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>List[str]</code>: lista con i pezzi di testo generati.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: se la divisione del testo fallisce.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>chunks = service.<span class="t-f">split_text</span>(<span class="t-s">&quot;Texto muito longo...&quot;</span>, chunk_size=<span class="t-n">200</span>, chunk_overlap=<span class="t-n">40</span>)
+<span class="t-f">print</span>(f<span class="t-s">&quot;Quantidade de chunks gerados: {len(chunks)}&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="5-build-documents-metodo-statico"><a class="anchor" href="#5-build-documents-metodo-statico" aria-label="Link para esta seção">#</a>5. <code>build_documents</code> (metodo statico)</h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Crea oggetti Document (di LangChain) a partire da pezzi di testo, associando un dizionario di metadati a ciascun documento.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>chunks</code> (List[str]): lista di testi frammentati.</li>
+    <li><code>metadata</code> (Dict[str, Any]): metadati da allegare a ogni documento.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>List[Document]</code>: lista di documenti pronti per l'ingestione.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: se la costruzione dei Document fallisce.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>documents = PineconeEmbedding.<span class="t-f">build_documents</span>(
+    [<span class="t-s">&quot;texto 1&quot;</span>, <span class="t-s">&quot;texto 2&quot;</span>],
+    {<span class="t-s">&quot;file_id&quot;</span>: <span class="t-s">&quot;abc123&quot;</span>, <span class="t-s">&quot;created_at&quot;</span>: <span class="t-s">&quot;2024-06-01&quot;</span>}
+)
+<span class="t-k">for</span> doc <span class="t-k">in</span> documents:
+    <span class="t-f">print</span>(doc.metadata)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="6-generate-embeddings"><a class="anchor" href="#6-generate-embeddings" aria-label="Link para esta seção">#</a>6. <code>generate_embeddings</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Genera gli embedding vettoriali per una lista di testi, utilizzando il modello configurato.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>texts</code> (List[str]): lista di frasi o documenti da trasformare in vettori.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>List[List[float]]</code>: lista di vettori numerici corrispondenti ai testi.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: se si verifica un errore nella generazione degli embedding.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>embeddings = service.<span class="t-f">generate_embeddings</span>([
+    <span class="t-s">&quot;primeiro texto&quot;</span>,
+    <span class="t-s">&quot;segundo texto&quot;</span>
+])
+<span class="t-f">print</span>(f<span class="t-s">&quot;Embedding do primeiro texto tem dimensão {len(embeddings[0])}&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="esempio-di-uso-completo"><a class="anchor" href="#esempio-di-uso-completo" aria-label="Link para esta seção">#</a>Esempio di uso completo</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>pine_client = <span class="t-f">PineconeClient</span>(index_name=<span class="t-s">&quot;exemplo-index&quot;</span>, main_namespace=<span class="t-s">&quot;embeddings&quot;</span>)
+service = <span class="t-f">PineconeEmbedding</span>(vector_client=pine_client, embedding_model_name=<span class="t-s">&quot;text-embedding-ada-002&quot;</span>)
+
+texto = <span class="t-s">&quot;Este é um exemplo de texto que será dividido, embeddado e armazenado.&quot;</span>
+
+response = service.<span class="t-f">embedding_document</span>(
+    text=texto,
+    metadata={<span class="t-s">&quot;file_id&quot;</span>: <span class="t-s">&quot;exemplo_12345&quot;</span>},
+    save_global=<span class="t-n">True</span>
+)
+
+<span class="t-k">if</span> response[<span class="t-s">'status'</span>] == <span class="t-s">&quot;success&quot;</span>:
+    <span class="t-f">print</span>(<span class="t-s">&quot;Embeddings gerados e salvos com sucesso!&quot;</span>)
+<span class="t-k">else</span>:
+    <span class="t-f">print</span>(<span class="t-s">&quot;Falha ao salvar embeddings:&quot;</span>, response[<span class="t-s">&quot;message&quot;</span>])</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <p>Questa documentazione illustra il funzionamento di <code>PineconeEmbedding</code>, evidenziandone l'uso pratico, i metodi disponibili e i consigli per un'integrazione efficiente con sistemi di vettorizzazione basati su Pinecone e OpenAI.</p></div>
+        <div class="feedback"></div>
+        <p class="source">Fonte: <code>src/vector_store/pinecone/embedding.py</code></p>
+        <nav class="pager" aria-label="Pagine vicine"><a class="pager-link prev" href="../../../../pages/it/internal-source-code/vector-store/pinecone-client.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Precedente</small><span>Pinecone Client</span></div></a><a class="pager-link next" href="../../../../pages/it/internal-source-code/vector-store/pinecone-retriever.html"><div><small>Successiva</small><span>Pinecone Retriever</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="In questa pagina"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="../../../../pages/it/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+          <p>Where intelligence finds purpose.</p>
+          <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>Repository su GitHub</a>
+        </div>
+        <div class="foot-col"><h2>Documentazione</h2><a href="../../../../pages/it/getting-started/index.html">Introduction</a><a href="../../../../pages/it/agents/index.html">Agents</a><a href="../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/it/api/index.html">API</a><a href="../../../../pages/it/modules/index.html">Modules</a><a href="../../../../pages/it/internal-source-code/index.html">Internal Services</a></div>
+        <div class="foot-col"><h2>Risorse</h2><a href="../../../../pages/it/getting-started/quickstart.html">Quickstart</a><a href="../../../../pages/it/getting-started/licence.html">Licence</a><a href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener">Codice sorgente</a><a href="https://github.com/enzoschitini/better-ai/issues" target="_blank" rel="noopener">Segnala un problema</a></div>
+        <div class="foot-col"><h2>Creatore</h2><div class="foot-me"><img src="../../../../assets/img/profile.jpg" alt="" width="44" height="44"><div><strong>Enzo Schitini</strong><span>Data Scientist &amp; AI Engineer</span></div></div><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/enzoschitini" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 BetterAI &middot; Licenza MIT</span>
+        <span>Creato da <a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Enzo Schitini</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Cerca nella documentazione">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Cerca pagine e sezioni" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Risultati"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>naviga</span></span>
+    <span><kbd>Enter</kbd><span>apri</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "it", "root": "../../../../", "index": "../../../../search-it.json", "alt": {"pt": "pages/pt/internal-source-code/vector-store/pinecone-embedding.html", "it": "pages/it/internal-source-code/vector-store/pinecone-embedding.html", "en": "pages/en/internal-source-code/vector-store/pinecone-embedding.html"}, "i": {"noResults": "Nessun risultato per “%s”. Prova con il nome di un modulo, come “Pinecone”."}};</script>
+<script src="../../../../_design-system/js/ds.js?v=9a5e2954"></script>
+<script src="../../../../_design-system/js/docs.js?v=6f602c0a"></script>
+</body>
+</html>

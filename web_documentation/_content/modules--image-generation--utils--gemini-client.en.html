@@ -1,0 +1,31 @@
+<page data-lead="Wrapper that reads the API key from the environment and creates, only once, the Gemini SDK client used by the image generation module.">
+  <div class="callout" data-kind="note"><p><strong>Source:</strong> <code>src/image_generation/utils/gemini_client.py</code>. This page's original notebook was empty; the content was written from the code.</p></div>
+
+  <h2>Overview</h2>
+  <p>The file has two <code>dataclass</code>es: <code>GeminiConfig</code>, which resolves the API key, and <code>GeminiClient</code>, which creates and keeps the <code>genai.Client</code>.</p>
+
+  <h2>GeminiConfig</h2>
+  <p>The <code>api_key_env</code> field holds the name of the environment variable and defaults to <code>GEMINI_API_KEY</code>. The <code>get_api_key()</code> method reads that variable with <code>os.getenv</code>.</p>
+  <div class="callout" data-kind="warn"><p><strong>Required variable.</strong> If the variable does not exist or is empty, <code>get_api_key()</code> raises <code>EnvironmentError</code> with the message "Variável de ambiente 'GEMINI_API_KEY' não encontrada.".</p></div>
+  <pre data-lang="env" data-title=".env"><code>
+GEMINI_API_KEY=********************
+</code></pre>
+
+  <h2>GeminiClient</h2>
+  <p>The <code>get_client()</code> method creates the <code>genai.Client</code> on the first call and reuses the same instance on the following ones (the client is kept in <code>_client</code>).</p>
+  <pre data-lang="python"><code>
+from src.image_generation.utils.gemini_client import GeminiClient
+
+# Create the client on the first call
+client = GeminiClient().get_client()
+
+# Use a different environment variable name
+from src.image_generation.utils.gemini_client import GeminiConfig
+
+custom = GeminiClient(config=GeminiConfig(api_key_env="MY_GEMINI_KEY"))
+client = custom.get_client()
+</code></pre>
+
+  <h2>Notes</h2>
+  <p>The file loads the <code>.env</code> with <code>load_dotenv()</code> when imported. The client is used by <a href="@/modules/image-generation/image-generator-service">Image Generator Service</a> and by <code>ImageGeneration</code> in <code>applications.py</code>.</p>
+</page>

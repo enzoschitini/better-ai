@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tavily Core | BetterAI Docs</title>
+<meta name="description" content="Documentação da classe TavilyDeepResearch, o wrapper dinâmico sobre a API da Tavily usado pelo módulo Deep Research.">
+<link rel="canonical" href="pages/pt/modules/deep-research/tavily-research/tavily-core.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../../../../_design-system/css/tokens.css?v=7f43b250">
+<link rel="stylesheet" href="../../../../../_design-system/css/base.css?v=4a698b89">
+<link rel="stylesheet" href="../../../../../_design-system/css/layout.css?v=503e806e">
+<link rel="stylesheet" href="../../../../../_design-system/css/content.css?v=cfc5f8ef">
+<link rel="stylesheet" href="../../../../../_design-system/css/search.css?v=1ecf3252">
+<link rel="stylesheet" href="../../../../../_design-system/css/responsive.css?v=6efeec66">
+</head>
+<body>
+<a class="skip" href="#main">Ir para o conteúdo</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Criado por Enzo Schitini. Convido você a se conectar comigo no LinkedIn.</a></span>
+    <button type="button" aria-label="Fechar aviso"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../../pages/pt/index.html">
+        <img src="../../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Buscar na documentação">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Buscar...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="../../../../../pages/pt/getting-started/quickstart.html">Quickstart<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Idioma"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>PT</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="true"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="false"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="false"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Alternar tema claro e escuro"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Áreas da documentação"><a class="tab" href="../../../../../pages/pt/index.html">Visão geral</a><a class="tab" href="../../../../../pages/pt/getting-started/index.html">Introduction</a><a class="tab" href="../../../../../pages/pt/agents/index.html">Agents</a><a class="tab" href="../../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../../pages/pt/api/index.html">API</a><a class="tab" href="../../../../../pages/pt/modules/index.html" aria-current="page">Modules</a><a class="tab" href="../../../../../pages/pt/internal-source-code/index.html">Internal Services</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Modules</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Tavily Core</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Navegação da documentação">
+    <nav class="side"><div class="side-areas"><a href="../../../../../pages/pt/index.html">Visão geral</a><a href="../../../../../pages/pt/getting-started/index.html">Introduction</a><a href="../../../../../pages/pt/agents/index.html">Agents</a><a href="../../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../../pages/pt/api/index.html">API</a><a href="../../../../../pages/pt/modules/index.html" aria-current="page">Modules</a><a href="../../../../../pages/pt/internal-source-code/index.html">Internal Services</a></div><a class="side-link" href="../../../../../pages/pt/modules/index.html"><span>Visão geral</span></a><div class="side-group"><p class="side-title">Content Parse</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Content Parsing Agent</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/modules/content-parse/content-parsing-agent/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/content-parse/content-parsing-agent/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/pt/modules/content-parse/document-parse.html"><span>Document Parse</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/content-parse/field-metadata-parser.html"><span>Field Metadata Parser</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/content-parse/generate-pydantic-schema.html"><span>Generate Pydantic Schema</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/content-parse/json-to-pydantic.html"><span>Json To Pydantic</span></a></li></ul></div><div class="side-group"><p class="side-title">Deep Research</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="true"><span>Tavily Research</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub"><li><a class="side-link" href="../../../../../pages/pt/modules/deep-research/tavily-research/context-builder.html"><span>Context Builder</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/deep-research/tavily-research/tavily-core.html" aria-current="page"><span>Tavily Core</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Image Generation</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Cost Calculator</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/cost-calculator/cost-calculator.html"><span>Cost Calculator</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/cost-calculator/pricing-table.html"><span>Pricing Table</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/image-generator-service.html"><span>Image Generator Service</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/module.html"><span>Module</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Utils</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/utils/config.html"><span>Config</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/utils/gemini-client.html"><span>Gemini Client</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/utils/params-validator.html"><span>Params Validator</span></a></li><li><a class="side-link" href="../../../../../pages/pt/modules/image-generation/utils/payload-builder.html"><span>Payload Builder</span></a></li></ul></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Deep Research / Tavily Research</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Tavily Core</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copiar página</span></button>
+            </div>
+          </div>
+          <p class="lead">Documentação da classe TavilyDeepResearch, o wrapper dinâmico sobre a API da Tavily usado pelo módulo Deep Research.</p>
+          <details class="toc-inline"><summary>Nesta página</summary><ul></ul></details>
+        </header>
+        <div class="prose"><h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão Geral</h2>
+  <p>A classe <code>TavilyDeepResearch</code> é um <strong>wrapper dinâmico</strong> sobre o <code>TavilyClient</code> da biblioteca <code>tavily</code>. Em vez de definir uma assinatura própria para cada operação, cada método recebe um único dicionário de configuração (<code>params</code>) e o repassa, como argumentos nomeados, ao método correspondente do cliente Tavily.</p>
+  <p>Na prática, isso dá máxima flexibilidade: qualquer parâmetro aceito pela Tavily pode ser enviado sem alterar a classe. Ela é a camada de acesso à Tavily usada pelo <a href="context-builder.html">Context Builder</a>, que transforma uma busca na web em contexto pronto para modelos de linguagem.</p>
+
+  <h2 id="fluxo-de-execucao"><a class="anchor" href="#fluxo-de-execucao" aria-label="Link para esta seção">#</a>Fluxo de Execução</h2>
+  <ol>
+    <li><strong>Instanciação</strong>: a classe recebe uma chave de API opcional. Se ela não for informada, é lida da variável de ambiente <code>TAVILY_API_KEY</code>.</li>
+    <li><strong>Validação da chave</strong>: se nenhuma chave for encontrada, uma <code>RuntimeError</code> é levantada.</li>
+    <li><strong>Criação do cliente</strong>: um <code>TavilyClient</code> é criado com a chave e guardado em <code>self.client</code>.</li>
+    <li><strong>Chamada de um método</strong>: o usuário chama um método (por exemplo, <code>start_search</code>) passando um dicionário com os parâmetros da operação.</li>
+    <li><strong>Repasse dos parâmetros</strong>: o dicionário é descompactado com <code>**params</code> e enviado ao método homônimo do cliente Tavily, cujo retorno é devolvido sem alterações.</li>
+  </ol>
+
+  <h2 id="tabela-de-metodos-da-classe"><a class="anchor" href="#tabela-de-metodos-da-classe" aria-label="Link para esta seção">#</a>Tabela de Métodos da Classe</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Método</th><th>Método do cliente Tavily</th><th>Descrição</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>—</td><td>Resolve a chave de API e cria o cliente Tavily.</td></tr>
+      <tr><td><code>start_search</code></td><td><code>search</code></td><td>Busca geral.</td></tr>
+      <tr><td><code>get_context</code></td><td><code>get_search_context</code></td><td>Retorna contexto para LLMs.</td></tr>
+      <tr><td><code>qna</code></td><td><code>qna_search</code></td><td>Pergunta e resposta direta.</td></tr>
+      <tr><td><code>extract_content</code></td><td><code>extract</code></td><td>Extração de conteúdo de URLs.</td></tr>
+      <tr><td><code>map_site</code></td><td><code>map</code></td><td>Mapeia a estrutura de URLs de um site.</td></tr>
+      <tr><td><code>crawl_site</code></td><td><code>crawl</code></td><td>Explora um site recursivamente.</td></tr>
+      <tr><td><code>get_company</code></td><td><code>get_company_info</code></td><td>Dados firmográficos de uma empresa.</td></tr>
+      <tr><td><code>start_research</code></td><td><code>research</code></td><td>Inicia o agente autônomo de pesquisa.</td></tr>
+      <tr><td><code>get_research_status</code></td><td><code>get_research</code></td><td>Consulta o status de uma pesquisa.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="variaveis-de-ambiente"><a class="anchor" href="#variaveis-de-ambiente" aria-label="Link para esta seção">#</a>Variáveis de Ambiente</h2>
+  <ul>
+    <li><code>TAVILY_API_KEY</code>: chave de API da Tavily. Usada quando <code>api_key</code> não é passada ao construtor. O módulo chama <code>load_dotenv()</code> ao ser importado, então a variável também pode vir de um arquivo <code>.env</code>.</li>
+  </ul>
+
+  <h2 id="pontos-importantes-da-arquitetura-e-insights"><a class="anchor" href="#pontos-importantes-da-arquitetura-e-insights" aria-label="Link para esta seção">#</a>Pontos Importantes da Arquitetura e Insights</h2>
+  <ul>
+    <li><strong>Wrapper fino e dinâmico:</strong> a classe não valida nem transforma os parâmetros; ela só os repassa. Os nomes e os valores aceitos são os da biblioteca <code>tavily</code>.</li>
+    <li><strong>Retorno sem tratamento:</strong> os métodos devolvem exatamente o que o cliente Tavily devolve. Tratamento, filtragem e formatação ficam por conta de quem chama, como o Context Builder.</li>
+    <li><strong>Erros:</strong> além da verificação da chave no construtor, a classe não captura exceções. Qualquer erro da Tavily propaga para quem chamou.</li>
+    <li><strong>Tópico da pesquisa autônoma:</strong> em <code>start_research</code>, o tópico é enviado na chave <code>input</code>, que é o nome usado pelo método <code>research</code> da biblioteca original.</li>
+  </ul>
+
+  <h2 id="descricao-da-classe-e-metodos"><a class="anchor" href="#descricao-da-classe-e-metodos" aria-label="Link para esta seção">#</a>Descrição da Classe e Métodos</h2>
+
+  <h2 id="classe-tavilydeepresearch"><a class="anchor" href="#classe-tavilydeepresearch" aria-label="Link para esta seção">#</a>Classe <code>TavilyDeepResearch</code></h2>
+  <h3 id="descricao"><a class="anchor" href="#descricao" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Wrapper dinâmico para a Tavily AI. Recebe dicionários de configuração para máxima flexibilidade.</p>
+  <h3 id="argumentos-do-construtor"><a class="anchor" href="#argumentos-do-construtor" aria-label="Link para esta seção">#</a>Argumentos do Construtor</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argumento</th><th>Tipo</th><th>Descrição</th><th>Valor Padrão</th></tr></thead>
+    <tbody>
+      <tr><td><code>api_key</code></td><td><code>str | None</code></td><td>Chave de API da Tavily. Se omitida, usa <code>TAVILY_API_KEY</code>.</td><td>None</td></tr>
+    </tbody>
+  </table></div>
+  <h3 id="metodos"><a class="anchor" href="#metodos" aria-label="Link para esta seção">#</a>Métodos</h3>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <h3 id="descricao-2"><a class="anchor" href="#descricao-2" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Resolve a chave de API (argumento ou variável de ambiente) e cria o <code>TavilyClient</code>.</p>
+  <h3 id="argumentos"><a class="anchor" href="#argumentos" aria-label="Link para esta seção">#</a>Argumentos</h3>
+  <ul>
+    <li><code>api_key</code> (str | None): chave de API da Tavily.</li>
+  </ul>
+  <h3 id="retornos"><a class="anchor" href="#retornos" aria-label="Link para esta seção">#</a>Retornos</h3>
+  <ul>
+    <li>Não retorna valor.</li>
+  </ul>
+  <h3 id="raises"><a class="anchor" href="#raises" aria-label="Link para esta seção">#</a>Raises</h3>
+  <ul>
+    <li><code>RuntimeError</code>: se a chave não for informada e <code>TAVILY_API_KEY</code> não estiver definida.</li>
+  </ul>
+  <h3 id="exemplos"><a class="anchor" href="#exemplos" aria-label="Link para esta seção">#</a>Exemplos</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-c"># Usando a chave definida em TAVILY_API_KEY</span>
+researcher = <span class="t-f">TavilyDeepResearch</span>()
+
+<span class="t-c"># Informando a chave diretamente</span>
+researcher = <span class="t-f">TavilyDeepResearch</span>(api_key=<span class="t-s">&quot;tvly-...&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-start-search"><a class="anchor" href="#2-start-search" aria-label="Link para esta seção">#</a>2. <code>start_search</code></h3>
+  <h3 id="descricao-3"><a class="anchor" href="#descricao-3" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Busca geral. Espera chaves como <code>query</code>, <code>search_depth</code>, <code>max_results</code>, entre outras aceitas pela Tavily.</p>
+  <h3 id="argumentos-2"><a class="anchor" href="#argumentos-2" aria-label="Link para esta seção">#</a>Argumentos</h3>
+  <ul>
+    <li><code>params</code> (Dict[str, Any]): parâmetros da busca, repassados a <code>client.search</code>.</li>
+  </ul>
+  <h3 id="retornos-2"><a class="anchor" href="#retornos-2" aria-label="Link para esta seção">#</a>Retornos</h3>
+  <ul>
+    <li><code>dict</code>: resposta da busca.</li>
+  </ul>
+  <h3 id="exemplos-2"><a class="anchor" href="#exemplos-2" aria-label="Link para esta seção">#</a>Exemplos</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>result = researcher.<span class="t-f">start_search</span>({
+    <span class="t-s">&quot;query&quot;</span>: <span class="t-s">&quot;Quais as principais tendências de IA em 2026?&quot;</span>,
+    <span class="t-s">&quot;search_depth&quot;</span>: <span class="t-s">&quot;advanced&quot;</span>,
+    <span class="t-s">&quot;max_results&quot;</span>: <span class="t-n">5</span>,
+})</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-get-context"><a class="anchor" href="#3-get-context" aria-label="Link para esta seção">#</a>3. <code>get_context</code></h3>
+  <h3 id="descricao-4"><a class="anchor" href="#descricao-4" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Retorna contexto para LLMs. Espera <code>query</code>, <code>max_tokens</code>, entre outros.</p>
+  <h3 id="argumentos-3"><a class="anchor" href="#argumentos-3" aria-label="Link para esta seção">#</a>Argumentos</h3>
+  <ul>
+    <li><code>params</code> (Dict[str, Any]): parâmetros repassados a <code>client.get_search_context</code>.</li>
+  </ul>
+  <h3 id="retornos-3"><a class="anchor" href="#retornos-3" aria-label="Link para esta seção">#</a>Retornos</h3>
+  <ul>
+    <li><code>str</code>: contexto para uso em modelos de linguagem.</li>
+  </ul>
+  <h3 id="exemplos-3"><a class="anchor" href="#exemplos-3" aria-label="Link para esta seção">#</a>Exemplos</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>context = researcher.<span class="t-f">get_context</span>({<span class="t-s">&quot;query&quot;</span>: <span class="t-s">&quot;tendências de IA em 2026&quot;</span>, <span class="t-s">&quot;max_tokens&quot;</span>: <span class="t-n">1500</span>})</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-qna"><a class="anchor" href="#4-qna" aria-label="Link para esta seção">#</a>4. <code>qna</code></h3>
+  <h3 id="descricao-5"><a class="anchor" href="#descricao-5" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Pergunta e resposta direta. Geralmente requer apenas <code>{'query': 'sua pergunta'}</code>.</p>
+  <h3 id="argumentos-4"><a class="anchor" href="#argumentos-4" aria-label="Link para esta seção">#</a>Argumentos</h3>
+  <ul>
+    <li><code>params</code> (Dict[str, Any]): parâmetros repassados a <code>client.qna_search</code>.</li>
+  </ul>
+  <h3 id="retornos-4"><a class="anchor" href="#retornos-4" aria-label="Link para esta seção">#</a>Retornos</h3>
+  <ul>
+    <li><code>str</code>: resposta à pergunta.</li>
+  </ul>
+  <h3 id="exemplos-4"><a class="anchor" href="#exemplos-4" aria-label="Link para esta seção">#</a>Exemplos</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>answer = researcher.<span class="t-f">qna</span>({<span class="t-s">&quot;query&quot;</span>: <span class="t-s">&quot;Quem criou a linguagem Python?&quot;</span>})</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="5-extract-content"><a class="anchor" href="#5-extract-content" aria-label="Link para esta seção">#</a>5. <code>extract_content</code></h3>
+  <h3 id="descricao-6"><a class="anchor" href="#descricao-6" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Extração de conteúdo. Espera <code>urls</code> (lista ou string) e <code>format</code>.</p>
+  <h3 id="argumentos-5"><a class="anchor" href="#argumentos-5" aria-label="Link para esta seção">#</a>Argumentos</h3>
+  <ul>
+    <li><code>params</code> (Dict[str, Any]): parâmetros repassados a <code>client.extract</code>.</li>
+  </ul>
+  <h3 id="retornos-5"><a class="anchor" href="#retornos-5" aria-label="Link para esta seção">#</a>Retornos</h3>
+  <ul>
+    <li><code>dict</code>: conteúdo extraído.</li>
+  </ul>
+  <h3 id="exemplos-5"><a class="anchor" href="#exemplos-5" aria-label="Link para esta seção">#</a>Exemplos</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>content = researcher.<span class="t-f">extract_content</span>({<span class="t-s">&quot;urls&quot;</span>: [<span class="t-s">&quot;https://example.com&quot;</span>], <span class="t-s">&quot;format&quot;</span>: <span class="t-s">&quot;markdown&quot;</span>})</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="6-map-site"><a class="anchor" href="#6-map-site" aria-label="Link para esta seção">#</a>6. <code>map_site</code></h3>
+  <h3 id="descricao-7"><a class="anchor" href="#descricao-7" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Mapeia a estrutura de URLs de um site. Espera <code>url</code> e, opcionalmente, <code>limit</code>.</p>
+  <h3 id="argumentos-6"><a class="anchor" href="#argumentos-6" aria-label="Link para esta seção">#</a>Argumentos</h3>
+  <ul>
+    <li><code>params</code> (Dict[str, Any]): parâmetros repassados a <code>client.map</code>.</li>
+  </ul>
+  <h3 id="retornos-6"><a class="anchor" href="#retornos-6" aria-label="Link para esta seção">#</a>Retornos</h3>
+  <ul>
+    <li><code>dict</code>: mapa de URLs do site.</li>
+  </ul>
+  <h3 id="exemplos-6"><a class="anchor" href="#exemplos-6" aria-label="Link para esta seção">#</a>Exemplos</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>site_map = researcher.<span class="t-f">map_site</span>({<span class="t-s">&quot;url&quot;</span>: <span class="t-s">&quot;https://example.com&quot;</span>, <span class="t-s">&quot;limit&quot;</span>: <span class="t-n">50</span>})</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="7-crawl-site"><a class="anchor" href="#7-crawl-site" aria-label="Link para esta seção">#</a>7. <code>crawl_site</code></h3>
+  <h3 id="descricao-8"><a class="anchor" href="#descricao-8" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Explora um site recursivamente. Espera <code>url</code>, <code>limit</code> e <code>max_depth</code>.</p>
+  <h3 id="argumentos-7"><a class="anchor" href="#argumentos-7" aria-label="Link para esta seção">#</a>Argumentos</h3>
+  <ul>
+    <li><code>params</code> (Dict[str, Any]): parâmetros repassados a <code>client.crawl</code>.</li>
+  </ul>
+  <h3 id="retornos-7"><a class="anchor" href="#retornos-7" aria-label="Link para esta seção">#</a>Retornos</h3>
+  <ul>
+    <li><code>dict</code>: resultado da exploração.</li>
+  </ul>
+  <h3 id="exemplos-7"><a class="anchor" href="#exemplos-7" aria-label="Link para esta seção">#</a>Exemplos</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>crawl = researcher.<span class="t-f">crawl_site</span>({<span class="t-s">&quot;url&quot;</span>: <span class="t-s">&quot;https://example.com&quot;</span>, <span class="t-s">&quot;limit&quot;</span>: <span class="t-n">20</span>, <span class="t-s">&quot;max_depth&quot;</span>: <span class="t-n">2</span>})</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="8-get-company"><a class="anchor" href="#8-get-company" aria-label="Link para esta seção">#</a>8. <code>get_company</code></h3>
+  <h3 id="descricao-9"><a class="anchor" href="#descricao-9" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Dados firmográficos de uma empresa. Espera <code>query</code>.</p>
+  <h3 id="argumentos-8"><a class="anchor" href="#argumentos-8" aria-label="Link para esta seção">#</a>Argumentos</h3>
+  <ul>
+    <li><code>params</code> (Dict[str, Any]): parâmetros repassados a <code>client.get_company_info</code>.</li>
+  </ul>
+  <h3 id="retornos-8"><a class="anchor" href="#retornos-8" aria-label="Link para esta seção">#</a>Retornos</h3>
+  <ul>
+    <li><code>List[dict]</code>: dados da empresa.</li>
+  </ul>
+  <h3 id="exemplos-8"><a class="anchor" href="#exemplos-8" aria-label="Link para esta seção">#</a>Exemplos</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>company = researcher.<span class="t-f">get_company</span>({<span class="t-s">&quot;query&quot;</span>: <span class="t-s">&quot;Tavily&quot;</span>})</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="9-start-research"><a class="anchor" href="#9-start-research" aria-label="Link para esta seção">#</a>9. <code>start_research</code></h3>
+  <h3 id="descricao-10"><a class="anchor" href="#descricao-10" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Inicia o agente autônomo de pesquisa. Espera <code>input</code> (o tópico) e <code>model</code>.</p>
+  <h3 id="argumentos-9"><a class="anchor" href="#argumentos-9" aria-label="Link para esta seção">#</a>Argumentos</h3>
+  <ul>
+    <li><code>params</code> (Dict[str, Any]): parâmetros repassados a <code>client.research</code>. A biblioteca original usa <code>input</code> para o tópico.</li>
+  </ul>
+  <h3 id="retornos-9"><a class="anchor" href="#retornos-9" aria-label="Link para esta seção">#</a>Retornos</h3>
+  <ul>
+    <li><code>dict</code>: resposta da solicitação de pesquisa.</li>
+  </ul>
+  <h3 id="exemplos-9"><a class="anchor" href="#exemplos-9" aria-label="Link para esta seção">#</a>Exemplos</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>research = researcher.<span class="t-f">start_research</span>({<span class="t-s">&quot;input&quot;</span>: <span class="t-s">&quot;Mercado de energia solar no Brasil&quot;</span>, <span class="t-s">&quot;model&quot;</span>: <span class="t-s">&quot;gpt-4o-mini&quot;</span>})</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="10-get-research-status"><a class="anchor" href="#10-get-research-status" aria-label="Link para esta seção">#</a>10. <code>get_research_status</code></h3>
+  <h3 id="descricao-11"><a class="anchor" href="#descricao-11" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Consulta o status de uma pesquisa iniciada com <code>start_research</code>. Espera <code>request_id</code>.</p>
+  <h3 id="argumentos-10"><a class="anchor" href="#argumentos-10" aria-label="Link para esta seção">#</a>Argumentos</h3>
+  <ul>
+    <li><code>params</code> (Dict[str, Any]): parâmetros repassados a <code>client.get_research</code>.</li>
+  </ul>
+  <h3 id="retornos-10"><a class="anchor" href="#retornos-10" aria-label="Link para esta seção">#</a>Retornos</h3>
+  <ul>
+    <li><code>dict</code>: status da pesquisa.</li>
+  </ul>
+  <h3 id="exemplos-10"><a class="anchor" href="#exemplos-10" aria-label="Link para esta seção">#</a>Exemplos</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>status = researcher.<span class="t-f">get_research_status</span>({<span class="t-s">&quot;request_id&quot;</span>: <span class="t-s">&quot;...&quot;</span>})</code></pre><button class="copy floating" type="button"></button></div></div></div>
+        <div class="feedback"></div>
+        <p class="source">Fonte: <code>src/deep_research/tavily_research/tavily_core.py</code></p>
+        <nav class="pager" aria-label="Páginas vizinhas"><a class="pager-link prev" href="../../../../../pages/pt/modules/deep-research/tavily-research/context-builder.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Anterior</small><span>Context Builder</span></div></a><a class="pager-link next" href="../../../../../pages/pt/modules/image-generation/cost-calculator/cost-calculator.html"><div><small>Próxima</small><span>Cost Calculator</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="Nesta página"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="../../../../../pages/pt/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+          <p>Where intelligence finds purpose.</p>
+          <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>Repositório no GitHub</a>
+        </div>
+        <div class="foot-col"><h2>Documentação</h2><a href="../../../../../pages/pt/getting-started/index.html">Introduction</a><a href="../../../../../pages/pt/agents/index.html">Agents</a><a href="../../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../../pages/pt/api/index.html">API</a><a href="../../../../../pages/pt/modules/index.html">Modules</a><a href="../../../../../pages/pt/internal-source-code/index.html">Internal Services</a></div>
+        <div class="foot-col"><h2>Recursos</h2><a href="../../../../../pages/pt/getting-started/quickstart.html">Quickstart</a><a href="../../../../../pages/pt/getting-started/licence.html">Licence</a><a href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener">Código-fonte</a><a href="https://github.com/enzoschitini/better-ai/issues" target="_blank" rel="noopener">Reportar um problema</a></div>
+        <div class="foot-col"><h2>Criador</h2><div class="foot-me"><img src="../../../../../assets/img/profile.jpg" alt="" width="44" height="44"><div><strong>Enzo Schitini</strong><span>Data Scientist &amp; AI Engineer</span></div></div><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/enzoschitini" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 BetterAI &middot; Licença MIT</span>
+        <span>Criado por <a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Enzo Schitini</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Buscar na documentação">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Buscar páginas e seções" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Resultados"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>navegar</span></span>
+    <span><kbd>Enter</kbd><span>abrir</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "pt", "root": "../../../../../", "index": "../../../../../search-pt.json", "alt": {"pt": "pages/pt/modules/deep-research/tavily-research/tavily-core.html", "it": "pages/it/modules/deep-research/tavily-research/tavily-core.html", "en": "pages/en/modules/deep-research/tavily-research/tavily-core.html"}, "i": {"noResults": "Nada encontrado para “%s”. Tente o nome de um módulo, como “Pinecone”."}};</script>
+<script src="../../../../../_design-system/js/ds.js?v=9a5e2954"></script>
+<script src="../../../../../_design-system/js/docs.js?v=6f602c0a"></script>
+</body>
+</html>

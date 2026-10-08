@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Field Metadata Parser | BetterAI Docs</title>
+<meta name="description" content="The FieldMetadataParser class is responsible for interpreting metadata defined in dictionaries for data fields and converting it into types and fields compatible with the Pydantic library.">
+<link rel="canonical" href="pages/en/modules/content-parse/field-metadata-parser.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../../../_design-system/css/tokens.css?v=7f43b250">
+<link rel="stylesheet" href="../../../../_design-system/css/base.css?v=4a698b89">
+<link rel="stylesheet" href="../../../../_design-system/css/layout.css?v=503e806e">
+<link rel="stylesheet" href="../../../../_design-system/css/content.css?v=cfc5f8ef">
+<link rel="stylesheet" href="../../../../_design-system/css/search.css?v=1ecf3252">
+<link rel="stylesheet" href="../../../../_design-system/css/responsive.css?v=6efeec66">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Created by Enzo Schitini. I invite you to connect with me on LinkedIn.</a></span>
+    <button type="button" aria-label="Dismiss notice"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../pages/en/index.html">
+        <img src="../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Search the documentation">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Search...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="../../../../pages/en/getting-started/quickstart.html">Quickstart<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Language"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>EN</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="false"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="false"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="true"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light and dark theme"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Documentation areas"><a class="tab" href="../../../../pages/en/index.html">Overview</a><a class="tab" href="../../../../pages/en/getting-started/index.html">Introduction</a><a class="tab" href="../../../../pages/en/agents/index.html">Agents</a><a class="tab" href="../../../../pages/en/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../pages/en/api/index.html">API</a><a class="tab" href="../../../../pages/en/modules/index.html" aria-current="page">Modules</a><a class="tab" href="../../../../pages/en/internal-source-code/index.html">Internal Services</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Modules</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Field Metadata Parser</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Documentation navigation">
+    <nav class="side"><div class="side-areas"><a href="../../../../pages/en/index.html">Overview</a><a href="../../../../pages/en/getting-started/index.html">Introduction</a><a href="../../../../pages/en/agents/index.html">Agents</a><a href="../../../../pages/en/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/en/api/index.html">API</a><a href="../../../../pages/en/modules/index.html" aria-current="page">Modules</a><a href="../../../../pages/en/internal-source-code/index.html">Internal Services</a></div><a class="side-link" href="../../../../pages/en/modules/index.html"><span>Overview</span></a><div class="side-group"><p class="side-title">Content Parse</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Content Parsing Agent</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/en/modules/content-parse/content-parsing-agent/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../pages/en/modules/content-parse/content-parsing-agent/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/en/modules/content-parse/document-parse.html"><span>Document Parse</span></a></li><li><a class="side-link" href="../../../../pages/en/modules/content-parse/field-metadata-parser.html" aria-current="page"><span>Field Metadata Parser</span></a></li><li><a class="side-link" href="../../../../pages/en/modules/content-parse/generate-pydantic-schema.html"><span>Generate Pydantic Schema</span></a></li><li><a class="side-link" href="../../../../pages/en/modules/content-parse/json-to-pydantic.html"><span>Json To Pydantic</span></a></li></ul></div><div class="side-group"><p class="side-title">Deep Research</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Tavily Research</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/en/modules/deep-research/tavily-research/context-builder.html"><span>Context Builder</span></a></li><li><a class="side-link" href="../../../../pages/en/modules/deep-research/tavily-research/tavily-core.html"><span>Tavily Core</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Image Generation</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Cost Calculator</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/en/modules/image-generation/cost-calculator/cost-calculator.html"><span>Cost Calculator</span></a></li><li><a class="side-link" href="../../../../pages/en/modules/image-generation/cost-calculator/pricing-table.html"><span>Pricing Table</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/en/modules/image-generation/image-generator-service.html"><span>Image Generator Service</span></a></li><li><a class="side-link" href="../../../../pages/en/modules/image-generation/module.html"><span>Module</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Utils</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/en/modules/image-generation/utils/config.html"><span>Config</span></a></li><li><a class="side-link" href="../../../../pages/en/modules/image-generation/utils/gemini-client.html"><span>Gemini Client</span></a></li><li><a class="side-link" href="../../../../pages/en/modules/image-generation/utils/params-validator.html"><span>Params Validator</span></a></li><li><a class="side-link" href="../../../../pages/en/modules/image-generation/utils/payload-builder.html"><span>Payload Builder</span></a></li></ul></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Content Parse</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Field Metadata Parser</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copy page</span></button>
+            </div>
+          </div>
+          <p class="lead">The FieldMetadataParser class is responsible for interpreting metadata defined in dictionaries for data fields and converting it into types and fields compatible with the Pydantic library.</p>
+          <details class="toc-inline"><summary>On this page</summary><ul></ul></details>
+        </header>
+        <div class="prose"><h2 id="overview"><a class="anchor" href="#overview" aria-label="Link para esta seção">#</a>Overview</h2>
+  <p>The <code>FieldMetadataParser</code> class is responsible for interpreting metadata defined in dictionaries for data fields and converting it into types and fields compatible with the Pydantic library. It analyzes information such as the field type, whether it is required, description, examples and constraints, thus generating a representation ready for validation and use in Pydantic models.</p>
+  <p>This process is fundamental for systems that receive dynamic data schemas or external configuration and need to build validation models in an automated and consistent way. With this class, it is possible to turn a JSON-like specification directly into Pydantic types, ensuring automatic validation and documentation generated from the metadata.</p>
+  <p>In practice, it can be used in data frameworks, dynamic schema imports, or any application that models data from flexible definitions.</p>
+
+  <h2 id="execution-flow"><a class="anchor" href="#execution-flow" aria-label="Link para esta seção">#</a>Execution Flow</h2>
+  <ol>
+    <li>The <code>parse</code> method receives an arbitrary value that may or may not be a field metadata.</li>
+    <li>Checks whether the value is a dictionary containing the key <code>"type"</code>, identifying it as valid metadata for analysis.</li>
+    <li>If it is metadata, it delegates to the private method <code>_parse_metadata</code>, which does the detailed transformation.</li>
+    <li><code>_parse_metadata</code> extracts the given type and checks whether the field is required (<code>required</code>).</li>
+    <li>If the type is <code>"list"</code>, it looks up the definition of the item type (<code>items</code>), and may generate a generic type or a nested model for complex objects.</li>
+    <li>Maps the string type to the corresponding Python type, using the <code>_map_type</code> method.</li>
+    <li>If the field is not required, the type is wrapped in <code>Optional</code> to support the absence of a value.</li>
+    <li>Creates a Pydantic <code>Field</code> with parameters such as default value, description, examples and size constraints.</li>
+    <li>Returns a tuple made up of the final type and the <code>Field</code> object for direct use in Pydantic models.</li>
+    <li>If the value is not a recognized metadata, it returns <code>None</code>.</li>
+    <li>If there is a parsing error, it raises a <code>RuntimeError</code> exception with details.</li>
+  </ol>
+
+  <h2 id="class-methods-table"><a class="anchor" href="#class-methods-table" aria-label="Link para esta seção">#</a>Class Methods Table</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Method</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Not explicitly implemented (default constructor)</td></tr>
+      <tr><td><code>parse</code></td><td>Analyzes the value and returns the type and Field for metadata, or None</td></tr>
+      <tr><td><code>_parse_metadata</code></td><td>Converts a metadata dictionary into a Pydantic type and a configured Field</td></tr>
+      <tr><td><code>_map_type</code></td><td>Maps a string type name to the corresponding Python type</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="environment-variables"><a class="anchor" href="#environment-variables" aria-label="Link para esta seção">#</a>Environment Variables</h2>
+  <p>No environment variable is needed for this class to work.</p>
+
+  <h2 id="key-architecture-points-and-insights"><a class="anchor" href="#key-architecture-points-and-insights" aria-label="Link para esta seção">#</a>Key Architecture Points and Insights</h2>
+  <ul>
+    <li>The class uses encapsulation, restricting helper functions to the private scope (<code>_parse_metadata</code> and <code>_map_type</code>).</li>
+    <li>It uses dynamic creation of Pydantic models (<code>create_model</code>) to represent nested complex types (objects inside lists), allowing flexibility and extensibility.</li>
+    <li>The parser interprets a JSON-like structure to produce annotated types and complete information for validation — making integration with dynamic data easier.</li>
+    <li>It supports optional attributes, default values, descriptions and examples, promoting automatic documentation via Pydantic.</li>
+    <li>Explicit error handling with clear messages makes debugging easier.</li>
+    <li>The <code>_map_type</code> method is easily extensible to new types, just by adding them to the dictionary.</li>
+  </ul>
+
+  <h2 id="class-and-methods-description"><a class="anchor" href="#class-and-methods-description" aria-label="Link para esta seção">#</a>Class and Methods Description</h2>
+
+  <h2 id="fieldmetadataparser-class"><a class="anchor" href="#fieldmetadataparser-class" aria-label="Link para esta seção">#</a><code>FieldMetadataParser</code> Class</h2>
+
+  <h3 id="description"><a class="anchor" href="#description" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>Class to analyze metadata provided in dictionaries and turn it into types and fields configured for use with Pydantic. It makes it easier to dynamically create validation models from external specifications, interpreting types, whether fields are required and descriptive metadata.</p>
+
+  <h3 id="constructor-arguments"><a class="anchor" href="#constructor-arguments" aria-label="Link para esta seção">#</a>Constructor Arguments</h3>
+  <p>No parameters in the constructor.</p>
+
+  <h3 id="methods"><a class="anchor" href="#methods" aria-label="Link para esta seção">#</a>Methods</h3>
+
+  <h3 id="1-parse"><a class="anchor" href="#1-parse" aria-label="Link para esta seção">#</a>1. <code>parse</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Receives any value and, if it is a dictionary that defines field metadata (with the key <code>"type"</code>), returns a tuple containing the resulting Pydantic type and a <code>Field</code> object configured with the properties. Otherwise, it returns <code>None</code>.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>value</code> (Any): Value to be analyzed as field metadata.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>Tuple[Any, Any] | None</code>: Tuple with the field type and the Field object, or <code>None</code> if it is not metadata.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: If any error occurs while analyzing the metadata, an exception with an explanatory message is raised.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-c"># Metadado válido para um campo inteiro obrigatório</span>
+result = parser.<span class="t-f">parse</span>({<span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;int&quot;</span>, <span class="t-s">&quot;required&quot;</span>: <span class="t-n">True</span>, <span class="t-s">&quot;description&quot;</span>: <span class="t-s">&quot;Idade do usuário&quot;</span>})
+<span class="t-c"># result será algo como (int, Field(..., description=&quot;Idade do usuário&quot;))</span>
+
+<span class="t-c"># Metadado inválido ou não seguindo o padrão retorna None</span>
+result = parser.<span class="t-f">parse</span>(<span class="t-s">&quot;apenas uma string&quot;</span>)
+<span class="t-c"># result será None</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-parse-metadata"><a class="anchor" href="#2-parse-metadata" aria-label="Link para esta seção">#</a>2. <code>_parse_metadata</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Private helper method that receives a validated metadata dictionary, extracts its type, setting up the type and the properties of the field, especially handling lists and nested objects, returning the tuple with the Pydantic type and the <code>Field</code> object.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>value</code> (Dict[str, Any]): Dictionary containing the field's properties, such as type, requirement, examples, among others.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>Tuple[Any, Any]</code>: Tuple with the field type and the <code>Field</code> information.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: If the type is <code>"list"</code> and does not contain the mandatory definition of the key <code>"items"</code>.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-c"># Parse de um campo do tipo lista de inteiros não obrigatória</span>
+type_, field = parser.<span class="t-f">_parse_metadata</span>({
+    <span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;list&quot;</span>,
+    <span class="t-s">&quot;items&quot;</span>: {<span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;int&quot;</span>},
+    <span class="t-s">&quot;required&quot;</span>: <span class="t-n">False</span>,
+    <span class="t-s">&quot;description&quot;</span>: <span class="t-s">&quot;Lista de números&quot;</span>
+})
+<span class="t-c"># type_ será Optional[List[int]]</span>
+<span class="t-c"># field conterá description e configurações</span>
+
+<span class="t-c"># Parse de um campo objeto aninhado dentro da lista</span>
+type_, field = parser.<span class="t-f">_parse_metadata</span>({
+    <span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;list&quot;</span>,
+    <span class="t-s">&quot;items&quot;</span>: {
+        <span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;object&quot;</span>,
+        <span class="t-s">&quot;properties&quot;</span>: {
+            <span class="t-s">&quot;nome&quot;</span>: {<span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>, <span class="t-s">&quot;description&quot;</span>: <span class="t-s">&quot;Nome do item&quot;</span>}
+        }
+    }
+})
+<span class="t-c"># type_ será List[ModeloDinâmico]</span>
+<span class="t-c"># field configurado conforme descrito</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-map-type"><a class="anchor" href="#3-map-type" aria-label="Link para esta seção">#</a>3. <code>_map_type</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Maps a type name represented by a string to the corresponding Python type, used in Pydantic modeling. If the type is not recognized, it returns <code>Any</code> as a fallback.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>type_name</code> (str): String representing the type, for example <code>"str"</code>, <code>"int"</code>, <code>"list"</code>.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>tipo</code>: Corresponding Python type (e.g. <code>str</code>, <code>int</code>, <code>list</code>) or <code>Any</code> if not recognized.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">if</span> __name__ == <span class="t-s">&quot;__main__&quot;</span>:
+    parser = <span class="t-f">FieldMetadataParser</span>()
+
+    test_cases = [
+        {
+            <span class="t-s">&quot;input&quot;</span>: {
+                <span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>,
+                <span class="t-s">&quot;description&quot;</span>: <span class="t-s">&quot;Nome do personagem&quot;</span>,
+                <span class="t-s">&quot;example&quot;</span>: <span class="t-s">&quot;John&quot;</span>
+            }
+        },
+        {
+            <span class="t-s">&quot;input&quot;</span>: {
+                <span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;int&quot;</span>,
+                <span class="t-s">&quot;default&quot;</span>: <span class="t-n">10</span>
+            }
+        },
+        {
+            <span class="t-s">&quot;input&quot;</span>: <span class="t-s">&quot;valor simples&quot;</span>
+        }
+    ]
+
+    <span class="t-k">for</span> i, case <span class="t-k">in</span> <span class="t-f">enumerate</span>(test_cases, <span class="t-n">1</span>):
+        result = parser.<span class="t-f">parse</span>(case[<span class="t-s">&quot;input&quot;</span>])
+        <span class="t-f">print</span>(f<span class="t-s">&quot;\nTeste {i}&quot;</span>)
+        <span class="t-f">print</span>(<span class="t-s">&quot;Input:&quot;</span>, case[<span class="t-s">&quot;input&quot;</span>])
+        <span class="t-f">print</span>(<span class="t-s">&quot;Output:&quot;</span>, result)
+
+<span class="t-c"># python -m src.content_parse.pydantic_shema</span></code></pre><button class="copy floating" type="button"></button></div></div></div>
+        <div class="feedback"></div>
+        <p class="source">Source: <code>src/content_parse/pydantic_schema.py</code></p>
+        <nav class="pager" aria-label="Neighboring pages"><a class="pager-link prev" href="../../../../pages/en/modules/content-parse/document-parse.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Previous</small><span>Document Parse</span></div></a><a class="pager-link next" href="../../../../pages/en/modules/content-parse/generate-pydantic-schema.html"><div><small>Next</small><span>Generate Pydantic Schema</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="On this page"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="../../../../pages/en/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+          <p>Where intelligence finds purpose.</p>
+          <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>Repository on GitHub</a>
+        </div>
+        <div class="foot-col"><h2>Documentation</h2><a href="../../../../pages/en/getting-started/index.html">Introduction</a><a href="../../../../pages/en/agents/index.html">Agents</a><a href="../../../../pages/en/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/en/api/index.html">API</a><a href="../../../../pages/en/modules/index.html">Modules</a><a href="../../../../pages/en/internal-source-code/index.html">Internal Services</a></div>
+        <div class="foot-col"><h2>Resources</h2><a href="../../../../pages/en/getting-started/quickstart.html">Quickstart</a><a href="../../../../pages/en/getting-started/licence.html">Licence</a><a href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener">Source code</a><a href="https://github.com/enzoschitini/better-ai/issues" target="_blank" rel="noopener">Report an issue</a></div>
+        <div class="foot-col"><h2>Creator</h2><div class="foot-me"><img src="../../../../assets/img/profile.jpg" alt="" width="44" height="44"><div><strong>Enzo Schitini</strong><span>Data Scientist &amp; AI Engineer</span></div></div><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/enzoschitini" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 BetterAI &middot; MIT License</span>
+        <span>Created by <a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Enzo Schitini</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Search the documentation">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Search pages and sections" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Results"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>navigate</span></span>
+    <span><kbd>Enter</kbd><span>open</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "en", "root": "../../../../", "index": "../../../../search-en.json", "alt": {"pt": "pages/pt/modules/content-parse/field-metadata-parser.html", "it": "pages/it/modules/content-parse/field-metadata-parser.html", "en": "pages/en/modules/content-parse/field-metadata-parser.html"}, "i": {"noResults": "Nothing found for “%s”. Try a module name, such as “Pinecone”."}};</script>
+<script src="../../../../_design-system/js/ds.js?v=9a5e2954"></script>
+<script src="../../../../_design-system/js/docs.js?v=6f602c0a"></script>
+</body>
+</html>

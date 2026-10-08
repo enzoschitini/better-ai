@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Local Manage | BetterAI Docs</title>
+<meta name="description" content="Questa è una documentazione dettagliata e didattica della classe LocalManager, pensata per fare da guida sia agli utenti sia agli sviluppatori che vogliono comprendere la struttura di questo gestore di dati NoSQL locale.">
+<link rel="canonical" href="pages/it/internal-source-code/database/no-sql/local-manage.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../../../../_design-system/css/tokens.css?v=7f43b250">
+<link rel="stylesheet" href="../../../../../_design-system/css/base.css?v=4a698b89">
+<link rel="stylesheet" href="../../../../../_design-system/css/layout.css?v=503e806e">
+<link rel="stylesheet" href="../../../../../_design-system/css/content.css?v=cfc5f8ef">
+<link rel="stylesheet" href="../../../../../_design-system/css/search.css?v=1ecf3252">
+<link rel="stylesheet" href="../../../../../_design-system/css/responsive.css?v=6efeec66">
+</head>
+<body>
+<a class="skip" href="#main">Vai al contenuto</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Creato da Enzo Schitini. Ti invito a connetterti con me su LinkedIn.</a></span>
+    <button type="button" aria-label="Chiudi avviso"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../../pages/it/index.html">
+        <img src="../../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Cerca nella documentazione">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Cerca...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="../../../../../pages/it/getting-started/quickstart.html">Quickstart<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Lingua"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>IT</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="false"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="true"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="false"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Cambia tema chiaro o scuro"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Aree della documentazione"><a class="tab" href="../../../../../pages/it/index.html">Panoramica</a><a class="tab" href="../../../../../pages/it/getting-started/index.html">Introduction</a><a class="tab" href="../../../../../pages/it/agents/index.html">Agents</a><a class="tab" href="../../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../../pages/it/api/index.html">API</a><a class="tab" href="../../../../../pages/it/modules/index.html">Modules</a><a class="tab" href="../../../../../pages/it/internal-source-code/index.html" aria-current="page">Internal Services</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Internal Services</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Local Manage</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Navigazione della documentazione">
+    <nav class="side"><div class="side-areas"><a href="../../../../../pages/it/index.html">Panoramica</a><a href="../../../../../pages/it/getting-started/index.html">Introduction</a><a href="../../../../../pages/it/agents/index.html">Agents</a><a href="../../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../../pages/it/api/index.html">API</a><a href="../../../../../pages/it/modules/index.html">Modules</a><a href="../../../../../pages/it/internal-source-code/index.html" aria-current="page">Internal Services</a></div><a class="side-link" href="../../../../../pages/it/internal-source-code/index.html"><span>Panoramica</span></a><div class="side-group"><p class="side-title">Application Tracing</p><ul><li><a class="side-link" href="../../../../../pages/it/internal-source-code/application-tracing/logger-engine.html"><span>Logger Engine</span></a></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/application-tracing/payload-builder.html"><span>Payload Builder</span></a></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/application-tracing/tracing-core.html"><span>Tracing Core</span></a></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/application-tracing/use.html"><span>Use</span></a></li></ul></div><div class="side-group"><p class="side-title">Database</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="true"><span>No SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub"><li><a class="side-link" href="../../../../../pages/it/internal-source-code/database/no-sql/local-manage.html" aria-current="page"><span>Local Manage</span></a></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/database/no-sql/mongo-manager.html"><span>Mongo Manager</span></a></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/database/no-sql/router.html"><span>Router</span></a></li></ul></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/it/internal-source-code/database/sql/supabase-database.html"><span>Supabase Database</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Storage</p><ul><li><a class="side-link" href="../../../../../pages/it/internal-source-code/storage/storage-menage-repository.html"><span>Storage Menage Repository</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Supabase</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/it/internal-source-code/storage/supabase/storage-menager.html"><span>Storage Menager</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Token Calculate</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Exchange Rate</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/it/internal-source-code/token-calculate/exchange-rate/bcb-exchange-rate-service.html"><span>BCB Exchange Rate Service</span></a></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/token-calculate/exchange-rate/exchange-rate-service.html"><span>Exchange Rate Service</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/token-calculate/model-pricing.html"><span>Model Pricing</span></a></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/token-calculate/token-counter.html"><span>Token Counter</span></a></li></ul></div><div class="side-group"><p class="side-title">Utils</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Load Request File</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/it/internal-source-code/utils/load-request-file/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/utils/load-request-file/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/utils/loader-files.html"><span>Loader Files</span></a></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/utils/unique-id-factory.html"><span>Unique ID Factory</span></a></li></ul></div><div class="side-group"><p class="side-title">Vector Store</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Local Dynamic Embedding</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/it/internal-source-code/vector-store/local-dynamic-embedding/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/vector-store/local-dynamic-embedding/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/vector-store/pinecone-client.html"><span>Pinecone Client</span></a></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/vector-store/pinecone-embedding.html"><span>Pinecone Embedding</span></a></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/vector-store/pinecone-retriever.html"><span>Pinecone Retriever</span></a></li><li><a class="side-link" href="../../../../../pages/it/internal-source-code/vector-store/retrieval-manager.html"><span>Retrieval Manager</span></a></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Database / No SQL</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Local Manage</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copia pagina</span></button>
+            </div>
+          </div>
+          <p class="lead">Questa è una documentazione dettagliata e didattica della classe LocalManager, pensata per fare da guida sia agli utenti sia agli sviluppatori che vogliono comprendere la struttura di questo gestore di dati NoSQL locale.</p>
+          <details class="toc-inline"><summary>In questa pagina</summary><ul></ul></details>
+        </header>
+        <div class="prose"><h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
+  <p><code>LocalManager</code> è una soluzione leggera ed efficiente per la persistenza dei dati in formato NoSQL, che usa il file system locale come archivio. Emula il comportamento dei database moderni (come MongoDB), organizzando le informazioni in una gerarchia di <strong>Databases</strong> (directory) e <strong>Collections</strong> (file JSON).</p>
+  <p>È lo strumento ideale per:</p>
+  <ul>
+    <li>Prototipazione rapida di applicazioni.</li>
+    <li>Archiviazione di configurazioni locali.</li>
+    <li>Ambienti di test in cui non si vuole configurare un server di database complesso.</li>
+  </ul>
+
+  <h2 id="flusso-di-esecuzione"><a class="anchor" href="#flusso-di-esecuzione" aria-label="Link para esta seção">#</a>Flusso di Esecuzione</h2>
+  <p>Il funzionamento della classe segue un ciclo prevedibile di gestione dell'I/O dei file:</p>
+  <ol>
+    <li><strong>Inizializzazione:</strong> Il gestore verifica o crea la cartella radice (<code>data</code>).</li>
+    <li><strong>Mappatura:</strong> Quando viene richiesta un'operazione, risolve il percorso fisico: <code>base/database/collection.json</code>.</li>
+    <li><strong>Caricamento:</strong> Il file JSON viene letto e deserializzato in una lista di dizionari Python in memoria.</li>
+    <li><strong>Elaborazione:</strong> Filtri, inserimenti o aggiornamenti vengono applicati a questa lista.</li>
+    <li><strong>Persistenza:</strong> La lista risultante viene serializzata di nuovo nel file JSON, garantendo l'integrità dei dati.</li>
+  </ol>
+
+  <h2 id="riepilogo-dei-metodi"><a class="anchor" href="#riepilogo-dei-metodi" aria-label="Link para esta seção">#</a>Riepilogo dei Metodi</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Metodo</th><th>Descrizione Breve</th></tr></thead>
+    <tbody>
+      <tr><td><code>save_payload</code></td><td>Inserisce un nuovo record con ID univoco e timestamp.</td></tr>
+      <tr><td><code>fetch_documents</code></td><td>Filtra e restituisce i documenti della collezione.</td></tr>
+      <tr><td><code>update_documents</code></td><td>Modifica i campi dei documenti esistenti in base ai filtri.</td></tr>
+      <tr><td><code>delete_documents</code></td><td>Rimuove record specifici o multipli dalla collezione.</td></tr>
+      <tr><td><code>_get_collection_path</code></td><td>(Interno) Risolve e crea il percorso delle directory per il database.</td></tr>
+      <tr><td><code>_load_collection</code></td><td>(Interno) Legge i dati dal file JSON con gestione degli errori.</td></tr>
+      <tr><td><code>_save_collection</code></td><td>(Interno) Scrive i dati su disco con un'indentazione leggibile.</td></tr>
+      <tr><td><code>_match_filter</code></td><td>(Interno) Confronta i documenti con i criteri di ricerca.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="architettura-e-insights"><a class="anchor" href="#architettura-e-insights" aria-label="Link para esta seção">#</a>Architettura e Insights</h2>
+  <ul>
+    <li><strong>Astrazione di ID e Tempo:</strong> Il sistema toglie allo sviluppatore l'onere di generare ID univoci (<code>uuid4</code>) e di registrare i momenti di creazione/aggiornamento, iniettando i metadati automaticamente.</li>
+    <li><strong>Sicurezza di Scrittura:</strong> Usando <code>os.makedirs(exist_ok=True)</code>, il codice evita i comuni errori di "directory non trovata" durante l'esecuzione.</li>
+    <li><strong>Semplicità di Ricerca:</strong> Il filtraggio si basa sulla semplice uguaglianza, il che rende bassissima la curva di apprendimento per i nuovi utenti.</li>
+  </ul>
+
+  <h2 id="classe-localmanager"><a class="anchor" href="#classe-localmanager" aria-label="Link para esta seção">#</a>Classe LocalManager</h2>
+  <h3 id="descrizione"><a class="anchor" href="#descrizione" aria-label="Link para esta seção">#</a>Descrizione</h3>
+  <p>Gestore di persistenza locale che usa file JSON per simulare un database NoSQL. Organizza i dati in strutture di database e collezione all'interno del file system.</p>
+
+  <h3 id="argomenti"><a class="anchor" href="#argomenti" aria-label="Link para esta seção">#</a>Argomenti</h3>
+  <ul>
+    <li><strong>base_path</strong> (<em>str</em>): Nome della directory radice in cui verranno salvati tutti i dati. Predefinito: <code>"data"</code>.</li>
+  </ul>
+
+  <h3 id="metodi"><a class="anchor" href="#metodi" aria-label="Link para esta seção">#</a>Metodi</h3>
+
+  <h3 id="1-save-payload"><a class="anchor" href="#1-save-payload" aria-label="Link para esta seção">#</a>1. save_payload</h3>
+  <p><strong>Descrizione:</strong> Aggiunge un nuovo documento al database. Il metodo genera automaticamente un campo <code>_id</code> univoco e un campo <code>_created_at</code>.</p>
+  <p><strong>Argomenti:</strong></p>
+  <ul>
+    <li><code>database_name</code> (<em>str</em>): Nome del database.</li>
+    <li><code>collection_name</code> (<em>str</em>): Nome della collezione.</li>
+    <li><code>payload</code> (<em>dict</em>): I dati che vuoi salvare.</li>
+  </ul>
+  <p><strong>Valori di ritorno:</strong></p>
+  <ul>
+    <li><code>dict</code>: Un dizionario contenente lo stato dell'operazione e l'ID generato.</li>
+  </ul>
+  <p><strong>Raises:</strong></p>
+  <ul>
+    <li><code>Exception</code>: Errori di permesso di scrittura o errore del file system.</li>
+  </ul>
+  <p><strong>Esempio:</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>manager.<span class="t-f">save_payload</span>(<span class="t-s">&quot;loja&quot;</span>, <span class="t-s">&quot;produtos&quot;</span>, {<span class="t-s">&quot;nome&quot;</span>: <span class="t-s">&quot;Teclado&quot;</span>, <span class="t-s">&quot;preco&quot;</span>: <span class="t-n">150.0</span>})</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-fetch-documents"><a class="anchor" href="#2-fetch-documents" aria-label="Link para esta seção">#</a>2. fetch_documents</h3>
+  <p><strong>Descrizione:</strong> Recupera una lista di documenti che corrispondono ai criteri indicati.</p>
+  <p><strong>Argomenti:</strong></p>
+  <ul>
+    <li><code>database_name</code> (<em>str</em>): Nome del database.</li>
+    <li><code>collection_name</code> (<em>str</em>): Nome della collezione.</li>
+    <li><code>filter</code> (<em>dict</em>, opzionale): Filtro di uguaglianza (es: <code>{"status": "ativo"}</code>).</li>
+    <li><code>limit</code> (<em>int</em>): Limite massimo di risultati (0 per illimitato).</li>
+  </ul>
+  <p><strong>Valori di ritorno:</strong></p>
+  <ul>
+    <li><code>List[Dict]</code>: Lista dei documenti trovati.</li>
+  </ul>
+  <p><strong>Raises:</strong></p>
+  <ul>
+    <li><code>json.JSONDecodeError</code>: Se il file è corrotto.</li>
+  </ul>
+  <p><strong>Esempio:</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>manager.<span class="t-f">fetch_documents</span>(<span class="t-s">&quot;loja&quot;</span>, <span class="t-s">&quot;produtos&quot;</span>, filter={<span class="t-s">&quot;nome&quot;</span>: <span class="t-s">&quot;Teclado&quot;</span>})</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-update-documents"><a class="anchor" href="#3-update-documents" aria-label="Link para esta seção">#</a>3. update_documents</h3>
+  <p><strong>Descrizione:</strong> Individua i documenti tramite filtro e ne aggiorna i valori con un nuovo insieme di dati.</p>
+  <p><strong>Argomenti:</strong></p>
+  <ul>
+    <li><code>database_name</code> (<em>str</em>): Nome del database.</li>
+    <li><code>collection_name</code> (<em>str</em>): Nome della collezione.</li>
+    <li><code>filter</code> (<em>dict</em>): Criterio per trovare i documenti da modificare.</li>
+    <li><code>new_values</code> (<em>dict</em>): Nuovi campi e valori da inserire/modificare.</li>
+    <li><code>multi</code> (<em>bool</em>): Se <code>True</code>, aggiorna tutti quelli trovati; se <code>False</code>, solo il primo.</li>
+  </ul>
+  <p><strong>Valori di ritorno:</strong></p>
+  <ul>
+    <li><code>dict</code>: Statistiche contenenti <code>matched_count</code> e <code>modified_count</code>.</li>
+  </ul>
+  <p><strong>Raises:</strong></p>
+  <ul>
+    <li><code>IOError</code>: Errore durante il salvataggio delle modifiche su disco.</li>
+  </ul>
+  <p><strong>Esempio:</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>manager.<span class="t-f">update_documents</span>(<span class="t-s">&quot;loja&quot;</span>, <span class="t-s">&quot;produtos&quot;</span>, {<span class="t-s">&quot;nome&quot;</span>: <span class="t-s">&quot;Teclado&quot;</span>}, {<span class="t-s">&quot;preco&quot;</span>: <span class="t-n">130.0</span>})</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-delete-documents"><a class="anchor" href="#4-delete-documents" aria-label="Link para esta seção">#</a>4. delete_documents</h3>
+  <p><strong>Descrizione:</strong> Rimuove dalla collezione i documenti che corrispondono al filtro passato.</p>
+  <p><strong>Argomenti:</strong></p>
+  <ul>
+    <li><code>database_name</code> (<em>str</em>): Nome del database.</li>
+    <li><code>collection_name</code> (<em>str</em>): Nome della collezione.</li>
+    <li><code>filter</code> (<em>dict</em>): Criterio di selezione per la rimozione.</li>
+    <li><code>multi</code> (<em>bool</em>): Se rimuovere tutti i corrispondenti o solo il primo.</li>
+  </ul>
+  <p><strong>Valori di ritorno:</strong></p>
+  <ul>
+    <li><code>dict</code>: Conferma con il numero di elementi eliminati (<code>deleted_count</code>).</li>
+  </ul>
+  <p><strong>Raises:</strong></p>
+  <ul>
+    <li><code>Exception</code>: Errori generici di accesso al file.</li>
+  </ul>
+  <p><strong>Esempio:</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>manager.<span class="t-f">delete_documents</span>(<span class="t-s">&quot;loja&quot;</span>, <span class="t-s">&quot;produtos&quot;</span>, {<span class="t-s">&quot;status&quot;</span>: <span class="t-s">&quot;esgotado&quot;</span>}, multi=<span class="t-n">True</span>)</code></pre><button class="copy floating" type="button"></button></div></div></div>
+        <div class="feedback"></div>
+        <p class="source">Fonte: <code>src/database/no_relational_db/local_manager.py</code></p>
+        <nav class="pager" aria-label="Pagine vicine"><a class="pager-link prev" href="../../../../../pages/it/internal-source-code/application-tracing/use.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Precedente</small><span>Use</span></div></a><a class="pager-link next" href="../../../../../pages/it/internal-source-code/database/no-sql/mongo-manager.html"><div><small>Successiva</small><span>Mongo Manager</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="In questa pagina"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="../../../../../pages/it/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+          <p>Where intelligence finds purpose.</p>
+          <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>Repository su GitHub</a>
+        </div>
+        <div class="foot-col"><h2>Documentazione</h2><a href="../../../../../pages/it/getting-started/index.html">Introduction</a><a href="../../../../../pages/it/agents/index.html">Agents</a><a href="../../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../../pages/it/api/index.html">API</a><a href="../../../../../pages/it/modules/index.html">Modules</a><a href="../../../../../pages/it/internal-source-code/index.html">Internal Services</a></div>
+        <div class="foot-col"><h2>Risorse</h2><a href="../../../../../pages/it/getting-started/quickstart.html">Quickstart</a><a href="../../../../../pages/it/getting-started/licence.html">Licence</a><a href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener">Codice sorgente</a><a href="https://github.com/enzoschitini/better-ai/issues" target="_blank" rel="noopener">Segnala un problema</a></div>
+        <div class="foot-col"><h2>Creatore</h2><div class="foot-me"><img src="../../../../../assets/img/profile.jpg" alt="" width="44" height="44"><div><strong>Enzo Schitini</strong><span>Data Scientist &amp; AI Engineer</span></div></div><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/enzoschitini" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 BetterAI &middot; Licenza MIT</span>
+        <span>Creato da <a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Enzo Schitini</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Cerca nella documentazione">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Cerca pagine e sezioni" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Risultati"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>naviga</span></span>
+    <span><kbd>Enter</kbd><span>apri</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "it", "root": "../../../../../", "index": "../../../../../search-it.json", "alt": {"pt": "pages/pt/internal-source-code/database/no-sql/local-manage.html", "it": "pages/it/internal-source-code/database/no-sql/local-manage.html", "en": "pages/en/internal-source-code/database/no-sql/local-manage.html"}, "i": {"noResults": "Nessun risultato per “%s”. Prova con il nome di un modulo, come “Pinecone”."}};</script>
+<script src="../../../../../_design-system/js/ds.js?v=9a5e2954"></script>
+<script src="../../../../../_design-system/js/docs.js?v=6f602c0a"></script>
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dependences | BetterAI Docs</title>
+<meta name="description" content="Questo progetto utilizza un solido insieme di librerie per la costruzione di API, l'orchestrazione di agenti di IA, l'elaborazione dei dati, l'archiviazione e l'integrazione con servizi esterni.">
+<link rel="canonical" href="pages/it/getting-started/dependences.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../../_design-system/css/tokens.css?v=7f43b250">
+<link rel="stylesheet" href="../../../_design-system/css/base.css?v=4a698b89">
+<link rel="stylesheet" href="../../../_design-system/css/layout.css?v=503e806e">
+<link rel="stylesheet" href="../../../_design-system/css/content.css?v=cfc5f8ef">
+<link rel="stylesheet" href="../../../_design-system/css/search.css?v=1ecf3252">
+<link rel="stylesheet" href="../../../_design-system/css/responsive.css?v=6efeec66">
+</head>
+<body>
+<a class="skip" href="#main">Vai al contenuto</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Creato da Enzo Schitini. Ti invito a connetterti con me su LinkedIn.</a></span>
+    <button type="button" aria-label="Chiudi avviso"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../pages/it/index.html">
+        <img src="../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Cerca nella documentazione">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Cerca...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="../../../pages/it/getting-started/quickstart.html">Quickstart<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Lingua"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>IT</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="false"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="true"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="false"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Cambia tema chiaro o scuro"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Aree della documentazione"><a class="tab" href="../../../pages/it/index.html">Panoramica</a><a class="tab" href="../../../pages/it/getting-started/index.html" aria-current="page">Introduction</a><a class="tab" href="../../../pages/it/agents/index.html">Agents</a><a class="tab" href="../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../pages/it/api/index.html">API</a><a class="tab" href="../../../pages/it/modules/index.html">Modules</a><a class="tab" href="../../../pages/it/internal-source-code/index.html">Internal Services</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Introduction</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Dependences</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Navigazione della documentazione">
+    <nav class="side"><div class="side-areas"><a href="../../../pages/it/index.html">Panoramica</a><a href="../../../pages/it/getting-started/index.html" aria-current="page">Introduction</a><a href="../../../pages/it/agents/index.html">Agents</a><a href="../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../pages/it/api/index.html">API</a><a href="../../../pages/it/modules/index.html">Modules</a><a href="../../../pages/it/internal-source-code/index.html">Internal Services</a></div><a class="side-link" href="../../../pages/it/getting-started/index.html"><span>Panoramica</span></a><div class="side-group"><p class="side-title">Primi passi</p><ul><li><a class="side-link" href="../../../pages/it/getting-started/quickstart.html"><span>Quickstart</span></a></li><li><a class="side-link" href="../../../pages/it/getting-started/dependences.html" aria-current="page"><span>Dependences</span></a></li><li><a class="side-link" href="../../../pages/it/getting-started/licence.html"><span>Licence</span></a></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Primi passi</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Dependences</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copia pagina</span></button>
+            </div>
+          </div>
+          <p class="lead">Questo progetto utilizza un solido insieme di librerie per la costruzione di API, l'orchestrazione di agenti di IA, l'elaborazione dei dati, l'archiviazione e l'integrazione con servizi esterni.</p>
+          <details class="toc-inline"><summary>In questa pagina</summary><ul></ul></details>
+        </header>
+        <div class="prose"><p>Le dipendenze sono organizzate per responsabilità per facilitare manutenzione, scalabilità e comprensione dell'architettura.</p>
+  <p><strong>Progetto:</strong> <code>better-ai</code> · <strong>Versione:</strong> <code>0.1.0</code> · <strong>Python richiesto:</strong> <code>&gt;=3.12</code></p>
+  <div class="callout" data-kind="note"><p><strong>Fonte di verità:</strong> <code>pyproject.toml</code>. Installazione consigliata con <code>uv sync</code> (oppure <code>uv pip install -e .</code>).</p></div>
+
+  <h2 id="1-core-api-infrastructure"><a class="anchor" href="#1-core-api-infrastructure" aria-label="Link para esta seção">#</a>1. Core &amp; API Infrastructure</h2>
+  <p>Responsabili della struttura dell'applicazione backend e della comunicazione HTTP.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Libreria</th><th>Versione</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>dotenv</code></td><td><code>~0.9.9</code></td><td>Gestione delle variabili d'ambiente tramite <code>.env</code></td></tr>
+      <tr><td><code>fastapi</code></td><td><code>~0.120.4</code></td><td>Framework moderno per creare API veloci in Python</td></tr>
+      <tr><td><code>uvicorn</code></td><td><code>~0.23.2</code></td><td>Server ASGI per eseguire applicazioni FastAPI</td></tr>
+      <tr><td><code>python-multipart</code></td><td><code>~0.0.20</code></td><td>Supporto al caricamento di file nelle API</td></tr>
+      <tr><td><code>requests</code></td><td><code>~2.32.5</code></td><td>Client HTTP per consumare API esterne</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="2-orchestration-langchain-stack"><a class="anchor" href="#2-orchestration-langchain-stack" aria-label="Link para esta seção">#</a>2. Orchestration (LangChain Stack)</h2>
+  <p>Livello principale di intelligenza e orchestrazione degli agenti.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Libreria</th><th>Versione</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>langchain</code></td><td><code>~0.3.27</code></td><td>Framework per costruire applicazioni con LLM</td></tr>
+      <tr><td><code>langchain-community</code></td><td><code>~0.3.31</code></td><td>Integrazioni aggiuntive della community</td></tr>
+      <tr><td><code>langchain-experimental</code></td><td><code>~0.3.4</code></td><td>Funzionalità sperimentali</td></tr>
+      <tr><td><code>langchain-openai</code></td><td><code>~0.3.35</code></td><td>Integrazione con i modelli di OpenAI</td></tr>
+      <tr><td><code>langchain-google-genai</code></td><td><code>~2.1.12</code></td><td>Integrazione con i modelli Google Gemini</td></tr>
+      <tr><td><code>langchain-groq</code></td><td><code>~0.3.8</code></td><td>Integrazione con i modelli Groq (alte prestazioni)</td></tr>
+      <tr><td><code>langchain-pinecone</code></td><td><code>~0.2.13</code></td><td>Integrazione con il database vettoriale Pinecone</td></tr>
+      <tr><td><code>langchain-text-splitters</code></td><td><code>&gt;=0.3.11</code></td><td>Strategie di chunking del testo per pipeline RAG</td></tr>
+      <tr><td><code>agno</code></td><td><code>~2.5.8</code></td><td>Framework di agenti (memoria, tool, team di agenti)</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="3-ai-models-sdks"><a class="anchor" href="#3-ai-models-sdks" aria-label="Link para esta seção">#</a>3. AI Models &amp; SDKs</h2>
+  <p>SDK nativi per l'uso diretto dei modelli, utili quando una funzionalità non è coperta da LangChain.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Libreria</th><th>Versione</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>google-genai</code></td><td><code>~1.52.0</code></td><td>SDK ufficiale per l'uso dei modelli Gemini</td></tr>
+      <tr><td><code>anthropic</code></td><td><code>&gt;=0.105.2</code></td><td>SDK ufficiale di Anthropic (modelli Claude)</td></tr>
+      <tr><td><code>groq</code></td><td><code>~0.37.1</code></td><td>SDK ufficiale di Groq per inferenza a bassa latenza</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="4-data-persistence-memory"><a class="anchor" href="#4-data-persistence-memory" aria-label="Link para esta seção">#</a>4. Data Persistence &amp; Memory</h2>
+  <p>Livello di archiviazione dei dati strutturati e vettoriali.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Libreria</th><th>Versione</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>pinecone</code></td><td><code>~7.3.0</code></td><td>Database vettoriale per embedding</td></tr>
+      <tr><td><code>faiss-cpu</code></td><td><code>&gt;=1.14.3</code></td><td>Indice vettoriale locale (in-process), senza dipendenza da servizi esterni</td></tr>
+      <tr><td><code>pymongo</code></td><td><code>~4.15.3</code></td><td>Client MongoDB (NoSQL)</td></tr>
+      <tr><td><code>supabase</code></td><td><code>~2.27.3</code></td><td>Backend as a Service con Postgres + Auth</td></tr>
+      <tr><td><code>psycopg2</code></td><td><code>&gt;=2.9.11</code></td><td>Driver PostgreSQL (compilato dal codice sorgente)</td></tr>
+      <tr><td><code>psycopg2-binary</code></td><td><code>&gt;=2.9.11</code></td><td>Versione binaria precompilata del driver PostgreSQL</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="5-document-processing-rag"><a class="anchor" href="#5-document-processing-rag" aria-label="Link para esta seção">#</a>5. Document Processing &amp; RAG</h2>
+  <p>Estrazione e gestione di documenti per alimentare la base di conoscenza.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Libreria</th><th>Versione</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>pymupdf</code></td><td><code>~1.26.7</code></td><td>Lettura ed estrazione di PDF (alte prestazioni)</td></tr>
+      <tr><td><code>pypdf</code></td><td><code>~6.2.0</code></td><td>Gestione di file PDF</td></tr>
+      <tr><td><code>python-docx</code></td><td><code>~1.2.0</code></td><td>Lettura e scrittura di file Word</td></tr>
+      <tr><td><code>python-pptx</code></td><td><code>~1.0.2</code></td><td>Gestione di file PowerPoint</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="6-data-analysis-formatting"><a class="anchor" href="#6-data-analysis-formatting" aria-label="Link para esta seção">#</a>6. Data Analysis &amp; Formatting</h2>
+  <p>Analisi, trasformazione e visualizzazione dei dati.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Libreria</th><th>Versione</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>pandas</code></td><td><code>~2.3.3</code></td><td>Manipolazione e analisi dei dati</td></tr>
+      <tr><td><code>pandasai</code></td><td><code>&gt;=2.0.24</code></td><td>Interrogazione di DataFrame in linguaggio naturale tramite LLM</td></tr>
+      <tr><td><code>openpyxl</code></td><td><code>~3.1.5</code></td><td>Lettura/scrittura di file Excel</td></tr>
+      <tr><td><code>tabulate</code></td><td><code>~0.9.0</code></td><td>Formattazione di tabelle in testo</td></tr>
+      <tr><td><code>matplotlib</code></td><td><code>~3.10.8</code></td><td>Visualizzazione dei dati</td></tr>
+      <tr><td><code>seaborn</code></td><td><code>~0.13.2</code></td><td>Visualizzazioni statistiche basate su matplotlib</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="7-external-tools-integrations"><a class="anchor" href="#7-external-tools-integrations" aria-label="Link para esta seção">#</a>7. External Tools &amp; Integrations</h2>
+  <p>Strumenti di ricerca e API di terze parti utilizzati dagli agenti.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Libreria</th><th>Versione</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>wikipedia</code></td><td><code>~1.4.0</code></td><td>Accesso ai dati di Wikipedia</td></tr>
+      <tr><td><code>tavily</code></td><td><code>&gt;=1.1.0</code></td><td>API di ricerca ottimizzata per LLM</td></tr>
+      <tr><td><code>yfinance</code></td><td><code>&gt;=1.2.0</code></td><td>Dati finanziari di Yahoo Finance</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="8-internal-services-utilities"><a class="anchor" href="#8-internal-services-utilities" aria-label="Link para esta seção">#</a>8. Internal Services &amp; Utilities</h2>
+  <p>Interfaccia, test e utility di supporto allo sviluppo.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Libreria</th><th>Versione</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>streamlit</code></td><td><code>&gt;=1.56.0</code></td><td>Interfaccia web per le demo e i pannelli della piattaforma</td></tr>
+      <tr><td><code>pytest</code></td><td><code>&gt;=9.0.2</code></td><td>Framework per test automatizzati</td></tr>
+      <tr><td><code>inflect</code></td><td><code>~7.5.0</code></td><td>Pluralizzazione e normalizzazione di termini in inglese</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="convenzioni-di-versionamento"><a class="anchor" href="#convenzioni-di-versionamento" aria-label="Link para esta seção">#</a>Convenzioni di versionamento</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Operatore</th><th>Significato</th><th>Esempio</th></tr></thead>
+    <tbody>
+      <tr><td><code>~=X.Y.Z</code></td><td>Consente aggiornamenti di patch, fissa major e minor</td><td><code>~=0.3.27</code> → <code>&gt;=0.3.27, &lt;0.4.0</code></td></tr>
+      <tr><td><code>&gt;=X.Y.Z</code></td><td>Accetta qualsiasi versione uguale o superiore</td><td><code>&gt;=1.56.0</code></td></tr>
+    </tbody>
+  </table></div>
+  <p>Le librerie con <code>~=</code> sono quelle che incidono direttamente sul comportamento degli agenti e delle pipeline RAG — mantenerle fissate per minor evita rotture silenziose delle API. Quelle contrassegnate con <code>&gt;=</code> sono periferiche o abbastanza stabili da seguire le versioni più recenti.</p></div>
+        <div class="feedback"></div>
+        <nav class="pager" aria-label="Pagine vicine"><a class="pager-link prev" href="../../../pages/it/getting-started/quickstart.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Precedente</small><span>Quickstart</span></div></a><a class="pager-link next" href="../../../pages/it/getting-started/licence.html"><div><small>Successiva</small><span>Licence</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="In questa pagina"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="../../../pages/it/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+          <p>Where intelligence finds purpose.</p>
+          <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>Repository su GitHub</a>
+        </div>
+        <div class="foot-col"><h2>Documentazione</h2><a href="../../../pages/it/getting-started/index.html">Introduction</a><a href="../../../pages/it/agents/index.html">Agents</a><a href="../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../pages/it/api/index.html">API</a><a href="../../../pages/it/modules/index.html">Modules</a><a href="../../../pages/it/internal-source-code/index.html">Internal Services</a></div>
+        <div class="foot-col"><h2>Risorse</h2><a href="../../../pages/it/getting-started/quickstart.html">Quickstart</a><a href="../../../pages/it/getting-started/licence.html">Licence</a><a href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener">Codice sorgente</a><a href="https://github.com/enzoschitini/better-ai/issues" target="_blank" rel="noopener">Segnala un problema</a></div>
+        <div class="foot-col"><h2>Creatore</h2><div class="foot-me"><img src="../../../assets/img/profile.jpg" alt="" width="44" height="44"><div><strong>Enzo Schitini</strong><span>Data Scientist &amp; AI Engineer</span></div></div><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/enzoschitini" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 BetterAI &middot; Licenza MIT</span>
+        <span>Creato da <a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Enzo Schitini</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Cerca nella documentazione">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Cerca pagine e sezioni" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Risultati"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>naviga</span></span>
+    <span><kbd>Enter</kbd><span>apri</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "it", "root": "../../../", "index": "../../../search-it.json", "alt": {"pt": "pages/pt/getting-started/dependences.html", "it": "pages/it/getting-started/dependences.html", "en": "pages/en/getting-started/dependences.html"}, "i": {"noResults": "Nessun risultato per “%s”. Prova con il nome di un modulo, come “Pinecone”."}};</script>
+<script src="../../../_design-system/js/ds.js?v=9a5e2954"></script>
+<script src="../../../_design-system/js/docs.js?v=6f602c0a"></script>
+</body>
+</html>

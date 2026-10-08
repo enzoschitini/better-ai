@@ -1,0 +1,16 @@
+/* ---------- Busca ---------- */
+.search { width: min(640px, calc(100vw - 32px)); margin: 12vh auto 0; padding: 0; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--bg); color: var(--ink); box-shadow: var(--shadow-pop); overflow: hidden; }
+.search::backdrop { background: rgba(3, 7, 16, .45); backdrop-filter: blur(3px); }
+.search-field { display: flex; align-items: center; gap: 12px; padding: 0 16px; border-bottom: 1px solid var(--line-soft); color: var(--ink-3); }
+.search-field input { flex: 1; min-width: 0; height: 52px; border: 0; outline: 0; background: none; color: var(--ink); font: inherit; }
+.search-field input::-webkit-search-cancel-button { display: none; }
+.results { list-style: none; margin: 0; padding: 8px; max-height: min(56vh, 420px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+.results-label { padding: 8px 12px 4px; font-size: .75rem; font-weight: 600; color: var(--ink-3); }
+.result a { display: flex; flex-direction: column; padding: 8px 12px; border-radius: var(--radius-md); text-decoration: none; }
+.result[aria-selected="true"] a { background: var(--primary-fill); }
+.r-title { font-weight: 500; font-size: .9375rem; line-height: 1.5; }
+.r-path { font-size: .8125rem; line-height: 1.4; color: var(--ink-3); }
+.result mark { background: none; color: var(--accent); font-weight: 600; }
+.no-results { padding: 26px 16px; text-align: center; color: var(--ink-3); font-size: .9375rem; }
+.search-foot { display: flex; gap: 18px; padding: 10px 16px; border-top: 1px solid var(--line-soft); font-size: .8125rem; color: var(--ink-3); }
+.search-foot kbd { padding: 3px 6px; border: 1px solid var(--line); border-radius: var(--radius-xs); margin-right: 3px; }

@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tracing Core | BetterAI Docs</title>
+<meta name="description" content="Esta é uma documentação detalhada e didática da classe ApplicationTracing, projetada para facilitar a implementação de observabilidade em sistemas Python.">
+<link rel="canonical" href="pages/pt/internal-source-code/application-tracing/tracing-core.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../../../_design-system/css/tokens.css?v=7f43b250">
+<link rel="stylesheet" href="../../../../_design-system/css/base.css?v=4a698b89">
+<link rel="stylesheet" href="../../../../_design-system/css/layout.css?v=503e806e">
+<link rel="stylesheet" href="../../../../_design-system/css/content.css?v=cfc5f8ef">
+<link rel="stylesheet" href="../../../../_design-system/css/search.css?v=1ecf3252">
+<link rel="stylesheet" href="../../../../_design-system/css/responsive.css?v=6efeec66">
+</head>
+<body>
+<a class="skip" href="#main">Ir para o conteúdo</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Criado por Enzo Schitini. Convido você a se conectar comigo no LinkedIn.</a></span>
+    <button type="button" aria-label="Fechar aviso"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../pages/pt/index.html">
+        <img src="../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Buscar na documentação">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Buscar...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="../../../../pages/pt/getting-started/quickstart.html">Quickstart<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Idioma"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>PT</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="true"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="false"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="false"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Alternar tema claro e escuro"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Áreas da documentação"><a class="tab" href="../../../../pages/pt/index.html">Visão geral</a><a class="tab" href="../../../../pages/pt/getting-started/index.html">Introduction</a><a class="tab" href="../../../../pages/pt/agents/index.html">Agents</a><a class="tab" href="../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../pages/pt/api/index.html">API</a><a class="tab" href="../../../../pages/pt/modules/index.html">Modules</a><a class="tab" href="../../../../pages/pt/internal-source-code/index.html" aria-current="page">Internal Services</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Internal Services</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Tracing Core</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Navegação da documentação">
+    <nav class="side"><div class="side-areas"><a href="../../../../pages/pt/index.html">Visão geral</a><a href="../../../../pages/pt/getting-started/index.html">Introduction</a><a href="../../../../pages/pt/agents/index.html">Agents</a><a href="../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/pt/api/index.html">API</a><a href="../../../../pages/pt/modules/index.html">Modules</a><a href="../../../../pages/pt/internal-source-code/index.html" aria-current="page">Internal Services</a></div><a class="side-link" href="../../../../pages/pt/internal-source-code/index.html"><span>Visão geral</span></a><div class="side-group"><p class="side-title">Application Tracing</p><ul><li><a class="side-link" href="../../../../pages/pt/internal-source-code/application-tracing/logger-engine.html"><span>Logger Engine</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/application-tracing/payload-builder.html"><span>Payload Builder</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/application-tracing/tracing-core.html" aria-current="page"><span>Tracing Core</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/application-tracing/use.html"><span>Use</span></a></li></ul></div><div class="side-group"><p class="side-title">Database</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>No SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/database/no-sql/local-manage.html"><span>Local Manage</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/database/no-sql/mongo-manager.html"><span>Mongo Manager</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/database/no-sql/router.html"><span>Router</span></a></li></ul></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/database/sql/supabase-database.html"><span>Supabase Database</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Storage</p><ul><li><a class="side-link" href="../../../../pages/pt/internal-source-code/storage/storage-menage-repository.html"><span>Storage Menage Repository</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Supabase</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/storage/supabase/storage-menager.html"><span>Storage Menager</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Token Calculate</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Exchange Rate</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/token-calculate/exchange-rate/bcb-exchange-rate-service.html"><span>BCB Exchange Rate Service</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/token-calculate/exchange-rate/exchange-rate-service.html"><span>Exchange Rate Service</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/token-calculate/model-pricing.html"><span>Model Pricing</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/token-calculate/token-counter.html"><span>Token Counter</span></a></li></ul></div><div class="side-group"><p class="side-title">Utils</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Load Request File</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/utils/load-request-file/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/utils/load-request-file/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/utils/loader-files.html"><span>Loader Files</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/utils/unique-id-factory.html"><span>Unique ID Factory</span></a></li></ul></div><div class="side-group"><p class="side-title">Vector Store</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Local Dynamic Embedding</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/vector-store/local-dynamic-embedding/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/vector-store/local-dynamic-embedding/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/vector-store/pinecone-client.html"><span>Pinecone Client</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/vector-store/pinecone-embedding.html"><span>Pinecone Embedding</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/vector-store/pinecone-retriever.html"><span>Pinecone Retriever</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/vector-store/retrieval-manager.html"><span>Retrieval Manager</span></a></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Application Tracing</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Tracing Core</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copiar página</span></button>
+            </div>
+          </div>
+          <p class="lead">Esta é uma documentação detalhada e didática da classe ApplicationTracing, projetada para facilitar a implementação de observabilidade em sistemas Python.</p>
+          <details class="toc-inline"><summary>Nesta página</summary><ul></ul></details>
+        </header>
+        <div class="prose"><h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão Geral</h2>
+  <p>A classe <code>ApplicationTracing</code> atua como uma <strong>Fachada (Facade)</strong> para o gerenciamento de logs. Em vez de lidar diretamente com bibliotecas complexas ou configurações de baixo nível, o desenvolvedor utiliza esta classe para padronizar como as mensagens são registradas, exibidas e armazenadas.</p>
+  <p>O principal objetivo é garantir que todos os logs da aplicação sigam a mesma estrutura, facilitando a busca por falhas (troubleshooting) e a análise de dados em ferramentas como o MongoDB ou visualizadores de arquivos de log.</p>
+
+  <h2 id="fluxo-de-execucao"><a class="anchor" href="#fluxo-de-execucao" aria-label="Link para esta seção">#</a>Fluxo de Execução</h2>
+  <p>O fluxo de funcionamento da classe segue estas etapas:</p>
+  <ol>
+    <li><strong>Instanciação</strong>: O desenvolvedor cria o objeto definindo as configurações globais (ex: se deve salvar no MongoDB, se deve mostrar metadados no console).</li>
+    <li><strong>Encapsulamento</strong>: O construtor inicializa internamente o <code>LoggerEngine</code>, que é o motor real de processamento.</li>
+    <li><strong>Chamada de Método</strong>: Ao chamar um método como <code>.INFO()</code> ou <code>.ERROR()</code>, os parâmetros passados (mensagem, metadados) são enviados ao motor.</li>
+    <li><strong>Sobrescrita Dinâmica</strong>: Cada método de log permite sobrescrever as configurações globais momentaneamente (ex: o sistema não salva logs INFO por padrão, mas você pode forçar o salvamento de um log específico).</li>
+    <li><strong>Saída Multi-canal</strong>: O log é processado e enviado simultaneamente para o console, arquivo local ou banco de dados, conforme configurado.</li>
+  </ol>
+
+  <h2 id="tabela-de-metodos"><a class="anchor" href="#tabela-de-metodos" aria-label="Link para esta seção">#</a>Tabela de Métodos</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Método</th><th>Nível de Severidade</th><th>Uso Recomendado</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>N/A</td><td>Configuração inicial e setup dos drivers de saída.</td></tr>
+      <tr><td><code>INFO</code></td><td>Informativo</td><td>Marcos de sucesso e fluxo normal (ex: "Processamento concluído").</td></tr>
+      <tr><td><code>DEBUG</code></td><td>Baixo</td><td>Detalhes técnicos para desenvolvedores (ex: valores de variáveis).</td></tr>
+      <tr><td><code>WARNING</code></td><td>Médio</td><td>Situações inesperadas que não impedem a execução (ex: "API lenta").</td></tr>
+      <tr><td><code>ERROR</code></td><td>Alto</td><td>Falhas em funcionalidades específicas (ex: "Falha ao enviar e-mail").</td></tr>
+      <tr><td><code>CRITICAL</code></td><td>Urgente</td><td>Problemas que podem derrubar o sistema (ex: "Banco de dados offline").</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="arquitetura-e-insights"><a class="anchor" href="#arquitetura-e-insights" aria-label="Link para esta seção">#</a>Arquitetura e Insights</h2>
+  <ul>
+    <li><strong>Separação de Preocupações</strong>: A classe não sabe <em>como</em> escrever no MongoDB; ela apenas delega essa responsabilidade para o <code>LoggerEngine</code>. Isso facilita a manutenção futura.</li>
+    <li><strong>Flexibilidade Granular</strong>: O design permite que você tenha um comportamento global, mas flexibilidade total em cada linha de código através dos argumentos opcionais nos métodos.</li>
+    <li><strong>Observabilidade Estruturada</strong>: O uso do argumento <code>metadata</code> (dicionário) incentiva o log estruturado (JSON), que é muito mais fácil de indexar e pesquisar do que simples strings de texto.</li>
+    <li><strong>Rastreabilidade</strong>: O parâmetro <code>log_id</code> permite correlacionar logs de uma mesma transação que atravessa diferentes funções ou arquivos.</li>
+  </ul>
+
+  <h2 id="documentacao-tecnica"><a class="anchor" href="#documentacao-tecnica" aria-label="Link para esta seção">#</a>Documentação Técnica</h2>
+
+  <h2 id="classe-applicationtracing"><a class="anchor" href="#classe-applicationtracing" aria-label="Link para esta seção">#</a>Classe <code>ApplicationTracing</code></h2>
+  <h3 id="descricao"><a class="anchor" href="#descricao" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Classe responsável por abstrair e padronizar o uso de logs dentro da aplicação. Ela encapsula a lógica complexa de logging e fornece uma interface simplificada para o desenvolvedor.</p>
+  <h3 id="argumentos-do-construtor"><a class="anchor" href="#argumentos-do-construtor" aria-label="Link para esta seção">#</a>Argumentos do Construtor</h3>
+  <ul>
+    <li><code>log_id</code> (str): ID único para rastreamento de fluxo.</li>
+    <li><code>flag</code> (str): Marcador para categorizar logs.</li>
+    <li><code>file_name</code> (str): Contexto do arquivo de origem.</li>
+    <li><code>log_file_name</code> (str): Nome do arquivo <code>.log</code> de destino.</li>
+    <li><code>show_info_logs</code> (bool): Habilita/Desabilita logs de nível INFO no console.</li>
+    <li><code>show_metadata</code> (bool): Define se detalhes técnicos aparecem no console.</li>
+    <li><code>save_logs</code> (bool): Se <code>True</code>, grava em arquivo físico.</li>
+    <li><code>save_mongo</code> (bool): Se <code>True</code>, persiste no banco de dados.</li>
+    <li><code>format_metadata</code> (bool): Aplica formatação visual aos metadados.</li>
+  </ul>
+
+  <h2 id="metodos"><a class="anchor" href="#metodos" aria-label="Link para esta seção">#</a>Métodos</h2>
+
+  <h2 id="1-info-debug-warning-error-critical"><a class="anchor" href="#1-info-debug-warning-error-critical" aria-label="Link para esta seção">#</a>1. INFO / DEBUG / WARNING / ERROR / CRITICAL</h2>
+  <p><em>(Os métodos compartilham a mesma assinatura para manter a consistência)</em></p>
+  <p><strong>Descrição</strong></p>
+  <p>Registram uma mensagem no nível de severidade correspondente, processando o armazenamento e a exibição conforme as regras definidas na instância.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>func_name</code> (Optional[str]): Nome da função onde o evento ocorreu.</li>
+    <li><code>message</code> (Optional[str]): Texto explicativo do log.</li>
+    <li><code>metadata</code> (Optional[Dict]): Dicionário com dados extras (ex: <code>{"user_id": 123}</code>).</li>
+    <li><code>save_logs</code> (Optional[bool]): Sobrescreve a configuração global de salvamento em arquivo.</li>
+    <li><code>save_mongo</code> (Optional[bool]): Sobrescreve a configuração global de salvamento no MongoDB.</li>
+    <li><code>show_info_logs</code> (Optional[bool]): Força a exibição ou ocultação de logs INFO.</li>
+    <li><code>show_metadata</code> (Optional[bool]): Força a exibição ou ocultação de metadados.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li><code>None</code>: O método realiza o registro (efeito colateral) e não retorna dados.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>Exception</code>: Pode propagar erros de conexão com banco de dados ou permissão de escrita em disco originados no <code>LoggerEngine</code>.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> src.tracing.tracing_core <span class="t-k">import</span> ApplicationTracing
+
+<span class="t-c"># Inicialização</span>
+tracer = <span class="t-f">ApplicationTracing</span>(save_logs=<span class="t-n">True</span>, log_id=<span class="t-s">&quot;TR-9952&quot;</span>)
+
+<span class="t-c"># Uso simples</span>
+tracer.<span class="t-f">INFO</span>(
+    func_name=<span class="t-s">&quot;create_user&quot;</span>,
+    message=<span class="t-s">&quot;App Init&quot;</span>
+)
+
+tracer.<span class="t-f">DEBUG</span>(
+    func_name=<span class="t-s">&quot;create_user&quot;</span>,
+    message=<span class="t-s">&quot;User created&quot;</span>,
+    metadata={<span class="t-s">&quot;user&quot;</span>: <span class="t-s">&quot;Enzo&quot;</span>},
+    <span class="t-c">#save_logs=False</span>
+    <span class="t-c">#show_metadata=False</span>
+)
+
+tracer.<span class="t-f">WARNING</span>(
+    func_name=<span class="t-s">&quot;create_user&quot;</span>,
+    message=<span class="t-s">&quot;User created&quot;</span>,
+    metadata={<span class="t-s">&quot;user&quot;</span>: <span class="t-s">&quot;Enzo&quot;</span>},
+)
+
+tracer.<span class="t-f">ERROR</span>(
+    func_name=<span class="t-s">&quot;create_user&quot;</span>,
+    message=<span class="t-s">&quot;User created&quot;</span>,
+    metadata={<span class="t-s">&quot;user&quot;</span>: <span class="t-s">&quot;Enzo&quot;</span>},
+)
+
+tracer.<span class="t-f">CRITICAL</span>(
+    func_name=<span class="t-s">&quot;create_user&quot;</span>,
+    message=<span class="t-s">&quot;User created&quot;</span>,
+    metadata={<span class="t-s">&quot;user&quot;</span>: <span class="t-s">&quot;Enzo&quot;</span>},
+)
+
+<span class="t-c"># Debug forçando salvamento no Mongo apenas para esta linha</span>
+tracer.<span class="t-f">DEBUG</span>(message=<span class="t-s">&quot;Checkpont técnico&quot;</span>, save_mongo=<span class="t-n">True</span>)</code></pre><button class="copy floating" type="button"></button></div></div></div>
+        <div class="feedback"></div>
+        <p class="source">Fonte: <code>src/tracing/tracing_core.py</code></p>
+        <nav class="pager" aria-label="Páginas vizinhas"><a class="pager-link prev" href="../../../../pages/pt/internal-source-code/application-tracing/payload-builder.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Anterior</small><span>Payload Builder</span></div></a><a class="pager-link next" href="../../../../pages/pt/internal-source-code/application-tracing/use.html"><div><small>Próxima</small><span>Use</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="Nesta página"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="../../../../pages/pt/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+          <p>Where intelligence finds purpose.</p>
+          <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>Repositório no GitHub</a>
+        </div>
+        <div class="foot-col"><h2>Documentação</h2><a href="../../../../pages/pt/getting-started/index.html">Introduction</a><a href="../../../../pages/pt/agents/index.html">Agents</a><a href="../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/pt/api/index.html">API</a><a href="../../../../pages/pt/modules/index.html">Modules</a><a href="../../../../pages/pt/internal-source-code/index.html">Internal Services</a></div>
+        <div class="foot-col"><h2>Recursos</h2><a href="../../../../pages/pt/getting-started/quickstart.html">Quickstart</a><a href="../../../../pages/pt/getting-started/licence.html">Licence</a><a href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener">Código-fonte</a><a href="https://github.com/enzoschitini/better-ai/issues" target="_blank" rel="noopener">Reportar um problema</a></div>
+        <div class="foot-col"><h2>Criador</h2><div class="foot-me"><img src="../../../../assets/img/profile.jpg" alt="" width="44" height="44"><div><strong>Enzo Schitini</strong><span>Data Scientist &amp; AI Engineer</span></div></div><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/enzoschitini" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 BetterAI &middot; Licença MIT</span>
+        <span>Criado por <a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Enzo Schitini</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Buscar na documentação">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Buscar páginas e seções" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Resultados"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>navegar</span></span>
+    <span><kbd>Enter</kbd><span>abrir</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "pt", "root": "../../../../", "index": "../../../../search-pt.json", "alt": {"pt": "pages/pt/internal-source-code/application-tracing/tracing-core.html", "it": "pages/it/internal-source-code/application-tracing/tracing-core.html", "en": "pages/en/internal-source-code/application-tracing/tracing-core.html"}, "i": {"noResults": "Nada encontrado para “%s”. Tente o nome de um módulo, como “Pinecone”."}};</script>
+<script src="../../../../_design-system/js/ds.js?v=9a5e2954"></script>
+<script src="../../../../_design-system/js/docs.js?v=6f602c0a"></script>
+</body>
+</html>

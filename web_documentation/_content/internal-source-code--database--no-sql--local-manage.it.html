@@ -1,0 +1,141 @@
+<page data-lead="Questa è una documentazione dettagliata e didattica della classe LocalManager, pensata per fare da guida sia agli utenti sia agli sviluppatori che vogliono comprendere la struttura di questo gestore di dati NoSQL locale.">
+  <h2>Panoramica</h2>
+  <p><code>LocalManager</code> è una soluzione leggera ed efficiente per la persistenza dei dati in formato NoSQL, che usa il file system locale come archivio. Emula il comportamento dei database moderni (come MongoDB), organizzando le informazioni in una gerarchia di <strong>Databases</strong> (directory) e <strong>Collections</strong> (file JSON).</p>
+  <p>È lo strumento ideale per:</p>
+  <ul>
+    <li>Prototipazione rapida di applicazioni.</li>
+    <li>Archiviazione di configurazioni locali.</li>
+    <li>Ambienti di test in cui non si vuole configurare un server di database complesso.</li>
+  </ul>
+
+  <h2>Flusso di Esecuzione</h2>
+  <p>Il funzionamento della classe segue un ciclo prevedibile di gestione dell'I/O dei file:</p>
+  <ol>
+    <li><strong>Inizializzazione:</strong> Il gestore verifica o crea la cartella radice (<code>data</code>).</li>
+    <li><strong>Mappatura:</strong> Quando viene richiesta un'operazione, risolve il percorso fisico: <code>base/database/collection.json</code>.</li>
+    <li><strong>Caricamento:</strong> Il file JSON viene letto e deserializzato in una lista di dizionari Python in memoria.</li>
+    <li><strong>Elaborazione:</strong> Filtri, inserimenti o aggiornamenti vengono applicati a questa lista.</li>
+    <li><strong>Persistenza:</strong> La lista risultante viene serializzata di nuovo nel file JSON, garantendo l'integrità dei dati.</li>
+  </ol>
+
+  <h2>Riepilogo dei Metodi</h2>
+  <table>
+    <thead><tr><th>Metodo</th><th>Descrizione Breve</th></tr></thead>
+    <tbody>
+      <tr><td><code>save_payload</code></td><td>Inserisce un nuovo record con ID univoco e timestamp.</td></tr>
+      <tr><td><code>fetch_documents</code></td><td>Filtra e restituisce i documenti della collezione.</td></tr>
+      <tr><td><code>update_documents</code></td><td>Modifica i campi dei documenti esistenti in base ai filtri.</td></tr>
+      <tr><td><code>delete_documents</code></td><td>Rimuove record specifici o multipli dalla collezione.</td></tr>
+      <tr><td><code>_get_collection_path</code></td><td>(Interno) Risolve e crea il percorso delle directory per il database.</td></tr>
+      <tr><td><code>_load_collection</code></td><td>(Interno) Legge i dati dal file JSON con gestione degli errori.</td></tr>
+      <tr><td><code>_save_collection</code></td><td>(Interno) Scrive i dati su disco con un'indentazione leggibile.</td></tr>
+      <tr><td><code>_match_filter</code></td><td>(Interno) Confronta i documenti con i criteri di ricerca.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Architettura e Insights</h2>
+  <ul>
+    <li><strong>Astrazione di ID e Tempo:</strong> Il sistema toglie allo sviluppatore l'onere di generare ID univoci (<code>uuid4</code>) e di registrare i momenti di creazione/aggiornamento, iniettando i metadati automaticamente.</li>
+    <li><strong>Sicurezza di Scrittura:</strong> Usando <code>os.makedirs(exist_ok=True)</code>, il codice evita i comuni errori di "directory non trovata" durante l'esecuzione.</li>
+    <li><strong>Semplicità di Ricerca:</strong> Il filtraggio si basa sulla semplice uguaglianza, il che rende bassissima la curva di apprendimento per i nuovi utenti.</li>
+  </ul>
+
+  <h2>Classe LocalManager</h2>
+  <h3>Descrizione</h3>
+  <p>Gestore di persistenza locale che usa file JSON per simulare un database NoSQL. Organizza i dati in strutture di database e collezione all'interno del file system.</p>
+
+  <h3>Argomenti</h3>
+  <ul>
+    <li><strong>base_path</strong> (<em>str</em>): Nome della directory radice in cui verranno salvati tutti i dati. Predefinito: <code>"data"</code>.</li>
+  </ul>
+
+  <h3>Metodi</h3>
+
+  <h3>1. save_payload</h3>
+  <p><strong>Descrizione:</strong> Aggiunge un nuovo documento al database. Il metodo genera automaticamente un campo <code>_id</code> univoco e un campo <code>_created_at</code>.</p>
+  <p><strong>Argomenti:</strong></p>
+  <ul>
+    <li><code>database_name</code> (<em>str</em>): Nome del database.</li>
+    <li><code>collection_name</code> (<em>str</em>): Nome della collezione.</li>
+    <li><code>payload</code> (<em>dict</em>): I dati che vuoi salvare.</li>
+  </ul>
+  <p><strong>Valori di ritorno:</strong></p>
+  <ul>
+    <li><code>dict</code>: Un dizionario contenente lo stato dell'operazione e l'ID generato.</li>
+  </ul>
+  <p><strong>Raises:</strong></p>
+  <ul>
+    <li><code>Exception</code>: Errori di permesso di scrittura o errore del file system.</li>
+  </ul>
+  <p><strong>Esempio:</strong></p>
+  <pre data-lang="python"><code>
+manager.save_payload("loja", "produtos", {"nome": "Teclado", "preco": 150.0})
+</code></pre>
+
+  <h3>2. fetch_documents</h3>
+  <p><strong>Descrizione:</strong> Recupera una lista di documenti che corrispondono ai criteri indicati.</p>
+  <p><strong>Argomenti:</strong></p>
+  <ul>
+    <li><code>database_name</code> (<em>str</em>): Nome del database.</li>
+    <li><code>collection_name</code> (<em>str</em>): Nome della collezione.</li>
+    <li><code>filter</code> (<em>dict</em>, opzionale): Filtro di uguaglianza (es: <code>{"status": "ativo"}</code>).</li>
+    <li><code>limit</code> (<em>int</em>): Limite massimo di risultati (0 per illimitato).</li>
+  </ul>
+  <p><strong>Valori di ritorno:</strong></p>
+  <ul>
+    <li><code>List[Dict]</code>: Lista dei documenti trovati.</li>
+  </ul>
+  <p><strong>Raises:</strong></p>
+  <ul>
+    <li><code>json.JSONDecodeError</code>: Se il file è corrotto.</li>
+  </ul>
+  <p><strong>Esempio:</strong></p>
+  <pre data-lang="python"><code>
+manager.fetch_documents("loja", "produtos", filter={"nome": "Teclado"})
+</code></pre>
+
+  <h3>3. update_documents</h3>
+  <p><strong>Descrizione:</strong> Individua i documenti tramite filtro e ne aggiorna i valori con un nuovo insieme di dati.</p>
+  <p><strong>Argomenti:</strong></p>
+  <ul>
+    <li><code>database_name</code> (<em>str</em>): Nome del database.</li>
+    <li><code>collection_name</code> (<em>str</em>): Nome della collezione.</li>
+    <li><code>filter</code> (<em>dict</em>): Criterio per trovare i documenti da modificare.</li>
+    <li><code>new_values</code> (<em>dict</em>): Nuovi campi e valori da inserire/modificare.</li>
+    <li><code>multi</code> (<em>bool</em>): Se <code>True</code>, aggiorna tutti quelli trovati; se <code>False</code>, solo il primo.</li>
+  </ul>
+  <p><strong>Valori di ritorno:</strong></p>
+  <ul>
+    <li><code>dict</code>: Statistiche contenenti <code>matched_count</code> e <code>modified_count</code>.</li>
+  </ul>
+  <p><strong>Raises:</strong></p>
+  <ul>
+    <li><code>IOError</code>: Errore durante il salvataggio delle modifiche su disco.</li>
+  </ul>
+  <p><strong>Esempio:</strong></p>
+  <pre data-lang="python"><code>
+manager.update_documents("loja", "produtos", {"nome": "Teclado"}, {"preco": 130.0})
+</code></pre>
+
+  <h3>4. delete_documents</h3>
+  <p><strong>Descrizione:</strong> Rimuove dalla collezione i documenti che corrispondono al filtro passato.</p>
+  <p><strong>Argomenti:</strong></p>
+  <ul>
+    <li><code>database_name</code> (<em>str</em>): Nome del database.</li>
+    <li><code>collection_name</code> (<em>str</em>): Nome della collezione.</li>
+    <li><code>filter</code> (<em>dict</em>): Criterio di selezione per la rimozione.</li>
+    <li><code>multi</code> (<em>bool</em>): Se rimuovere tutti i corrispondenti o solo il primo.</li>
+  </ul>
+  <p><strong>Valori di ritorno:</strong></p>
+  <ul>
+    <li><code>dict</code>: Conferma con il numero di elementi eliminati (<code>deleted_count</code>).</li>
+  </ul>
+  <p><strong>Raises:</strong></p>
+  <ul>
+    <li><code>Exception</code>: Errori generici di accesso al file.</li>
+  </ul>
+  <p><strong>Esempio:</strong></p>
+  <pre data-lang="python"><code>
+manager.delete_documents("loja", "produtos", {"status": "esgotado"}, multi=True)
+</code></pre>
+</page>

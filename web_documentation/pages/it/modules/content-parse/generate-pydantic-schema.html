@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Generate Pydantic Schema | BetterAI Docs</title>
+<meta name="description" content="La classe GeneratePydanticSchema è stata sviluppata per facilitare la creazione dinamica di modelli Pydantic a partire da dizionari Python annidati.">
+<link rel="canonical" href="pages/it/modules/content-parse/generate-pydantic-schema.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../../../_design-system/css/tokens.css?v=7f43b250">
+<link rel="stylesheet" href="../../../../_design-system/css/base.css?v=4a698b89">
+<link rel="stylesheet" href="../../../../_design-system/css/layout.css?v=503e806e">
+<link rel="stylesheet" href="../../../../_design-system/css/content.css?v=cfc5f8ef">
+<link rel="stylesheet" href="../../../../_design-system/css/search.css?v=1ecf3252">
+<link rel="stylesheet" href="../../../../_design-system/css/responsive.css?v=6efeec66">
+</head>
+<body>
+<a class="skip" href="#main">Vai al contenuto</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Creato da Enzo Schitini. Ti invito a connetterti con me su LinkedIn.</a></span>
+    <button type="button" aria-label="Chiudi avviso"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../pages/it/index.html">
+        <img src="../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Cerca nella documentazione">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Cerca...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="../../../../pages/it/getting-started/quickstart.html">Quickstart<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Lingua"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>IT</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="false"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="true"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="false"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Cambia tema chiaro o scuro"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Aree della documentazione"><a class="tab" href="../../../../pages/it/index.html">Panoramica</a><a class="tab" href="../../../../pages/it/getting-started/index.html">Introduction</a><a class="tab" href="../../../../pages/it/agents/index.html">Agents</a><a class="tab" href="../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../pages/it/api/index.html">API</a><a class="tab" href="../../../../pages/it/modules/index.html" aria-current="page">Modules</a><a class="tab" href="../../../../pages/it/internal-source-code/index.html">Internal Services</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Modules</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Generate Pydantic Schema</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Navigazione della documentazione">
+    <nav class="side"><div class="side-areas"><a href="../../../../pages/it/index.html">Panoramica</a><a href="../../../../pages/it/getting-started/index.html">Introduction</a><a href="../../../../pages/it/agents/index.html">Agents</a><a href="../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/it/api/index.html">API</a><a href="../../../../pages/it/modules/index.html" aria-current="page">Modules</a><a href="../../../../pages/it/internal-source-code/index.html">Internal Services</a></div><a class="side-link" href="../../../../pages/it/modules/index.html"><span>Panoramica</span></a><div class="side-group"><p class="side-title">Content Parse</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Content Parsing Agent</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/modules/content-parse/content-parsing-agent/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/content-parse/content-parsing-agent/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/it/modules/content-parse/document-parse.html"><span>Document Parse</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/content-parse/field-metadata-parser.html"><span>Field Metadata Parser</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/content-parse/generate-pydantic-schema.html" aria-current="page"><span>Generate Pydantic Schema</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/content-parse/json-to-pydantic.html"><span>Json To Pydantic</span></a></li></ul></div><div class="side-group"><p class="side-title">Deep Research</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Tavily Research</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/modules/deep-research/tavily-research/context-builder.html"><span>Context Builder</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/deep-research/tavily-research/tavily-core.html"><span>Tavily Core</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Image Generation</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Cost Calculator</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/modules/image-generation/cost-calculator/cost-calculator.html"><span>Cost Calculator</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/image-generation/cost-calculator/pricing-table.html"><span>Pricing Table</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/it/modules/image-generation/image-generator-service.html"><span>Image Generator Service</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/image-generation/module.html"><span>Module</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Utils</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/modules/image-generation/utils/config.html"><span>Config</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/image-generation/utils/gemini-client.html"><span>Gemini Client</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/image-generation/utils/params-validator.html"><span>Params Validator</span></a></li><li><a class="side-link" href="../../../../pages/it/modules/image-generation/utils/payload-builder.html"><span>Payload Builder</span></a></li></ul></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Content Parse</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Generate Pydantic Schema</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copia pagina</span></button>
+            </div>
+          </div>
+          <p class="lead">La classe GeneratePydanticSchema è stata sviluppata per facilitare la creazione dinamica di modelli Pydantic a partire da dizionari Python annidati.</p>
+          <details class="toc-inline"><summary>In questa pagina</summary><ul></ul></details>
+        </header>
+        <div class="prose"><h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
+  <p>La classe <code>GeneratePydanticSchema</code> è stata sviluppata per facilitare la creazione dinamica di modelli Pydantic a partire da dizionari Python annidati. In scenari in cui vengono ricevuti dati complessi e strutturati, come nelle API o nei sistemi che gestiscono diverse strutture JSON, questa classe automatizza la generazione di schemi Pydantic, usati per la validazione, la conversione e la documentazione di tali strutture.</p>
+  <p>Il problema che la classe risolve è la necessità manuale e ripetitiva di creare modelli Pydantic per ogni struttura di dati complessa, che spesso varia in profondità e formato. Utilizzando questa classe, lo sviluppatore passa un dizionario di dati e riceve un modello Pydantic che riflette esattamente la struttura e i tipi di tali dati, inclusi schemi annidati per gli oggetti interni e le liste.</p>
+  <p>In pratica, può essere usata per validare i dati di input, generare esempi per la documentazione automatica o costruire interfacce adattive in sistemi che consumano dati dinamici.</p>
+
+  <h2 id="flusso-di-esecuzione"><a class="anchor" href="#flusso-di-esecuzione" aria-label="Link para esta seção">#</a>Flusso di Esecuzione</h2>
+  <ol>
+    <li>L'utente istanzia la classe <code>GeneratePydanticSchema</code>, potendo opzionalmente indicare un oggetto <code>FieldMetadataParser</code> per personalizzare l'estrazione dei metadati dei campi.</li>
+    <li>Il metodo <code>convert()</code> viene chiamato con un dizionario Python che rappresenta i dati da modellare e un nome radice per il modello (predefinito "RootModel").</li>
+    <li>La classe analizza ricorsivamente ogni chiave e valore del dizionario:
+      <ul>
+        <li>Per i campi scalari, determina il tipo di base.</li>
+        <li>Per i dizionari annidati, genera un nuovo modello Pydantic con un nome automatico univoco.</li>
+        <li>Per le liste, analizza il tipo del primo elemento per definire il tipo degli elementi nella lista, generando modelli per gli oggetti se necessario.</li>
+      </ul>
+    </li>
+    <li>I campi ricevono metadati (descrizione) generati automaticamente o tramite l'analisi del <code>metadata_parser</code>.</li>
+    <li>Tutti i modelli generati vengono archiviati internamente e possono essere recuperati con il metodo <code>get_models()</code>.</li>
+    <li>In caso di errore durante la conversione, viene sollevata un'eccezione <code>RuntimeError</code> con i dettagli dell'errore.</li>
+  </ol>
+
+  <h2 id="tabella-dei-metodi-della-classe"><a class="anchor" href="#tabella-dei-metodi-della-classe" aria-label="Link para esta seção">#</a>Tabella dei Metodi della Classe</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Metodo</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Inizializza la classe con un parser di metadati opzionale.</td></tr>
+      <tr><td><code>convert</code></td><td>Converte un dizionario in un modello Pydantic radice.</td></tr>
+      <tr><td><code>get_models</code></td><td>Restituisce tutti i modelli Pydantic generati fino a questo momento.</td></tr>
+      <tr><td><code>_generate_name</code></td><td>Genera nomi univoci per i modelli annidati.</td></tr>
+      <tr><td><code>_create_model</code></td><td>Crea un modello Pydantic a partire da campi definiti.</td></tr>
+      <tr><td><code>_resolve_type</code></td><td>Deduce il tipo di base del valore ricevuto.</td></tr>
+      <tr><td><code>_parse_object</code></td><td>Costruisce ricorsivamente modelli Pydantic per gli oggetti.</td></tr>
+      <tr><td><code>_parse_field</code></td><td>Analizza il tipo e i metadati di un singolo campo.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="punti-importanti-dell-architettura-e-insights"><a class="anchor" href="#punti-importanti-dell-architettura-e-insights" aria-label="Link para esta seção">#</a>Punti Importanti dell'Architettura e Insights</h2>
+  <ul>
+    <li>La generazione dinamica sfrutta il metodo <code>create_model</code> di Pydantic per creare classi a runtime, facilitando la creazione di modelli non noti in fase di codifica.</li>
+    <li>L'uso ricorsivo consente la creazione di modelli annidati che riflettono la struttura complessa dei dati di input.</li>
+    <li>Il conteggio incrementale garantisce nomi univoci per i modelli ausiliari, evitando collisioni.</li>
+    <li>La classe dipende da <code>FieldMetadataParser</code> per arricchire i campi con metadati, creando una separazione che favorisce la personalizzazione e l'estensibilità dell'analisi dei campi.</li>
+    <li>La gestione specifica per le liste, con il tentativo di singolarizzare i nomi (presumibilmente usando <code>inflector.singular_noun</code>), mostra attenzione alla nomenclatura dei modelli.</li>
+    <li>Gestione attenta delle eccezioni durante il parsing e la conversione, registrando il messaggio di errore e mantenendo l'usabilità esponendo errori chiari all'utente.</li>
+    <li>Internamente, l'archiviazione dei modelli in un dizionario consente la consultazione e il riutilizzo successivi.</li>
+  </ul>
+
+  <h2 id="descrizione-della-classe-e-dei-metodi"><a class="anchor" href="#descrizione-della-classe-e-dei-metodi" aria-label="Link para esta seção">#</a>Descrizione della Classe e dei Metodi</h2>
+
+  <h2 id="classe-generatepydanticschema"><a class="anchor" href="#classe-generatepydanticschema" aria-label="Link para esta seção">#</a>Classe <code>GeneratePydanticSchema</code></h2>
+
+  <h3 id="descrizione"><a class="anchor" href="#descrizione" aria-label="Link para esta seção">#</a>Descrizione</h3>
+  <p>Questa classe ha il ruolo di convertire dizionari complessi e annidati in modelli Pydantic in modo programmatico. Automatizza la generazione di schemi di validazione che riflettono fedelmente la struttura dei dati di input, con supporto per campi annidati, liste e l'integrazione con un parser di metadati per arricchire la descrizione dei campi.</p>
+  <p>Il suo uso è indicato per scenari di validazione dinamica e per la costruzione di API o sistemi che ricevono dati JSON diversi e necessitano di una validazione forte ed esplicita.</p>
+
+  <h3 id="argomenti-del-costruttore"><a class="anchor" href="#argomenti-del-costruttore" aria-label="Link para esta seção">#</a>Argomenti del Costruttore</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argomento</th><th>Tipo</th><th>Descrizione</th><th>Valore Predefinito</th></tr></thead>
+    <tbody>
+      <tr><td><code>metadata_parser</code></td><td><code>FieldMetadataParser</code></td><td>Oggetto per l'analisi e l'estrazione dei metadati dei campi.</td><td>Nuova istanza di <code>FieldMetadataParser</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="metodi"><a class="anchor" href="#metodi" aria-label="Link para esta seção">#</a>Metodi</h3>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Inizializza l'istanza della classe, definendo il parser di metadati e preparando l'archiviazione interna per i modelli generati.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>metadata_parser</code> (<code>FieldMetadataParser</code>): Parser opzionale per l'estrazione dei metadati.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nessuna.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>schema_generator = <span class="t-f">GeneratePydanticSchema</span>()</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-convert"><a class="anchor" href="#2-convert" aria-label="Link para esta seção">#</a>2. <code>convert</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Riceve un dizionario Python e lo converte in un modello Pydantic radice, generando automaticamente tutti i modelli annidati necessari per la validazione completa della struttura.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>data</code> (<code>Dict[str, Any]</code>): Dizionario di dati da convertire in modello.</li>
+    <li><code>root_name</code> (<code>str</code>): Nome del modello radice da creare. Il valore predefinito è "RootModel".</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>Type[BaseModel]</code>: Modello Pydantic generato per il dizionario indicato.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: Nel caso in cui si verifichi un errore durante la conversione dei dati.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>data = {
+    <span class="t-s">&quot;nome&quot;</span>: <span class="t-s">&quot;João&quot;</span>,
+    <span class="t-s">&quot;idade&quot;</span>: <span class="t-n">30</span>,
+    <span class="t-s">&quot;endereco&quot;</span>: {
+        <span class="t-s">&quot;rua&quot;</span>: <span class="t-s">&quot;Av. Brasil&quot;</span>,
+        <span class="t-s">&quot;numero&quot;</span>: <span class="t-n">100</span>
+    }
+}
+
+model = schema_generator.<span class="t-f">convert</span>(data, root_name=<span class="t-s">&quot;Pessoa&quot;</span>)
+<span class="t-c"># model agora é uma classe Pydantic com campos nome, idade e endereco (que é outro modelo)</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-get-models"><a class="anchor" href="#3-get-models" aria-label="Link para esta seção">#</a>3. <code>get_models</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Restituisce tutti i modelli Pydantic creati fino a questo momento, inclusi i modelli annidati generati durante la conversione dei dati.</p>
+  <p><strong>Argomenti</strong></p>
+  <p>Nessuno.</p>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>Dict[str, Type[BaseModel]]</code>: Dizionario con i nomi dei modelli come chiave e le classi Pydantic come valore.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <p>Nessuna.</p>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>all_models = schema_generator.<span class="t-f">get_models</span>()
+<span class="t-c"># Pode acessar, por exemplo, all_models[&quot;Pessoa1&quot;] para um modelo aninhado</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-generate-name"><a class="anchor" href="#4-generate-name" aria-label="Link para esta seção">#</a>4. <code>_generate_name</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Genera un nome univoco per i modelli Pydantic annidati, combinando una base di nome con un contatore incrementale.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>base</code> (<code>str</code>): Nome di base per il modello.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>str</code>: Nome univoco generato, es: "Endereco1".</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <p>Nessuna.</p>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>nome = schema_generator.<span class="t-f">_generate_name</span>(<span class="t-s">&quot;endereco&quot;</span>)
+<span class="t-c"># &quot;Endereco1&quot;</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="5-create-model"><a class="anchor" href="#5-create-model" aria-label="Link para esta seção">#</a>5. <code>_create_model</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Crea dinamicamente un modello Pydantic a partire da un nome e da campi specificati, archiviandolo nel dizionario interno.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>name</code> (<code>str</code>): Nome del modello.</li>
+    <li><code>fields</code> (<code>Dict[str, Tuple[Any, Any]]</code>): Mappatura dei campi in tuple (tipo, metadati).</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>Type[BaseModel]</code>: Modello Pydantic creato.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <p>Nessuna.</p>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>fields = {
+    <span class="t-s">&quot;nome&quot;</span>: (str, ...),
+    <span class="t-s">&quot;idade&quot;</span>: (int, ...)
+}
+
+model = schema_generator.<span class="t-f">_create_model</span>(<span class="t-s">&quot;Pessoa&quot;</span>, fields)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="6-resolve-type"><a class="anchor" href="#6-resolve-type" aria-label="Link para esta seção">#</a>6. <code>_resolve_type</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Determina il tipo Pydantic di base di un semplice valore Python.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>value</code> (<code>Any</code>): Valore di cui va dedotto il tipo.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>Any</code>: Tipo Python corrispondente (<code>str</code>, <code>bool</code>, <code>int</code>, <code>float</code>, <code>list</code>, <code>dict</code> oppure <code>Any</code> come fallback).</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <p>Nessuna.</p>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>t = schema_generator.<span class="t-f">_resolve_type</span>(<span class="t-n">10</span>)   <span class="t-c"># int</span>
+t2 = schema_generator.<span class="t-f">_resolve_type</span>(<span class="t-s">&quot;hi&quot;</span>) <span class="t-c"># str</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="7-parse-object"><a class="anchor" href="#7-parse-object" aria-label="Link para esta seção">#</a>7. <code>_parse_object</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Analizza un dizionario e crea un modello Pydantic per esso, elaborando ricorsivamente tutti i campi dell'oggetto.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>obj</code> (<code>Dict[str, Any]</code>): Dizionario di cui eseguire il parsing.</li>
+    <li><code>name</code> (<code>str</code>): Nome del modello da creare.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>Type[BaseModel]</code>: Modello Pydantic creato per l'oggetto analizzato.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <p>Nessuna.</p>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>model = schema_generator.<span class="t-f">_parse_object</span>({<span class="t-s">&quot;a&quot;</span>: <span class="t-n">1</span>, <span class="t-s">&quot;b&quot;</span>: <span class="t-s">&quot;x&quot;</span>}, <span class="t-s">&quot;SimpleModel&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="8-parse-field"><a class="anchor" href="#8-parse-field" aria-label="Link para esta seção">#</a>8. <code>_parse_field</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Determina il tipo e i metadati per un singolo campo, gestendo i casi di dizionari, liste, valori scalari e applicando un'analisi personalizzata tramite <code>metadata_parser</code>.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>key</code> (<code>str</code>): Nome del campo.</li>
+    <li><code>value</code> (<code>Any</code>): Valore del campo per dedurne il tipo.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>Tuple[Any, Any]</code>: Tupla con il tipo del campo e l'istanza <code>Field</code> contenente i metadati per Pydantic.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: Se si verifica un errore durante il parsing, incapsula l'errore originale.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">if</span> __name__ == <span class="t-s">&quot;__main__&quot;</span>:
+    json_data = {
+        <span class="t-s">&quot;script&quot;</span>: {
+            <span class="t-s">&quot;setting&quot;</span>: {
+                <span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>,
+                <span class="t-s">&quot;description&quot;</span>: <span class="t-s">&quot;Onde o filme acontece&quot;</span>,
+                <span class="t-s">&quot;example&quot;</span>: <span class="t-s">&quot;Tokyo&quot;</span>
+            },
+            <span class="t-s">&quot;genre&quot;</span>: {
+                <span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>,
+                <span class="t-s">&quot;description&quot;</span>: <span class="t-s">&quot;Gênero do filme&quot;</span>,
+                <span class="t-s">&quot;example&quot;</span>: <span class="t-s">&quot;Heist&quot;</span>
+            },
+            <span class="t-s">&quot;storyline&quot;</span>: <span class="t-s">&quot;A big robbery&quot;</span>
+        },
+        <span class="t-s">&quot;context&quot;</span>: {
+            <span class="t-s">&quot;year&quot;</span>: {
+                <span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;int&quot;</span>,
+                <span class="t-s">&quot;description&quot;</span>: <span class="t-s">&quot;Ano da história&quot;</span>,
+                <span class="t-s">&quot;example&quot;</span>: <span class="t-n">2025</span>
+            }
+        },
+        <span class="t-s">&quot;people&quot;</span>: {
+            <span class="t-s">&quot;characters&quot;</span>: [
+                {
+                    <span class="t-s">&quot;name&quot;</span>: {
+                        <span class="t-s">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>,
+                        <span class="t-s">&quot;description&quot;</span>: <span class="t-s">&quot;Nome do personagem&quot;</span>
+                    },
+                    <span class="t-s">&quot;role&quot;</span>: <span class="t-s">&quot;protagonist&quot;</span>
+                }
+            ]
+        }
+    }
+
+    converter = <span class="t-f">JsonToPydantic</span>()
+    Movie = converter.<span class="t-f">convert</span>(json_data, <span class="t-s">&quot;Movie&quot;</span>)
+
+    <span class="t-f">print</span>(Movie.<span class="t-f">schema_json</span>(indent=<span class="t-n">2</span>))
+
+<span class="t-c"># python -m src.content_parse.pydantic_shema</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>Questa documentazione offre una guida dettagliata per consentire ai programmatori di comprendere e utilizzare la classe <code>GeneratePydanticSchema</code> in modo pratico ed efficiente, garantendo la generazione rapida e corretta di modelli Pydantic per la validazione e la manipolazione di dati complessi.</p></div>
+        <div class="feedback"></div>
+        <p class="source">Fonte: <code>src/content_parse/pydantic_schema.py</code></p>
+        <nav class="pager" aria-label="Pagine vicine"><a class="pager-link prev" href="../../../../pages/it/modules/content-parse/field-metadata-parser.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Precedente</small><span>Field Metadata Parser</span></div></a><a class="pager-link next" href="../../../../pages/it/modules/content-parse/json-to-pydantic.html"><div><small>Successiva</small><span>Json To Pydantic</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="In questa pagina"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="../../../../pages/it/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+          <p>Where intelligence finds purpose.</p>
+          <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>Repository su GitHub</a>
+        </div>
+        <div class="foot-col"><h2>Documentazione</h2><a href="../../../../pages/it/getting-started/index.html">Introduction</a><a href="../../../../pages/it/agents/index.html">Agents</a><a href="../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/it/api/index.html">API</a><a href="../../../../pages/it/modules/index.html">Modules</a><a href="../../../../pages/it/internal-source-code/index.html">Internal Services</a></div>
+        <div class="foot-col"><h2>Risorse</h2><a href="../../../../pages/it/getting-started/quickstart.html">Quickstart</a><a href="../../../../pages/it/getting-started/licence.html">Licence</a><a href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener">Codice sorgente</a><a href="https://github.com/enzoschitini/better-ai/issues" target="_blank" rel="noopener">Segnala un problema</a></div>
+        <div class="foot-col"><h2>Creatore</h2><div class="foot-me"><img src="../../../../assets/img/profile.jpg" alt="" width="44" height="44"><div><strong>Enzo Schitini</strong><span>Data Scientist &amp; AI Engineer</span></div></div><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/enzoschitini" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 BetterAI &middot; Licenza MIT</span>
+        <span>Creato da <a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Enzo Schitini</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Cerca nella documentazione">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Cerca pagine e sezioni" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Risultati"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>naviga</span></span>
+    <span><kbd>Enter</kbd><span>apri</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "it", "root": "../../../../", "index": "../../../../search-it.json", "alt": {"pt": "pages/pt/modules/content-parse/generate-pydantic-schema.html", "it": "pages/it/modules/content-parse/generate-pydantic-schema.html", "en": "pages/en/modules/content-parse/generate-pydantic-schema.html"}, "i": {"noResults": "Nessun risultato per “%s”. Prova con il nome di un modulo, come “Pinecone”."}};</script>
+<script src="../../../../_design-system/js/ds.js?v=9a5e2954"></script>
+<script src="../../../../_design-system/js/docs.js?v=6f602c0a"></script>
+</body>
+</html>

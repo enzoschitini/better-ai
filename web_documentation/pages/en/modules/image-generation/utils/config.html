@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Config | BetterAI Docs</title>
+<meta name="description" content="Shared constants and types of the module: Imagen model catalog, storage and database parameters, default Gemini configuration and the base prompt.">
+<link rel="canonical" href="pages/en/modules/image-generation/utils/config.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../../../../_design-system/css/tokens.css?v=7f43b250">
+<link rel="stylesheet" href="../../../../../_design-system/css/base.css?v=4a698b89">
+<link rel="stylesheet" href="../../../../../_design-system/css/layout.css?v=503e806e">
+<link rel="stylesheet" href="../../../../../_design-system/css/content.css?v=cfc5f8ef">
+<link rel="stylesheet" href="../../../../../_design-system/css/search.css?v=1ecf3252">
+<link rel="stylesheet" href="../../../../../_design-system/css/responsive.css?v=6efeec66">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Created by Enzo Schitini. I invite you to connect with me on LinkedIn.</a></span>
+    <button type="button" aria-label="Dismiss notice"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../../pages/en/index.html">
+        <img src="../../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Search the documentation">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Search...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="../../../../../pages/en/getting-started/quickstart.html">Quickstart<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Language"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>EN</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="false"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="false"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="true"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light and dark theme"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Documentation areas"><a class="tab" href="../../../../../pages/en/index.html">Overview</a><a class="tab" href="../../../../../pages/en/getting-started/index.html">Introduction</a><a class="tab" href="../../../../../pages/en/agents/index.html">Agents</a><a class="tab" href="../../../../../pages/en/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../../pages/en/api/index.html">API</a><a class="tab" href="../../../../../pages/en/modules/index.html" aria-current="page">Modules</a><a class="tab" href="../../../../../pages/en/internal-source-code/index.html">Internal Services</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Modules</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Config</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Documentation navigation">
+    <nav class="side"><div class="side-areas"><a href="../../../../../pages/en/index.html">Overview</a><a href="../../../../../pages/en/getting-started/index.html">Introduction</a><a href="../../../../../pages/en/agents/index.html">Agents</a><a href="../../../../../pages/en/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../../pages/en/api/index.html">API</a><a href="../../../../../pages/en/modules/index.html" aria-current="page">Modules</a><a href="../../../../../pages/en/internal-source-code/index.html">Internal Services</a></div><a class="side-link" href="../../../../../pages/en/modules/index.html"><span>Overview</span></a><div class="side-group"><p class="side-title">Content Parse</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Content Parsing Agent</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/en/modules/content-parse/content-parsing-agent/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../../pages/en/modules/content-parse/content-parsing-agent/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/en/modules/content-parse/document-parse.html"><span>Document Parse</span></a></li><li><a class="side-link" href="../../../../../pages/en/modules/content-parse/field-metadata-parser.html"><span>Field Metadata Parser</span></a></li><li><a class="side-link" href="../../../../../pages/en/modules/content-parse/generate-pydantic-schema.html"><span>Generate Pydantic Schema</span></a></li><li><a class="side-link" href="../../../../../pages/en/modules/content-parse/json-to-pydantic.html"><span>Json To Pydantic</span></a></li></ul></div><div class="side-group"><p class="side-title">Deep Research</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Tavily Research</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/en/modules/deep-research/tavily-research/context-builder.html"><span>Context Builder</span></a></li><li><a class="side-link" href="../../../../../pages/en/modules/deep-research/tavily-research/tavily-core.html"><span>Tavily Core</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Image Generation</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Cost Calculator</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/en/modules/image-generation/cost-calculator/cost-calculator.html"><span>Cost Calculator</span></a></li><li><a class="side-link" href="../../../../../pages/en/modules/image-generation/cost-calculator/pricing-table.html"><span>Pricing Table</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/en/modules/image-generation/image-generator-service.html"><span>Image Generator Service</span></a></li><li><a class="side-link" href="../../../../../pages/en/modules/image-generation/module.html"><span>Module</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="true"><span>Utils</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub"><li><a class="side-link" href="../../../../../pages/en/modules/image-generation/utils/config.html" aria-current="page"><span>Config</span></a></li><li><a class="side-link" href="../../../../../pages/en/modules/image-generation/utils/gemini-client.html"><span>Gemini Client</span></a></li><li><a class="side-link" href="../../../../../pages/en/modules/image-generation/utils/params-validator.html"><span>Params Validator</span></a></li><li><a class="side-link" href="../../../../../pages/en/modules/image-generation/utils/payload-builder.html"><span>Payload Builder</span></a></li></ul></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Image Generation / Utils</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Config</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copy page</span></button>
+            </div>
+          </div>
+          <p class="lead">Shared constants and types of the module: Imagen model catalog, storage and database parameters, default Gemini configuration and the base prompt.</p>
+          <details class="toc-inline"><summary>On this page</summary><ul></ul></details>
+        </header>
+        <div class="prose"><div class="callout" data-kind="note"><p><strong>Source:</strong> <code>src/image_generation/utils/config.py</code>. This page's original notebook was empty; the content was written from the code.</p></div>
+
+  <h2 id="model-catalog"><a class="anchor" href="#model-catalog" aria-label="Link para esta seção">#</a>Model catalog</h2>
+  <p><code>IMAGE_MODELS_CATALOG</code> describes what each Imagen model accepts. It is the source used by <a href="params-validator.html">Params Validator</a>.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Model</th><th>Max. images per prompt</th><th>Aspect ratios</th><th>Resolutions</th><th>MIME types</th></tr></thead>
+    <tbody>
+      <tr><td><code>imagen-4.0-generate-001</code></td><td>4</td><td><code>1:1</code>, <code>3:4</code>, <code>4:3</code>, <code>9:16</code>, <code>16:9</code></td><td><code>1K</code>, <code>2K</code></td><td><code>image/png</code>, <code>image/jpeg</code></td></tr>
+      <tr><td><code>imagen-4.0-fast-generate-001</code></td><td>4</td><td><code>1:1</code>, <code>3:4</code>, <code>4:3</code>, <code>9:16</code>, <code>16:9</code></td><td><code>1K</code></td><td><code>image/png</code>, <code>image/jpeg</code></td></tr>
+      <tr><td><code>imagen-4.0-ultra-generate-001</code></td><td>4</td><td><code>1:1</code>, <code>3:4</code>, <code>4:3</code>, <code>9:16</code>, <code>16:9</code></td><td><code>1K</code>, <code>2K</code></td><td><code>image/png</code>, <code>image/jpeg</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="storage-and-database"><a class="anchor" href="#storage-and-database" aria-label="Link para esta seção">#</a>Storage and database</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Constant</th><th>Value</th><th>Use</th></tr></thead>
+    <tbody>
+      <tr><td><code>BUCKET_NAME</code></td><td><code>images</code></td><td>Supabase Storage bucket.</td></tr>
+      <tr><td><code>STORAGE_BASE_PATH</code></td><td><code>image_generations</code></td><td>Base folder inside the bucket.</td></tr>
+      <tr><td><code>ID_PREFIX</code></td><td><code>img_</code></td><td>Prefix of each image identifier.</td></tr>
+      <tr><td><code>BASE_URL</code></td><td>Public URL of the bucket, ending in <code>/image_generations</code></td><td>Base of the URLs returned to the client.</td></tr>
+      <tr><td><code>DATABASE_NAME</code></td><td><code>GenAI</code></td><td>MongoDB database.</td></tr>
+      <tr><td><code>COLLECTION_NAME</code></td><td><code>ImageGeneration</code></td><td>MongoDB collection.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="default-gemini-configuration"><a class="anchor" href="#default-gemini-configuration" aria-label="Link para esta seção">#</a>Default Gemini configuration</h2>
+  <p><code>DEFAULT_CONTENT_CONFIG</code> is the base that <a href="../image-generator-service.html">Image Generator Service</a> merges with the configuration sent by the user.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Key</th><th>Default</th></tr></thead>
+    <tbody>
+      <tr><td><code>model</code></td><td><code>gemini-2.5-flash-image</code></td></tr>
+      <tr><td><code>temperature</code></td><td><code>0.75</code></td></tr>
+      <tr><td><code>top_p</code></td><td><code>0.85</code></td></tr>
+      <tr><td><code>max_output_tokens</code></td><td><code>1024</code></td></tr>
+      <tr><td><code>aspect_ratio</code></td><td><code>1:1</code></td></tr>
+      <tr><td><code>number_of_images</code></td><td><code>1</code></td></tr>
+    </tbody>
+  </table></div>
+  <p>Next to <code>max_output_tokens</code>, the code carries the annotation that <code>gemini-2.5-flash-image</code> uses 1024 or 2048 and <code>gemini-3-pro-image-preview</code> uses 4096 or 8192.</p>
+
+  <h2 id="base-prompt"><a class="anchor" href="#base-prompt" aria-label="Link para esta seção">#</a>Base prompt</h2>
+  <p><code>BASE_PROMPT</code> is the text, in English, that opens every prompt sent to Gemini. It defines the agent's role (visual creation and transformation) and the constraints: follow the user's request, apply the style of the reference images, preserve what was not asked to change, not add or remove elements without instruction, and prioritize consistency and quality.</p>
+
+  <h2 id="helper-types"><a class="anchor" href="#helper-types" aria-label="Link para esta seção">#</a>Helper types</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Type</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>GeneratedImage</code></td><td><code>dataclass</code> with <code>image_bytes</code> and <code>mime_type</code>. It is the internal format of the generation output.</td></tr>
+      <tr><td><code>Ratios</code></td><td>Aspect ratios: <code>R1_1</code>, <code>R3_4</code>, <code>R4_3</code>, <code>R9_16</code>, <code>R16_9</code>.</td></tr>
+      <tr><td><code>Resolutions</code></td><td>Resolutions: <code>K1</code> (<code>1K</code>) and <code>K2</code> (<code>2K</code>).</td></tr>
+      <tr><td><code>MimeTypes</code></td><td><code>PNG</code> (<code>image/png</code>) and <code>JPEG</code> (<code>image/jpeg</code>).</td></tr>
+      <tr><td><code>ModelSpecs</code></td><td>Groups <code>id</code>, <code>max_images</code>, <code>ratios</code>, <code>resolutions</code> and <code>mimes</code> of a model.</td></tr>
+      <tr><td><code>Imagen</code></td><td>Shortcuts for the models: <code>Imagen.GENERATE</code>, <code>Imagen.FAST</code> and <code>Imagen.ULTRA</code>.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> src.image_generation.utils.config <span class="t-k">import</span> Imagen
+
+<span class="t-c"># Access the identifier and the options of a model</span>
+model_id = Imagen.GENERATE.id
+ratio = Imagen.GENERATE.ratios.R16_9
+size = Imagen.GENERATE.resolutions.K2</code></pre><button class="copy floating" type="button"></button></div></div>
+  <div class="callout" data-kind="note"><p><code>Imagen.FAST</code> defines <code>Resolutions(K2=None)</code>, because this model only accepts <code>1K</code>.</p></div>
+
+  <h2 id="intro-sentences"><a class="anchor" href="#intro-sentences" aria-label="Link para esta seção">#</a>Intro sentences</h2>
+  <p><code>IMAGE_INTRO_SENTENCES</code> is a list of 50 short sentences in Portuguese ("Aqui está a imagem conforme solicitado." and variations) to introduce a delivered image.</p></div>
+        <div class="feedback"></div>
+        <p class="source">Source: <code>src/image_generation/utils/config.py</code></p>
+        <nav class="pager" aria-label="Neighboring pages"><a class="pager-link prev" href="../../../../../pages/en/modules/image-generation/module.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Previous</small><span>Module</span></div></a><a class="pager-link next" href="../../../../../pages/en/modules/image-generation/utils/gemini-client.html"><div><small>Next</small><span>Gemini Client</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="On this page"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="../../../../../pages/en/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+          <p>Where intelligence finds purpose.</p>
+          <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>Repository on GitHub</a>
+        </div>
+        <div class="foot-col"><h2>Documentation</h2><a href="../../../../../pages/en/getting-started/index.html">Introduction</a><a href="../../../../../pages/en/agents/index.html">Agents</a><a href="../../../../../pages/en/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../../pages/en/api/index.html">API</a><a href="../../../../../pages/en/modules/index.html">Modules</a><a href="../../../../../pages/en/internal-source-code/index.html">Internal Services</a></div>
+        <div class="foot-col"><h2>Resources</h2><a href="../../../../../pages/en/getting-started/quickstart.html">Quickstart</a><a href="../../../../../pages/en/getting-started/licence.html">Licence</a><a href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener">Source code</a><a href="https://github.com/enzoschitini/better-ai/issues" target="_blank" rel="noopener">Report an issue</a></div>
+        <div class="foot-col"><h2>Creator</h2><div class="foot-me"><img src="../../../../../assets/img/profile.jpg" alt="" width="44" height="44"><div><strong>Enzo Schitini</strong><span>Data Scientist &amp; AI Engineer</span></div></div><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/enzoschitini" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 BetterAI &middot; MIT License</span>
+        <span>Created by <a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Enzo Schitini</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Search the documentation">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Search pages and sections" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Results"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>navigate</span></span>
+    <span><kbd>Enter</kbd><span>open</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "en", "root": "../../../../../", "index": "../../../../../search-en.json", "alt": {"pt": "pages/pt/modules/image-generation/utils/config.html", "it": "pages/it/modules/image-generation/utils/config.html", "en": "pages/en/modules/image-generation/utils/config.html"}, "i": {"noResults": "Nothing found for “%s”. Try a module name, such as “Pinecone”."}};</script>
+<script src="../../../../../_design-system/js/ds.js?v=9a5e2954"></script>
+<script src="../../../../../_design-system/js/docs.js?v=6f602c0a"></script>
+</body>
+</html>

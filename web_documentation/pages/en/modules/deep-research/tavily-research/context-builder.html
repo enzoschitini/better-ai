@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Context Builder | BetterAI Docs</title>
+<meta name="description" content="Documentation of the TavilyContextBuilder and TavilyResearchRunner classes and of the endpoint that turn a web search into markdown context for language models.">
+<link rel="canonical" href="pages/en/modules/deep-research/tavily-research/context-builder.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../../../../_design-system/css/tokens.css?v=7f43b250">
+<link rel="stylesheet" href="../../../../../_design-system/css/base.css?v=4a698b89">
+<link rel="stylesheet" href="../../../../../_design-system/css/layout.css?v=503e806e">
+<link rel="stylesheet" href="../../../../../_design-system/css/content.css?v=cfc5f8ef">
+<link rel="stylesheet" href="../../../../../_design-system/css/search.css?v=1ecf3252">
+<link rel="stylesheet" href="../../../../../_design-system/css/responsive.css?v=6efeec66">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Created by Enzo Schitini. I invite you to connect with me on LinkedIn.</a></span>
+    <button type="button" aria-label="Dismiss notice"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../../pages/en/index.html">
+        <img src="../../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Search the documentation">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Search...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="../../../../../pages/en/getting-started/quickstart.html">Quickstart<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Language"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>EN</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="false"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="false"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="true"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light and dark theme"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Documentation areas"><a class="tab" href="../../../../../pages/en/index.html">Overview</a><a class="tab" href="../../../../../pages/en/getting-started/index.html">Introduction</a><a class="tab" href="../../../../../pages/en/agents/index.html">Agents</a><a class="tab" href="../../../../../pages/en/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../../pages/en/api/index.html">API</a><a class="tab" href="../../../../../pages/en/modules/index.html" aria-current="page">Modules</a><a class="tab" href="../../../../../pages/en/internal-source-code/index.html">Internal Services</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Modules</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Context Builder</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Documentation navigation">
+    <nav class="side"><div class="side-areas"><a href="../../../../../pages/en/index.html">Overview</a><a href="../../../../../pages/en/getting-started/index.html">Introduction</a><a href="../../../../../pages/en/agents/index.html">Agents</a><a href="../../../../../pages/en/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../../pages/en/api/index.html">API</a><a href="../../../../../pages/en/modules/index.html" aria-current="page">Modules</a><a href="../../../../../pages/en/internal-source-code/index.html">Internal Services</a></div><a class="side-link" href="../../../../../pages/en/modules/index.html"><span>Overview</span></a><div class="side-group"><p class="side-title">Content Parse</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Content Parsing Agent</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/en/modules/content-parse/content-parsing-agent/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../../pages/en/modules/content-parse/content-parsing-agent/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/en/modules/content-parse/document-parse.html"><span>Document Parse</span></a></li><li><a class="side-link" href="../../../../../pages/en/modules/content-parse/field-metadata-parser.html"><span>Field Metadata Parser</span></a></li><li><a class="side-link" href="../../../../../pages/en/modules/content-parse/generate-pydantic-schema.html"><span>Generate Pydantic Schema</span></a></li><li><a class="side-link" href="../../../../../pages/en/modules/content-parse/json-to-pydantic.html"><span>Json To Pydantic</span></a></li></ul></div><div class="side-group"><p class="side-title">Deep Research</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="true"><span>Tavily Research</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub"><li><a class="side-link" href="../../../../../pages/en/modules/deep-research/tavily-research/context-builder.html" aria-current="page"><span>Context Builder</span></a></li><li><a class="side-link" href="../../../../../pages/en/modules/deep-research/tavily-research/tavily-core.html"><span>Tavily Core</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Image Generation</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Cost Calculator</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/en/modules/image-generation/cost-calculator/cost-calculator.html"><span>Cost Calculator</span></a></li><li><a class="side-link" href="../../../../../pages/en/modules/image-generation/cost-calculator/pricing-table.html"><span>Pricing Table</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/en/modules/image-generation/image-generator-service.html"><span>Image Generator Service</span></a></li><li><a class="side-link" href="../../../../../pages/en/modules/image-generation/module.html"><span>Module</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Utils</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/en/modules/image-generation/utils/config.html"><span>Config</span></a></li><li><a class="side-link" href="../../../../../pages/en/modules/image-generation/utils/gemini-client.html"><span>Gemini Client</span></a></li><li><a class="side-link" href="../../../../../pages/en/modules/image-generation/utils/params-validator.html"><span>Params Validator</span></a></li><li><a class="side-link" href="../../../../../pages/en/modules/image-generation/utils/payload-builder.html"><span>Payload Builder</span></a></li></ul></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Deep Research / Tavily Research</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Context Builder</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copy page</span></button>
+            </div>
+          </div>
+          <p class="lead">Documentation of the TavilyContextBuilder and TavilyResearchRunner classes and of the endpoint that turn a web search into markdown context for language models.</p>
+          <details class="toc-inline"><summary>On this page</summary><ul></ul></details>
+        </header>
+        <div class="prose"><h2 id="overview"><a class="anchor" href="#overview" aria-label="Link para esta seção">#</a>Overview</h2>
+  <p>The <code>context_builder</code> module turns a web search done through Tavily into a <strong>markdown context</strong> ready to be used by language models, along with the list of URLs analyzed. It is made up of two classes:</p>
+  <ul>
+    <li><code>TavilyContextBuilder</code>: runs the pipeline (search, score filtering, conversion to markdown and URL extraction).</li>
+    <li><code>TavilyResearchRunner</code>: builds the search configuration, applying default values, and triggers the <code>TavilyContextBuilder</code>.</li>
+  </ul>
+  <p>The search itself is done by a "researcher" object, normally <a href="tavily-core.html">TavilyDeepResearch</a>. The pipeline is exposed by the API at the <code>POST /deep-research/context-builder</code> endpoint.</p>
+
+  <h2 id="execution-flow"><a class="anchor" href="#execution-flow" aria-label="Link para esta seção">#</a>Execution Flow</h2>
+  <ol>
+    <li><strong>Search configuration:</strong> <code>TavilyResearchRunner.run()</code> calls <code>build_search_config()</code>, which validates <code>query</code> and <code>max_results</code>, applies the default values (<code>search_depth</code>, <code>topic</code> and <code>include_answer</code>) and incorporates extra parameters.</li>
+    <li><strong>Pipeline:</strong> the runner hands the configuration to <code>TavilyContextBuilder.build_context()</code>.</li>
+    <li><strong>Search:</strong> <code>search()</code> calls <code>researcher.start_search()</code> with the configuration.</li>
+    <li><strong>Filtering:</strong> <code>filter_results()</code> keeps only the results with a <code>score</code> greater than or equal to <code>min_score</code>, removes the disposable global keys and the <code>raw_content</code> of each result.</li>
+    <li><strong>Markdown:</strong> <code>to_markdown()</code> converts the filtered response into markdown text.</li>
+    <li><strong>URLs:</strong> <code>get_web_sites()</code> gathers the URLs of the results kept.</li>
+    <li><strong>Return:</strong> <code>build_context()</code> returns a dictionary with the keys <code>markdown</code> and <code>urls</code>.</li>
+    <li><strong>Errors:</strong> at each stage, an exception is recorded with <code>ApplicationTracing</code> (ERROR level) and re-raised as a <code>RuntimeError</code> with a descriptive message.</li>
+  </ol>
+
+  <h2 id="classes-methods-table"><a class="anchor" href="#classes-methods-table" aria-label="Link para esta seção">#</a>Classes Methods Table</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Class</th><th>Method</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>TavilyContextBuilder</code></td><td><code>__init__</code></td><td>Defines the researcher, the minimum score and the keys to remove.</td></tr>
+      <tr><td><code>TavilyContextBuilder</code></td><td><code>search</code></td><td>Runs the search with the configuration received.</td></tr>
+      <tr><td><code>TavilyContextBuilder</code></td><td><code>filter_results</code></td><td>Filters the results by score and removes unnecessary fields.</td></tr>
+      <tr><td><code>TavilyContextBuilder</code></td><td><code>to_markdown</code></td><td>Converts the filtered results into markdown.</td></tr>
+      <tr><td><code>TavilyContextBuilder</code></td><td><code>get_web_sites</code></td><td>Returns the list of the results' URLs.</td></tr>
+      <tr><td><code>TavilyContextBuilder</code></td><td><code>build_context</code></td><td>Runs the complete pipeline.</td></tr>
+      <tr><td><code>TavilyResearchRunner</code></td><td><code>__init__</code></td><td>Defines the builder and the search's default values.</td></tr>
+      <tr><td><code>TavilyResearchRunner</code></td><td><code>build_search_config</code></td><td>Builds the search configuration dictionary.</td></tr>
+      <tr><td><code>TavilyResearchRunner</code></td><td><code>run</code></td><td>Builds the configuration and runs the pipeline.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="environment-variables"><a class="anchor" href="#environment-variables" aria-label="Link para esta seção">#</a>Environment Variables</h2>
+  <ul>
+    <li><code>TAVILY_API_KEY</code>: Tavily API key, read by <code>TavilyDeepResearch</code> when it is instantiated.</li>
+  </ul>
+
+  <h2 id="important-architecture-points-and-insights"><a class="anchor" href="#important-architecture-points-and-insights" aria-label="Link para esta seção">#</a>Important Architecture Points and Insights</h2>
+  <ul>
+    <li><strong>Separation of responsibilities:</strong> <code>TavilyResearchRunner</code> takes care of configuration and defaults; <code>TavilyContextBuilder</code> takes care of processing; the researcher takes care of access to Tavily.</li>
+    <li><strong>Dependency injection:</strong> the builder receives the researcher and the runner receives the builder, which makes it easy to swap any piece.</li>
+    <li><strong>Relevance filtering:</strong> only the results with a <code>score</code> greater than or equal to <code>min_score</code> (default 0.5) enter the context.</li>
+    <li><strong>Lean context:</strong> the response's <code>response_time</code>, <code>follow_up_questions</code>, <code>images</code> and <code>request_id</code> keys and each result's <code>raw_content</code> are removed before conversion.</li>
+    <li><strong>Uniform error handling:</strong> every failure is recorded with <code>ApplicationTracing</code> (flag "Deep Research") and re-raised as a <code>RuntimeError</code>.</li>
+    <li><strong>Informational logs disabled:</strong> the tracer is created with <code>show_info_logs=False</code>, and the module's <code>tracer.INFO</code> calls are commented out.</li>
+  </ul>
+
+  <h2 id="generated-markdown-format"><a class="anchor" href="#generated-markdown-format" aria-label="Link para esta seção">#</a>Generated Markdown Format</h2>
+  <p>The <code>to_markdown()</code> method produces a text with this structure, repeating the source block for each result:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang=""><code># Consulta
+**Pergunta:**
+{query}
+
+---
+
+## Resposta resumida
+{answer}
+
+---
+
+## Fontes analisadas
+
+### 1. {title}
+- **URL:** {url}
+- **Score de relevância:** {score}
+
+**Conteúdo:**
+{content}
+
+---</code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>The score is rounded to 5 decimal places. If a result has no title, "Sem título" is used.</p>
+
+  <h2 id="api-endpoint"><a class="anchor" href="#api-endpoint" aria-label="Link para esta seção">#</a>API Endpoint</h2>
+  <div class="endpoint"><span class="method" data-m="POST">POST</span><span>/deep-research/context-builder</span></div>
+  <p>The endpoint builds a <code>TavilyDeepResearch</code>, a <code>TavilyContextBuilder</code> (with the <code>min_score</code> received) and a <code>TavilyResearchRunner</code>, and returns the result of <code>run()</code> in the <code>result</code> field of the standard response. It requires the BetterAI API key in the <code>X-API-Key</code> header (validation is skipped when <code>LOCAL=true</code>).</p>
+  <h3 id="request-body"><a class="anchor" href="#request-body" aria-label="Link para esta seção">#</a>Request body</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Field</th><th>Type</th><th>Description</th><th>Default Value</th></tr></thead>
+    <tbody>
+      <tr><td><code>query</code></td><td>str</td><td>Main query or subject of the research.</td><td>"What are the latest AI trends in the healthcare industry?"</td></tr>
+      <tr><td><code>search_depth</code></td><td>"basic" | "advanced"</td><td>Depth of the research: <code>basic</code> for a quick overview, <code>advanced</code> for a more comprehensive search.</td><td>"advanced"</td></tr>
+      <tr><td><code>max_results</code></td><td>int (1 to 100)</td><td>Maximum number of results to retrieve and include in the context.</td><td>35</td></tr>
+      <tr><td><code>topic</code></td><td>str</td><td>Category or domain of the research. Examples: general, news, finance.</td><td>"general"</td></tr>
+      <tr><td><code>include_answer</code></td><td>bool</td><td>Whether to include an answer generated from the results.</td><td>True</td></tr>
+      <tr><td><code>min_score</code></td><td>float (0.0 to 1.0)</td><td>Minimum relevance score; results below it are discarded.</td><td>0.5</td></tr>
+    </tbody>
+  </table></div>
+  <h3 id="request-example"><a class="anchor" href="#request-example" aria-label="Link para esta seção">#</a>Request example</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">curl</span> <span class="t-n">-X</span> POST <span class="t-s">&quot;http://localhost:8000/deep-research/context-builder&quot;</span> \
+  <span class="t-n">-H</span> <span class="t-s">&quot;X-API-Key: SUA_CHAVE&quot;</span> \
+  <span class="t-n">-H</span> <span class="t-s">&quot;Content-Type: application/json&quot;</span> \
+  <span class="t-n">-d</span> '{
+    <span class="t-s">&quot;query&quot;</span>: <span class="t-s">&quot;Quais as principais tendências de IA em 2026?&quot;</span>,
+    <span class="t-s">&quot;search_depth&quot;</span>: <span class="t-s">&quot;advanced&quot;</span>,
+    <span class="t-s">&quot;max_results&quot;</span>: 10,
+    <span class="t-s">&quot;topic&quot;</span>: <span class="t-s">&quot;general&quot;</span>,
+    <span class="t-s">&quot;include_answer&quot;</span>: true,
+    <span class="t-s">&quot;min_score&quot;</span>: 0.5
+  }'</code></pre><button class="copy floating" type="button"></button></div></div>
+  <h3 id="success-response"><a class="anchor" href="#success-response" aria-label="Link para esta seção">#</a>Success response</h3>
+  <p>The response follows the API's standardized format, with <code>job_id</code>, <code>status</code>, <code>result</code> and time metrics. In <code>result</code> come the markdown and the URLs:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+  <span class="t-f">&quot;job_id&quot;</span>: <span class="t-s">&quot;job_...&quot;</span>,
+  <span class="t-f">&quot;status&quot;</span>: <span class="t-s">&quot;success&quot;</span>,
+  <span class="t-f">&quot;status_code&quot;</span>: <span class="t-n">200</span>,
+  <span class="t-f">&quot;result&quot;</span>: {
+    <span class="t-f">&quot;markdown&quot;</span>: <span class="t-s">&quot;# Consulta\n...&quot;</span>,
+    <span class="t-f">&quot;urls&quot;</span>: [<span class="t-s">&quot;https://...&quot;</span>]
+  },
+  <span class="t-f">&quot;time&quot;</span>: {
+    <span class="t-f">&quot;start&quot;</span>: <span class="t-s">&quot;2026-01-01 10:00:00&quot;</span>,
+    <span class="t-f">&quot;end&quot;</span>: <span class="t-s">&quot;2026-01-01 10:00:05&quot;</span>,
+    <span class="t-f">&quot;duration_seconds&quot;</span>: <span class="t-n">5.0</span>
+  }
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>In case of failure, the response carries <code>status</code> equal to <code>error</code>, <code>status_code</code> 500 and an <code>error</code> object with <code>type</code> and <code>message</code>. The API's full parameters and examples are in <a href="../../../api/web-service-network-api/use.html">Web Service Network - API</a>.</p>
+
+  <h2 id="classes-and-methods-description"><a class="anchor" href="#classes-and-methods-description" aria-label="Link para esta seção">#</a>Classes and Methods Description</h2>
+
+  <h2 id="tavilycontextbuilder-class"><a class="anchor" href="#tavilycontextbuilder-class" aria-label="Link para esta seção">#</a><code>TavilyContextBuilder</code> Class</h2>
+  <h3 id="description"><a class="anchor" href="#description" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>Runs the pipeline that turns a web search into markdown context: search, score filtering, conversion to markdown and URL extraction.</p>
+  <h3 id="constructor-arguments"><a class="anchor" href="#constructor-arguments" aria-label="Link para esta seção">#</a>Constructor Arguments</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argument</th><th>Type</th><th>Description</th><th>Default Value</th></tr></thead>
+    <tbody>
+      <tr><td><code>researcher</code></td><td>object</td><td>Object with the <code>start_search</code> method, normally a <code>TavilyDeepResearch</code>.</td><td>—</td></tr>
+      <tr><td><code>min_score</code></td><td><code>float</code></td><td>Minimum score to keep a result.</td><td>0.5</td></tr>
+      <tr><td><code>remove_keys</code></td><td><code>List[str] | None</code></td><td>Keys removed from the response's top level.</td><td><code>["response_time", "follow_up_questions", "images", "request_id"]</code></td></tr>
+    </tbody>
+  </table></div>
+  <h3 id="methods"><a class="anchor" href="#methods" aria-label="Link para esta seção">#</a>Methods</h3>
+
+  <h3 id="1-search"><a class="anchor" href="#1-search" aria-label="Link para esta seção">#</a>1. <code>search</code></h3>
+  <h3 id="description-2"><a class="anchor" href="#description-2" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>Runs the search by calling <code>researcher.start_search()</code> with the configuration received.</p>
+  <h3 id="arguments"><a class="anchor" href="#arguments" aria-label="Link para esta seção">#</a>Arguments</h3>
+  <ul>
+    <li><code>search_config</code> (Dict[str, Any]): search configuration (for example, <code>query</code>, <code>max_results</code>, <code>search_depth</code>).</li>
+  </ul>
+  <h3 id="returns"><a class="anchor" href="#returns" aria-label="Link para esta seção">#</a>Returns</h3>
+  <ul>
+    <li><code>Dict[str, Any]</code>: raw search response.</li>
+  </ul>
+  <h3 id="raises"><a class="anchor" href="#raises" aria-label="Link para esta seção">#</a>Raises</h3>
+  <ul>
+    <li><code>RuntimeError</code>: if the search fails ("Error during web search").</li>
+  </ul>
+  <h3 id="examples"><a class="anchor" href="#examples" aria-label="Link para esta seção">#</a>Examples</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>raw = builder.<span class="t-f">search</span>({<span class="t-s">&quot;query&quot;</span>: <span class="t-s">&quot;tendências de IA em 2026&quot;</span>, <span class="t-s">&quot;max_results&quot;</span>: <span class="t-n">5</span>})</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-filter-results"><a class="anchor" href="#2-filter-results" aria-label="Link para esta seção">#</a>2. <code>filter_results</code></h3>
+  <h3 id="description-3"><a class="anchor" href="#description-3" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>Keeps only the results whose <code>score</code> is greater than or equal to <code>min_score</code>, removes the global keys defined in <code>remove_keys</code> and removes each result's <code>raw_content</code>.</p>
+  <h3 id="arguments-2"><a class="anchor" href="#arguments-2" aria-label="Link para esta seção">#</a>Arguments</h3>
+  <ul>
+    <li><code>research_results</code> (Dict[str, Any]): raw search response.</li>
+  </ul>
+  <h3 id="returns-2"><a class="anchor" href="#returns-2" aria-label="Link para esta seção">#</a>Returns</h3>
+  <ul>
+    <li><code>Dict[str, Any]</code>: filtered response.</li>
+  </ul>
+  <h3 id="raises-2"><a class="anchor" href="#raises-2" aria-label="Link para esta seção">#</a>Raises</h3>
+  <ul>
+    <li><code>RuntimeError</code>: if the filtering fails ("Error filtering web search results").</li>
+  </ul>
+  <h3 id="examples-2"><a class="anchor" href="#examples-2" aria-label="Link para esta seção">#</a>Examples</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>filtered = builder.<span class="t-f">filter_results</span>(raw)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-to-markdown"><a class="anchor" href="#3-to-markdown" aria-label="Link para esta seção">#</a>3. <code>to_markdown</code></h3>
+  <h3 id="description-4"><a class="anchor" href="#description-4" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>Converts the filtered response into markdown text, with the query, the summarized answer and the sources analyzed (title, URL, relevance score and content).</p>
+  <h3 id="arguments-3"><a class="anchor" href="#arguments-3" aria-label="Link para esta seção">#</a>Arguments</h3>
+  <ul>
+    <li><code>data</code> (Dict[str, Any]): filtered response.</li>
+  </ul>
+  <h3 id="returns-3"><a class="anchor" href="#returns-3" aria-label="Link para esta seção">#</a>Returns</h3>
+  <ul>
+    <li><code>str</code>: markdown text.</li>
+  </ul>
+  <h3 id="raises-3"><a class="anchor" href="#raises-3" aria-label="Link para esta seção">#</a>Raises</h3>
+  <ul>
+    <li><code>RuntimeError</code>: if the conversion fails ("Error converting web search results to markdown").</li>
+  </ul>
+  <h3 id="examples-3"><a class="anchor" href="#examples-3" aria-label="Link para esta seção">#</a>Examples</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>markdown = builder.<span class="t-f">to_markdown</span>(filtered)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-get-web-sites"><a class="anchor" href="#4-get-web-sites" aria-label="Link para esta seção">#</a>4. <code>get_web_sites</code></h3>
+  <h3 id="description-5"><a class="anchor" href="#description-5" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>Returns the list with the URL of each result in the filtered response.</p>
+  <h3 id="arguments-4"><a class="anchor" href="#arguments-4" aria-label="Link para esta seção">#</a>Arguments</h3>
+  <ul>
+    <li><code>filtered_result</code> (dict): filtered response, with the <code>results</code> key.</li>
+  </ul>
+  <h3 id="returns-4"><a class="anchor" href="#returns-4" aria-label="Link para esta seção">#</a>Returns</h3>
+  <ul>
+    <li><code>list</code>: URLs of the results.</li>
+  </ul>
+  <h3 id="examples-4"><a class="anchor" href="#examples-4" aria-label="Link para esta seção">#</a>Examples</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>urls = builder.<span class="t-f">get_web_sites</span>(filtered)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="5-build-context"><a class="anchor" href="#5-build-context" aria-label="Link para esta seção">#</a>5. <code>build_context</code></h3>
+  <h3 id="description-6"><a class="anchor" href="#description-6" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>Runs the complete pipeline: <code>search</code>, <code>filter_results</code>, <code>to_markdown</code> and <code>get_web_sites</code>.</p>
+  <h3 id="arguments-5"><a class="anchor" href="#arguments-5" aria-label="Link para esta seção">#</a>Arguments</h3>
+  <ul>
+    <li><code>search_config</code> (Dict[str, Any]): search configuration.</li>
+  </ul>
+  <h3 id="returns-5"><a class="anchor" href="#returns-5" aria-label="Link para esta seção">#</a>Returns</h3>
+  <ul>
+    <li><code>dict</code>: dictionary with the keys <code>markdown</code> (markdown text) and <code>urls</code> (list of URLs analyzed).</li>
+  </ul>
+  <h3 id="raises-4"><a class="anchor" href="#raises-4" aria-label="Link para esta seção">#</a>Raises</h3>
+  <ul>
+    <li><code>RuntimeError</code>: if any stage fails ("Error building research context").</li>
+  </ul>
+  <h3 id="examples-5"><a class="anchor" href="#examples-5" aria-label="Link para esta seção">#</a>Examples</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>context = builder.<span class="t-f">build_context</span>({<span class="t-s">&quot;query&quot;</span>: <span class="t-s">&quot;tendências de IA em 2026&quot;</span>, <span class="t-s">&quot;max_results&quot;</span>: <span class="t-n">5</span>})
+<span class="t-f">print</span>(context[<span class="t-s">&quot;markdown&quot;</span>])
+<span class="t-f">print</span>(context[<span class="t-s">&quot;urls&quot;</span>])</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="tavilyresearchrunner-class"><a class="anchor" href="#tavilyresearchrunner-class" aria-label="Link para esta seção">#</a><code>TavilyResearchRunner</code> Class</h2>
+  <h3 id="description-7"><a class="anchor" href="#description-7" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>Builds the search configuration, applying default values, and triggers the <code>TavilyContextBuilder</code>. It is the simplest entry point for generating a context.</p>
+  <h3 id="constructor-arguments-2"><a class="anchor" href="#constructor-arguments-2" aria-label="Link para esta seção">#</a>Constructor Arguments</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argument</th><th>Type</th><th>Description</th><th>Default Value</th></tr></thead>
+    <tbody>
+      <tr><td><code>builder</code></td><td>object</td><td>Object with the <code>build_context</code> method, normally a <code>TavilyContextBuilder</code>.</td><td>—</td></tr>
+      <tr><td><code>default_search_depth</code></td><td><code>str</code></td><td>Depth used when <code>search_depth</code> is not provided.</td><td>"advanced"</td></tr>
+      <tr><td><code>default_topic</code></td><td><code>str</code></td><td>Topic used when <code>topic</code> is not provided.</td><td>"general"</td></tr>
+      <tr><td><code>default_include_answer</code></td><td><code>bool</code></td><td>Value used when <code>include_answer</code> is not provided.</td><td>True</td></tr>
+    </tbody>
+  </table></div>
+  <h3 id="methods-2"><a class="anchor" href="#methods-2" aria-label="Link para esta seção">#</a>Methods</h3>
+
+  <h3 id="1-build-search-config"><a class="anchor" href="#1-build-search-config" aria-label="Link para esta seção">#</a>1. <code>build_search_config</code></h3>
+  <h3 id="description-8"><a class="anchor" href="#description-8" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>Builds the search configuration dictionary, validating the required fields, applying the default values and incorporating <code>extra_params</code>.</p>
+  <h3 id="arguments-6"><a class="anchor" href="#arguments-6" aria-label="Link para esta seção">#</a>Arguments</h3>
+  <ul>
+    <li><code>query</code> (str): query. Required.</li>
+    <li><code>max_results</code> (int): maximum number of results. Required.</li>
+    <li><code>search_depth</code> (Optional[str]): search depth. If omitted, uses the runner's default.</li>
+    <li><code>topic</code> (Optional[str]): search topic. If omitted, uses the runner's default.</li>
+    <li><code>include_answer</code> (Optional[bool]): whether to include the summarized answer. If omitted, uses the runner's default.</li>
+    <li><code>extra_params</code> (Optional[Dict[str, Any]]): additional parameters incorporated into the configuration; they can override the fields above.</li>
+  </ul>
+  <p>All arguments are named (keyword-only).</p>
+  <h3 id="returns-6"><a class="anchor" href="#returns-6" aria-label="Link para esta seção">#</a>Returns</h3>
+  <ul>
+    <li><code>Dict[str, Any]</code>: search configuration.</li>
+  </ul>
+  <h3 id="raises-5"><a class="anchor" href="#raises-5" aria-label="Link para esta seção">#</a>Raises</h3>
+  <ul>
+    <li><code>ValueError</code>: if <code>query</code> is empty or if <code>max_results</code> is <code>None</code>.</li>
+  </ul>
+  <h3 id="examples-6"><a class="anchor" href="#examples-6" aria-label="Link para esta seção">#</a>Examples</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>config = runner.<span class="t-f">build_search_config</span>(
+    query=<span class="t-s">&quot;tendências de IA em 2026&quot;</span>,
+    max_results=<span class="t-n">5</span>,
+    extra_params={<span class="t-s">&quot;include_domains&quot;</span>: [<span class="t-s">&quot;arxiv.org&quot;</span>]},
+)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-run"><a class="anchor" href="#2-run" aria-label="Link para esta seção">#</a>2. <code>run</code></h3>
+  <h3 id="description-9"><a class="anchor" href="#description-9" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>Builds the configuration with <code>build_search_config</code> and runs the pipeline with <code>builder.build_context</code>.</p>
+  <h3 id="arguments-7"><a class="anchor" href="#arguments-7" aria-label="Link para esta seção">#</a>Arguments</h3>
+  <ul>
+    <li>The same as <code>build_search_config</code>, all named.</li>
+  </ul>
+  <h3 id="returns-7"><a class="anchor" href="#returns-7" aria-label="Link para esta seção">#</a>Returns</h3>
+  <ul>
+    <li><code>dict</code>: dictionary with the keys <code>markdown</code> and <code>urls</code>, as in <code>build_context</code>.</li>
+  </ul>
+  <h3 id="raises-6"><a class="anchor" href="#raises-6" aria-label="Link para esta seção">#</a>Raises</h3>
+  <ul>
+    <li><code>ValueError</code>: if <code>query</code> or <code>max_results</code> are not provided.</li>
+    <li><code>RuntimeError</code>: if any stage of the pipeline fails.</li>
+  </ul>
+  <h3 id="examples-7"><a class="anchor" href="#examples-7" aria-label="Link para esta seção">#</a>Examples</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>researcher = <span class="t-f">TavilyDeepResearch</span>()
+
+builder = <span class="t-f">TavilyContextBuilder</span>(
+    researcher=researcher,
+    min_score=<span class="t-n">0.5</span>
+)
+
+runner = <span class="t-f">TavilyResearchRunner</span>(builder)
+
+context = runner.<span class="t-f">run</span>(
+    query=<span class="t-s">&quot;Quais as principais tendências de IA em 2026?&quot;</span>,
+    search_depth=<span class="t-s">&quot;advanced&quot;</span>,
+    max_results=<span class="t-n">2</span>,
+    topic=<span class="t-s">&quot;general&quot;</span>,
+    include_answer=<span class="t-n">True</span>
+)
+
+<span class="t-f">print</span>(context[<span class="t-s">&quot;markdown&quot;</span>])
+<span class="t-c"># python -m src.deep_research.tavily_research.context_builder</span></code></pre><button class="copy floating" type="button"></button></div></div></div>
+        <div class="feedback"></div>
+        <p class="source">Source: <code>src/deep_research/tavily_research/context_builder.py</code></p>
+        <nav class="pager" aria-label="Neighboring pages"><a class="pager-link prev" href="../../../../../pages/en/modules/content-parse/json-to-pydantic.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Previous</small><span>Json To Pydantic</span></div></a><a class="pager-link next" href="../../../../../pages/en/modules/deep-research/tavily-research/tavily-core.html"><div><small>Next</small><span>Tavily Core</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="On this page"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="../../../../../pages/en/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+          <p>Where intelligence finds purpose.</p>
+          <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>Repository on GitHub</a>
+        </div>
+        <div class="foot-col"><h2>Documentation</h2><a href="../../../../../pages/en/getting-started/index.html">Introduction</a><a href="../../../../../pages/en/agents/index.html">Agents</a><a href="../../../../../pages/en/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../../pages/en/api/index.html">API</a><a href="../../../../../pages/en/modules/index.html">Modules</a><a href="../../../../../pages/en/internal-source-code/index.html">Internal Services</a></div>
+        <div class="foot-col"><h2>Resources</h2><a href="../../../../../pages/en/getting-started/quickstart.html">Quickstart</a><a href="../../../../../pages/en/getting-started/licence.html">Licence</a><a href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener">Source code</a><a href="https://github.com/enzoschitini/better-ai/issues" target="_blank" rel="noopener">Report an issue</a></div>
+        <div class="foot-col"><h2>Creator</h2><div class="foot-me"><img src="../../../../../assets/img/profile.jpg" alt="" width="44" height="44"><div><strong>Enzo Schitini</strong><span>Data Scientist &amp; AI Engineer</span></div></div><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/enzoschitini" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 BetterAI &middot; MIT License</span>
+        <span>Created by <a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Enzo Schitini</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Search the documentation">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Search pages and sections" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Results"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>navigate</span></span>
+    <span><kbd>Enter</kbd><span>open</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "en", "root": "../../../../../", "index": "../../../../../search-en.json", "alt": {"pt": "pages/pt/modules/deep-research/tavily-research/context-builder.html", "it": "pages/it/modules/deep-research/tavily-research/context-builder.html", "en": "pages/en/modules/deep-research/tavily-research/context-builder.html"}, "i": {"noResults": "Nothing found for “%s”. Try a module name, such as “Pinecone”."}};</script>
+<script src="../../../../../_design-system/js/ds.js?v=9a5e2954"></script>
+<script src="../../../../../_design-system/js/docs.js?v=6f602c0a"></script>
+</body>
+</html>
