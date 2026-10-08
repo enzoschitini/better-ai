@@ -150,7 +150,7 @@ uvicorn web_services:app --reload
   <p>The <code>--reload</code> flag restarts the server automatically on every code change — recommended for development only.</p>
   <pre><code>
 INFO:     Will watch for changes in these directories: ['C:\\Users\\user_name\\better-ai']
-INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Uvicorn running on http://localhost:8000 (Press CTRL+C to quit)
 INFO:     Started reloader process [24960] using StatReload
 INFO:     Router included: /agents
 INFO:     Router included: /davinci
@@ -193,7 +193,7 @@ INFO:     Application startup complete.
   <p><strong>Validate the startup</strong></p>
   <p>Confirm that the API responded correctly before moving on:</p>
   <pre data-lang="bash"><code>
-curl -X GET "http://127.0.0.1:8000/health"
+curl -X GET "http://localhost:8000/health"
 </code></pre>
   <p><strong>Main endpoints</strong></p>
   <table>

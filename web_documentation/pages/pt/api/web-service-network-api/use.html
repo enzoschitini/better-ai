@@ -89,7 +89,7 @@
 
   <h2 id="start-application"><a class="anchor" href="#start-application" aria-label="Link para esta seção">#</a>Start application</h2>
   <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-c"># uvicorn web_services:app --reload</span></code></pre><button class="copy floating" type="button"></button></div></div>
-  <div class="code plain"><div class="code-body"><pre data-lang=""><code>INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+  <div class="code plain"><div class="code-body"><pre data-lang=""><code>INFO:     Uvicorn running on http://localhost:8000 (Press CTRL+C to quit)
 INFO:     Started reloader process [8036] using StatReload
 INFO:     Router included: /davinci
 INFO:     Router included: /deep-research
@@ -123,7 +123,7 @@ INFO:     Application startup complete.</code></pre><button class="copy floating
 
   <h2 id="healthy-healthy"><a class="anchor" href="#healthy-healthy" aria-label="Link para esta seção">#</a>Healthy - <code>/healthy</code></h2>
   <div class="endpoint"><span class="method" data-m="GET">GET</span><span>/health</span></div>
-  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">curl</span> <span class="t-n">-X</span> GET <span class="t-s">&quot;http://127.0.0.1:8000/health&quot;</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">curl</span> <span class="t-n">-X</span> GET <span class="t-s">&quot;http://localhost:8000/health&quot;</span></code></pre><button class="copy floating" type="button"></button></div></div>
 
   <h2 id="healthy-with-authorization-health-authorization"><a class="anchor" href="#healthy-with-authorization-health-authorization" aria-label="Link para esta seção">#</a>Healthy With Authorization - <code>/health-authorization</code></h2>
   <div class="endpoint"><span class="method" data-m="GET">GET</span><span>/health-authorization</span></div>

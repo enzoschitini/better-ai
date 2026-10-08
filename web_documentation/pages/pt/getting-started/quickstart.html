@@ -213,7 +213,7 @@
   <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">uvicorn</span> web_services:app <span class="t-n">--reload</span></code></pre><button class="copy floating" type="button"></button></div></div>
   <p>A flag <code>--reload</code> reinicia o servidor automaticamente a cada alteração no código — recomendada apenas em desenvolvimento.</p>
   <div class="code plain"><div class="code-body"><pre data-lang=""><code>INFO:     Will watch for changes in these directories: ['C:\\Users\\user_name\\better-ai']
-INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Uvicorn running on http://localhost:8000 (Press CTRL+C to quit)
 INFO:     Started reloader process [24960] using StatReload
 INFO:     Router included: /agents
 INFO:     Router included: /davinci
@@ -254,7 +254,7 @@ INFO:     Application startup complete.</code></pre><button class="copy floating
   </table></div>
   <p><strong>Valide a inicialização</strong></p>
   <p>Confirme que a API respondeu corretamente antes de seguir:</p>
-  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">curl</span> <span class="t-n">-X</span> GET <span class="t-s">&quot;http://127.0.0.1:8000/health&quot;</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">curl</span> <span class="t-n">-X</span> GET <span class="t-s">&quot;http://localhost:8000/health&quot;</span></code></pre><button class="copy floating" type="button"></button></div></div>
   <p><strong>Endpoints principais</strong></p>
   <div class="table-wrap"><table>
     <thead><tr><th>Endpoint</th><th>Descrição</th></tr></thead>

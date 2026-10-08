@@ -204,7 +204,7 @@ LOCAL=false
 uvicorn web_services:app --reload
 </code></pre>
   <pre data-lang="output" data-title="Saída"><code>
-INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Uvicorn running on http://localhost:8000 (Press CTRL+C to quit)
 INFO:     Router included: /agents
 INFO:     Router included: /davinci
 INFO:     Router included: /deep-research
@@ -215,7 +215,7 @@ INFO:     Application startup complete.
 </code></pre>
   <p>Confirme que a API respondeu antes de seguir:</p>
   <pre data-lang="bash"><code>
-curl -X GET "http://127.0.0.1:8000/health"
+curl -X GET "http://localhost:8000/health"
 </code></pre>
   <div class="callout" data-kind="tip"><p>Se o <code>/health</code> respondeu, a documentação interativa está em <code>http://localhost:8000/docs</code>.</p></div>
   <h3>Interface Streamlit</h3>

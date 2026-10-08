@@ -5,7 +5,7 @@ import time
 from text_parse.backup.text_parse_module import TextParserModule
 import httpx
 
-url = "http://127.0.0.1:8000/text_parse"
+url = "http://localhost:8000/text_parse"
 
 schema = [
     {

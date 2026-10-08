@@ -34,7 +34,7 @@ uvicorn src.dev_tools.launch_api:app --reload
 
   <h3>CURL</h3>
   <pre data-lang="bash"><code>
-curl -X POST "http://127.0.0.1:8000/upload" \
+curl -X POST "http://localhost:8000/upload" \
   -H "accept: application/json" \
   -H "Content-Type: multipart/form-data" \
   -F "file=@caminho/do/seu/arquivo.txt"

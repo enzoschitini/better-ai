@@ -112,7 +112,7 @@ app = <span class="t-f">FastAPI</span>()
   <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">uvicorn</span> src.dev_tools.launch_api:app <span class="t-n">--reload</span></code></pre><button class="copy floating" type="button"></button></div></div>
 
   <h3 id="curl"><a class="anchor" href="#curl" aria-label="Link para esta seção">#</a>CURL</h3>
-  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">curl</span> <span class="t-n">-X</span> POST <span class="t-s">&quot;http://127.0.0.1:8000/upload&quot;</span> \
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">curl</span> <span class="t-n">-X</span> POST <span class="t-s">&quot;http://localhost:8000/upload&quot;</span> \
   <span class="t-n">-H</span> <span class="t-s">&quot;accept: application/json&quot;</span> \
   <span class="t-n">-H</span> <span class="t-s">&quot;Content-Type: multipart/form-data&quot;</span> \
   <span class="t-n">-F</span> <span class="t-s">&quot;file=@caminho/do/seu/arquivo.txt&quot;</span></code></pre><button class="copy floating" type="button"></button></div></div></div>

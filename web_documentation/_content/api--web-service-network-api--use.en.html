@@ -9,7 +9,7 @@
 # uvicorn web_services:app --reload
 </code></pre>
   <pre><code>
-INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Uvicorn running on http://localhost:8000 (Press CTRL+C to quit)
 INFO:     Started reloader process [8036] using StatReload
 INFO:     Router included: /davinci
 INFO:     Router included: /deep-research
@@ -45,7 +45,7 @@ INFO:     Application startup complete.
   <h2>Healthy - <code>/healthy</code></h2>
   <endpoint method="GET" path="/health"></endpoint>
   <pre data-lang="bash"><code>
-curl -X GET "http://127.0.0.1:8000/health"
+curl -X GET "http://localhost:8000/health"
 </code></pre>
 
   <h2>Healthy With Authorization - <code>/health-authorization</code></h2>
