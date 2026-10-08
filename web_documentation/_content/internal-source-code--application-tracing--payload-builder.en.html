@@ -1,0 +1,118 @@
+<page data-lead="This is a detailed and didactic documentation of the PayloadBuilder class, designed to standardize telemetry and logging in Python applications.">
+  <h2>Overview</h2>
+  <p>The <code>PayloadBuilder</code> class acts as a <strong>factory of messages and data structures</strong>. Its main goal is to ensure that, no matter where a log is generated in the system, it has a consistent structure.</p>
+  <p>It solves the common problem of disorganized logs, allowing the developer to generate both a <strong>human-friendly string</strong> (console) and a <strong>structured JSON object</strong> for NoSQL databases (such as MongoDB), keeping traceability through IDs and metadata.</p>
+
+  <h2>Execution Flow</h2>
+  <p>The typical flow of using the class follows these steps:</p>
+  <ol>
+    <li><strong>Instantiation</strong>: The object is created, usually receiving the global context (log ID, file name or category flags).</li>
+    <li><strong>Metadata Processing</strong>: When recording an event, the class evaluates whether there is extra data (<code>metadata</code>) and how it should be displayed (formatted as indented JSON or as a simple string).</li>
+    <li><strong>Message Composition</strong>: The <code>build_message</code> method concatenates the parts (function, message, context) using a delimiter (<code>|</code>).</li>
+    <li><strong>Structuring for Persistence</strong>: If the log needs to be saved to a database, the <code>build_mongo_payload</code> method organizes the same information into a Python dictionary with precise timestamps.</li>
+  </ol>
+
+  <h2>Methods Summary</h2>
+  <table>
+    <thead><tr><th>Method</th><th>Responsibility</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Sets up the builder's context (ID, file, flags and format preferences).</td></tr>
+      <tr><td><code>format_metadata_payload</code></td><td>Handles the display of extra dictionaries, converting them into strings or indented JSON.</td></tr>
+      <tr><td><code>build_message</code></td><td>Generates the final formatted string for display in console logs or text files.</td></tr>
+      <tr><td><code>build_mongo_payload</code></td><td>Creates a structured dictionary with date/time for insertion into databases.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Architecture and Insights</h2>
+  <ul>
+    <li><strong>Separation of Concerns</strong>: The class separates the <em>formatting logic</em> from the <em>transport logic</em> (sending to the database). It does not "log" anything, it only "builds the payload".</li>
+    <li><strong>Traceability (Observability)</strong>: Using the <code>log_id</code> makes it possible to correlate different log entries that belong to the same request or process.</li>
+    <li><strong>Resilience</strong>: The formatting method has a <code>try/except</code> block to ensure that, even if JSON serialization fails, the log does not break the application, falling back to a simple string.</li>
+  </ul>
+
+  <h2>Class Details</h2>
+
+  <h2><code>PayloadBuilder</code> Class</h2>
+  <p><strong>Description</strong></p>
+  <p>Responsible for centralizing the composition of log messages, metadata handling and the organization of contextual information to ensure standardization across different outputs (console and database).</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>log_id</code> (str, optional): Unique identifier of the transaction or process.</li>
+    <li><code>flag</code> (str, optional): Tag for categorization (e.g. "SISTEMA_PAGAMENTO").</li>
+    <li><code>file_name</code> (str, optional): Name of the Python file where the log occurred.</li>
+    <li><code>format_metadata</code> (bool): If <code>True</code>, formats metadata dictionaries with JSON indentation.</li>
+  </ul>
+
+  <h2>Methods</h2>
+
+  <h2>1. format_metadata_payload()</h2>
+  <p><strong>Description</strong></p>
+  <p>Formats the metadata dictionary into a string representation.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>metadata</code> (Dict[str, Any]): Additional data to include in the log.</li>
+    <li><code>show_metadata</code> (bool): Flag that authorizes or not the inclusion of the data in the output.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>Optional[str]</code>: Formatted string or <code>None</code> if the data should not be displayed.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><strong>None</strong>: Catches exceptions internally and returns the raw string representation (<code>str(metadata)</code>) in case of error.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+# Com format_metadata=True na classe
+builder.format_metadata_payload({"status": 200}, True)
+# Retorna: "\n{\n    "status": 200\n}\n"`
+</code></pre>
+
+  <h2>2. build_message()</h2>
+  <p><strong>Description</strong></p>
+  <p>Assembles the final log string, joining the components with a vertical separator (<code>|</code>).</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>func_name</code> (str): Name of the originating function.</li>
+    <li><code>message</code> (str): Explanatory text of the log.</li>
+    <li><code>metadata</code> (Dict): Extra data.</li>
+    <li><code>show_metadata</code> (bool): Whether the extra data should appear in this message.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>str</code>: Complete, formatted log line.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: If no parameter is provided (empty message).</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+builder.build_message("process_data", "Sucesso", {"items": 5}, True)
+# Retorna: 'process_data() | Sucesso | metadata={'items': 5} | log_id=...'
+</code></pre>
+
+  <h2>3. build_mongo_payload()</h2>
+  <p><strong>Description</strong></p>
+  <p>Prepares an object ready to be inserted into MongoDB collections or similar databases.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>level</code> (str): Log level (DEBUG, INFO, ERROR, etc).</li>
+    <li><code>func_name</code> (str): Originating function.</li>
+    <li><code>message</code> (str): Log content.</li>
+    <li><code>metadata</code> (Dict): Structured data.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>Dict[str, Any]</code>: Dictionary containing standardized fields and a timestamp.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: If the level is not provided.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+builder.build_mongo_payload("error", "save_user", "Falha de conexão", {"db": "prod"})
+# Retorna: {'log_id': '...', 'level': 'ERROR', 'time': '2026-03-18...', ...}
+</code></pre>
+</page>

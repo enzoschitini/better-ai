@@ -1,0 +1,53 @@
+<page data-lead="Constrói um contexto rico em markdown a partir de uma pesquisa profunda na web, usando o TavilyDeepResearch como motor de busca.">
+  <h2>Context Builder - <code>/deep-research/context-builder</code></h2>
+  <endpoint method="POST" path="/deep-research/context-builder"></endpoint>
+  <p>Constrói um contexto rico em markdown a partir de uma pesquisa profunda na web, usando o <strong>TavilyDeepResearch</strong> como motor de busca. Ideal para alimentar pipelines de RAG, geração de relatórios ou enriquecimento de prompts.</p>
+
+  <h3>Parâmetros</h3>
+  <table>
+    <thead><tr><th>Parâmetro</th><th>Tipo</th><th>Descrição</th><th>Exemplo</th></tr></thead>
+    <tbody>
+      <tr><td><code>query</code></td><td><code>string</code></td><td>Pergunta ou tema central da pesquisa. Define o que será buscado.</td><td><code>"Principais tendências de IA em 2026?"</code></td></tr>
+      <tr><td><code>search_depth</code></td><td><code>"basic"</code> | <code>"advanced"</code></td><td>Profundidade da busca. <code>basic</code> para uma visão rápida, <code>advanced</code> para uma pesquisa mais abrangente e detalhada.</td><td><code>"advanced"</code></td></tr>
+      <tr><td><code>max_results</code></td><td><code>integer</code> (1–100)</td><td>Número máximo de resultados a recuperar e incluir no contexto.</td><td><code>35</code></td></tr>
+      <tr><td><code>topic</code></td><td><code>string</code></td><td>Categoria ou domínio da pesquisa. Orienta o tipo de fonte priorizada. Valores comuns: <code>general</code>, <code>news</code>, <code>finance</code>.</td><td><code>"news"</code></td></tr>
+      <tr><td><code>include_answer</code></td><td><code>boolean</code></td><td>Se <code>true</code>, inclui no contexto uma resposta gerada automaticamente com base nos resultados encontrados.</td><td><code>true</code></td></tr>
+      <tr><td><code>min_score</code></td><td><code>float</code> (0.0–1.0)</td><td>Score mínimo de relevância. Resultados abaixo desse limiar são descartados. Valores mais altos = contexto mais preciso, porém menor.</td><td><code>0.5</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Request</h3>
+  <pre data-lang="bash"><code>
+curl --location 'http://localhost:8000/deep-research/context-builder' \
+--header 'Content-Type: application/json' \
+--header 'X-API-Key: ******' \
+--data '{
+    "query": "Principais tendências de IA em 2026?",
+    "search_depth": "advanced",
+    "max_results": 35,
+    "topic": "general",
+    "include_answer": true,
+    "min_score": 0.5
+}'
+</code></pre>
+
+  <h3>Response</h3>
+  <pre data-lang="json"><code>
+{
+    "job_id": "job_1779392104064657200TsJh",
+    "status": "success",
+    "status_code": 200,
+    "result": {
+        "markdown": "...",
+        "urls": [
+            "https://example.com"
+        ]
+    },
+    "time": {
+        "start": "2026-05-21 16:35:04",
+        "end": "2026-05-21 16:35:11",
+        "duration_seconds": 7.0
+    }
+}
+</code></pre>
+</page>

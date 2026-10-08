@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Curl Compiler | BetterAI Docs</title>
+<meta name="description" content="The CurlCompiler class was created to make it easier to interpret and programmatically run curl commands in the Python environment, using the requests library.">
+<link rel="canonical" href="pages/en/api/curl-compiler.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../../_design-system/css/tokens.css?v=7f43b250">
+<link rel="stylesheet" href="../../../_design-system/css/base.css?v=4a698b89">
+<link rel="stylesheet" href="../../../_design-system/css/layout.css?v=503e806e">
+<link rel="stylesheet" href="../../../_design-system/css/content.css?v=cfc5f8ef">
+<link rel="stylesheet" href="../../../_design-system/css/search.css?v=1ecf3252">
+<link rel="stylesheet" href="../../../_design-system/css/responsive.css?v=6efeec66">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Created by Enzo Schitini. I invite you to connect with me on LinkedIn.</a></span>
+    <button type="button" aria-label="Dismiss notice"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../pages/en/index.html">
+        <img src="../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Search the documentation">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Search...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="../../../pages/en/getting-started/quickstart.html">Quickstart<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Language"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>EN</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="false"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="false"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="true"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light and dark theme"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Documentation areas"><a class="tab" href="../../../pages/en/index.html">Overview</a><a class="tab" href="../../../pages/en/getting-started/index.html">Introduction</a><a class="tab" href="../../../pages/en/agents/index.html">Agents</a><a class="tab" href="../../../pages/en/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../pages/en/api/index.html" aria-current="page">API</a><a class="tab" href="../../../pages/en/modules/index.html">Modules</a><a class="tab" href="../../../pages/en/internal-source-code/index.html">Internal Services</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>API</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Curl Compiler</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Documentation navigation">
+    <nav class="side"><div class="side-areas"><a href="../../../pages/en/index.html">Overview</a><a href="../../../pages/en/getting-started/index.html">Introduction</a><a href="../../../pages/en/agents/index.html">Agents</a><a href="../../../pages/en/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../pages/en/api/index.html" aria-current="page">API</a><a href="../../../pages/en/modules/index.html">Modules</a><a href="../../../pages/en/internal-source-code/index.html">Internal Services</a></div><a class="side-link" href="../../../pages/en/api/index.html"><span>Overview</span></a><div class="side-group"><p class="side-title">Tools</p><ul><li><a class="side-link" href="../../../pages/en/api/curl-compiler.html" aria-current="page"><span>Curl Compiler</span></a></li></ul></div><div class="side-group"><p class="side-title">Web Service Network - API</p><ul><li><a class="side-link" href="../../../pages/en/api/web-service-network-api/web-service-api.html"><span>Web Service API</span></a></li><li><a class="side-link" href="../../../pages/en/api/web-service-network-api/use.html"><span>Use</span></a></li></ul></div><div class="side-group"><p class="side-title">Deep Research</p><ul><li><a class="side-link" href="../../../pages/en/api/deep-research/context-builder.html"><span>Context Builder</span></a></li></ul></div><div class="side-group"><p class="side-title">Parse Content</p><ul><li><a class="side-link" href="../../../pages/en/api/parse-content/document-parse.html"><span>Document Parse</span></a></li></ul></div><div class="side-group"><p class="side-title">Image Generation</p><ul><li><a class="side-link" href="../../../pages/en/api/image-generation/image-generation.html"><span>Image Generation</span></a></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Tools</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Curl Compiler</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copy page</span></button>
+            </div>
+          </div>
+          <p class="lead">The CurlCompiler class was created to make it easier to interpret and programmatically run curl commands in the Python environment, using the requests library.</p>
+          <details class="toc-inline"><summary>On this page</summary><ul></ul></details>
+        </header>
+        <div class="prose"><h2 id="overview"><a class="anchor" href="#overview" aria-label="Link para esta seção">#</a>Overview</h2>
+  <p>The <code>CurlCompiler</code> class was created to make it easier to interpret and programmatically run <code>curl</code> commands in the Python environment, using the <code>requests</code> library. It solves the problem of automating HTTP requests that would normally be made from the terminal, allowing detailed parsing of the <code>curl</code> command to identify the HTTP method, headers, authentication, request body and URL.</p>
+  <p>In practice, this class lets developers take any <code>curl</code> command and:</p>
+  <ul>
+    <li>get its components in a structured way (method, headers, data),</li>
+    <li>run the HTTP request directly through Python code,</li>
+    <li>print the responses in a readable way,</li>
+    <li>generate equivalent Python snippets for reuse.</li>
+  </ul>
+  <p>This is especially useful in API testing scenarios, system integration or when the <code>curl</code> command is generated by other tools and needs to be used programmatically.</p>
+
+  <h2 id="execution-flow"><a class="anchor" href="#execution-flow" aria-label="Link para esta seção">#</a>Execution Flow</h2>
+  <ol>
+    <li><strong>Object initialization</strong>: An instance of the <code>CurlCompiler</code> class is created, and it is possible to set the timeout and whether SSL verification is on or off.</li>
+    <li><strong>Compile the curl command</strong>: When the <code>curl</code> command is passed as a string to the <code>compile</code> method, it is split into tokens to extract the HTTP method, headers, body, authentication and URL.</li>
+    <li><strong>Compilation validation</strong>: The command is validated to ensure that it has a valid URL and HTTP method.</li>
+    <li><strong>Request execution</strong>: Using the <code>execute</code> method, the class compiles the command and sends the HTTP request based on the extracted data.</li>
+    <li><strong>Handle the response</strong>: The HTTP response received can be converted into a dictionary for manipulation via <code>response_to_dict</code>, printed in a formatted way with <code>pretty_print_response</code> or inspected manually.</li>
+    <li><strong>Python code generation</strong>: A Python snippet equivalent to the <code>curl</code> command can be generated with <code>generate_python_code</code> for reuse or documentation.</li>
+  </ol>
+
+  <h2 id="class-methods-table"><a class="anchor" href="#class-methods-table" aria-label="Link para esta seção">#</a>Class Methods Table</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Method</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Initializes the class with timeout and SSL verification settings</td></tr>
+      <tr><td><code>compile</code></td><td>Parses the curl command and returns its components in a dictionary</td></tr>
+      <tr><td><code>execute</code></td><td>Compiles and runs the curl command, returning the HTTP response</td></tr>
+      <tr><td><code>call_endpoint</code></td><td>Runs the HTTP request with manually defined parameters</td></tr>
+      <tr><td><code>response_to_dict</code></td><td>Converts a <code>requests</code> response into a dictionary for easy manipulation</td></tr>
+      <tr><td><code>pretty_print_response</code></td><td>Prints the HTTP response formatted for reading</td></tr>
+      <tr><td><code>get_domain</code></td><td>Extracts the domain from a given URL</td></tr>
+      <tr><td><code>generate_python_code</code></td><td>Generates Python code equivalent to the curl command</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="key-architecture-points-and-insights"><a class="anchor" href="#key-architecture-points-and-insights" aria-label="Link para esta seção">#</a>Key Architecture Points and Insights</h2>
+  <ul>
+    <li>The class uses lexical parsing via <code>shlex</code> to correctly handle strings and spaces in the <code>curl</code> command.</li>
+    <li>It implements clear encapsulation: parsing, execution, response handling and code generation are separated into methods.</li>
+    <li>The decision to automatically set the POST method when a body is present in a command that was originally GET is a common practice and makes use easier.</li>
+    <li>It uses the <code>requests</code> library directly for execution, ensuring compatibility and robustness.</li>
+    <li>The <code>compile</code> method covers the main curl options (method, headers, basic auth, data) and is extensible.</li>
+    <li>Python code generation makes it possible to quickly integrate external curl commands without manual rework.</li>
+  </ul>
+
+  <h2 id="class-and-methods-description"><a class="anchor" href="#class-and-methods-description" aria-label="Link para esta seção">#</a>Class and Methods Description</h2>
+
+  <h2 id="curlcompiler-class"><a class="anchor" href="#curlcompiler-class" aria-label="Link para esta seção">#</a><code>CurlCompiler</code> Class</h2>
+
+  <h3 id="description"><a class="anchor" href="#description" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>Class that lets you interpret <code>curl</code> commands to run HTTP requests via Python, making automation, testing and API integration easier. It fully parses the command to retrieve the method, URL, headers, authentication and data, and runs the call using the <code>requests</code> library. It also allows easy handling and display of the response.</p>
+
+  <h3 id="constructor-arguments"><a class="anchor" href="#constructor-arguments" aria-label="Link para esta seção">#</a>Constructor Arguments</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argument</th><th>Type</th><th>Description</th><th>Default Value</th></tr></thead>
+    <tbody>
+      <tr><td>timeout</td><td>int</td><td>Time limit in seconds for HTTP requests</td><td>30</td></tr>
+      <tr><td>verify_ssl</td><td>bool</td><td>Defines whether SSL certificate verification is done</td><td>True</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Initializes the <code>CurlCompiler</code> object by setting the timeout for HTTP requests and whether SSL verification should be done.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>timeout (int): maximum time in seconds for the request (default 30).</li>
+    <li>verify_ssl (bool): turns SSL verification on/off (default True).</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>Returns no value.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Not applicable.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>client = <span class="t-f">CurlCompiler</span>(timeout=<span class="t-n">10</span>, verify_ssl=<span class="t-n">False</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-compile"><a class="anchor" href="#2-compile" aria-label="Link para esta seção">#</a>2. <code>compile</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Receives a <code>curl</code> command (string) and fully parses it to extract the HTTP method, URL, headers, authentication and request body. Returns a structured dictionary with this information ready for consumption.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>curl_command (str): string containing the full curl command.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>dict: dictionary containing the keys <code>method</code>, <code>url</code>, <code>headers</code>, <code>params</code>, <code>data</code>, <code>json</code>, <code>auth</code>.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>ValueError: if the command does not start with "curl" or does not contain a valid URL/HTTP method.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>curl = <span class="t-s">'curl -X POST https://api.exemplo.com -H &quot;Content-Type: application/json&quot; -d \'{&quot;key&quot;:&quot;value&quot;}\''</span>
+compiled = client.<span class="t-f">compile</span>(curl)
+<span class="t-f">print</span>(compiled[<span class="t-s">'method'</span>])  <span class="t-c"># &quot;POST&quot;</span>
+<span class="t-f">print</span>(compiled[<span class="t-s">'url'</span>])     <span class="t-c"># &quot;https://api.exemplo.com&quot;</span>
+<span class="t-f">print</span>(compiled[<span class="t-s">'json'</span>])    <span class="t-c"># {&quot;key&quot;: &quot;value&quot;}</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-execute"><a class="anchor" href="#3-execute" aria-label="Link para esta seção">#</a>3. <code>execute</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Compiles the <code>curl</code> command and runs the HTTP request, returning the <code>requests.Response</code> object.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>curl_command (str): curl command to be run.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>requests.Response: response received from the server.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Propagates exceptions from compilation and HTTP execution (e.g. ValueError, requests exceptions).</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>response = client.<span class="t-f">execute</span>(<span class="t-s">'curl -X GET https://httpbin.org/get'</span>)
+<span class="t-f">print</span>(response.status_code)  <span class="t-c"># 200</span>
+<span class="t-f">print</span>(response.text)         <span class="t-c"># Conteúdo da resposta</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-call-endpoint"><a class="anchor" href="#4-call-endpoint" aria-label="Link para esta seção">#</a>4. <code>call_endpoint</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Runs a direct HTTP call using explicit parameters (method, url, headers, body, authentication).</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>method (str): HTTP method ('GET', 'POST', etc.)</li>
+    <li>url (str): endpoint URL</li>
+    <li>headers (dict, optional): HTTP headers</li>
+    <li>data (any, optional): request body in raw/text format</li>
+    <li>json_data (any, optional): request body as serializable JSON</li>
+    <li>auth (tuple, optional): (username, password) pair for basic authentication</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>requests.Response: response of the HTTP request.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Propagates exceptions from requests.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>resp = client.<span class="t-f">call_endpoint</span>(
+    method=<span class="t-s">'POST'</span>,
+    url=<span class="t-s">'https://api.exemplo.com'</span>,
+    headers={<span class="t-s">'Content-Type'</span>: <span class="t-s">'application/json'</span>},
+    json_data={<span class="t-s">'msg'</span>: <span class="t-s">'oi'</span>}
+)
+<span class="t-f">print</span>(resp.status_code)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="5-response-to-dict"><a class="anchor" href="#5-response-to-dict" aria-label="Link para esta seção">#</a>5. <code>response_to_dict</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Converts the <code>requests.Response</code> object into a dictionary containing status, headers, body (JSON or text) and a success flag.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>response (requests.Response): HTTP response object.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>dict: dictionary containing the keys <code>status_code</code>, <code>headers</code>, <code>body</code>, <code>success</code>.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Not applicable.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>resp_dict = client.<span class="t-f">response_to_dict</span>(response)
+<span class="t-f">print</span>(resp_dict[<span class="t-s">'status_code'</span>])  <span class="t-c"># Exemplo: 200</span>
+<span class="t-f">print</span>(resp_dict[<span class="t-s">'body'</span>])         <span class="t-c"># Conteúdo da resposta</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="6-pretty-print-response"><a class="anchor" href="#6-pretty-print-response" aria-label="Link para esta seção">#</a>6. <code>pretty_print_response</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Prints the details of the HTTP response in a formatted and readable way, including status, headers and body.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>response (requests.Response): HTTP response to be printed.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>None</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Not applicable.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>client.<span class="t-f">pretty_print_response</span>(response)
+<span class="t-c"># Status: 200</span>
+<span class="t-c"># Headers: { ... }</span>
+<span class="t-c"># Body: { ... }</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="7-get-domain"><a class="anchor" href="#7-get-domain" aria-label="Link para esta seção">#</a>7. <code>get_domain</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Extracts the domain (host) from a full URL.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>url (str): URL to extract the domain from.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>str: extracted domain, for example "httpbin.org".</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Not applicable.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>domain = client.<span class="t-f">get_domain</span>(<span class="t-s">&quot;https://httpbin.org/post&quot;</span>)
+<span class="t-f">print</span>(domain)  <span class="t-c"># httpbin.org</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="8-generate-python-code"><a class="anchor" href="#8-generate-python-code" aria-label="Link para esta seção">#</a>8. <code>generate_python_code</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Generates a Python code snippet using <code>requests</code> that implements the same behavior as the <code>curl</code> command received.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>curl_command (str): curl command to be converted.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>str: formatted and indented Python code.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Propagates errors from compiling the curl command.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>code = client.<span class="t-f">generate_python_code</span>(<span class="t-s">'curl -X POST https://api.exemplo.com -H &quot;Content-Type: application/json&quot; -d \'{&quot;key&quot;:&quot;value&quot;}\''</span>)
+<span class="t-f">print</span>(code)</code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>Expected output example:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-c"># =========================================================</span>
+<span class="t-c"># EXEMPLO DE USO</span>
+<span class="t-c"># =========================================================</span>
+
+<span class="t-k">if</span> __name__ == <span class="t-s">&quot;__main__&quot;</span>:
+
+    curl = <span class="t-s">''</span>'
+    curl -X POST <span class="t-s">&quot;https://httpbin.org/post&quot;</span> \
+    -H <span class="t-s">&quot;Content-Type: application/json&quot;</span> \
+    -H <span class="t-s">&quot;Authorization: Bearer TOKEN_123&quot;</span> \
+    -d <span class="t-s">'{&quot;message&quot;:&quot;hello world&quot;,&quot;value&quot;:123}'</span>
+    <span class="t-s">''</span>'
+
+    curl = <span class="t-s">''</span>'
+    curl --location --request POST <span class="t-s">'http://localhost:8000/embedding'</span>
+    <span class="t-s">''</span>'
+
+    client = <span class="t-f">CurlCompiler</span>(timeout=<span class="t-n">15</span>)
+
+    <span class="t-c"># Compilar CURL</span>
+    compiled = client.<span class="t-f">compile</span>(curl)
+
+    <span class="t-f">print</span>(<span class="t-s">&quot;\nCURL COMPILADO:&quot;</span>)
+    <span class="t-f">print</span>(json.<span class="t-f">dumps</span>(compiled, indent=<span class="t-n">4</span>, ensure_ascii=<span class="t-n">False</span>))
+
+    <span class="t-c"># Executar</span>
+    response = client.<span class="t-f">execute</span>(curl)
+
+    <span class="t-c"># Mostrar resposta</span>
+    client.<span class="t-f">pretty_print_response</span>(response)
+
+    <span class="t-c"># Gerar código equivalente</span>
+    <span class="t-f">print</span>(<span class="t-s">&quot;\nCÓDIGO PYTHON GERADO:\n&quot;</span>)
+    <span class="t-f">print</span>(client.<span class="t-f">generate_python_code</span>(curl))</code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>This documentation provides a complete and didactic view of how the <code>CurlCompiler</code> class and its main methods work, enabling developers to use it efficiently for parsing and automated execution of <code>curl</code> commands in Python.</p></div>
+        <div class="feedback"></div>
+        <p class="source">Source: <code>src/web_services_network/utils/curl_compiler.py</code></p>
+        <nav class="pager" aria-label="Neighboring pages"><a class="pager-link prev" href="../../../pages/en/api/index.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Previous</small><span>API: overview</span></div></a><a class="pager-link next" href="../../../pages/en/api/web-service-network-api/web-service-api.html"><div><small>Next</small><span>Web Service API</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="On this page"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="../../../pages/en/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+          <p>Where intelligence finds purpose.</p>
+          <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>Repository on GitHub</a>
+        </div>
+        <div class="foot-col"><h2>Documentation</h2><a href="../../../pages/en/getting-started/index.html">Introduction</a><a href="../../../pages/en/agents/index.html">Agents</a><a href="../../../pages/en/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../pages/en/api/index.html">API</a><a href="../../../pages/en/modules/index.html">Modules</a><a href="../../../pages/en/internal-source-code/index.html">Internal Services</a></div>
+        <div class="foot-col"><h2>Resources</h2><a href="../../../pages/en/getting-started/quickstart.html">Quickstart</a><a href="../../../pages/en/getting-started/licence.html">Licence</a><a href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener">Source code</a><a href="https://github.com/enzoschitini/better-ai/issues" target="_blank" rel="noopener">Report an issue</a></div>
+        <div class="foot-col"><h2>Creator</h2><div class="foot-me"><img src="../../../assets/img/profile.jpg" alt="" width="44" height="44"><div><strong>Enzo Schitini</strong><span>Data Scientist &amp; AI Engineer</span></div></div><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/enzoschitini" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 BetterAI &middot; MIT License</span>
+        <span>Created by <a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Enzo Schitini</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Search the documentation">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Search pages and sections" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Results"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>navigate</span></span>
+    <span><kbd>Enter</kbd><span>open</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "en", "root": "../../../", "index": "../../../search-en.json", "alt": {"pt": "pages/pt/api/curl-compiler.html", "it": "pages/it/api/curl-compiler.html", "en": "pages/en/api/curl-compiler.html"}, "i": {"noResults": "Nothing found for “%s”. Try a module name, such as “Pinecone”."}};</script>
+<script src="../../../_design-system/js/ds.js?v=9a5e2954"></script>
+<script src="../../../_design-system/js/docs.js?v=6f602c0a"></script>
+</body>
+</html>

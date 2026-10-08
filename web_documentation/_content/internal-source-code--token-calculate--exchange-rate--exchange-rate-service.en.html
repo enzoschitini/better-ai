@@ -1,0 +1,150 @@
+<page data-lead="The ExchangeRateService class is responsible for managing US dollar exchange rates, combining the retrieval of up-to-date data from the Central Bank of Brazil (BCB) API with local storage of these records for future queries.">
+  <h2>Overview</h2>
+  <p>The <code>ExchangeRateService</code> class is responsible for managing US dollar exchange rates, combining the retrieval of up-to-date data from the Central Bank of Brazil (BCB) API with local storage of these records for future queries. It keeps a limited history of rates to optimize the local database, avoiding excessive storage of old data.</p>
+  <p>This service is useful for applications that need the up-to-date dollar rate, but also need to guarantee quick access to recent data even when the external API fails. By storing locally and limiting the data kept, the class provides an efficient and resilient solution for systems that depend on this information.</p>
+  <p>In practice, the class can be used to obtain the real-time dollar rate, with automatic fallback to the last available value and persistence of the data for future queries.</p>
+
+  <h2>Execution Flow</h2>
+  <ol>
+    <li>An object of the <code>ExchangeRateService</code> class is instantiated.</li>
+    <li>The <code>get_usd_rate()</code> method is called to obtain the dollar rate.</li>
+    <li>The method checks whether a record of the day's rate already exists in the local database.</li>
+    <li>If the day's record is already available, it returns that value straight from the database.</li>
+    <li>If not, it queries the most recent rate from the BCB API.</li>
+    <li>If the API returns a valid value:
+      <ul>
+        <li>The value is stored in the local database.</li>
+        <li>A rule is applied to limit the number of saved records (keeping up to 5 records).</li>
+        <li>The value is returned.</li>
+      </ul>
+    </li>
+    <li>If the API fails and there is previous data in the database, the last stored value is returned.</li>
+    <li>If there is no data, a default base value is returned and this base is stored locally.</li>
+    <li>The local database is always kept at a maximum of 5 records, removing the oldest ones when necessary.</li>
+    <li>If an error occurs during the process, a <code>RuntimeError</code> is raised.</li>
+  </ol>
+
+  <h2>Class Methods Table</h2>
+  <table>
+    <thead><tr><th>Method</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Initializes the service, configures the local database and dates.</td></tr>
+      <tr><td><code>_get_bcb_rate</code></td><td>Fetches the most recent dollar rate from the BCB API.</td></tr>
+      <tr><td><code>_get_last_db_record</code></td><td>Gets the last record stored locally.</td></tr>
+      <tr><td><code>_enforce_limit</code></td><td>Limits the number of saved records, deleting the old ones.</td></tr>
+      <tr><td><code>get_usd_rate</code></td><td>Gets the dollar rate with fallback and persistence.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Key Architecture Points and Insights</h2>
+  <ul>
+    <li><strong>Design based on a robust fallback:</strong> The <code>get_usd_rate</code> method tries to prioritize up-to-date data, but gracefully handles failures of the external API by using local data or a default base.</li>
+    <li><strong>Encapsulation:</strong> The use of private methods (<code>_get_bcb_rate</code>, <code>_get_last_db_record</code>, <code>_enforce_limit</code>) separates responsibilities inside the class, keeping the interface clean for the user.</li>
+    <li><strong>History limit:</strong> Keeping a maximum number of records avoids uncontrolled growth of the local database, which is important for performance and space.</li>
+    <li><strong>Integration with other classes:</strong> The class uses <code>DocumentStore</code> for local persistence and <code>BCBExchangeRateService</code> for integration with the external rate API, demonstrating composition and separation of responsibilities.</li>
+    <li><strong>Use of a standardized date format:</strong> Dates are always stored and compared in the ISO format <code>%Y-%m-%d</code>, ensuring consistency.</li>
+    <li><strong>Exception handling:</strong> General errors are caught and wrapped in a <code>RuntimeError</code> to signal failures specific to this service.</li>
+  </ul>
+
+  <h2>Class and Methods Description</h2>
+
+  <h2><code>ExchangeRateService</code> Class</h2>
+  <h3>Description</h3>
+  <p>Class to manage US dollar exchange rates. It fetches rates from the Central Bank of Brazil API, stores the information locally, keeps a limited history of the data and offers access to the current rate with fallback mechanisms to guarantee service continuity even in case of external failures.</p>
+
+  <h3>Methods</h3>
+
+  <h3>1. <code>__init__</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Initializes the service instance, configuring the local database manager, setting a default rate base and storing the current formatted date.</p>
+  <p><strong>Arguments</strong></p>
+  <p>None.</p>
+  <p><strong>Returns</strong></p>
+  <p>Returns no value.</p>
+  <p><strong>Raises</strong></p>
+  <p>None.</p>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+service = ExchangeRateService()
+</code></pre>
+
+  <h3>2. <code>_get_bcb_rate</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Retrieves the most recent dollar rate from the Central Bank of Brazil API using the <code>BCBExchangeRateService</code> service.</p>
+  <p><strong>Arguments</strong></p>
+  <p>None.</p>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>float: Value of the most recent dollar rate obtained from the API.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <p>None (assuming errors are handled externally).</p>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+rate = service._get_bcb_rate()
+print(rate)  # Exemplo esperado: 5.25
+</code></pre>
+
+  <h3>3. <code>_get_last_db_record</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Fetches the most recent dollar rate record from the local database. Returns the record with the latest date, or None if there are no records.</p>
+  <p><strong>Arguments</strong></p>
+  <p>None.</p>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>dict or None: Dictionary with the most recent record or None if the database is empty.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <p>None.</p>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+last_record = service._get_last_db_record()
+if last_record:
+    print(last_record["rate"])
+else:
+    print("Nenhum registro encontrado.")
+</code></pre>
+
+  <h3>4. <code>_enforce_limit</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Limits the maximum number of records saved in the local database to the specified value, removing the oldest records if the limit is exceeded.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>limit (int): Maximum number of records allowed in the database. Default is 5.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <p>Returns no value.</p>
+  <p><strong>Raises</strong></p>
+  <p>None.</p>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+service._enforce_limit(limit=5)
+# Garante que no banco existam no máximo 5 registros recentes.
+</code></pre>
+
+  <h3>5. <code>get_usd_rate</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Gets the current US dollar rate. It first checks whether the day's rate is already saved in the local database; otherwise, it tries to fetch it from the BCB API. If the API returns data, it saves it locally while limiting the history. If the API fails, it returns the last saved value or a default base value. It handles general errors by raising <code>RuntimeError</code>.</p>
+  <p><strong>Arguments</strong></p>
+  <p>None.</p>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>float: Current rate ready for use.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>RuntimeError: In case of a general failure in obtaining or storing the rate.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+try:
+    rate = service.get_usd_rate()
+    print(f"Cotação do dólar: {rate}")
+except RuntimeError:
+    print("Não foi possível obter a cotação.")
+
+# python -m src.tokens_calculate.exchange_rate
+</code></pre>
+
+  <h2>End of documentation.</h2>
+</page>

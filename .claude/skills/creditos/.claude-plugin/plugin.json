@@ -1,0 +1,6 @@
+{
+  "name": "creditos",
+  "version": "0.1.0",
+  "description": "Mostra, a cada prompt, quanto ele consumiu: tokens por modelo, custo estimado, contexto e limites do plano.",
+  "types": "./types/index.d.ts"
+}

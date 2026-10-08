@@ -1,0 +1,120 @@
+<page data-lead="This is a detailed and didactic documentation of the MongoDBManager class, designed to make it easier for developers who will integrate this tool into their projects to understand it.">
+  <h2>Overview</h2>
+  <p>The <code>MongoDBManager</code> class acts as a <strong>Wrapper</strong> (or facilitator) for the <code>pymongo</code> library. Its main goal is to simplify interaction with MongoDB databases, abstracting the complexity of managing connections and ensuring that common <strong>CRUD</strong> (Create, Read, Update, Delete) operations are performed in a standardized way.</p>
+  <p>It is ideal for applications that need flexible data persistence, automatically handling metadata such as creation and update dates.</p>
+
+  <h2>Execution Flow</h2>
+  <p>The class follows a <strong>Lazy Loading</strong> logic:</p>
+  <ol>
+    <li><strong>Instantiation:</strong> When the object is created, it only stores the connection URI. The database is not accessed yet.</li>
+    <li><strong>First Call:</strong> When any operation method (such as <code>save_payload</code>) is invoked, it internally calls the <code>connect()</code> method.</li>
+    <li><strong>Persistent Connection:</strong> The <code>MongoClient</code> is created and stored in the <code>self.client</code> attribute. All subsequent calls reuse this same connection to save resources.</li>
+    <li><strong>Processing:</strong> The method runs the requested logic (insert, search, etc.).</li>
+    <li><strong>Error Handling:</strong> If something fails, the connection is closed preventively to avoid memory leaks or "stuck" connections.</li>
+  </ol>
+
+  <h2>Methods Table</h2>
+  <table>
+    <thead><tr><th>Method</th><th>Brief Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Configures the connection URI (via argument or environment variable).</td></tr>
+      <tr><td><code>connect</code></td><td>Establishes or reuses the connection to the MongoDB server.</td></tr>
+      <tr><td><code>close_connection</code></td><td>Ends the active connection and clears the client.</td></tr>
+      <tr><td><code>save_payload</code></td><td>Inserts a new document with a creation timestamp.</td></tr>
+      <tr><td><code>fetch_documents</code></td><td>Searches documents with filters and a limit option.</td></tr>
+      <tr><td><code>update_documents</code></td><td>Updates one or several records, adding an edit timestamp.</td></tr>
+      <tr><td><code>delete_documents</code></td><td>Permanently removes records from the database.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Architecture and Insights</h2>
+  <ul>
+    <li><strong>State Management:</strong> The class uses a <em>Singleton-like</em> pattern for the connection within the instance, ensuring you do not open hundreds of unnecessary connections.</li>
+    <li><strong>Data Safety:</strong> In the update method, the code explicitly removes the <code>_id</code> key from the update payload (<code>new_values.pop("_id", None)</code>). This avoids common MongoDB errors caused by trying to overwrite a document's immutable ID.</li>
+    <li><strong>Traceability:</strong> The automatic inclusion of <code>_created_at</code> and <code>updated_at</code> turns simple documents into auditable records, making later debugging and data analysis easier.</li>
+    <li><strong>Error Handling:</strong> The use of <code>RuntimeError</code> wraps complex network errors in messages that are readable for the application developer.</li>
+  </ul>
+
+  <h2>Class Details</h2>
+
+  <h2>MongoDBManager Class</h2>
+  <p><strong>Description</strong></p>
+  <p>Central MongoDB persistence manager that encapsulates the connection lifecycle and CRUD operations, ensuring resource reuse and metadata standardization.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>mongo_uri</code> (str, optional): Connection string. If omitted, it looks up <code>os.getenv("MONGO_URI")</code> or uses the local default.</li>
+  </ul>
+
+  <h2>Methods</h2>
+
+  <h2>1. connect</h2>
+  <p><strong>Description:</strong> Ensures that there is an active connection to the database.</p>
+  <p><strong>Arguments:</strong> None.</p>
+  <p><strong>Returns:</strong> <code>MongoClient</code> (pymongo connection object).</p>
+  <p><strong>Raises:</strong> <code>Exception</code> in case of network or credentials failure.</p>
+  <p><strong>Examples:</strong></p>
+  <pre data-lang="python"><code>
+manager = MongoDBManager()
+client = manager.connect()
+</code></pre>
+
+  <h2>2. save_payload</h2>
+  <p><strong>Description:</strong> Inserts a dictionary into the database and adds the creation date.</p>
+  <p><strong>Arguments:</strong></p>
+  <ul>
+    <li><code>database_name</code> (str): Name of the database.</li>
+    <li><code>collection_name</code> (str): Name of the collection.</li>
+    <li><code>payload</code> (dict): Data to be saved.</li>
+  </ul>
+  <p><strong>Returns:</strong> <code>dict</code> containing the status and the generated ID.</p>
+  <p><strong>Raises:</strong> <code>RuntimeError</code> if the insert fails.</p>
+  <p><strong>Examples:</strong></p>
+  <pre data-lang="python"><code>
+manager.save_payload("log_db", "events", {"event": "login_success"})
+</code></pre>
+
+  <h3>3. fetch_documents</h3>
+  <p><strong>Description:</strong> Locates documents that match the given criteria.</p>
+  <p><strong>Arguments:</strong></p>
+  <ul>
+    <li><code>database_name</code> (str): Name of the database.</li>
+    <li><code>collection_name</code> (str): Name of the collection.</li>
+    <li><code>filter</code> (dict): Search filter (e.g. <code>{"status": "active"}</code>).</li>
+    <li><code>limit</code> (int): Maximum number of results.</li>
+  </ul>
+  <p><strong>Returns:</strong> <code>List[dict]</code> (List of documents found).</p>
+  <p><strong>Raises:</strong> <code>RuntimeError</code>.</p>
+  <p><strong>Examples:</strong></p>
+  <pre data-lang="python"><code>
+users = manager.fetch_documents("app", "users", {"age": {"$gt": 18}}, limit=10)
+</code></pre>
+
+  <h2>4. update_documents</h2>
+  <p><strong>Description:</strong> Modifies existing documents and records the modification date.</p>
+  <p><strong>Arguments:</strong></p>
+  <ul>
+    <li><code>filter</code> (dict): Criterion to find the documents.</li>
+    <li><code>new_values</code> (dict): Data to be updated.</li>
+    <li><code>multi</code> (bool): If <code>True</code>, updates all documents found; if <code>False</code>, only the first.</li>
+  </ul>
+  <p><strong>Returns:</strong> <code>dict</code> with metrics (<code>matched_count</code>, <code>modified_count</code>).</p>
+  <p><strong>Raises:</strong> <code>RuntimeError</code>.</p>
+  <p><strong>Examples:</strong></p>
+  <pre data-lang="python"><code>
+manager.update_documents("app", "users", {"id": 1}, {"status": "premium"})
+</code></pre>
+
+  <h2>5. delete_documents</h2>
+  <p><strong>Description:</strong> Permanently removes documents from the collection.</p>
+  <p><strong>Arguments:</strong></p>
+  <ul>
+    <li><code>filter</code> (dict): Deletion criterion.</li>
+    <li><code>multi</code> (bool): Defines whether to delete one or all the records found.</li>
+  </ul>
+  <p><strong>Returns:</strong> <code>dict</code> with <code>deleted_count</code>.</p>
+  <p><strong>Raises:</strong> <code>RuntimeError</code>.</p>
+  <p><strong>Examples:</strong></p>
+  <pre data-lang="python"><code>
+manager.delete_documents("app", "temp_data", {"expired": True}, multi=True)
+</code></pre>
+</page>

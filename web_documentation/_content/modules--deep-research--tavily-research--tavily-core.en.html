@@ -1,0 +1,230 @@
+<page data-lead="Documentation of the TavilyDeepResearch class, the dynamic wrapper over the Tavily API used by the Deep Research module.">
+  <h2>Overview</h2>
+  <p>The <code>TavilyDeepResearch</code> class is a <strong>dynamic wrapper</strong> over the <code>TavilyClient</code> of the <code>tavily</code> library. Instead of defining its own signature for each operation, each method receives a single configuration dictionary (<code>params</code>) and forwards it, as named arguments, to the corresponding method of the Tavily client.</p>
+  <p>In practice, this gives maximum flexibility: any parameter accepted by Tavily can be sent without changing the class. It is the Tavily access layer used by the <a href="@/modules/deep-research/tavily-research/context-builder">Context Builder</a>, which turns a web search into context ready for language models.</p>
+
+  <h2>Execution Flow</h2>
+  <ol>
+    <li><strong>Instantiation</strong>: the class receives an optional API key. If it is not provided, it is read from the <code>TAVILY_API_KEY</code> environment variable.</li>
+    <li><strong>Key validation</strong>: if no key is found, a <code>RuntimeError</code> is raised.</li>
+    <li><strong>Client creation</strong>: a <code>TavilyClient</code> is created with the key and stored in <code>self.client</code>.</li>
+    <li><strong>Method call</strong>: the user calls a method (for example, <code>start_search</code>) passing a dictionary with the operation's parameters.</li>
+    <li><strong>Parameter forwarding</strong>: the dictionary is unpacked with <code>**params</code> and sent to the same-named method of the Tavily client, whose return value is returned unchanged.</li>
+  </ol>
+
+  <h2>Class Methods Table</h2>
+  <table>
+    <thead><tr><th>Method</th><th>Tavily client method</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>—</td><td>Resolves the API key and creates the Tavily client.</td></tr>
+      <tr><td><code>start_search</code></td><td><code>search</code></td><td>General search.</td></tr>
+      <tr><td><code>get_context</code></td><td><code>get_search_context</code></td><td>Returns context for LLMs.</td></tr>
+      <tr><td><code>qna</code></td><td><code>qna_search</code></td><td>Direct question and answer.</td></tr>
+      <tr><td><code>extract_content</code></td><td><code>extract</code></td><td>Content extraction from URLs.</td></tr>
+      <tr><td><code>map_site</code></td><td><code>map</code></td><td>Maps the URL structure of a site.</td></tr>
+      <tr><td><code>crawl_site</code></td><td><code>crawl</code></td><td>Explores a site recursively.</td></tr>
+      <tr><td><code>get_company</code></td><td><code>get_company_info</code></td><td>Firmographic data of a company.</td></tr>
+      <tr><td><code>start_research</code></td><td><code>research</code></td><td>Starts the autonomous research agent.</td></tr>
+      <tr><td><code>get_research_status</code></td><td><code>get_research</code></td><td>Checks the status of a research.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Environment Variables</h2>
+  <ul>
+    <li><code>TAVILY_API_KEY</code>: Tavily API key. Used when <code>api_key</code> is not passed to the constructor. The module calls <code>load_dotenv()</code> when imported, so the variable can also come from a <code>.env</code> file.</li>
+  </ul>
+
+  <h2>Important Architecture Points and Insights</h2>
+  <ul>
+    <li><strong>Thin, dynamic wrapper:</strong> the class neither validates nor transforms the parameters; it only forwards them. The accepted names and values are those of the <code>tavily</code> library.</li>
+    <li><strong>Return without processing:</strong> the methods return exactly what the Tavily client returns. Processing, filtering and formatting are left to the caller, such as the Context Builder.</li>
+    <li><strong>Errors:</strong> besides the key check in the constructor, the class does not catch exceptions. Any Tavily error propagates to the caller.</li>
+    <li><strong>Autonomous research topic:</strong> in <code>start_research</code>, the topic is sent in the <code>input</code> key, which is the name used by the original library's <code>research</code> method.</li>
+  </ul>
+
+  <h2>Class and Methods Description</h2>
+
+  <h2><code>TavilyDeepResearch</code> Class</h2>
+  <h3>Description</h3>
+  <p>Dynamic wrapper for Tavily AI. Receives configuration dictionaries for maximum flexibility.</p>
+  <h3>Constructor Arguments</h3>
+  <table>
+    <thead><tr><th>Argument</th><th>Type</th><th>Description</th><th>Default Value</th></tr></thead>
+    <tbody>
+      <tr><td><code>api_key</code></td><td><code>str | None</code></td><td>Tavily API key. If omitted, uses <code>TAVILY_API_KEY</code>.</td><td>None</td></tr>
+    </tbody>
+  </table>
+  <h3>Methods</h3>
+
+  <h3>1. <code>__init__</code></h3>
+  <h3>Description</h3>
+  <p>Resolves the API key (argument or environment variable) and creates the <code>TavilyClient</code>.</p>
+  <h3>Arguments</h3>
+  <ul>
+    <li><code>api_key</code> (str | None): Tavily API key.</li>
+  </ul>
+  <h3>Returns</h3>
+  <ul>
+    <li>Does not return a value.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li><code>RuntimeError</code>: if the key is not provided and <code>TAVILY_API_KEY</code> is not defined.</li>
+  </ul>
+  <h3>Examples</h3>
+  <pre data-lang="python"><code>
+# Usando a chave definida em TAVILY_API_KEY
+researcher = TavilyDeepResearch()
+
+# Informando a chave diretamente
+researcher = TavilyDeepResearch(api_key="tvly-...")
+</code></pre>
+
+  <h3>2. <code>start_search</code></h3>
+  <h3>Description</h3>
+  <p>General search. Expects keys such as <code>query</code>, <code>search_depth</code>, <code>max_results</code>, among others accepted by Tavily.</p>
+  <h3>Arguments</h3>
+  <ul>
+    <li><code>params</code> (Dict[str, Any]): search parameters, forwarded to <code>client.search</code>.</li>
+  </ul>
+  <h3>Returns</h3>
+  <ul>
+    <li><code>dict</code>: search response.</li>
+  </ul>
+  <h3>Examples</h3>
+  <pre data-lang="python"><code>
+result = researcher.start_search({
+    "query": "Quais as principais tendências de IA em 2026?",
+    "search_depth": "advanced",
+    "max_results": 5,
+})
+</code></pre>
+
+  <h3>3. <code>get_context</code></h3>
+  <h3>Description</h3>
+  <p>Returns context for LLMs. Expects <code>query</code>, <code>max_tokens</code>, among others.</p>
+  <h3>Arguments</h3>
+  <ul>
+    <li><code>params</code> (Dict[str, Any]): parameters forwarded to <code>client.get_search_context</code>.</li>
+  </ul>
+  <h3>Returns</h3>
+  <ul>
+    <li><code>str</code>: context for use in language models.</li>
+  </ul>
+  <h3>Examples</h3>
+  <pre data-lang="python"><code>
+context = researcher.get_context({"query": "tendências de IA em 2026", "max_tokens": 1500})
+</code></pre>
+
+  <h3>4. <code>qna</code></h3>
+  <h3>Description</h3>
+  <p>Direct question and answer. Usually requires only <code>{'query': 'sua pergunta'}</code>.</p>
+  <h3>Arguments</h3>
+  <ul>
+    <li><code>params</code> (Dict[str, Any]): parameters forwarded to <code>client.qna_search</code>.</li>
+  </ul>
+  <h3>Returns</h3>
+  <ul>
+    <li><code>str</code>: answer to the question.</li>
+  </ul>
+  <h3>Examples</h3>
+  <pre data-lang="python"><code>
+answer = researcher.qna({"query": "Quem criou a linguagem Python?"})
+</code></pre>
+
+  <h3>5. <code>extract_content</code></h3>
+  <h3>Description</h3>
+  <p>Content extraction. Expects <code>urls</code> (list or string) and <code>format</code>.</p>
+  <h3>Arguments</h3>
+  <ul>
+    <li><code>params</code> (Dict[str, Any]): parameters forwarded to <code>client.extract</code>.</li>
+  </ul>
+  <h3>Returns</h3>
+  <ul>
+    <li><code>dict</code>: extracted content.</li>
+  </ul>
+  <h3>Examples</h3>
+  <pre data-lang="python"><code>
+content = researcher.extract_content({"urls": ["https://example.com"], "format": "markdown"})
+</code></pre>
+
+  <h3>6. <code>map_site</code></h3>
+  <h3>Description</h3>
+  <p>Maps the URL structure of a site. Expects <code>url</code> and, optionally, <code>limit</code>.</p>
+  <h3>Arguments</h3>
+  <ul>
+    <li><code>params</code> (Dict[str, Any]): parameters forwarded to <code>client.map</code>.</li>
+  </ul>
+  <h3>Returns</h3>
+  <ul>
+    <li><code>dict</code>: map of the site's URLs.</li>
+  </ul>
+  <h3>Examples</h3>
+  <pre data-lang="python"><code>
+site_map = researcher.map_site({"url": "https://example.com", "limit": 50})
+</code></pre>
+
+  <h3>7. <code>crawl_site</code></h3>
+  <h3>Description</h3>
+  <p>Explores a site recursively. Expects <code>url</code>, <code>limit</code> and <code>max_depth</code>.</p>
+  <h3>Arguments</h3>
+  <ul>
+    <li><code>params</code> (Dict[str, Any]): parameters forwarded to <code>client.crawl</code>.</li>
+  </ul>
+  <h3>Returns</h3>
+  <ul>
+    <li><code>dict</code>: result of the exploration.</li>
+  </ul>
+  <h3>Examples</h3>
+  <pre data-lang="python"><code>
+crawl = researcher.crawl_site({"url": "https://example.com", "limit": 20, "max_depth": 2})
+</code></pre>
+
+  <h3>8. <code>get_company</code></h3>
+  <h3>Description</h3>
+  <p>Firmographic data of a company. Expects <code>query</code>.</p>
+  <h3>Arguments</h3>
+  <ul>
+    <li><code>params</code> (Dict[str, Any]): parameters forwarded to <code>client.get_company_info</code>.</li>
+  </ul>
+  <h3>Returns</h3>
+  <ul>
+    <li><code>List[dict]</code>: company data.</li>
+  </ul>
+  <h3>Examples</h3>
+  <pre data-lang="python"><code>
+company = researcher.get_company({"query": "Tavily"})
+</code></pre>
+
+  <h3>9. <code>start_research</code></h3>
+  <h3>Description</h3>
+  <p>Starts the autonomous research agent. Expects <code>input</code> (the topic) and <code>model</code>.</p>
+  <h3>Arguments</h3>
+  <ul>
+    <li><code>params</code> (Dict[str, Any]): parameters forwarded to <code>client.research</code>. The original library uses <code>input</code> for the topic.</li>
+  </ul>
+  <h3>Returns</h3>
+  <ul>
+    <li><code>dict</code>: response to the research request.</li>
+  </ul>
+  <h3>Examples</h3>
+  <pre data-lang="python"><code>
+research = researcher.start_research({"input": "Mercado de energia solar no Brasil", "model": "gpt-4o-mini"})
+</code></pre>
+
+  <h3>10. <code>get_research_status</code></h3>
+  <h3>Description</h3>
+  <p>Checks the status of a research started with <code>start_research</code>. Expects <code>request_id</code>.</p>
+  <h3>Arguments</h3>
+  <ul>
+    <li><code>params</code> (Dict[str, Any]): parameters forwarded to <code>client.get_research</code>.</li>
+  </ul>
+  <h3>Returns</h3>
+  <ul>
+    <li><code>dict</code>: research status.</li>
+  </ul>
+  <h3>Examples</h3>
+  <pre data-lang="python"><code>
+status = researcher.get_research_status({"request_id": "..."})
+</code></pre>
+</page>

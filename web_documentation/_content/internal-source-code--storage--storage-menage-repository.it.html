@@ -1,0 +1,110 @@
+<page data-lead="Questa è la documentazione didattica per la classe StorageRepository, un componente essenziale per la gestione ibrida dei file nella tua applicazione.">
+  <h2>1. Panoramica</h2>
+  <p>La classe <code>StorageRepository</code> agisce come un <strong>livello di astrazione</strong> (o Repository) per l'archiviazione delle immagini. Il suo obiettivo principale è unificare due mondi: l'<strong>archiviazione locale</strong> (disco rigido del server) e l'<strong>archiviazione in cloud</strong> (Supabase Storage).</p>
+  <p>Utilizzando questa classe, il resto del tuo codice non deve preoccuparsi di dettagli tecnici come la manipolazione dei percorsi dei file o i protocolli di rete; si limita a richiedere che un'immagine venga salvata, e il repository decide come e dove farlo.</p>
+
+  <h2>2. Flusso di Esecuzione</h2>
+  <p>Il ciclo di vita di una normale operazione in questa classe segue questi passi:</p>
+  <ol>
+    <li><strong>Configurazione</strong>: L'oggetto viene creato ricevendo un <code>base_path</code> (dove salvare in locale) e un <code>bucket_name</code> (dove salvare nel cloud).</li>
+    <li><strong>Preparazione dei Dati</strong>: Alla ricezione di una lista di oggetti <code>GeneratedImage</code>, la classe estrae i byte e identifica il formato (MIME type).</li>
+    <li><strong>Persistenza Locale</strong>: Se viene chiamato il metodo <code>local_repository</code>, la classe genera nomi univoci basati sulla data e sull'ora correnti per evitare conflitti tra file e scrive i byte su disco.</li>
+    <li><strong>Sincronizzazione Remota</strong>: Se viene chiamato il metodo <code>upload_to_supabase</code>, la classe utilizza internamente lo <code>StorageManager</code> per inviare i dati al cloud e recupera immediatamente il link pubblico di accesso.</li>
+  </ol>
+
+  <h2>3. Tabella dei Metodi</h2>
+  <table>
+    <thead><tr><th>Metodo</th><th>Tipo</th><th>Breve Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Costruttore</td><td>Definisce i percorsi base e il bucket di destinazione.</td></tr>
+      <tr><td><code>local_repository</code></td><td>Pubblico</td><td>Salva più immagini nel file system locale.</td></tr>
+      <tr><td><code>_mime_to_extension</code></td><td>Privato (Ausiliario)</td><td>Converte tipi come <code>image/png</code> nell'estensione <code>.png</code>.</td></tr>
+      <tr><td><code>upload_to_supabase</code></td><td>Pubblico</td><td>Invia un file a Supabase e restituisce il suo URL.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>4. Architettura e Insight</h2>
+  <ul>
+    <li><strong>Pattern Repository</strong>: Questa classe isola la logica di infrastruttura. Se domani decidi di sostituire Supabase con Amazon S3, dovrai modificare solo questo file, senza rompere il resto del sistema.</li>
+    <li><strong>Generazione di Nomi Univoci</strong>: L'uso di <code>datetime.utcnow()</code> nel salvataggio locale garantisce che, anche se due immagini vengono generate in sequenza, abbiano nomi distinti, evitando la sovrapposizione accidentale dei dati.</li>
+    <li><strong>Gestione delle Estensioni</strong>: Il metodo <code>_mime_to_extension</code> agisce come un guardiano dell'integrità, garantendo che vengano elaborati solo i tipi di immagine supportati (JPEG e PNG), evitando file corrotti o sconosciuti.</li>
+  </ul>
+
+  <h2>5. Dettaglio della Classe</h2>
+
+  <h3>Classe StorageRepository</h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Gestisce la persistenza delle immagini in modo ibrido. Permette che le immagini generate dall'applicazione vengano archiviate sia in directory locali sia nel servizio Storage di Supabase, standardizzando l'accesso ai file.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>base_path</code> (str): Directory base locale o prefisso di cartella nello storage remoto.</li>
+    <li><code>bucket_name</code> (str): Nome del bucket configurato nella console di Supabase.</li>
+  </ul>
+
+  <h3>Metodi</h3>
+
+  <h3>1. local_repository</h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Itera su una lista di immagini, genera nomi di file basati su un marcatore di data/ora (timestamp) e le salva sul disco locale.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>images</code> (List[GeneratedImage]): Lista di oggetti contenenti i byte e il MIME type.</li>
+    <li><code>prefix</code> (str): Nome iniziale del file (es: "avatar", "post"). Il default è "image".</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>List[str]</code>: Una lista contenente il percorso completo (path) di ogni file salvato con successo.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: Se un'immagine possiede un MIME type non mappato.</li>
+    <li><code>IOError</code>: In caso di errore di permessi o di spazio su disco durante la scrittura.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+repo = StorageRepository(base_path="./data/exports")
+paths = repo.local_repository(lista_de_imagens, prefix="geracao_ia")
+# Retorno: ["./data/exports/geracao_ia_20240101_120000_1.jpg", ...]
+</code></pre>
+
+  <h3>2. upload_to_supabase</h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Fa da ponte tra l'applicazione e Supabase. Invia i byte grezzi al bucket e restituisce il link diretto per la visualizzazione.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>file_name</code> (str): Nome che il file avrà all'interno del bucket.</li>
+    <li><code>byte_data</code> (bytes): Il contenuto binario dell'immagine.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>str</code>: L'URL pubblico (HTTP) per accedere al file nel cloud.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ConnectionError</code>: In caso di errore di rete o delle credenziali di Supabase.</li>
+    <li><code>ValueError</code>: Se i parametri del nome del file non sono validi.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+repo = StorageRepository(base_path="galeria", bucket_name="bucket_oficial")
+url_publica = repo.upload_to_supabase("foto_perfil.png", dados_em_bytes)
+print(url_publica)
+Saída: https://projeto.supabase.co/storage/v1/object/public/bucket_oficial/galeria/foto_perfil.png
+</code></pre>
+
+  <h3>3. _mime_to_extension</h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Metodo interno di supporto che traduce il tipo MIME dell'immagine in un'estensione di file adatta al sistema operativo.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>mime_type</code> (str): Il tipo MIME (es: "image/jpeg").</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>str</code>: L'estensione breve (es: "jpg" o "png").</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: Se il MIME type non è "image/jpeg" o "image/png".</li>
+  </ul>
+</page>

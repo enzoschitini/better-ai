@@ -1,0 +1,76 @@
+<page data-lead="Here is the didactic documentation of the FilesPayloadBuilder class, structured to make it easier for developers and integrators to understand.">
+  <h2>1. Overview</h2>
+  <p>The <code>FilesPayloadBuilder</code> class acts as a <strong>security filter and data transformer</strong> at the input layer of your API. When a user sends files through FastAPI, they arrive as <code>UploadFile</code> objects.</p>
+  <p>This class ensures that those files do not "break" the server by being too large or by having malicious or unsupported formats. After validation, it turns the raw data into a Python dictionary (payload) that is easy to handle by other parts of the system, such as image processing services or databases.</p>
+
+  <h2>2. Execution Flow</h2>
+  <p>The processing flow of a file follows this logical path:</p>
+  <ol>
+    <li><strong>Receiving</strong>: The API receives a list of files via form (Multipart).</li>
+    <li><strong>Asynchronous Reading</strong>: The file content is read from memory or temporary disk in a non-blocking way (<code>await f.read()</code>).</li>
+    <li><strong>Type Check</strong>: The system checks whether the <code>content_type</code> (e.g. image/png) is in the list of allowed types.</li>
+    <li><strong>Weight Check</strong>: The total size of the bytes read is compared with the configured limit (e.g. 10MB).</li>
+    <li><strong>Structuring</strong>: If everything is correct, the data is organized into a dictionary. If something fails, an HTTP exception is raised immediately, interrupting the process to protect the server.</li>
+  </ol>
+
+  <h2>3. Methods Summary</h2>
+  <table>
+    <thead><tr><th>Method</th><th>Type</th><th>Short Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Constructor</td><td>Sets up the business rules (maximum size and accepted types).</td></tr>
+      <tr><td><code>build_images_payload</code></td><td>Coroutine (async)</td><td>Validates the list of files and generates the final data structure.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>4. Architecture and Insights</h2>
+  <ul>
+    <li><strong>Reactive Security</strong>: By validating the size and MIME type right at the entrance, you avoid "Denial of Service" (DoS) attacks through the upload of giant files.</li>
+    <li><strong>Using a Set for Performance</strong>: The <code>allowed_types</code> variable is converted to a <code>set</code>. In Python, checking whether an item exists in a <code>set</code> is much faster than in a <code>list</code> or <code>tuple</code>, especially if the list of formats grows.</li>
+    <li><strong>FastAPI Integration</strong>: Using <code>HTTPException</code> allows validation errors to be returned directly to the end user with appropriate status codes (400 Bad Request), without the need for extra try/except blocks in the API route.</li>
+  </ul>
+
+  <h2>5. Class Details</h2>
+
+  <h3>FilesPayloadBuilder Class</h3>
+  <p><strong>Description</strong><br>Responsible for validating the integrity of files sent via upload and preparing them for internal processing. It centralizes the rules of "what can come in" to the system in terms of media files.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>max_mb</code> (int): The maximum size allowed for each individual file in Megabytes.</li>
+    <li><code>allowed_types</code> (Iterable[str]): A collection of strings representing the accepted MIME types (e.g. <code>["image/jpeg", "application/pdf"]</code>).</li>
+  </ul>
+
+  <h3>Methods</h3>
+
+  <h3>1. build_images_payload</h3>
+  <p><strong>Description</strong><br>This is the heart of the class. It goes through each uploaded file, reads its binary content and checks whether it meets the security requirements defined in the constructor.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>files</code> (List[UploadFile]): A list of file objects coming from a FastAPI endpoint.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>list[dict]</code>: A list of dictionaries, where each dictionary contains:
+      <ul>
+        <li><code>filename</code>: Original name of the file.</li>
+        <li><code>content_type</code>: Format of the file.</li>
+        <li><code>size_bytes</code>: Real size in bytes.</li>
+        <li><code>bytes</code>: The raw binary content.</li>
+      </ul>
+    </li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>HTTPException (400)</code>: Raised if the file format is not allowed.</li>
+    <li><code>HTTPException (400)</code>: Raised if the file exceeds the configured Megabyte limit.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+builder = FilesPayloadBuilder(max_mb=2, allowed_types=["image/png"])
+
+# Em uma rota FastAPI
+@app.post("/upload")
+async def upload_image(files: List[UploadFile]):
+    payload = await builder.build_images_payload(files)
+    return {"status": "sucesso", "arquivos_processados": len(payload)}
+</code></pre>
+</page>

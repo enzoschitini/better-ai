@@ -1,0 +1,326 @@
+<page data-lead="Documentazione delle classi TavilyContextBuilder e TavilyResearchRunner e dell'endpoint che trasformano una ricerca sul web in un contesto in markdown per i modelli di linguaggio.">
+  <h2>Panoramica</h2>
+  <p>Il modulo <code>context_builder</code> trasforma una ricerca sul web effettuata con Tavily in un <strong>contesto in markdown</strong> pronto per essere usato dai modelli di linguaggio, insieme all'elenco degli URL analizzati. È composto da due classi:</p>
+  <ul>
+    <li><code>TavilyContextBuilder</code>: esegue la pipeline (ricerca, filtraggio per score, conversione in markdown ed estrazione degli URL).</li>
+    <li><code>TavilyResearchRunner</code>: costruisce la configurazione della ricerca, applicando i valori predefiniti, e attiva il <code>TavilyContextBuilder</code>.</li>
+  </ul>
+  <p>La ricerca vera e propria viene eseguita da un oggetto "researcher", normalmente il <a href="@/modules/deep-research/tavily-research/tavily-core">TavilyDeepResearch</a>. La pipeline è esposta dall'API nell'endpoint <code>POST /deep-research/context-builder</code>.</p>
+
+  <h2>Flusso di Esecuzione</h2>
+  <ol>
+    <li><strong>Configurazione della ricerca:</strong> <code>TavilyResearchRunner.run()</code> chiama <code>build_search_config()</code>, che valida <code>query</code> e <code>max_results</code>, applica i valori predefiniti (<code>search_depth</code>, <code>topic</code> e <code>include_answer</code>) e incorpora i parametri extra.</li>
+    <li><strong>Pipeline:</strong> il runner consegna la configurazione a <code>TavilyContextBuilder.build_context()</code>.</li>
+    <li><strong>Ricerca:</strong> <code>search()</code> chiama <code>researcher.start_search()</code> con la configurazione.</li>
+    <li><strong>Filtraggio:</strong> <code>filter_results()</code> mantiene solo i risultati con <code>score</code> maggiore o uguale a <code>min_score</code>, rimuove le chiavi globali scartabili e il <code>raw_content</code> di ogni risultato.</li>
+    <li><strong>Markdown:</strong> <code>to_markdown()</code> converte la risposta filtrata in un testo in markdown.</li>
+    <li><strong>URL:</strong> <code>get_web_sites()</code> raccoglie gli URL dei risultati mantenuti.</li>
+    <li><strong>Ritorno:</strong> <code>build_context()</code> restituisce un dizionario con le chiavi <code>markdown</code> e <code>urls</code>.</li>
+    <li><strong>Errori:</strong> in ogni fase, un'eccezione viene registrata con <code>ApplicationTracing</code> (livello ERROR) e rilanciata come <code>RuntimeError</code> con un messaggio descrittivo.</li>
+  </ol>
+
+  <h2>Tabella dei Metodi delle Classi</h2>
+  <table>
+    <thead><tr><th>Classe</th><th>Metodo</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>TavilyContextBuilder</code></td><td><code>__init__</code></td><td>Definisce il researcher, lo score minimo e le chiavi da rimuovere.</td></tr>
+      <tr><td><code>TavilyContextBuilder</code></td><td><code>search</code></td><td>Esegue la ricerca con la configurazione ricevuta.</td></tr>
+      <tr><td><code>TavilyContextBuilder</code></td><td><code>filter_results</code></td><td>Filtra i risultati per score e rimuove i campi non necessari.</td></tr>
+      <tr><td><code>TavilyContextBuilder</code></td><td><code>to_markdown</code></td><td>Converte i risultati filtrati in markdown.</td></tr>
+      <tr><td><code>TavilyContextBuilder</code></td><td><code>get_web_sites</code></td><td>Restituisce l'elenco degli URL dei risultati.</td></tr>
+      <tr><td><code>TavilyContextBuilder</code></td><td><code>build_context</code></td><td>Esegue la pipeline completa.</td></tr>
+      <tr><td><code>TavilyResearchRunner</code></td><td><code>__init__</code></td><td>Definisce il builder e i valori predefiniti della ricerca.</td></tr>
+      <tr><td><code>TavilyResearchRunner</code></td><td><code>build_search_config</code></td><td>Costruisce il dizionario di configurazione della ricerca.</td></tr>
+      <tr><td><code>TavilyResearchRunner</code></td><td><code>run</code></td><td>Costruisce la configurazione ed esegue la pipeline.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Variabili d'Ambiente</h2>
+  <ul>
+    <li><code>TAVILY_API_KEY</code>: chiave API di Tavily, letta da <code>TavilyDeepResearch</code> quando viene istanziato.</li>
+  </ul>
+
+  <h2>Punti Importanti dell'Architettura e Spunti</h2>
+  <ul>
+    <li><strong>Separazione delle responsabilità:</strong> <code>TavilyResearchRunner</code> si occupa della configurazione e dei valori predefiniti; <code>TavilyContextBuilder</code> si occupa dell'elaborazione; il researcher si occupa dell'accesso a Tavily.</li>
+    <li><strong>Iniezione delle dipendenze:</strong> il builder riceve il researcher e il runner riceve il builder, il che facilita la sostituzione di ogni componente.</li>
+    <li><strong>Filtraggio per rilevanza:</strong> entrano nel contesto solo i risultati con <code>score</code> maggiore o uguale a <code>min_score</code> (predefinito 0.5).</li>
+    <li><strong>Contesto snello:</strong> le chiavi <code>response_time</code>, <code>follow_up_questions</code>, <code>images</code> e <code>request_id</code> della risposta e il <code>raw_content</code> di ogni risultato vengono rimossi prima della conversione.</li>
+    <li><strong>Gestione uniforme degli errori:</strong> ogni errore viene registrato con <code>ApplicationTracing</code> (flag "Deep Research") e rilanciato come <code>RuntimeError</code>.</li>
+    <li><strong>Log informativi disattivati:</strong> il tracer viene creato con <code>show_info_logs=False</code>, e le chiamate <code>tracer.INFO</code> del modulo sono commentate.</li>
+  </ul>
+
+  <h2>Formato del Markdown Generato</h2>
+  <p>Il metodo <code>to_markdown()</code> produce un testo con questa struttura, ripetendo il blocco della fonte per ogni risultato:</p>
+  <pre><code>
+# Consulta
+**Pergunta:**
+{query}
+
+---
+
+## Resposta resumida
+{answer}
+
+---
+
+## Fontes analisadas
+
+### 1. {title}
+- **URL:** {url}
+- **Score de relevância:** {score}
+
+**Conteúdo:**
+{content}
+
+---
+</code></pre>
+  <p>Lo score viene arrotondato a 5 cifre decimali. Se un risultato non ha titolo, si usa "Sem título".</p>
+
+  <h2>Endpoint dell'API</h2>
+  <endpoint method="POST" path="/deep-research/context-builder"></endpoint>
+  <p>L'endpoint costruisce un <code>TavilyDeepResearch</code>, un <code>TavilyContextBuilder</code> (con il <code>min_score</code> ricevuto) e un <code>TavilyResearchRunner</code>, e restituisce il risultato di <code>run()</code> nel campo <code>result</code> della risposta standard. Richiede la chiave API di BetterAI nell'intestazione <code>X-API-Key</code> (la validazione viene ignorata quando <code>LOCAL=true</code>).</p>
+  <h3>Corpo della richiesta</h3>
+  <table>
+    <thead><tr><th>Campo</th><th>Tipo</th><th>Descrizione</th><th>Valore Predefinito</th></tr></thead>
+    <tbody>
+      <tr><td><code>query</code></td><td>str</td><td>Interrogazione o argomento principale della ricerca.</td><td>"What are the latest AI trends in the healthcare industry?"</td></tr>
+      <tr><td><code>search_depth</code></td><td>"basic" | "advanced"</td><td>Profondità della ricerca: <code>basic</code> per una panoramica rapida, <code>advanced</code> per una ricerca più completa.</td><td>"advanced"</td></tr>
+      <tr><td><code>max_results</code></td><td>int (da 1 a 100)</td><td>Numero massimo di risultati da recuperare e includere nel contesto.</td><td>35</td></tr>
+      <tr><td><code>topic</code></td><td>str</td><td>Categoria o dominio della ricerca. Esempi: general, news, finance.</td><td>"general"</td></tr>
+      <tr><td><code>include_answer</code></td><td>bool</td><td>Se includere una risposta generata a partire dai risultati.</td><td>True</td></tr>
+      <tr><td><code>min_score</code></td><td>float (da 0.0 a 1.0)</td><td>Score minimo di rilevanza; i risultati sotto questa soglia vengono scartati.</td><td>0.5</td></tr>
+    </tbody>
+  </table>
+  <h3>Esempio di richiesta</h3>
+  <pre data-lang="bash"><code>
+curl -X POST "http://localhost:8000/deep-research/context-builder" \
+  -H "X-API-Key: SUA_CHAVE" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "Quais as principais tendências de IA em 2026?",
+    "search_depth": "advanced",
+    "max_results": 10,
+    "topic": "general",
+    "include_answer": true,
+    "min_score": 0.5
+  }'
+</code></pre>
+  <h3>Risposta di successo</h3>
+  <p>La risposta segue il formato standardizzato dell'API, con <code>job_id</code>, <code>status</code>, <code>result</code> e metriche di tempo. In <code>result</code> si trovano il markdown e gli URL:</p>
+  <pre data-lang="json"><code>
+{
+  "job_id": "job_...",
+  "status": "success",
+  "status_code": 200,
+  "result": {
+    "markdown": "# Consulta\n...",
+    "urls": ["https://..."]
+  },
+  "time": {
+    "start": "2026-01-01 10:00:00",
+    "end": "2026-01-01 10:00:05",
+    "duration_seconds": 5.0
+  }
+}
+</code></pre>
+  <p>In caso di errore, la risposta contiene <code>status</code> uguale a <code>error</code>, <code>status_code</code> 500 e un oggetto <code>error</code> con <code>type</code> e <code>message</code>. I parametri e gli esempi completi dell'API si trovano in <a href="@/api/web-service-network-api/use">Web Service Network - API</a>.</p>
+
+  <h2>Descrizione delle Classi e dei Metodi</h2>
+
+  <h2>Classe <code>TavilyContextBuilder</code></h2>
+  <h3>Descrizione</h3>
+  <p>Esegue la pipeline che trasforma una ricerca sul web in un contesto in markdown: ricerca, filtraggio per score, conversione in markdown ed estrazione degli URL.</p>
+  <h3>Argomenti del Costruttore</h3>
+  <table>
+    <thead><tr><th>Argomento</th><th>Tipo</th><th>Descrizione</th><th>Valore Predefinito</th></tr></thead>
+    <tbody>
+      <tr><td><code>researcher</code></td><td>oggetto</td><td>Oggetto con il metodo <code>start_search</code>, normalmente un <code>TavilyDeepResearch</code>.</td><td>—</td></tr>
+      <tr><td><code>min_score</code></td><td><code>float</code></td><td>Score minimo per mantenere un risultato.</td><td>0.5</td></tr>
+      <tr><td><code>remove_keys</code></td><td><code>List[str] | None</code></td><td>Chiavi rimosse dal livello globale della risposta.</td><td><code>["response_time", "follow_up_questions", "images", "request_id"]</code></td></tr>
+    </tbody>
+  </table>
+  <h3>Metodi</h3>
+
+  <h3>1. <code>search</code></h3>
+  <h3>Descrizione</h3>
+  <p>Esegue la ricerca chiamando <code>researcher.start_search()</code> con la configurazione ricevuta.</p>
+  <h3>Argomenti</h3>
+  <ul>
+    <li><code>search_config</code> (Dict[str, Any]): configurazione della ricerca (per esempio, <code>query</code>, <code>max_results</code>, <code>search_depth</code>).</li>
+  </ul>
+  <h3>Valori di ritorno</h3>
+  <ul>
+    <li><code>Dict[str, Any]</code>: risposta grezza della ricerca.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li><code>RuntimeError</code>: se la ricerca fallisce ("Error during web search").</li>
+  </ul>
+  <h3>Esempi</h3>
+  <pre data-lang="python"><code>
+raw = builder.search({"query": "tendências de IA em 2026", "max_results": 5})
+</code></pre>
+
+  <h3>2. <code>filter_results</code></h3>
+  <h3>Descrizione</h3>
+  <p>Mantiene solo i risultati il cui <code>score</code> è maggiore o uguale a <code>min_score</code>, rimuove le chiavi globali definite in <code>remove_keys</code> e rimuove il <code>raw_content</code> di ogni risultato.</p>
+  <h3>Argomenti</h3>
+  <ul>
+    <li><code>research_results</code> (Dict[str, Any]): risposta grezza della ricerca.</li>
+  </ul>
+  <h3>Valori di ritorno</h3>
+  <ul>
+    <li><code>Dict[str, Any]</code>: risposta filtrata.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li><code>RuntimeError</code>: se il filtraggio fallisce ("Error filtering web search results").</li>
+  </ul>
+  <h3>Esempi</h3>
+  <pre data-lang="python"><code>
+filtered = builder.filter_results(raw)
+</code></pre>
+
+  <h3>3. <code>to_markdown</code></h3>
+  <h3>Descrizione</h3>
+  <p>Converte la risposta filtrata in testo markdown, con l'interrogazione, la risposta sintetica e le fonti analizzate (titolo, URL, score di rilevanza e contenuto).</p>
+  <h3>Argomenti</h3>
+  <ul>
+    <li><code>data</code> (Dict[str, Any]): risposta filtrata.</li>
+  </ul>
+  <h3>Valori di ritorno</h3>
+  <ul>
+    <li><code>str</code>: testo in markdown.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li><code>RuntimeError</code>: se la conversione fallisce ("Error converting web search results to markdown").</li>
+  </ul>
+  <h3>Esempi</h3>
+  <pre data-lang="python"><code>
+markdown = builder.to_markdown(filtered)
+</code></pre>
+
+  <h3>4. <code>get_web_sites</code></h3>
+  <h3>Descrizione</h3>
+  <p>Restituisce l'elenco con l'URL di ogni risultato della risposta filtrata.</p>
+  <h3>Argomenti</h3>
+  <ul>
+    <li><code>filtered_result</code> (dict): risposta filtrata, con la chiave <code>results</code>.</li>
+  </ul>
+  <h3>Valori di ritorno</h3>
+  <ul>
+    <li><code>list</code>: URL dei risultati.</li>
+  </ul>
+  <h3>Esempi</h3>
+  <pre data-lang="python"><code>
+urls = builder.get_web_sites(filtered)
+</code></pre>
+
+  <h3>5. <code>build_context</code></h3>
+  <h3>Descrizione</h3>
+  <p>Esegue la pipeline completa: <code>search</code>, <code>filter_results</code>, <code>to_markdown</code> e <code>get_web_sites</code>.</p>
+  <h3>Argomenti</h3>
+  <ul>
+    <li><code>search_config</code> (Dict[str, Any]): configurazione della ricerca.</li>
+  </ul>
+  <h3>Valori di ritorno</h3>
+  <ul>
+    <li><code>dict</code>: dizionario con le chiavi <code>markdown</code> (testo in markdown) e <code>urls</code> (elenco degli URL analizzati).</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li><code>RuntimeError</code>: se una qualsiasi fase fallisce ("Error building research context").</li>
+  </ul>
+  <h3>Esempi</h3>
+  <pre data-lang="python"><code>
+context = builder.build_context({"query": "tendências de IA em 2026", "max_results": 5})
+print(context["markdown"])
+print(context["urls"])
+</code></pre>
+
+  <h2>Classe <code>TavilyResearchRunner</code></h2>
+  <h3>Descrizione</h3>
+  <p>Costruisce la configurazione della ricerca, applicando i valori predefiniti, e attiva il <code>TavilyContextBuilder</code>. È il punto di ingresso più semplice per generare un contesto.</p>
+  <h3>Argomenti del Costruttore</h3>
+  <table>
+    <thead><tr><th>Argomento</th><th>Tipo</th><th>Descrizione</th><th>Valore Predefinito</th></tr></thead>
+    <tbody>
+      <tr><td><code>builder</code></td><td>oggetto</td><td>Oggetto con il metodo <code>build_context</code>, normalmente un <code>TavilyContextBuilder</code>.</td><td>—</td></tr>
+      <tr><td><code>default_search_depth</code></td><td><code>str</code></td><td>Profondità usata quando <code>search_depth</code> non viene indicata.</td><td>"advanced"</td></tr>
+      <tr><td><code>default_topic</code></td><td><code>str</code></td><td>Argomento usato quando <code>topic</code> non viene indicato.</td><td>"general"</td></tr>
+      <tr><td><code>default_include_answer</code></td><td><code>bool</code></td><td>Valore usato quando <code>include_answer</code> non viene indicato.</td><td>True</td></tr>
+    </tbody>
+  </table>
+  <h3>Metodi</h3>
+
+  <h3>1. <code>build_search_config</code></h3>
+  <h3>Descrizione</h3>
+  <p>Costruisce il dizionario di configurazione della ricerca, validando i campi obbligatori, applicando i valori predefiniti e incorporando <code>extra_params</code>.</p>
+  <h3>Argomenti</h3>
+  <ul>
+    <li><code>query</code> (str): interrogazione. Obbligatoria.</li>
+    <li><code>max_results</code> (int): numero massimo di risultati. Obbligatorio.</li>
+    <li><code>search_depth</code> (Optional[str]): profondità della ricerca. Se omessa, usa il valore predefinito del runner.</li>
+    <li><code>topic</code> (Optional[str]): argomento della ricerca. Se omesso, usa il valore predefinito del runner.</li>
+    <li><code>include_answer</code> (Optional[bool]): se includere la risposta sintetica. Se omesso, usa il valore predefinito del runner.</li>
+    <li><code>extra_params</code> (Optional[Dict[str, Any]]): parametri aggiuntivi incorporati nella configurazione; possono sovrascrivere i campi precedenti.</li>
+  </ul>
+  <p>Tutti gli argomenti sono nominati (keyword-only).</p>
+  <h3>Valori di ritorno</h3>
+  <ul>
+    <li><code>Dict[str, Any]</code>: configurazione della ricerca.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li><code>ValueError</code>: se <code>query</code> è vuota o se <code>max_results</code> è <code>None</code>.</li>
+  </ul>
+  <h3>Esempi</h3>
+  <pre data-lang="python"><code>
+config = runner.build_search_config(
+    query="tendências de IA em 2026",
+    max_results=5,
+    extra_params={"include_domains": ["arxiv.org"]},
+)
+</code></pre>
+
+  <h3>2. <code>run</code></h3>
+  <h3>Descrizione</h3>
+  <p>Costruisce la configurazione con <code>build_search_config</code> ed esegue la pipeline con <code>builder.build_context</code>.</p>
+  <h3>Argomenti</h3>
+  <ul>
+    <li>Gli stessi di <code>build_search_config</code>, tutti nominati.</li>
+  </ul>
+  <h3>Valori di ritorno</h3>
+  <ul>
+    <li><code>dict</code>: dizionario con le chiavi <code>markdown</code> e <code>urls</code>, come in <code>build_context</code>.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li><code>ValueError</code>: se <code>query</code> o <code>max_results</code> non vengono indicati.</li>
+    <li><code>RuntimeError</code>: se una qualsiasi fase della pipeline fallisce.</li>
+  </ul>
+  <h3>Esempi</h3>
+  <pre data-lang="python"><code>
+researcher = TavilyDeepResearch()
+
+builder = TavilyContextBuilder(
+    researcher=researcher,
+    min_score=0.5
+)
+
+runner = TavilyResearchRunner(builder)
+
+context = runner.run(
+    query="Quais as principais tendências de IA em 2026?",
+    search_depth="advanced",
+    max_results=2,
+    topic="general",
+    include_answer=True
+)
+
+print(context["markdown"])
+# python -m src.deep_research.tavily_research.context_builder
+</code></pre>
+</page>

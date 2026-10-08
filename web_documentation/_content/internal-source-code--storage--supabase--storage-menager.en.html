@@ -1,0 +1,121 @@
+<page data-lead="This is detailed, didactic documentation for the Supabase Storage integration module. The code was designed following Object-Oriented Programming (OOP) principles to make maintenance and connection reuse easier.">
+  <h2>1. Overview</h2>
+  <p>The module is made up of two main classes that work together to abstract the complexity of the Supabase API. The central idea is to separate the <strong>connection configuration</strong> (infrastructure) from <strong>file handling</strong> (business logic).</p>
+  <ul>
+    <li><strong>SupabaseConnection</strong>: Ensures the connection to the server is established correctly using environment variables.</li>
+    <li><strong>StorageManager</strong>: Offers a simplified interface to upload, delete and retrieve file links inside a specific "bucket" (container/repository).</li>
+  </ul>
+
+  <h2>2. Execution Flow</h2>
+  <p>To understand how the classes interact, picture the following flow:</p>
+  <ol>
+    <li><strong>Environment Loading</strong>: The script reads the <code>.env</code> file to capture the project URL and Key.</li>
+    <li><strong>Instantiation</strong>: When you create a <code>StorageManager</code>, it checks whether you already have a connection. If not, it calls <code>SupabaseConnection</code> automatically.</li>
+    <li><strong>Bucket Access</strong>: The client connects to the specific bucket given at the start.</li>
+    <li><strong>Operation</strong>: You call simple methods (such as <code>upload_bytes</code>), and the class handles the internal logic of the official Supabase library.</li>
+  </ol>
+
+  <h2>3. Methods Summary</h2>
+  <table>
+    <thead><tr><th>Method</th><th>Class</th><th>Short Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td><code>SupabaseConnection</code></td><td>Validates credentials and creates the <code>Client</code> client.</td></tr>
+      <tr><td><code>__init__</code></td><td><code>StorageManager</code></td><td>Sets the target bucket and ensures an active client exists.</td></tr>
+      <tr><td><code>upload_bytes</code></td><td><code>StorageManager</code></td><td>Uploads binary files (bytes) to the storage.</td></tr>
+      <tr><td><code>delete_files</code></td><td><code>StorageManager</code></td><td>Removes a list of files at once.</td></tr>
+      <tr><td><code>get_url</code></td><td><code>StorageManager</code></td><td>Generates the public link to view the file.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>4. Architecture and Insights</h2>
+  <ul>
+    <li><strong>Implicit Singleton vs Dependency Injection</strong>: The <code>StorageManager</code> class accepts an optional <code>supabase_client</code>. This is great for unit tests or for reusing a connection already open elsewhere in the system, avoiding unnecessary multiple connections.</li>
+    <li><strong>Error Handling</strong>: Using <code>try/except</code> blocks in the write methods (upload/delete) keeps the application from crashing when a network or permission failure occurs.</li>
+    <li><strong>Security</strong>: Using <code>dotenv</code> and <code>os.getenv</code> ensures sensitive keys are never exposed directly in the source code.</li>
+  </ul>
+
+  <h2>5. Detailed Documentation</h2>
+
+  <h3>Class SupabaseConnection</h3>
+  <p><strong>Description</strong></p>
+  <p>Responsible for centralizing authentication. It works as a connection "factory", making sure the Supabase client is properly configured before any operation.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>It has no direct arguments (it uses <code>.env</code> environment variables).</li>
+  </ul>
+  <p><strong>Methods</strong></p>
+
+  <h3>1. <code>__init__</code></h3>
+  <ul>
+    <li><strong>Description</strong>: Locates the <code>SUPABASE_URL</code> and <code>SUPABASE_SECRET_KEY</code> variables, validating them before instantiating the official client.</li>
+    <li><strong>Arguments</strong>: None.</li>
+    <li><strong>Returns</strong>: None (initializes the <code>self.client</code> attribute).</li>
+    <li><strong>Raises</strong>: <code>ValueError</code> if the keys are not found in the environment.</li>
+    <li><strong>Examples</strong>:</li>
+  </ul>
+  <pre data-lang="python"><code>
+conn = SupabaseConnection()
+client = conn.client # Cliente pronto para uso
+</code></pre>
+
+  <h3>Class StorageManager</h3>
+  <p><strong>Description</strong></p>
+  <p>Encapsulates the bucket handling logic. It is the "front-end" class the developer will use most of the time to manage files.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>bucket_name</code> (str): The name of the folder/repository in Supabase.</li>
+    <li><code>supabase_client</code> (Optional[Client]): An existing instance of the Supabase client.</li>
+  </ul>
+  <p><strong>Methods</strong></p>
+
+  <h3>1. <code>upload_bytes</code></h3>
+  <ul>
+    <li><strong>Description</strong>: Sends a file to the storage from in-memory data (bytes).</li>
+    <li><strong>Arguments</strong>:
+      <ul>
+        <li><code>path_on_storage</code> (str): Path/name of the file at the destination.</li>
+        <li><code>file_bytes</code> (bytes): The binary content of the file.</li>
+        <li><code>content_type</code> (str): File type (e.g. <code>image/png</code>).</li>
+      </ul>
+    </li>
+    <li><strong>Returns</strong>: <code>dict</code> with upload metadata or <code>None</code> on error.</li>
+    <li><strong>Raises</strong>: Catches generic exceptions and prints them to the console.</li>
+    <li><strong>Examples</strong>:</li>
+  </ul>
+  <pre data-lang="python"><code>
+manager.upload_bytes("docs/perfil.jpg", foto_bytes, "image/jpeg")
+</code></pre>
+
+  <h3>2. <code>delete_files</code></h3>
+  <ul>
+    <li><strong>Description</strong>: Deletes one or more files at the same time.</li>
+    <li><strong>Arguments</strong>:
+      <ul>
+        <li><code>paths</code> (List[str]): List of paths (e.g. <code>["img1.jpg", "img2.jpg"]</code>).</li>
+      </ul>
+    </li>
+    <li><strong>Returns</strong>: <code>dict</code> with the removal status or <code>None</code>.</li>
+    <li><strong>Raises</strong>: Catches network or permission exceptions.</li>
+    <li><strong>Examples</strong>:</li>
+  </ul>
+  <pre data-lang="python"><code>
+manager.delete_files(["velho/foto1.png", "velho/foto2.png"])
+</code></pre>
+
+  <h3>3. <code>get_url</code></h3>
+  <ul>
+    <li><strong>Description</strong>: Gets the public web address to access a file.</li>
+    <li><strong>Arguments</strong>:
+      <ul>
+        <li><code>path</code> (str): Path of the file inside the bucket.</li>
+      </ul>
+    </li>
+    <li><strong>Returns</strong>: <code>str</code> containing the full URL.</li>
+    <li><strong>Raises</strong>: <code>ValueError</code> if the path is empty.</li>
+    <li><strong>Examples</strong>:</li>
+  </ul>
+  <pre data-lang="python"><code>
+link = manager.get_url("produtos/celular.png")
+print(link) # https://xyz.supabase.co/storage/v1/object/public/...
+</code></pre>
+</page>

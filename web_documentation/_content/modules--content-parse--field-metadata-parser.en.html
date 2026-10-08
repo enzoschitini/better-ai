@@ -1,0 +1,168 @@
+<page data-lead="The FieldMetadataParser class is responsible for interpreting metadata defined in dictionaries for data fields and converting it into types and fields compatible with the Pydantic library.">
+  <h2>Overview</h2>
+  <p>The <code>FieldMetadataParser</code> class is responsible for interpreting metadata defined in dictionaries for data fields and converting it into types and fields compatible with the Pydantic library. It analyzes information such as the field type, whether it is required, description, examples and constraints, thus generating a representation ready for validation and use in Pydantic models.</p>
+  <p>This process is fundamental for systems that receive dynamic data schemas or external configuration and need to build validation models in an automated and consistent way. With this class, it is possible to turn a JSON-like specification directly into Pydantic types, ensuring automatic validation and documentation generated from the metadata.</p>
+  <p>In practice, it can be used in data frameworks, dynamic schema imports, or any application that models data from flexible definitions.</p>
+
+  <h2>Execution Flow</h2>
+  <ol>
+    <li>The <code>parse</code> method receives an arbitrary value that may or may not be a field metadata.</li>
+    <li>Checks whether the value is a dictionary containing the key <code>"type"</code>, identifying it as valid metadata for analysis.</li>
+    <li>If it is metadata, it delegates to the private method <code>_parse_metadata</code>, which does the detailed transformation.</li>
+    <li><code>_parse_metadata</code> extracts the given type and checks whether the field is required (<code>required</code>).</li>
+    <li>If the type is <code>"list"</code>, it looks up the definition of the item type (<code>items</code>), and may generate a generic type or a nested model for complex objects.</li>
+    <li>Maps the string type to the corresponding Python type, using the <code>_map_type</code> method.</li>
+    <li>If the field is not required, the type is wrapped in <code>Optional</code> to support the absence of a value.</li>
+    <li>Creates a Pydantic <code>Field</code> with parameters such as default value, description, examples and size constraints.</li>
+    <li>Returns a tuple made up of the final type and the <code>Field</code> object for direct use in Pydantic models.</li>
+    <li>If the value is not a recognized metadata, it returns <code>None</code>.</li>
+    <li>If there is a parsing error, it raises a <code>RuntimeError</code> exception with details.</li>
+  </ol>
+
+  <h2>Class Methods Table</h2>
+  <table>
+    <thead><tr><th>Method</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Not explicitly implemented (default constructor)</td></tr>
+      <tr><td><code>parse</code></td><td>Analyzes the value and returns the type and Field for metadata, or None</td></tr>
+      <tr><td><code>_parse_metadata</code></td><td>Converts a metadata dictionary into a Pydantic type and a configured Field</td></tr>
+      <tr><td><code>_map_type</code></td><td>Maps a string type name to the corresponding Python type</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Environment Variables</h2>
+  <p>No environment variable is needed for this class to work.</p>
+
+  <h2>Key Architecture Points and Insights</h2>
+  <ul>
+    <li>The class uses encapsulation, restricting helper functions to the private scope (<code>_parse_metadata</code> and <code>_map_type</code>).</li>
+    <li>It uses dynamic creation of Pydantic models (<code>create_model</code>) to represent nested complex types (objects inside lists), allowing flexibility and extensibility.</li>
+    <li>The parser interprets a JSON-like structure to produce annotated types and complete information for validation — making integration with dynamic data easier.</li>
+    <li>It supports optional attributes, default values, descriptions and examples, promoting automatic documentation via Pydantic.</li>
+    <li>Explicit error handling with clear messages makes debugging easier.</li>
+    <li>The <code>_map_type</code> method is easily extensible to new types, just by adding them to the dictionary.</li>
+  </ul>
+
+  <h2>Class and Methods Description</h2>
+
+  <h2><code>FieldMetadataParser</code> Class</h2>
+
+  <h3>Description</h3>
+  <p>Class to analyze metadata provided in dictionaries and turn it into types and fields configured for use with Pydantic. It makes it easier to dynamically create validation models from external specifications, interpreting types, whether fields are required and descriptive metadata.</p>
+
+  <h3>Constructor Arguments</h3>
+  <p>No parameters in the constructor.</p>
+
+  <h3>Methods</h3>
+
+  <h3>1. <code>parse</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Receives any value and, if it is a dictionary that defines field metadata (with the key <code>"type"</code>), returns a tuple containing the resulting Pydantic type and a <code>Field</code> object configured with the properties. Otherwise, it returns <code>None</code>.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>value</code> (Any): Value to be analyzed as field metadata.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>Tuple[Any, Any] | None</code>: Tuple with the field type and the Field object, or <code>None</code> if it is not metadata.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: If any error occurs while analyzing the metadata, an exception with an explanatory message is raised.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+# Metadado válido para um campo inteiro obrigatório
+result = parser.parse({"type": "int", "required": True, "description": "Idade do usuário"})
+# result será algo como (int, Field(..., description="Idade do usuário"))
+
+# Metadado inválido ou não seguindo o padrão retorna None
+result = parser.parse("apenas uma string")
+# result será None
+</code></pre>
+
+  <h3>2. <code>_parse_metadata</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Private helper method that receives a validated metadata dictionary, extracts its type, setting up the type and the properties of the field, especially handling lists and nested objects, returning the tuple with the Pydantic type and the <code>Field</code> object.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>value</code> (Dict[str, Any]): Dictionary containing the field's properties, such as type, requirement, examples, among others.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>Tuple[Any, Any]</code>: Tuple with the field type and the <code>Field</code> information.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: If the type is <code>"list"</code> and does not contain the mandatory definition of the key <code>"items"</code>.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+# Parse de um campo do tipo lista de inteiros não obrigatória
+type_, field = parser._parse_metadata({
+    "type": "list",
+    "items": {"type": "int"},
+    "required": False,
+    "description": "Lista de números"
+})
+# type_ será Optional[List[int]]
+# field conterá description e configurações
+
+# Parse de um campo objeto aninhado dentro da lista
+type_, field = parser._parse_metadata({
+    "type": "list",
+    "items": {
+        "type": "object",
+        "properties": {
+            "nome": {"type": "str", "description": "Nome do item"}
+        }
+    }
+})
+# type_ será List[ModeloDinâmico]
+# field configurado conforme descrito
+</code></pre>
+
+  <h3>3. <code>_map_type</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Maps a type name represented by a string to the corresponding Python type, used in Pydantic modeling. If the type is not recognized, it returns <code>Any</code> as a fallback.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>type_name</code> (str): String representing the type, for example <code>"str"</code>, <code>"int"</code>, <code>"list"</code>.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>tipo</code>: Corresponding Python type (e.g. <code>str</code>, <code>int</code>, <code>list</code>) or <code>Any</code> if not recognized.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+if __name__ == "__main__":
+    parser = FieldMetadataParser()
+
+    test_cases = [
+        {
+            "input": {
+                "type": "str",
+                "description": "Nome do personagem",
+                "example": "John"
+            }
+        },
+        {
+            "input": {
+                "type": "int",
+                "default": 10
+            }
+        },
+        {
+            "input": "valor simples"
+        }
+    ]
+
+    for i, case in enumerate(test_cases, 1):
+        result = parser.parse(case["input"])
+        print(f"\nTeste {i}")
+        print("Input:", case["input"])
+        print("Output:", result)
+
+# python -m src.content_parse.pydantic_shema
+</code></pre>
+</page>

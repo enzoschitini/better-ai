@@ -1,0 +1,141 @@
+<page data-lead="A practical guide to ApplicationTracing: how to create the tracer, record events, control what shows up in the console and where records are saved.">
+  <p><code>ApplicationTracing</code> is the entry point to BetterAI’s logging system. This page covers day-to-day use; the full reference for each class is in <a href="@/internal-source-code/application-tracing/tracing-core">Tracing Core</a>, <a href="@/internal-source-code/application-tracing/logger-engine">Logger Engine</a> and <a href="@/internal-source-code/application-tracing/payload-builder">Payload Builder</a>.</p>
+
+  <h2>Create the tracer</h2>
+  <p>Across the platform’s code, each module creates its tracer once, at the top of the file, and reuses it in every function:</p>
+  <pre data-lang="python"><code>
+from src.tracing.tracing_core import ApplicationTracing
+
+tracer = ApplicationTracing(
+    flag="DocumentParse",          # logger name and database collection name
+    file_name="document_parse.py", # shows up in every record as file=
+    log_file_name="parse",         # logs/parse.log file, when save_logs is on
+)
+</code></pre>
+  <ul>
+    <li><code>flag</code>: identifies where the records come from. It becomes the logger name in the console and the collection name when the record is saved to the database. Default: <code>"ApplicationTracing"</code>.</li>
+    <li><code>file_name</code>: name of the source file, appended to every message.</li>
+    <li><code>log_file_name</code>: name of the <code>.log</code> file in <code>logs/</code>. Default: <code>"app"</code>.</li>
+    <li><code>log_id</code>: identifier attached to every record of the instance. If omitted, it is generated from the current time, in the form <code>log_1791458846159946500JItJ</code>. Pass a fixed value to correlate records across instances.</li>
+  </ul>
+
+  <h2>Record events</h2>
+  <p>The five levels share the same signature: <code>func_name</code>, <code>message</code> and an optional <code>metadata</code> dictionary.</p>
+  <pre data-lang="python"><code>
+def run(job_id: str):
+    tracer.INFO(func_name="run", message=f"Processing job {job_id}")
+    try:
+        ...
+    except Exception as exc:
+        # Structured data goes in metadata, not in the message text
+        tracer.ERROR(
+            func_name="run",
+            message="Failed to extract content",
+            metadata={"job_id": job_id, "error": str(exc)},
+        )
+        raise
+</code></pre>
+  <table>
+    <thead><tr><th>Method</th><th>When to use it</th><th>Examples</th></tr></thead>
+    <tbody>
+      <tr><td><code>INFO</code></td><td>Normal application flow.</td><td>A process starting, an operation completing successfully.</td></tr>
+      <tr><td><code>DEBUG</code></td><td>Detailed diagnostics, useful during development.</td><td>Variable values, function inputs and outputs.</td></tr>
+      <tr><td><code>WARNING</code></td><td>An unexpected situation that does not stop execution.</td><td>Deprecated usage, fallback logic, missing optional data.</td></tr>
+      <tr><td><code>ERROR</code></td><td>An operation failed and affects expected functionality.</td><td>A failed API call, a caught exception.</td></tr>
+      <tr><td><code>CRITICAL</code></td><td>A severe error that can bring the application down.</td><td>A critical dependency unavailable, risk of data corruption.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>What shows up in the console</h2>
+  <p>Each record becomes one line on <code>stderr</code>, with its parts separated by <code>|</code>: time, level, <code>flag</code>, function, message, metadata, file and <code>log_id</code>.</p>
+  <pre data-title="Console"><code>
+2026-10-08 08:27:26,159 | ERROR | DocumentParse | run() | Failed to extract content | file=document_parse.py | log_id=log_1791458846159946500JItJ
+</code></pre>
+  <div class="callout" data-kind="warn"><p><strong>By default, only <code>ERROR</code> and <code>CRITICAL</code> show up.</strong> With <code>show_info_logs=False</code> (the default), the console drops <code>INFO</code>, <code>DEBUG</code> and <code>WARNING</code> too. Turn on <code>show_info_logs</code> to see every level.</p></div>
+  <p>Metadata only makes it into the line with <code>show_metadata=True</code>; without it, metadata is left out even on an <code>ERROR</code>:</p>
+  <pre data-title="Console"><code>
+2026-10-08 08:27:26,159 | INFO | DocumentParse | run() | Completed processing | metadata={'job_id': 'job_42'} | file=document_parse.py | log_id=log_1234
+</code></pre>
+  <p>With <code>format_metadata=True</code>, metadata is printed as indented JSON over several lines instead of a one-line dictionary.</p>
+
+  <h2>Save the records</h2>
+
+  <h3>To a file</h3>
+  <p>With <code>save_logs=True</code>, each record is also written to <code>logs/&lt;log_file_name&gt;.log</code>. The <code>logs/</code> folder is created in the directory the process was started from. The file receives every level, regardless of <code>show_info_logs</code>, and the text is the same line as in the console, without colors.</p>
+
+  <h3>To the NoSQL database</h3>
+  <p>With <code>save_mongo=True</code>, each record is also sent to the <a href="@/internal-source-code/database/no-sql/router">DocumentStore</a>, in the <code>application_tracings</code> database, in a collection named after the <code>flag</code>. <code>NOSQL_BACKEND</code> picks the backend:</p>
+  <ul>
+    <li><code>mongo</code>: writes to MongoDB.</li>
+    <li><code>local</code> (default): writes JSON to <code>data/application_tracings/&lt;flag&gt;.json</code>.</li>
+  </ul>
+  <p>The saved document carries the full metadata, even with <code>show_metadata=False</code>:</p>
+  <pre data-lang="json"><code>
+{
+  "log_id": "log_1234",
+  "level": "ERROR",
+  "flag": "DocumentParse",
+  "func_name": "run",
+  "message": "Failed to extract content",
+  "metadata": {"job_id": "job_42"},
+  "file_name": "document_parse.py",
+  "time": "2026-10-08 08:27:26,159"
+}
+</code></pre>
+  <p>The <code>local</code> backend adds the <code>_id</code> and <code>_created_at</code> fields.</p>
+
+  <h2>Configure through environment variables</h2>
+  <p>The display and saving options can also come from the <code>.env</code>, without changing the code:</p>
+  <table>
+    <thead><tr><th>Variable</th><th>Parameter</th></tr></thead>
+    <tbody>
+      <tr><td><code>SHOW_INFO_LOGS</code></td><td><code>show_info_logs</code></td></tr>
+      <tr><td><code>SHOW_METADATA</code></td><td><code>show_metadata</code></td></tr>
+      <tr><td><code>SAVE_LOGS</code></td><td><code>save_logs</code></td></tr>
+      <tr><td><code>SAVE_MONGO</code></td><td><code>save_mongo</code></td></tr>
+      <tr><td><code>FORMAT_METADATA</code></td><td><code>format_metadata</code></td></tr>
+      <tr><td><code>NOSQL_BACKEND</code></td><td>Backend for <code>save_mongo</code>: <code>mongo</code> or <code>local</code> (default).</td></tr>
+    </tbody>
+  </table>
+  <p>When the same option is set in more than one place, the first one in this list wins:</p>
+  <ol>
+    <li>The argument passed to the log call, for that call only.</li>
+    <li>A <code>True</code> argument in the constructor: it ignores the environment variable.</li>
+    <li>The environment variable, when the constructor received <code>False</code> (the default).</li>
+    <li><code>False</code>, if nothing was set.</li>
+  </ol>
+  <p>The <code>SHOW_*</code>, <code>SAVE_*</code> and <code>FORMAT_METADATA</code> variables are read once, when the tracer is created: changing the environment afterwards does not affect an existing tracer. <code>NOSQL_BACKEND</code> is read on every save.</p>
+  <div class="callout" data-kind="warn"><p><strong>Only <code>true</code> and <code>false</code>.</strong> The accepted values are <code>true</code> and <code>false</code>, case-insensitive. Any other value, such as <code>1</code> or <code>yes</code>, raises <code>KeyError</code> when the tracer is created.</p></div>
+
+  <h2>Override in a single call</h2>
+  <p>The log methods accept <code>show_info_logs</code>, <code>show_metadata</code> and <code>save_logs</code>, which apply to that call only:</p>
+  <pre data-lang="python"><code>
+# Show this INFO even with show_info_logs=False on the instance
+tracer.INFO(func_name="run", message="Checkpoint", show_info_logs=True)
+
+# Write only this record to the file, with the metadata in the line
+tracer.ERROR(
+    func_name="process_payment",
+    message="Payment failed",
+    metadata={"user_id": 123},
+    save_logs=True,
+    show_metadata=True,
+)
+</code></pre>
+  <div class="callout" data-kind="warn"><p><strong><code>save_mongo</code> does not work per call.</strong> The parameter is in the methods’ signature, but saving to the database always follows the instance value: <code>save_mongo=True</code> on a call does not save, and <code>save_mongo=False</code> does not prevent saving.</p></div>
+
+  <h2>Try it</h2>
+  <p>The <code>src/tracing/tracing_test.py</code> file emits one record per level. Run it from the project root:</p>
+  <pre data-lang="bash"><code>
+python -m src.tracing.tracing_test
+</code></pre>
+  <p>With the default configuration, only the <code>ERROR</code> and <code>CRITICAL</code> records show up. Set <code>SHOW_INFO_LOGS=true</code> in the <code>.env</code> to see all five.</p>
+
+  <h2>See also</h2>
+  <cards>
+    <card href="@/internal-source-code/application-tracing/tracing-core" icon="code" title="Tracing Core">The ApplicationTracing class and the signature of each level.</card>
+    <card href="@/internal-source-code/application-tracing/logger-engine" icon="code" title="Logger Engine">The engine that resolves the configuration and emits the records.</card>
+    <card href="@/internal-source-code/application-tracing/payload-builder" icon="code" title="Payload Builder">How the console line and the database document are built.</card>
+    <card href="@/internal-source-code/database/no-sql/router" icon="folder" title="Router">The DocumentStore and the choice between MongoDB and local JSON.</card>
+  </cards>
+</page>

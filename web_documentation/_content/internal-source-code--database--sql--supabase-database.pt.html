@@ -1,0 +1,105 @@
+<page data-lead="Esta documentação detalha a arquitetura e o funcionamento do motor de persistência de dados criado para interagir com o Supabase, utilizando uma abordagem híbrida entre a API REST (via cliente oficial) e o acesso direto ao PostgreSQL (via psycopg2).">
+  <h2>Visão Geral</h2>
+  <p>O código implementa uma camada de abstração de banco de dados dividida em duas responsabilidades principais: <strong>Gerenciamento de Conexão</strong> e <strong>Motor de Consultas (Query Engine)</strong>.</p>
+  <p>Diferente de abordagens que dependem apenas de bibliotecas de alto nível, este projeto foca na performance e no controle transacional robusto, permitindo execuções SQL puras, manipulação de JSONB e operações em lote (bulk operations) com segurança.</p>
+
+  <h2>Fluxo de Execução</h2>
+  <p>O fluxo de uma operação comum segue estes passos:</p>
+  <ol>
+    <li><strong>Inicialização:</strong> O <code>SupabaseConnection</code> carrega as variáveis de ambiente e valida as credenciais.</li>
+    <li><strong>Lazy Loading:</strong> A conexão com o banco PostgreSQL só é aberta no momento em que a primeira query é solicitada.</li>
+    <li><strong>Injeção de Dependência:</strong> O <code>SupabaseQueryEngineer</code> recebe o método de conexão.</li>
+    <li><strong>Execução &amp; Contexto:</strong> O motor de consulta abre um cursor, executa o SQL e, em caso de sucesso, realiza o <code>commit</code>.</li>
+    <li><strong>Tratamento de Erro:</strong> Se algo falhar, um <code>rollback</code> automático é acionado para manter a integridade dos dados.</li>
+  </ol>
+
+  <h2>Tabela de Métodos</h2>
+  <table>
+    <thead><tr><th>Classe</th><th>Método</th><th>Descrição Breve</th></tr></thead>
+    <tbody>
+      <tr><td><strong>SupabaseConnection</strong></td><td><code>get_connection()</code></td><td>Retorna uma conexão ativa, reconectando se necessário.</td></tr>
+      <tr><td><strong>SupabaseConnection</strong></td><td><code>close()</code></td><td>Encerra a conexão física com o banco de dados.</td></tr>
+      <tr><td><strong>SupabaseQueryEngineer</strong></td><td><code>select()</code></td><td>Executa consultas de leitura e retorna uma lista de dicionários.</td></tr>
+      <tr><td><strong>SupabaseQueryEngineer</strong></td><td><code>execute()</code></td><td>Executa comandos de escrita (Insert, Update, Delete).</td></tr>
+      <tr><td><strong>SupabaseQueryEngineer</strong></td><td><code>execute_many()</code></td><td>Executa o mesmo comando SQL para uma lista de múltiplos parâmetros.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Arquitetura e Insights</h2>
+  <ul>
+    <li><strong>Resiliência (Auto-reconexão):</strong> O método <code>get_connection</code> realiza um "ping" (<code>SELECT 1</code>) no banco. Isso evita erros comuns de "broken pipe" em ambientes serverless ou quando a conexão fica ociosa por muito tempo.</li>
+    <li><strong>Resultados Tipados:</strong> O uso do <code>RealDictCursor</code> transforma as linhas do banco em dicionários Python nativos, facilitando o uso em APIs e manipulação de dados.</li>
+    <li><strong>Segurança (SQL Injection):</strong> O sistema utiliza parametrização (<code>%s</code>), delegando ao driver a limpeza dos dados, o que previne ataques de injeção de SQL.</li>
+  </ul>
+
+  <h2>Documentação Detalhada das Classes</h2>
+
+  <h2>Classe SupabaseConnection</h2>
+  <p><strong>Descrição</strong></p>
+  <p>Gerencia o ciclo de vida da conexão com o ecossistema Supabase. Ela valida se o ambiente está configurado corretamente e fornece uma interface para obter conexões PostgreSQL estáveis através do protocolo TCP.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>Não possui argumentos de inicialização (lê diretamente de <code>.env</code>).</li>
+  </ul>
+
+  <h2>Metodos</h2>
+  <p><strong>1. get_connection</strong></p>
+  <ul>
+    <li><strong>Descrição:</strong> Fornece uma instância de conexão <code>psycopg2</code>. Implementa o padrão Lazy Initialization.</li>
+    <li><strong>Argumentos:</strong> Nenhum.</li>
+    <li><strong>Retornos:</strong> <code>psycopg2.extensions.connection</code></li>
+    <li><strong>Raises:</strong> <code>Exception</code> se as credenciais estiverem incorretas ou o banco estiver inacessível.</li>
+    <li><strong>Exemplos:</strong> <code>conn = connection.get_connection()</code></li>
+  </ul>
+
+  <h2>Classe SupabaseQueryEngineer</h2>
+  <p><strong>Descrição</strong></p>
+  <p>O "cérebro" das operações de banco de dados. Esta classe isola a complexidade do SQL, gerenciando cursores e transações (Commit/Rollback) de forma transparente para o desenvolvedor.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>get_connection</code> (Callable): Uma função ou método que retorne uma conexão ativa.</li>
+  </ul>
+
+  <h2>Metodos</h2>
+  <p><strong>1. select</strong></p>
+  <ul>
+    <li><strong>Descrição:</strong> Executa queries de busca de dados.</li>
+    <li><strong>Argumentos:</strong>
+      <ul>
+        <li><code>query</code> (str): Comando SQL SELECT.</li>
+        <li><code>params</code> (tuple, opcional): Valores para substituir os placeholders <code>%s</code>.</li>
+      </ul>
+    </li>
+    <li><strong>Retornos:</strong> <code>List[Dict[str, Any]]</code> - Uma lista onde cada item é uma linha da tabela.</li>
+    <li><strong>Raises:</strong> <code>Exception</code> em caso de erro de sintaxe SQL ou falha de conexão.</li>
+    <li><strong>Exemplos:</strong> <code>engine.select("SELECT * FROM users WHERE name = %s", ("Enzo",))</code></li>
+  </ul>
+
+  <p><strong>2. execute</strong></p>
+  <ul>
+    <li><strong>Descrição:</strong> Executa comandos que alteram o estado do banco de dados (DDL ou DML).</li>
+    <li><strong>Argumentos:</strong>
+      <ul>
+        <li><code>query</code> (str): Comando SQL (INSERT, UPDATE, DELETE, CREATE, etc).</li>
+        <li><code>params</code> (tuple, opcional): Parâmetros da query.</li>
+      </ul>
+    </li>
+    <li><strong>Retornos:</strong> <code>None</code></li>
+    <li><strong>Raises:</strong> <code>Exception</code> com rollback automático em caso de falha.</li>
+    <li><strong>Exemplos:</strong> <code>engine.execute("UPDATE users SET name = %s", ("Novo Nome",))</code></li>
+  </ul>
+
+  <p><strong>3. execute_many</strong></p>
+  <ul>
+    <li><strong>Descrição:</strong> Otimiza a inserção ou atualização de grandes volumes de dados.</li>
+    <li><strong>Argumentos:</strong>
+      <ul>
+        <li><code>query</code> (str): Comando SQL parametrizado.</li>
+        <li><code>params_list</code> (List[tuple]): Lista contendo as tuplas de parâmetros para cada repetição.</li>
+      </ul>
+    </li>
+    <li><strong>Retornos:</strong> <code>None</code></li>
+    <li><strong>Raises:</strong> <code>Exception</code> se qualquer uma das operações falhar (anula o lote inteiro).</li>
+    <li><strong>Exemplos:</strong> <code>engine.execute_many("INSERT INTO logs (msg) VALUES (%s)", [("Erro 1",), ("Erro 2",)])</code></li>
+  </ul>
+</page>

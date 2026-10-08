@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pinecone Embedding | BetterAI Docs</title>
+<meta name="description" content="The PineconeEmbedding class is an implementation focused on making it easier to work with embedding vectors based on the Pinecone library, widely used to store and search vectors at scale.">
+<link rel="canonical" href="pages/en/internal-source-code/vector-store/pinecone-embedding.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../../../_design-system/css/tokens.css?v=7f43b250">
+<link rel="stylesheet" href="../../../../_design-system/css/base.css?v=4a698b89">
+<link rel="stylesheet" href="../../../../_design-system/css/layout.css?v=503e806e">
+<link rel="stylesheet" href="../../../../_design-system/css/content.css?v=cfc5f8ef">
+<link rel="stylesheet" href="../../../../_design-system/css/search.css?v=1ecf3252">
+<link rel="stylesheet" href="../../../../_design-system/css/responsive.css?v=6efeec66">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Created by Enzo Schitini. I invite you to connect with me on LinkedIn.</a></span>
+    <button type="button" aria-label="Dismiss notice"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../pages/en/index.html">
+        <img src="../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Search the documentation">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Search...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="../../../../pages/en/getting-started/quickstart.html">Quickstart<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Language"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>EN</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="false"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="false"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="true"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light and dark theme"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Documentation areas"><a class="tab" href="../../../../pages/en/index.html">Overview</a><a class="tab" href="../../../../pages/en/getting-started/index.html">Introduction</a><a class="tab" href="../../../../pages/en/agents/index.html">Agents</a><a class="tab" href="../../../../pages/en/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../pages/en/api/index.html">API</a><a class="tab" href="../../../../pages/en/modules/index.html">Modules</a><a class="tab" href="../../../../pages/en/internal-source-code/index.html" aria-current="page">Internal Services</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Internal Services</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Pinecone Embedding</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Documentation navigation">
+    <nav class="side"><div class="side-areas"><a href="../../../../pages/en/index.html">Overview</a><a href="../../../../pages/en/getting-started/index.html">Introduction</a><a href="../../../../pages/en/agents/index.html">Agents</a><a href="../../../../pages/en/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/en/api/index.html">API</a><a href="../../../../pages/en/modules/index.html">Modules</a><a href="../../../../pages/en/internal-source-code/index.html" aria-current="page">Internal Services</a></div><a class="side-link" href="../../../../pages/en/internal-source-code/index.html"><span>Overview</span></a><div class="side-group"><p class="side-title">Application Tracing</p><ul><li><a class="side-link" href="../../../../pages/en/internal-source-code/application-tracing/logger-engine.html"><span>Logger Engine</span></a></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/application-tracing/payload-builder.html"><span>Payload Builder</span></a></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/application-tracing/tracing-core.html"><span>Tracing Core</span></a></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/application-tracing/use.html"><span>Use</span></a></li></ul></div><div class="side-group"><p class="side-title">Database</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>No SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/en/internal-source-code/database/no-sql/local-manage.html"><span>Local Manage</span></a></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/database/no-sql/mongo-manager.html"><span>Mongo Manager</span></a></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/database/no-sql/router.html"><span>Router</span></a></li></ul></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/en/internal-source-code/database/sql/supabase-database.html"><span>Supabase Database</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Storage</p><ul><li><a class="side-link" href="../../../../pages/en/internal-source-code/storage/storage-menage-repository.html"><span>Storage Menage Repository</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Supabase</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/en/internal-source-code/storage/supabase/storage-menager.html"><span>Storage Menager</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Token Calculate</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Exchange Rate</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/en/internal-source-code/token-calculate/exchange-rate/bcb-exchange-rate-service.html"><span>BCB Exchange Rate Service</span></a></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/token-calculate/exchange-rate/exchange-rate-service.html"><span>Exchange Rate Service</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/token-calculate/model-pricing.html"><span>Model Pricing</span></a></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/token-calculate/token-counter.html"><span>Token Counter</span></a></li></ul></div><div class="side-group"><p class="side-title">Utils</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Load Request File</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/en/internal-source-code/utils/load-request-file/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/utils/load-request-file/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/utils/loader-files.html"><span>Loader Files</span></a></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/utils/unique-id-factory.html"><span>Unique ID Factory</span></a></li></ul></div><div class="side-group"><p class="side-title">Vector Store</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Local Dynamic Embedding</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/en/internal-source-code/vector-store/local-dynamic-embedding/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/vector-store/local-dynamic-embedding/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/vector-store/pinecone-client.html"><span>Pinecone Client</span></a></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/vector-store/pinecone-embedding.html" aria-current="page"><span>Pinecone Embedding</span></a></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/vector-store/pinecone-retriever.html"><span>Pinecone Retriever</span></a></li><li><a class="side-link" href="../../../../pages/en/internal-source-code/vector-store/retrieval-manager.html"><span>Retrieval Manager</span></a></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Vector Store</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Pinecone Embedding</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copy page</span></button>
+            </div>
+          </div>
+          <p class="lead">The PineconeEmbedding class is an implementation focused on making it easier to work with embedding vectors based on the Pinecone library, widely used to store and search vectors at scale.</p>
+          <details class="toc-inline"><summary>On this page</summary><ul></ul></details>
+        </header>
+        <div class="prose"><h2 id="overview"><a class="anchor" href="#overview" aria-label="Link para esta seção">#</a>Overview</h2>
+  <p>The <code>PineconeEmbedding</code> class is an implementation focused on making it easier to work with embedding vectors based on the Pinecone library, widely used to store and search vectors at scale. It offers features to split texts into smaller pieces, turn those pieces into structured documents with metadata, generate embedding vectors from the texts and manage the storage of those vectors in Pinecone indexes.</p>
+  <p>This service is ideal for applications that deal with large volumes of text data and need to perform semantic search or embedding-based recommendations. Typical use involves processing raw text, generating embeddings through OpenAI, organized and efficient storage of those vectors, plus the ability to maintain them by removing specific vectors.</p>
+
+  <h2 id="execution-flow"><a class="anchor" href="#execution-flow" aria-label="Link para esta seção">#</a>Execution Flow</h2>
+  <ol>
+    <li><strong>Class Initialization</strong>: The class is instantiated with a custom or default Pinecone client, configuring embedding models, chunk sizes, namespaces, and other configuration parameters loaded from the environment or files.</li>
+    <li><strong>Vector Generation</strong>:
+      <ul>
+        <li>Receives a full text and associated metadata (e.g. <code>file_id</code>).</li>
+        <li>The text is split into smaller pieces respecting size and overlap limits.</li>
+        <li>Each piece becomes a document with metadata.</li>
+        <li>The documents are turned into embedding vectors in batches.</li>
+        <li>The vectors are saved in Pinecone's main namespace, with optional saving to the global namespace for reuse.</li>
+      </ul>
+    </li>
+    <li><strong>Vector Deletion</strong>:
+      <ul>
+        <li>Makes it possible to delete vectors from Pinecone by filtering on a metadata field and value, in the specified namespace.</li>
+        <li>Handles deletions in batches for efficiency.</li>
+        <li>Ensures rollback and logging to avoid inconsistencies in case of failures.</li>
+      </ul>
+    </li>
+    <li><strong>Monitoring and Logs</strong>:
+      <ul>
+        <li>Integration with the tracing system (<code>ApplicationTracing</code>) for detailed debugging of the steps.</li>
+        <li>Careful exception handling to report errors that occurred in the process.</li>
+      </ul>
+    </li>
+  </ol>
+
+  <h2 id="class-methods-table"><a class="anchor" href="#class-methods-table" aria-label="Link para esta seção">#</a>Class Methods Table</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Method</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Initializes the service, configures client and parameters.</td></tr>
+      <tr><td><code>embedding_document</code></td><td>Creates and saves embeddings of text split into chunks.</td></tr>
+      <tr><td><code>delete_documents</code></td><td>Deletes vectors in Pinecone based on metadata filters.</td></tr>
+      <tr><td><code>split_text</code></td><td>Splits a long text into multiple pieces.</td></tr>
+      <tr><td><code>build_documents</code></td><td>Creates Document objects with content and metadata. (static method)</td></tr>
+      <tr><td><code>generate_embeddings</code></td><td>Generates the vector representations from texts.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="environment-variables"><a class="anchor" href="#environment-variables" aria-label="Link para esta seção">#</a>Environment Variables</h2>
+  <ul>
+    <li><code>OPENAI_EMBEDDING_MODEL</code>: Defines the OpenAI embedding model to use to generate the vectors when none is explicitly provided.</li>
+  </ul>
+
+  <h2 id="key-architecture-points-and-insights"><a class="anchor" href="#key-architecture-points-and-insights" aria-label="Link para esta seção">#</a>Key Architecture Points and Insights</h2>
+  <ul>
+    <li><strong>Inheritance and Reuse</strong>: <code>PineconeEmbedding</code> inherits from <code>EmbeddingHelpers</code>, separating the text handling and embedding generation logic from the higher-level storage and management flow.</li>
+    <li><strong>Smart Batching</strong>: Embedding generation and deletion are processed in configurable batches to balance performance and resource use.</li>
+    <li><strong>Separate Namespaces</strong>: The distinction between main and global namespace allows data organization, enabling isolated and shared scope scenarios.</li>
+    <li><strong>Deep Logging and Tracing</strong>: Integration with a custom tracing system that enables granular debugging and detailed monitoring of operations.</li>
+    <li><strong>Robust Error Handling</strong>: Explicit rollback on batch insertion failures keeps the Pinecone index consistent.</li>
+    <li><strong>Use of OpenAIEmbeddings</strong>: Abstraction of embedding generation through an OpenAI model that can be easily swapped via environment variable or argument.</li>
+    <li><strong>External Dependencies</strong>: The class depends on the Pinecone client implementation (<code>PineconeClient</code>), the configuration (<code>PineconeVectorStoreConfig</code>) and the LangChain library for handling documents and embeddings.</li>
+  </ul>
+
+  <h2 id="class-and-methods-description"><a class="anchor" href="#class-and-methods-description" aria-label="Link para esta seção">#</a>Class and Methods Description</h2>
+
+  <h3 id="class-pineconeembedding"><a class="anchor" href="#class-pineconeembedding" aria-label="Link para esta seção">#</a>Class <code>PineconeEmbedding</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Class to manage the creation, storage and removal of text embeddings using Pinecone as the vector search service. It splits texts into pieces, generates embeddings through OpenAI, and lets you persist those vectors in configurable namespaces, easing integrations in systems that require semantic search.</p>
+  <p><strong>Constructor Arguments</strong></p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argument</th><th>Type</th><th>Description</th><th>Default Value</th></tr></thead>
+    <tbody>
+      <tr><td><code>vector_client</code></td><td><code>Optional[PineconeClient]</code></td><td>Custom Pinecone client for vector operations. If not provided, creates a default one.</td><td><code>None</code></td></tr>
+      <tr><td><code>embedding_model_name</code></td><td><code>str</code></td><td>Name of the embedding model used. If None, looks up the environment variable <code>OPENAI_EMBEDDING_MODEL</code> or the config default.</td><td><code>None</code></td></tr>
+      <tr><td><code>dimensions</code></td><td><code>int</code></td><td>Dimensionality of the vectors; if not given, uses the default configuration.</td><td><code>None</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Initializes the embedding service, configuring the Pinecone client, parameters such as chunk size, namespaces and embedding model, and creates the global and main Pinecone stores.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>vector_client</code> (Optional[PineconeClient]): Pinecone client for operations.</li>
+    <li><code>embedding_model_name</code> (str): embedding model name.</li>
+    <li><code>dimensions</code> (int): vector dimension.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: On failures during initialization.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>service = <span class="t-f">PineconeEmbedding</span>()
+<span class="t-c"># ou com cliente customizado e modelo definido</span>
+service_custom = <span class="t-f">PineconeEmbedding</span>(
+    vector_client=my_pinecone_client,
+    embedding_model_name=<span class="t-s">&quot;text-embedding-ada-002&quot;</span>,
+    dimensions=<span class="t-n">1536</span>
+)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-embedding-document"><a class="anchor" href="#2-embedding-document" aria-label="Link para esta seção">#</a>2. <code>embedding_document</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Processes long text, splits it into chunks, creates documents associating metadata, generates embeddings for those chunks in batches, and saves the vectors in Pinecone. It can save copies in the global namespace for reuse.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>text</code> (str): full text to generate vectors from.</li>
+    <li><code>metadata</code> (dict): metadata to associate with the vector documents.</li>
+    <li><code>save_global</code> (bool): flag to also save the vectors in the global namespace.</li>
+    <li><code>batch_size</code> (int | None): batch size for embedding generation.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>dict</code>: Result with status, messages, and detailed information about the saved embeddings, including ids and count.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Not directly; errors are caught and reported in the return value with rollback.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>response = service.<span class="t-f">embedding_document</span>(
+    text=<span class="t-s">&quot;Um texto muito longo que precisa ser dividido e vetorizado...&quot;</span>,
+    metadata={<span class="t-s">&quot;file_id&quot;</span>: <span class="t-s">&quot;doc_001&quot;</span>},
+    save_global=<span class="t-n">True</span>,
+    batch_size=<span class="t-n">50</span>
+)
+<span class="t-k">if</span> response[<span class="t-s">&quot;status&quot;</span>] == <span class="t-s">&quot;success&quot;</span>:
+    <span class="t-f">print</span>(f<span class="t-s">&quot;Vetores salvos, batches: {response['embedding_informations']['batch_count']}&quot;</span>)
+<span class="t-k">else</span>:
+    <span class="t-f">print</span>(<span class="t-s">&quot;Erro:&quot;</span>, response[<span class="t-s">&quot;message&quot;</span>])</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-delete-documents"><a class="anchor" href="#3-delete-documents" aria-label="Link para esta seção">#</a>3. <code>delete_documents</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Removes vectors from the Pinecone index by filtering on the value of a metadata field, within the specified namespace. It runs deletions in batches for performance and safety.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>target_feature</code> (str): metadata field used for filtering (e.g. "file_id").</li>
+    <li><code>target_id</code> (str): value that identifies the vectors to delete.</li>
+    <li><code>namespace</code> (str): Pinecone namespace in which to run the removal.</li>
+    <li><code>features</code> (list): optional list of valid features for validating the filter.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>dict</code>: Information about the number of deleted vectors and the namespace.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ValueError</code>: if <code>target_feature</code> is not in the <code>features</code> list when provided.</li>
+    <li><code>RuntimeError</code>: if an error occurs during removal.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>result = service.<span class="t-f">delete_documents</span>(
+    target_feature=<span class="t-s">&quot;file_id&quot;</span>,
+    target_id=<span class="t-s">&quot;doc_001&quot;</span>,
+    namespace=<span class="t-s">&quot;embedding_file&quot;</span>
+)
+<span class="t-f">print</span>(f<span class="t-s">&quot;Vectors deleted: {result['deleted_vectors']}&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-split-text"><a class="anchor" href="#4-split-text" aria-label="Link para esta seção">#</a>4. <code>split_text</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Splits a text into multiple smaller pieces, respecting size and overlap limits to ease processing and embedding generation.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>text</code> (str): text to be split.</li>
+    <li><code>chunk_size</code> (int | None): desired chunk size (optional).</li>
+    <li><code>chunk_overlap</code> (int | None): overlap between chunks (optional).</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>List[str]</code>: list with the generated text pieces.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: if splitting the text fails.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>chunks = service.<span class="t-f">split_text</span>(<span class="t-s">&quot;Texto muito longo...&quot;</span>, chunk_size=<span class="t-n">200</span>, chunk_overlap=<span class="t-n">40</span>)
+<span class="t-f">print</span>(f<span class="t-s">&quot;Quantidade de chunks gerados: {len(chunks)}&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="5-build-documents-static-method"><a class="anchor" href="#5-build-documents-static-method" aria-label="Link para esta seção">#</a>5. <code>build_documents</code> (static method)</h3>
+  <p><strong>Description</strong></p>
+  <p>Creates Document objects (from LangChain) out of text pieces, associating a metadata dictionary with each document.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>chunks</code> (List[str]): list of fragmented texts.</li>
+    <li><code>metadata</code> (Dict[str, Any]): metadata to attach to each document.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>List[Document]</code>: list of documents ready for ingestion.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: if building the Documents fails.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>documents = PineconeEmbedding.<span class="t-f">build_documents</span>(
+    [<span class="t-s">&quot;texto 1&quot;</span>, <span class="t-s">&quot;texto 2&quot;</span>],
+    {<span class="t-s">&quot;file_id&quot;</span>: <span class="t-s">&quot;abc123&quot;</span>, <span class="t-s">&quot;created_at&quot;</span>: <span class="t-s">&quot;2024-06-01&quot;</span>}
+)
+<span class="t-k">for</span> doc <span class="t-k">in</span> documents:
+    <span class="t-f">print</span>(doc.metadata)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="6-generate-embeddings"><a class="anchor" href="#6-generate-embeddings" aria-label="Link para esta seção">#</a>6. <code>generate_embeddings</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Generates the vector embeddings for a list of texts, using the configured model.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>texts</code> (List[str]): list of sentences or documents to turn into vectors.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>List[List[float]]</code>: list of numeric vectors matching the texts.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>RuntimeError</code>: if an error occurs while generating the embeddings.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>embeddings = service.<span class="t-f">generate_embeddings</span>([
+    <span class="t-s">&quot;primeiro texto&quot;</span>,
+    <span class="t-s">&quot;segundo texto&quot;</span>
+])
+<span class="t-f">print</span>(f<span class="t-s">&quot;Embedding do primeiro texto tem dimensão {len(embeddings[0])}&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="full-usage-example"><a class="anchor" href="#full-usage-example" aria-label="Link para esta seção">#</a>Full usage example</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>pine_client = <span class="t-f">PineconeClient</span>(index_name=<span class="t-s">&quot;exemplo-index&quot;</span>, main_namespace=<span class="t-s">&quot;embeddings&quot;</span>)
+service = <span class="t-f">PineconeEmbedding</span>(vector_client=pine_client, embedding_model_name=<span class="t-s">&quot;text-embedding-ada-002&quot;</span>)
+
+texto = <span class="t-s">&quot;Este é um exemplo de texto que será dividido, embeddado e armazenado.&quot;</span>
+
+response = service.<span class="t-f">embedding_document</span>(
+    text=texto,
+    metadata={<span class="t-s">&quot;file_id&quot;</span>: <span class="t-s">&quot;exemplo_12345&quot;</span>},
+    save_global=<span class="t-n">True</span>
+)
+
+<span class="t-k">if</span> response[<span class="t-s">'status'</span>] == <span class="t-s">&quot;success&quot;</span>:
+    <span class="t-f">print</span>(<span class="t-s">&quot;Embeddings gerados e salvos com sucesso!&quot;</span>)
+<span class="t-k">else</span>:
+    <span class="t-f">print</span>(<span class="t-s">&quot;Falha ao salvar embeddings:&quot;</span>, response[<span class="t-s">&quot;message&quot;</span>])</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <p>This documentation details how <code>PineconeEmbedding</code> works, highlighting its practical use, the available methods and tips for efficient integration with vectorization systems based on Pinecone and OpenAI.</p></div>
+        <div class="feedback"></div>
+        <p class="source">Source: <code>src/vector_store/pinecone/embedding.py</code></p>
+        <nav class="pager" aria-label="Neighboring pages"><a class="pager-link prev" href="../../../../pages/en/internal-source-code/vector-store/pinecone-client.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Previous</small><span>Pinecone Client</span></div></a><a class="pager-link next" href="../../../../pages/en/internal-source-code/vector-store/pinecone-retriever.html"><div><small>Next</small><span>Pinecone Retriever</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="On this page"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="../../../../pages/en/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+          <p>Where intelligence finds purpose.</p>
+          <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>Repository on GitHub</a>
+        </div>
+        <div class="foot-col"><h2>Documentation</h2><a href="../../../../pages/en/getting-started/index.html">Introduction</a><a href="../../../../pages/en/agents/index.html">Agents</a><a href="../../../../pages/en/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/en/api/index.html">API</a><a href="../../../../pages/en/modules/index.html">Modules</a><a href="../../../../pages/en/internal-source-code/index.html">Internal Services</a></div>
+        <div class="foot-col"><h2>Resources</h2><a href="../../../../pages/en/getting-started/quickstart.html">Quickstart</a><a href="../../../../pages/en/getting-started/licence.html">Licence</a><a href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener">Source code</a><a href="https://github.com/enzoschitini/better-ai/issues" target="_blank" rel="noopener">Report an issue</a></div>
+        <div class="foot-col"><h2>Creator</h2><div class="foot-me"><img src="../../../../assets/img/profile.jpg" alt="" width="44" height="44"><div><strong>Enzo Schitini</strong><span>Data Scientist &amp; AI Engineer</span></div></div><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/enzoschitini" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 BetterAI &middot; MIT License</span>
+        <span>Created by <a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Enzo Schitini</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Search the documentation">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Search pages and sections" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Results"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>navigate</span></span>
+    <span><kbd>Enter</kbd><span>open</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "en", "root": "../../../../", "index": "../../../../search-en.json", "alt": {"pt": "pages/pt/internal-source-code/vector-store/pinecone-embedding.html", "it": "pages/it/internal-source-code/vector-store/pinecone-embedding.html", "en": "pages/en/internal-source-code/vector-store/pinecone-embedding.html"}, "i": {"noResults": "Nothing found for “%s”. Try a module name, such as “Pinecone”."}};</script>
+<script src="../../../../_design-system/js/ds.js?v=9a5e2954"></script>
+<script src="../../../../_design-system/js/docs.js?v=6f602c0a"></script>
+</body>
+</html>

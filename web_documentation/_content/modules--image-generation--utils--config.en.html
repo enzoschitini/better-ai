@@ -1,0 +1,70 @@
+<page data-lead="Shared constants and types of the module: Imagen model catalog, storage and database parameters, default Gemini configuration and the base prompt.">
+  <div class="callout" data-kind="note"><p><strong>Source:</strong> <code>src/image_generation/utils/config.py</code>. This page's original notebook was empty; the content was written from the code.</p></div>
+
+  <h2>Model catalog</h2>
+  <p><code>IMAGE_MODELS_CATALOG</code> describes what each Imagen model accepts. It is the source used by <a href="@/modules/image-generation/utils/params-validator">Params Validator</a>.</p>
+  <table>
+    <thead><tr><th>Model</th><th>Max. images per prompt</th><th>Aspect ratios</th><th>Resolutions</th><th>MIME types</th></tr></thead>
+    <tbody>
+      <tr><td><code>imagen-4.0-generate-001</code></td><td>4</td><td><code>1:1</code>, <code>3:4</code>, <code>4:3</code>, <code>9:16</code>, <code>16:9</code></td><td><code>1K</code>, <code>2K</code></td><td><code>image/png</code>, <code>image/jpeg</code></td></tr>
+      <tr><td><code>imagen-4.0-fast-generate-001</code></td><td>4</td><td><code>1:1</code>, <code>3:4</code>, <code>4:3</code>, <code>9:16</code>, <code>16:9</code></td><td><code>1K</code></td><td><code>image/png</code>, <code>image/jpeg</code></td></tr>
+      <tr><td><code>imagen-4.0-ultra-generate-001</code></td><td>4</td><td><code>1:1</code>, <code>3:4</code>, <code>4:3</code>, <code>9:16</code>, <code>16:9</code></td><td><code>1K</code>, <code>2K</code></td><td><code>image/png</code>, <code>image/jpeg</code></td></tr>
+    </tbody>
+  </table>
+
+  <h2>Storage and database</h2>
+  <table>
+    <thead><tr><th>Constant</th><th>Value</th><th>Use</th></tr></thead>
+    <tbody>
+      <tr><td><code>BUCKET_NAME</code></td><td><code>images</code></td><td>Supabase Storage bucket.</td></tr>
+      <tr><td><code>STORAGE_BASE_PATH</code></td><td><code>image_generations</code></td><td>Base folder inside the bucket.</td></tr>
+      <tr><td><code>ID_PREFIX</code></td><td><code>img_</code></td><td>Prefix of each image identifier.</td></tr>
+      <tr><td><code>BASE_URL</code></td><td>Public URL of the bucket, ending in <code>/image_generations</code></td><td>Base of the URLs returned to the client.</td></tr>
+      <tr><td><code>DATABASE_NAME</code></td><td><code>GenAI</code></td><td>MongoDB database.</td></tr>
+      <tr><td><code>COLLECTION_NAME</code></td><td><code>ImageGeneration</code></td><td>MongoDB collection.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Default Gemini configuration</h2>
+  <p><code>DEFAULT_CONTENT_CONFIG</code> is the base that <a href="@/modules/image-generation/image-generator-service">Image Generator Service</a> merges with the configuration sent by the user.</p>
+  <table>
+    <thead><tr><th>Key</th><th>Default</th></tr></thead>
+    <tbody>
+      <tr><td><code>model</code></td><td><code>gemini-2.5-flash-image</code></td></tr>
+      <tr><td><code>temperature</code></td><td><code>0.75</code></td></tr>
+      <tr><td><code>top_p</code></td><td><code>0.85</code></td></tr>
+      <tr><td><code>max_output_tokens</code></td><td><code>1024</code></td></tr>
+      <tr><td><code>aspect_ratio</code></td><td><code>1:1</code></td></tr>
+      <tr><td><code>number_of_images</code></td><td><code>1</code></td></tr>
+    </tbody>
+  </table>
+  <p>Next to <code>max_output_tokens</code>, the code carries the annotation that <code>gemini-2.5-flash-image</code> uses 1024 or 2048 and <code>gemini-3-pro-image-preview</code> uses 4096 or 8192.</p>
+
+  <h2>Base prompt</h2>
+  <p><code>BASE_PROMPT</code> is the text, in English, that opens every prompt sent to Gemini. It defines the agent's role (visual creation and transformation) and the constraints: follow the user's request, apply the style of the reference images, preserve what was not asked to change, not add or remove elements without instruction, and prioritize consistency and quality.</p>
+
+  <h2>Helper types</h2>
+  <table>
+    <thead><tr><th>Type</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>GeneratedImage</code></td><td><code>dataclass</code> with <code>image_bytes</code> and <code>mime_type</code>. It is the internal format of the generation output.</td></tr>
+      <tr><td><code>Ratios</code></td><td>Aspect ratios: <code>R1_1</code>, <code>R3_4</code>, <code>R4_3</code>, <code>R9_16</code>, <code>R16_9</code>.</td></tr>
+      <tr><td><code>Resolutions</code></td><td>Resolutions: <code>K1</code> (<code>1K</code>) and <code>K2</code> (<code>2K</code>).</td></tr>
+      <tr><td><code>MimeTypes</code></td><td><code>PNG</code> (<code>image/png</code>) and <code>JPEG</code> (<code>image/jpeg</code>).</td></tr>
+      <tr><td><code>ModelSpecs</code></td><td>Groups <code>id</code>, <code>max_images</code>, <code>ratios</code>, <code>resolutions</code> and <code>mimes</code> of a model.</td></tr>
+      <tr><td><code>Imagen</code></td><td>Shortcuts for the models: <code>Imagen.GENERATE</code>, <code>Imagen.FAST</code> and <code>Imagen.ULTRA</code>.</td></tr>
+    </tbody>
+  </table>
+  <pre data-lang="python"><code>
+from src.image_generation.utils.config import Imagen
+
+# Access the identifier and the options of a model
+model_id = Imagen.GENERATE.id
+ratio = Imagen.GENERATE.ratios.R16_9
+size = Imagen.GENERATE.resolutions.K2
+</code></pre>
+  <div class="callout" data-kind="note"><p><code>Imagen.FAST</code> defines <code>Resolutions(K2=None)</code>, because this model only accepts <code>1K</code>.</p></div>
+
+  <h2>Intro sentences</h2>
+  <p><code>IMAGE_INTRO_SENTENCES</code> is a list of 50 short sentences in Portuguese ("Aqui está a imagem conforme solicitado." and variations) to introduce a delivered image.</p>
+</page>

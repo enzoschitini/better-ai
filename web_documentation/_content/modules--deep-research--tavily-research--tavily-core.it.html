@@ -1,0 +1,230 @@
+<page data-lead="Documentazione della classe TavilyDeepResearch, il wrapper dinamico sull'API di Tavily usato dal modulo Deep Research.">
+  <h2>Panoramica</h2>
+  <p>La classe <code>TavilyDeepResearch</code> è un <strong>wrapper dinamico</strong> sul <code>TavilyClient</code> della libreria <code>tavily</code>. Invece di definire una firma propria per ogni operazione, ogni metodo riceve un unico dizionario di configurazione (<code>params</code>) e lo inoltra, come argomenti nominati, al metodo corrispondente del client Tavily.</p>
+  <p>In pratica, questo dà la massima flessibilità: qualsiasi parametro accettato da Tavily può essere inviato senza modificare la classe. È il livello di accesso a Tavily usato dal <a href="@/modules/deep-research/tavily-research/context-builder">Context Builder</a>, che trasforma una ricerca sul web in un contesto pronto per i modelli di linguaggio.</p>
+
+  <h2>Flusso di Esecuzione</h2>
+  <ol>
+    <li><strong>Istanziazione</strong>: la classe riceve una chiave API opzionale. Se non viene indicata, viene letta dalla variabile d'ambiente <code>TAVILY_API_KEY</code>.</li>
+    <li><strong>Validazione della chiave</strong>: se non viene trovata nessuna chiave, viene sollevata una <code>RuntimeError</code>.</li>
+    <li><strong>Creazione del client</strong>: viene creato un <code>TavilyClient</code> con la chiave e salvato in <code>self.client</code>.</li>
+    <li><strong>Chiamata di un metodo</strong>: l'utente chiama un metodo (per esempio, <code>start_search</code>) passando un dizionario con i parametri dell'operazione.</li>
+    <li><strong>Inoltro dei parametri</strong>: il dizionario viene spacchettato con <code>**params</code> e inviato al metodo omonimo del client Tavily, il cui valore di ritorno viene restituito senza modifiche.</li>
+  </ol>
+
+  <h2>Tabella dei Metodi della Classe</h2>
+  <table>
+    <thead><tr><th>Metodo</th><th>Metodo del client Tavily</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>—</td><td>Risolve la chiave API e crea il client Tavily.</td></tr>
+      <tr><td><code>start_search</code></td><td><code>search</code></td><td>Ricerca generale.</td></tr>
+      <tr><td><code>get_context</code></td><td><code>get_search_context</code></td><td>Restituisce il contesto per gli LLM.</td></tr>
+      <tr><td><code>qna</code></td><td><code>qna_search</code></td><td>Domanda e risposta diretta.</td></tr>
+      <tr><td><code>extract_content</code></td><td><code>extract</code></td><td>Estrazione del contenuto da URL.</td></tr>
+      <tr><td><code>map_site</code></td><td><code>map</code></td><td>Mappa la struttura degli URL di un sito.</td></tr>
+      <tr><td><code>crawl_site</code></td><td><code>crawl</code></td><td>Esplora un sito in modo ricorsivo.</td></tr>
+      <tr><td><code>get_company</code></td><td><code>get_company_info</code></td><td>Dati firmografici di un'azienda.</td></tr>
+      <tr><td><code>start_research</code></td><td><code>research</code></td><td>Avvia l'agente autonomo di ricerca.</td></tr>
+      <tr><td><code>get_research_status</code></td><td><code>get_research</code></td><td>Consulta lo stato di una ricerca.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Variabili d'Ambiente</h2>
+  <ul>
+    <li><code>TAVILY_API_KEY</code>: chiave API di Tavily. Usata quando <code>api_key</code> non viene passata al costruttore. Il modulo chiama <code>load_dotenv()</code> quando viene importato, quindi la variabile può provenire anche da un file <code>.env</code>.</li>
+  </ul>
+
+  <h2>Punti Importanti dell'Architettura e Spunti</h2>
+  <ul>
+    <li><strong>Wrapper sottile e dinamico:</strong> la classe non valida né trasforma i parametri; si limita a inoltrarli. I nomi e i valori accettati sono quelli della libreria <code>tavily</code>.</li>
+    <li><strong>Ritorno senza elaborazione:</strong> i metodi restituiscono esattamente ciò che restituisce il client Tavily. Elaborazione, filtraggio e formattazione spettano a chi chiama, come il Context Builder.</li>
+    <li><strong>Errori:</strong> oltre alla verifica della chiave nel costruttore, la classe non cattura eccezioni. Qualsiasi errore di Tavily si propaga a chi ha chiamato.</li>
+    <li><strong>Argomento della ricerca autonoma:</strong> in <code>start_research</code>, l'argomento viene inviato nella chiave <code>input</code>, che è il nome usato dal metodo <code>research</code> della libreria originale.</li>
+  </ul>
+
+  <h2>Descrizione della Classe e dei Metodi</h2>
+
+  <h2>Classe <code>TavilyDeepResearch</code></h2>
+  <h3>Descrizione</h3>
+  <p>Wrapper dinamico per Tavily AI. Riceve dizionari di configurazione per la massima flessibilità.</p>
+  <h3>Argomenti del Costruttore</h3>
+  <table>
+    <thead><tr><th>Argomento</th><th>Tipo</th><th>Descrizione</th><th>Valore Predefinito</th></tr></thead>
+    <tbody>
+      <tr><td><code>api_key</code></td><td><code>str | None</code></td><td>Chiave API di Tavily. Se omessa, usa <code>TAVILY_API_KEY</code>.</td><td>None</td></tr>
+    </tbody>
+  </table>
+  <h3>Metodi</h3>
+
+  <h3>1. <code>__init__</code></h3>
+  <h3>Descrizione</h3>
+  <p>Risolve la chiave API (argomento o variabile d'ambiente) e crea il <code>TavilyClient</code>.</p>
+  <h3>Argomenti</h3>
+  <ul>
+    <li><code>api_key</code> (str | None): chiave API di Tavily.</li>
+  </ul>
+  <h3>Valori di ritorno</h3>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <h3>Raises</h3>
+  <ul>
+    <li><code>RuntimeError</code>: se la chiave non viene indicata e <code>TAVILY_API_KEY</code> non è definita.</li>
+  </ul>
+  <h3>Esempi</h3>
+  <pre data-lang="python"><code>
+# Usando a chave definida em TAVILY_API_KEY
+researcher = TavilyDeepResearch()
+
+# Informando a chave diretamente
+researcher = TavilyDeepResearch(api_key="tvly-...")
+</code></pre>
+
+  <h3>2. <code>start_search</code></h3>
+  <h3>Descrizione</h3>
+  <p>Ricerca generale. Si aspetta chiavi come <code>query</code>, <code>search_depth</code>, <code>max_results</code>, tra le altre accettate da Tavily.</p>
+  <h3>Argomenti</h3>
+  <ul>
+    <li><code>params</code> (Dict[str, Any]): parametri della ricerca, inoltrati a <code>client.search</code>.</li>
+  </ul>
+  <h3>Valori di ritorno</h3>
+  <ul>
+    <li><code>dict</code>: risposta della ricerca.</li>
+  </ul>
+  <h3>Esempi</h3>
+  <pre data-lang="python"><code>
+result = researcher.start_search({
+    "query": "Quais as principais tendências de IA em 2026?",
+    "search_depth": "advanced",
+    "max_results": 5,
+})
+</code></pre>
+
+  <h3>3. <code>get_context</code></h3>
+  <h3>Descrizione</h3>
+  <p>Restituisce il contesto per gli LLM. Si aspetta <code>query</code>, <code>max_tokens</code>, tra gli altri.</p>
+  <h3>Argomenti</h3>
+  <ul>
+    <li><code>params</code> (Dict[str, Any]): parametri inoltrati a <code>client.get_search_context</code>.</li>
+  </ul>
+  <h3>Valori di ritorno</h3>
+  <ul>
+    <li><code>str</code>: contesto da usare nei modelli di linguaggio.</li>
+  </ul>
+  <h3>Esempi</h3>
+  <pre data-lang="python"><code>
+context = researcher.get_context({"query": "tendências de IA em 2026", "max_tokens": 1500})
+</code></pre>
+
+  <h3>4. <code>qna</code></h3>
+  <h3>Descrizione</h3>
+  <p>Domanda e risposta diretta. Di solito richiede solo <code>{'query': 'sua pergunta'}</code>.</p>
+  <h3>Argomenti</h3>
+  <ul>
+    <li><code>params</code> (Dict[str, Any]): parametri inoltrati a <code>client.qna_search</code>.</li>
+  </ul>
+  <h3>Valori di ritorno</h3>
+  <ul>
+    <li><code>str</code>: risposta alla domanda.</li>
+  </ul>
+  <h3>Esempi</h3>
+  <pre data-lang="python"><code>
+answer = researcher.qna({"query": "Quem criou a linguagem Python?"})
+</code></pre>
+
+  <h3>5. <code>extract_content</code></h3>
+  <h3>Descrizione</h3>
+  <p>Estrazione del contenuto. Si aspetta <code>urls</code> (lista o stringa) e <code>format</code>.</p>
+  <h3>Argomenti</h3>
+  <ul>
+    <li><code>params</code> (Dict[str, Any]): parametri inoltrati a <code>client.extract</code>.</li>
+  </ul>
+  <h3>Valori di ritorno</h3>
+  <ul>
+    <li><code>dict</code>: contenuto estratto.</li>
+  </ul>
+  <h3>Esempi</h3>
+  <pre data-lang="python"><code>
+content = researcher.extract_content({"urls": ["https://example.com"], "format": "markdown"})
+</code></pre>
+
+  <h3>6. <code>map_site</code></h3>
+  <h3>Descrizione</h3>
+  <p>Mappa la struttura degli URL di un sito. Si aspetta <code>url</code> e, opzionalmente, <code>limit</code>.</p>
+  <h3>Argomenti</h3>
+  <ul>
+    <li><code>params</code> (Dict[str, Any]): parametri inoltrati a <code>client.map</code>.</li>
+  </ul>
+  <h3>Valori di ritorno</h3>
+  <ul>
+    <li><code>dict</code>: mappa degli URL del sito.</li>
+  </ul>
+  <h3>Esempi</h3>
+  <pre data-lang="python"><code>
+site_map = researcher.map_site({"url": "https://example.com", "limit": 50})
+</code></pre>
+
+  <h3>7. <code>crawl_site</code></h3>
+  <h3>Descrizione</h3>
+  <p>Esplora un sito in modo ricorsivo. Si aspetta <code>url</code>, <code>limit</code> e <code>max_depth</code>.</p>
+  <h3>Argomenti</h3>
+  <ul>
+    <li><code>params</code> (Dict[str, Any]): parametri inoltrati a <code>client.crawl</code>.</li>
+  </ul>
+  <h3>Valori di ritorno</h3>
+  <ul>
+    <li><code>dict</code>: risultato dell'esplorazione.</li>
+  </ul>
+  <h3>Esempi</h3>
+  <pre data-lang="python"><code>
+crawl = researcher.crawl_site({"url": "https://example.com", "limit": 20, "max_depth": 2})
+</code></pre>
+
+  <h3>8. <code>get_company</code></h3>
+  <h3>Descrizione</h3>
+  <p>Dati firmografici di un'azienda. Si aspetta <code>query</code>.</p>
+  <h3>Argomenti</h3>
+  <ul>
+    <li><code>params</code> (Dict[str, Any]): parametri inoltrati a <code>client.get_company_info</code>.</li>
+  </ul>
+  <h3>Valori di ritorno</h3>
+  <ul>
+    <li><code>List[dict]</code>: dati dell'azienda.</li>
+  </ul>
+  <h3>Esempi</h3>
+  <pre data-lang="python"><code>
+company = researcher.get_company({"query": "Tavily"})
+</code></pre>
+
+  <h3>9. <code>start_research</code></h3>
+  <h3>Descrizione</h3>
+  <p>Avvia l'agente autonomo di ricerca. Si aspetta <code>input</code> (l'argomento) e <code>model</code>.</p>
+  <h3>Argomenti</h3>
+  <ul>
+    <li><code>params</code> (Dict[str, Any]): parametri inoltrati a <code>client.research</code>. La libreria originale usa <code>input</code> per l'argomento.</li>
+  </ul>
+  <h3>Valori di ritorno</h3>
+  <ul>
+    <li><code>dict</code>: risposta della richiesta di ricerca.</li>
+  </ul>
+  <h3>Esempi</h3>
+  <pre data-lang="python"><code>
+research = researcher.start_research({"input": "Mercado de energia solar no Brasil", "model": "gpt-4o-mini"})
+</code></pre>
+
+  <h3>10. <code>get_research_status</code></h3>
+  <h3>Descrizione</h3>
+  <p>Consulta lo stato di una ricerca avviata con <code>start_research</code>. Si aspetta <code>request_id</code>.</p>
+  <h3>Argomenti</h3>
+  <ul>
+    <li><code>params</code> (Dict[str, Any]): parametri inoltrati a <code>client.get_research</code>.</li>
+  </ul>
+  <h3>Valori di ritorno</h3>
+  <ul>
+    <li><code>dict</code>: stato della ricerca.</li>
+  </ul>
+  <h3>Esempi</h3>
+  <pre data-lang="python"><code>
+status = researcher.get_research_status({"request_id": "..."})
+</code></pre>
+</page>

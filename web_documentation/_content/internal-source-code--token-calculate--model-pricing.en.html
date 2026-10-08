@@ -1,0 +1,131 @@
+<page data-lead="The ModelPricing class was created to represent a pricing model for token-based natural language models, allowing the cost associated with processing inputs and outputs in different language models to be calculated.">
+  <h2>Overview</h2>
+  <p>The <code>ModelPricing</code> class was created to represent a pricing model for token-based natural language models, allowing the cost associated with processing inputs and outputs in different language models to be calculated. It solves the problem of pricing the use of language models, converting costs per million tokens into unit costs, making financial estimation easier for API calls or model usage.</p>
+  <p>In practice, this class can be used to get the cost of a request involving a certain number of input and output tokens quickly and directly, just by providing the desired model. This is useful for anyone working with language processing APIs, allowing them to estimate spending and control token-based usage.</p>
+
+  <h2>Execution Flow</h2>
+  <ol>
+    <li>An instance of the <code>ModelPricing</code> class is initialized by passing the model name as a parameter. If the model is not supported, an exception is raised.</li>
+    <li>Through the <code>input_rate_per_token</code> and <code>output_rate_per_token</code> methods, the unit cost per input and output token is obtained, respectively, converting the values that are originally defined per million tokens.</li>
+    <li>These values are multiplied by the actual number of tokens processed to calculate the total input and output cost.</li>
+    <li>The final result is the estimated cost in dollars for using the model for the given number of tokens.</li>
+  </ol>
+
+  <h2>Class Methods Table</h2>
+  <table>
+    <thead><tr><th>Method</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Initializes the object with the chosen model, validating it.</td></tr>
+      <tr><td><code>input_rate_per_token</code></td><td>Returns the unit cost per input token.</td></tr>
+      <tr><td><code>output_rate_per_token</code></td><td>Returns the unit cost per output token.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Key Architecture Points and Insights</h2>
+  <ul>
+    <li>Pricing is stored in <code>COST_MODELS</code>, a dictionary that maps the model name to the costs per million tokens for input and output.</li>
+    <li>The calculation method converts the cost per million to a cost per token by dividing the value by 1,000,000, ensuring flexibility for different scales.</li>
+    <li>This approach encapsulates pricing in a class, making maintenance and extension to new models easier, just by adding entries to the dictionary.</li>
+    <li>By validating the model at initialization, later errors during calculation are avoided, ensuring safe use of the class.</li>
+  </ul>
+
+  <h2>Class and Methods Description</h2>
+
+  <h2><code>ModelPricing</code> Class</h2>
+  <h3>Description</h3>
+  <p>Class for calculating the cost of using language models, based on the number of input and output tokens and on the prices defined per model. It provides a simple interface to convert prices per million tokens into unit prices.</p>
+
+  <h3>Constructor Arguments</h3>
+  <table>
+    <thead><tr><th>Argument</th><th>Type</th><th>Description</th><th>Default Value</th></tr></thead>
+    <tbody>
+      <tr><td>model</td><td>str</td><td>The name of the model to calculate costs for.</td><td>None</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Methods</h3>
+
+  <h3>1. <code>__init__</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Initializes the class instance by checking that the given model exists in the base of supported prices, and assigns the corresponding prices.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>model (str): name of the language model used to look up prices.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>Returns no value.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>ValueError: If the given model is not listed among the supported models.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+model_pricing = ModelPricing("gpt-4.1-mini")
+</code></pre>
+
+  <h3>2. <code>input_rate_per_token</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Calculates and returns the cost per input token, based on the configured price per million tokens.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>float: cost in dollars per input token.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+input_cost_per_token = model_pricing.input_rate_per_token()
+# Retorna algo como 0.0000004 para "gpt-4.1-mini"
+</code></pre>
+
+  <h3>3. <code>output_rate_per_token</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Calculates and returns the cost per output token, based on the configured price per million tokens.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>float: cost in dollars per output token.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+output_cost_per_token = model_pricing.output_rate_per_token()
+# Retorna algo como 0.0000016 para "gpt-4.1-mini"
+</code></pre>
+
+  <h2>Complete Usage Example</h2>
+  <pre data-lang="python"><code>
+model = "gpt-4.1-mini"
+input_token_count = 946
+output_token_count = 255
+
+model_pricing = ModelPricing(model)
+input_cost = model_pricing.input_rate_per_token() * input_token_count
+output_cost = model_pricing.output_rate_per_token() * output_token_count
+
+print(f"Custo de entrada (USD): {input_cost:.6f}")
+print(f"Custo de saída (USD): {output_cost:.6f}")
+
+# python -m src.tokens_calculate.model_pricing
+</code></pre>
+  <p>Expected output:</p>
+  <pre><code>
+Custo de entrada (USD): 0.000378
+Custo de saída (USD): 0.000408
+</code></pre>
+  <p>This example illustrates how to calculate the total cost based on real token counts for a specific model, making financial control and cost analysis easier for calls to language models.</p>
+</page>

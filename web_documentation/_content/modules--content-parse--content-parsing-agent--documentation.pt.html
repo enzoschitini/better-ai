@@ -1,0 +1,151 @@
+<page data-lead="A classe ContentParsingAgent é um agente dedicado a processar dados estruturados de entrada e saída, gerando automaticamente esquemas Pydantic para validação desses dados, além de orquestrar a execução de modelos de linguagem configuráveis para processar o conteúdo conforme instruções fornecidas.">
+  <h2>Visão Geral</h2>
+  <p>A classe <code>ContentParsingAgent</code> é um agente dedicado a processar dados estruturados de entrada e saída, gerando automaticamente esquemas Pydantic para validação desses dados, além de orquestrar a execução de modelos de linguagem configuráveis para processar o conteúdo conforme instruções fornecidas. Isso permite uma integração fluida entre os dados utilizados e os modelos de inteligência artificial, garantindo consistência e validação rigorosa das informações.</p>
+  <p>Ela resolve o problema de converter dados brutos em modelos tipados e validados, além de facilitar a execução e o controle de modelos de linguagem com diferentes provedores, como OpenAI ou Groq, sem que o usuário precise lidar diretamente com detalhes internos desses modelos. Na prática, a classe pode ser usada para automatizar pipelines de processamento de dados textuais e geração de conteúdos baseados em regras e configurações definidas, tudo garantindo confiabilidade e rastreabilidade do fluxo.</p>
+
+  <h2>Fluxo de Execução</h2>
+  <ol>
+    <li><strong>Inicialização</strong>: O usuário cria uma instância do <code>ContentParsingAgent</code> passando os dados de entrada e saída como dicionários, além de configurações opcionais.</li>
+    <li><strong>Geração de Schemas</strong>: Internamente, a classe gera esquemas Pydantic dos dados de input, output e configuração para garantir a validade e tipagem dessas informações.</li>
+    <li><strong>Configuração do Modelo</strong>: Baseado na configuração, a classe seleciona um modelo de linguagem adequado (ex: OpenAI ou Groq).</li>
+    <li><strong>Execução do Agente</strong>: Com as instruções, descrição, configurações e schemas prontos, o agente executa o modelo sobre os dados de entrada.</li>
+    <li><strong>Formatação da Resposta</strong>: A resposta bruta do modelo é formatada para um dicionário estruturado contendo o conteúdo processado, metadados do modelo e métricas da execução, facilitando seu uso ou publicação.</li>
+  </ol>
+
+  <h2>Tabela de Métodos da Classe</h2>
+  <table>
+    <thead><tr><th>Método</th><th>Descrição</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Inicializa o agente com dados de entrada, saída e config.</td></tr>
+      <tr><td><code>get_schemas</code></td><td>Retorna os schemas Pydantic gerados para input, output e configuração.</td></tr>
+      <tr><td><code>run_agent</code></td><td>Executa o agente com o modelo configurado e retorna a resposta gerada.</td></tr>
+      <tr><td><code>format_response</code></td><td>Formata a resposta bruta do agente em um dicionário estruturado.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Variáveis de Ambiente</h2>
+  <ul>
+    <li>Nenhuma variável de ambiente específica é diretamente mencionada, porém a presença do <code>load_dotenv()</code> sugere que variáveis podem ser carregadas externamente para configurações (exemplo: chaves de API).</li>
+  </ul>
+
+  <h2>Pontos Importantes da Arquitetura e Insights</h2>
+  <ul>
+    <li><strong>Geração Automática de Schemas</strong>: Utiliza classes específicas (<code>JsonToPydantic</code>, <code>GeneratePydanticSchema</code>) para converter dados genéricos em modelos Pydantic, garantindo validação e tipagem consistente ao longo do fluxo.</li>
+    <li><strong>Flexibilidade no Modelo de Linguagem</strong>: Adota uma abordagem de fábrica simples para retornar diferentes implementações de modelo (OpenAI, Groq) com base nas configurações, o que facilita a extensão para outros provedores.</li>
+    <li><strong>Encapsulamento e Tratamento de Erros</strong>: Centraliza operações críticas (geração de schemas, execução do agente, formatação de resposta) com blocos try-except que convertem erros variados em exceções específicas, aumentando a robustez.</li>
+    <li><strong>Dependências Externas</strong>: Interage com classes externas para modelos (<code>Agent</code>, <code>OpenAIResponses</code>, <code>Groq</code>) e parsing (<code>Config</code>, <code>JsonToPydantic</code>, <code>GeneratePydanticSchema</code>), delegando responsabilidades e mantendo a classe focada no fluxo principal.</li>
+  </ul>
+
+  <h2>Descrição da Classe e Métodos</h2>
+
+  <h2>Classe <code>ContentParsingAgent</code></h2>
+
+  <h3>Descrição</h3>
+  <p>Esta classe funciona como um agente intermediário para processar dados estruturados, convertendo-os em modelos Pydantic validados e utilizando modelos de linguagem configurados para processar dados textuais conforme instruções específicas. Ela oferece um pipeline integrado que cobre desde a validação até a execução e formatação da resposta, facilitando integrações com sistemas de IA de maneira segura e modular.</p>
+
+  <h3>Argumentos do Construtor</h3>
+  <table>
+    <thead><tr><th>Argumento</th><th>Tipo</th><th>Descrição</th><th>Valor Padrão</th></tr></thead>
+    <tbody>
+      <tr><td>input_data</td><td>Dict[str, Any]</td><td>Dicionário com os dados de entrada a serem validados e processados.</td><td>Nenhum</td></tr>
+      <tr><td>output_data</td><td>Dict[str, Any]</td><td>Dicionário com os dados de saída esperados após o processamento.</td><td>Nenhum</td></tr>
+      <tr><td>config_data</td><td>Optional[Dict[str,Any]]</td><td>Dicionário opcional contendo configurações do agente.</td><td>None</td></tr>
+    </tbody>
+  </table>
+
+  <h3>1. <code>__init__</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Inicializa o agente com os dados de entrada, saída e configurações opcionais, e imediatamente gera os schemas Pydantic necessários para validar esses dados.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>input_data</code> (Dict[str, Any]): Dados de entrada a serem processados.</li>
+    <li><code>output_data</code> (Dict[str, Any]): Dados de saída desejados.</li>
+    <li><code>config_data</code> (Optional[Dict[str, Any]]): Configurações adicionais para o agente (opcional).</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>Não retorna valor.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nenhum explicitamente, mas pode levantar RuntimeError durante a geração dos schemas.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+agent = ContentParsingAgent(
+    input_data={"nome": "João", "idade": 30},
+    output_data={"resultado": "string"},
+    config_data={"model_provider": "openai", "model_id": "gpt-4"}
+)
+</code></pre>
+
+  <h3>2. <code>get_schemas</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Retorna os schemas Pydantic correspondentes aos dados de entrada, saída e configuração gerados pelo agente.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>dict: Dicionário com as chaves <code>"input"</code>, <code>"output"</code> e <code>"config"</code> contendo seus respectivos schemas.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+schemas = agent.get_schemas()
+print(schemas["input"])
+print(schemas["output"])
+print(schemas["config"])
+</code></pre>
+
+  <h3>3. <code>run_agent</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Executa o agente utilizando o modelo configurado e as instruções definidas para processar os dados de entrada, retornando a resposta gerada.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>Objeto da resposta gerada pelo modelo, geralmente contendo conteúdo e métricas.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>RuntimeError: Caso ocorra um erro durante a execução do modelo.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+response = agent.run_agent()
+print(response)
+</code></pre>
+
+  <h3>4. <code>format_response</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Formata a resposta bruta obtida na execução do agente em um dicionário estruturado, extraindo o conteúdo útil, metadados do modelo e estatísticas da execução para fácil consumo.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li><code>raw_response</code>: Objeto de resposta bruta retornado pelo agente.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>dict: Dicionário estruturado com as chaves <code>"content"</code> (dados processados) e <code>"metadata"</code> (informações do modelo e métricas).</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>RuntimeError: Caso ocorra erro durante a formatação da resposta.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+formatted = agent.format_response(response)
+print(formatted["content"])
+print(formatted["metadata"]["model"])
+print(formatted["metadata"]["tokens"])
+
+# python -m src.content_parse.content_parsing_agent
+</code></pre>
+  <p>Essa documentação apresenta o <code>ContentParsingAgent</code> de maneira didática e estruturada para facilitar o entendimento e uso por desenvolvedores, evidenciando os pontos chave do seu funcionamento e exemplos práticos de aplicação.</p>
+</page>

@@ -1,0 +1,189 @@
+<page data-lead="The PineconeClient class is an abstraction for managing the connection and operations with the Pinecone service, a high-performance vector storage and search solution.">
+  <h2>Overview</h2>
+  <p>The <code>PineconeClient</code> class is an abstraction for managing the connection and operations with the Pinecone service, a high-performance vector storage and search solution. It makes integrating with external APIs (Pinecone and OpenAI) easier, taking care of API key configuration, namespace definition and initialization of the embedding model to work with text vectors.</p>
+  <p>This class solves the problem of manual, repetitive configuration of these integrations, providing a unified and safe interface to create and manipulate vector stores using custom namespaces and specific embedding models. In practice, it can be used to store and search vectors generated from texts, which is fundamental for systems such as semantic search, similarity-based recommendation and NLP.</p>
+
+  <h2>Execution Flow</h2>
+  <ol>
+    <li><strong>Client Initialization:</strong>
+      <ul>
+        <li>When an instance of <code>PineconeClient</code> is created, the OpenAI and Pinecone API keys are loaded from the environment variables.</li>
+        <li><code>index_name</code>, <code>main_namespace</code> and <code>global_namespace</code> are defined either through the constructor parameters or through environment variables or the default configuration.</li>
+        <li>The embedding model to use is selected the same way.</li>
+        <li>It internally initializes the connection with Pinecone and the OpenAI embedding model.</li>
+      </ul>
+    </li>
+    <li><strong>Connection Setup:</strong>
+      <ul>
+        <li><code>_init_pinecone</code> creates the Pinecone client and instantiates the specified index.</li>
+        <li><code>_init_embeddings</code> initializes the OpenAI embedding model according to the configuration.</li>
+      </ul>
+    </li>
+    <li><strong>Namespace Resolution:</strong>
+      <ul>
+        <li>The <code>get_namespace()</code> method returns the namespace to use in operations, giving priority to a value passed to the method, if provided, or else the instance's main namespace.</li>
+      </ul>
+    </li>
+    <li><strong>Vector Store Creation:</strong>
+      <ul>
+        <li><code>create_vector_store()</code> builds the <code>PineconeVectorStore</code> instance, associating the appropriate index and embedding model with the desired namespace.</li>
+        <li>The returned object allows vector similarity operations.</li>
+      </ul>
+    </li>
+  </ol>
+
+  <h2>Class Methods Table</h2>
+  <table>
+    <thead><tr><th>Method</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Initializes the Pinecone client, loading settings and keys</td></tr>
+      <tr><td><code>_init_pinecone</code></td><td>Establishes the connection with Pinecone and instantiates the index</td></tr>
+      <tr><td><code>_init_embeddings</code></td><td>Initializes the OpenAI embedding model</td></tr>
+      <tr><td><code>get_namespace</code></td><td>Returns the namespace resolved for operations</td></tr>
+      <tr><td><code>create_vector_store</code></td><td>Returns a configured instance of PineconeVectorStore</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Environment Variables</h2>
+  <ul>
+    <li><code>OPENAI_API_KEY</code>: OpenAI API key for generating embeddings.</li>
+    <li><code>PINECONE_API_KEY</code>: Pinecone API key for accessing the service.</li>
+    <li><code>PINECONE_INDEX_NAME</code>: Name of the Pinecone index to use.</li>
+    <li><code>PINECONE_NAMESPACE</code>: Default main namespace for storing vectors.</li>
+    <li><code>PINECONE_GLOBAL_NAMESPACE</code>: Optional global namespace for shared vectors.</li>
+    <li><code>OPENAI_EMBEDDING_MODEL</code>: Name of the OpenAI embedding model to use.</li>
+  </ul>
+
+  <h2>Key Architecture Points and Insights</h2>
+  <ul>
+    <li>The class uses encapsulation to hide the initialization details of Pinecone and of the embedding model.</li>
+    <li>Using environment variables with a fallback to constructor parameters increases flexibility and reuse.</li>
+    <li>The "dependency injection" pattern is present in the creation of the vector store, allowing embedding and namespace to be overridden in the call.</li>
+    <li>Integration with specialized external modules (<code>langchain_openai</code>, <code>langchain_pinecone</code>), showing the use of composition.</li>
+    <li>The class uses a custom tracing system (<code>ApplicationTracing</code>) to ease debugging and monitoring, producing detailed logs at every step.</li>
+    <li>Clear separation between configuration, initialization and vector store creation, favoring maintenance and testing.</li>
+  </ul>
+
+  <h2>Class and Methods Description</h2>
+
+  <h3>Class <code>PineconeClient</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Class for controlling and easing the connection with the Pinecone service and for managing the stored vectors. It integrates the Pinecone and OpenAI APIs to create a custom vector base, which can be queried or updated from the embedding models provided. It allows namespaces and models to be configured flexibly, simplifying vector operations in applications.</p>
+  <p><strong>Constructor Arguments</strong></p>
+  <table>
+    <thead><tr><th>Argument</th><th>Type</th><th>Description</th><th>Default Value</th></tr></thead>
+    <tbody>
+      <tr><td><code>index_name</code></td><td><code>Optional[str]</code></td><td>Name of the Pinecone index to use</td><td><code>None</code></td></tr>
+      <tr><td><code>main_namespace</code></td><td><code>Optional[str]</code></td><td>Primary namespace for storing vectors</td><td><code>None</code></td></tr>
+      <tr><td><code>global_namespace</code></td><td><code>Optional[str]</code></td><td>Optional global namespace for shared vectors</td><td><code>None</code></td></tr>
+      <tr><td><code>embedding_model</code></td><td><code>Optional[str]</code></td><td>Name of the OpenAI model for embeddings</td><td><code>None</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>1. <code>__init__</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Initializes the Pinecone client by loading the API keys and settings, defining the namespaces and the embedding model, and establishing connections.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>index_name</code> (Optional[str]): Pinecone index name (optional)</li>
+    <li><code>main_namespace</code> (Optional[str]): primary namespace (optional)</li>
+    <li><code>global_namespace</code> (Optional[str]): global namespace (optional)</li>
+    <li><code>embedding_model</code> (Optional[str]): OpenAI model name (optional)</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>Does not return a value.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>EnvironmentError</code>: if the API keys are not defined.</li>
+    <li><code>ValueError</code>: if <code>index_name</code> is not defined.</li>
+    <li><code>RuntimeError</code>: for general initialization failures.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+client = PineconeClient(index_name="meu_indice", main_namespace="app_namespace")
+</code></pre>
+
+  <h3>2. <code>_init_pinecone</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Establishes the connection with the Pinecone service and instantiates the index with the configured name.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>Does not return a value.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+client._init_pinecone()
+# Internamente conecta ao Pinecone e configura o index para operações
+</code></pre>
+
+  <h3>3. <code>_init_embeddings</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Initializes the OpenAI model for generating embeddings, optionally using a custom model name.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>model_name</code> (Optional[str]): embedding model name (optional)</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>Does not return a value.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+client._init_embeddings("text-embedding-ada-002")
+# Atualiza o modelo de embedding usado pelo cliente
+</code></pre>
+
+  <h3>4. <code>get_namespace</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Returns the namespace to use for operations, giving priority to the argument passed, or else returning the configured main one.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>namespace</code> (Optional[str]): optional replacement namespace.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>str</code>: namespace resolved for use.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+ns = client.get_namespace()  # retorna o main_namespace configurado
+ns2 = client.get_namespace("namespace_alternativo")  # retorna "namespace_alternativo"
+</code></pre>
+
+  <h3>5. <code>create_vector_store</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Creates and returns a <code>PineconeVectorStore</code> instance configured with the selected index, embedding and namespace.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li><code>namespace</code> (Optional[str]): namespace for the store (optional).</li>
+    <li><code>embedding_model</code> (Optional[OpenAIEmbeddings]): embedding model instance (optional).</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li><code>PineconeVectorStore</code>: object for manipulating the vector storage.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <pre data-lang="python"><code>
+vector_store = client.create_vector_store()
+# Usa main_namespace e modelo configurado
+
+vector_store_custom = client.create_vector_store(namespace="ns_custom")
+# Cria store com namespace customizado
+</code></pre>
+
+  <h2>Usage</h2>
+  <pre data-lang="python"><code>
+if __name__ == "__main__":
+    client = PineconeClient()
+    vector_store = client.create_vector_store()
+    print("Pinecone Client initialized and VectorStore created successfully.")
+
+# python -m src.vector_store.pinecone.client
+</code></pre>
+</page>

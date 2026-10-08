@@ -1,0 +1,159 @@
+<page data-lead="La classe BCBExchangeRateService offre un servizio per consultare il cambio del dollaro rispetto al real direttamente dall'API ufficiale della Banca Centrale del Brasile (BCB).">
+  <h2>Panoramica</h2>
+  <p>La classe <code>BCBExchangeRateService</code> offre un servizio per consultare il cambio del dollaro rispetto al real direttamente dall'API ufficiale della Banca Centrale del Brasile (BCB). Questo servizio è utile per lo sviluppo di applicazioni finanziarie, sistemi di cambio, analisi economica e situazioni in cui è necessario ottenere tassi di cambio aggiornati in modo automatico e programmatico.</p>
+  <p>La funzionalità principale della classe è permettere la ricerca del tasso di cambio del dollaro per date specifiche, oltre a facilitare il recupero della migliore quotazione disponibile entro un intervallo di giorni passati, a partire dalla data odierna. Questo garantisce flessibilità nel rilevare valori anche quando non c'è una quotazione nei giorni recenti, ad esempio nei fine settimana o nei giorni festivi.</p>
+  <p>In pratica, uno sviluppatore può istanziare la classe e chiamare il metodo <code>get_latest_rate</code>, definendo quanti giorni precedenti considerare nella ricerca della quotazione. Il metodo restituisce il miglior tasso e la data corrispondente, facilitando integrazioni rapide con dati ufficiali.</p>
+
+  <h2>Flusso di Esecuzione</h2>
+  <ol>
+    <li><strong>Inizializzazione:</strong> L'utente crea un'istanza di <code>BCBExchangeRateService</code>, potendo definire un tempo limite (timeout) per le richieste HTTP (predefinito 10 secondi).</li>
+    <li><strong>Chiamata del metodo <code>get_latest_rate</code>:</strong> Questo metodo riceve un parametro opzionale <code>max_days_back</code> che definisce il numero di giorni precedenti in cui cercare la quotazione.</li>
+    <li><strong>Ricerca iterativa:</strong> Per ogni giorno, partendo da quello attuale e andando a ritroso fino a <code>max_days_back</code>, il metodo effettua una richiesta GET all'API del BCB usando il formato di URL costruito per quella data.</li>
+    <li><strong>Elaborazione della risposta:</strong> Se l'API restituisce dati validi, il metodo estrae la quotazione di vendita e la data di quella quotazione.</li>
+    <li><strong>Confronto e selezione:</strong> A ogni quotazione ottenuta, verifica se è la migliore (la più recente) trovata fino a quel momento e memorizza questa informazione.</li>
+    <li><strong>Ritardo tra le richieste:</strong> C'è un piccolo delay di 0,2 secondi tra un tentativo e l'altro per non sovraccaricare l'API.</li>
+    <li><strong>Restituzione del risultato:</strong> Dopo aver percorso i giorni, restituisce un dizionario con il valore della migliore quotazione trovata e la rispettiva data. Se si verifica un errore, restituisce valori <code>None</code>.</li>
+    <li><strong>Log:</strong> Il processo stampa sulla console i dettagli di tentativi, successi, errori e risultato finale.</li>
+  </ol>
+
+  <h2>Tabella dei Metodi della Classe</h2>
+  <table>
+    <thead><tr><th>Metodo</th><th>Descrizione</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Inizializza l'istanza definendo il timeout delle richieste.</td></tr>
+      <tr><td><code>_build_url</code></td><td>Costruisce l'URL dell'API per una data specifica.</td></tr>
+      <tr><td><code>_fetch_rate_for_date</code></td><td>Esegue la richiesta HTTP per ottenere la quotazione di una data.</td></tr>
+      <tr><td><code>get_latest_rate</code></td><td>Cerca la migliore quotazione disponibile entro l'intervallo definito.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Variabili d'Ambiente</h2>
+  <p>Non ci sono variabili d'ambiente utilizzate per il funzionamento di questa classe.</p>
+
+  <h2>Punti Importanti dell'Architettura e Insights</h2>
+  <ul>
+    <li><strong>Incapsulamento:</strong> La classe separa esplicitamente la costruzione dell'URL (<code>_build_url</code>) e l'ottenimento dei dati (<code>_fetch_rate_for_date</code>) come metodi privati, mantenendo pulita l'API pubblica.</li>
+    <li><strong>Robustezza:</strong> Il codice gestisce le eccezioni in vari punti per evitare che errori nelle richieste compromettano l'operazione complessiva.</li>
+    <li><strong>Rispetto dell'API:</strong> L'uso di delay tra le richieste evita di sovraccaricare il servizio del BCB.</li>
+    <li><strong>Dipendenza esterna:</strong> Utilizza la libreria <code>requests</code> per la comunicazione HTTP, garantendo semplicità e robustezza nelle chiamate.</li>
+    <li><strong>Buona pratica temporale:</strong> Usa date in UTC e formatta la data secondo lo standard atteso dall'API.</li>
+    <li><strong>Valore di ritorno strutturato:</strong> Garantisce la consumabilità restituendo un dizionario con <code>rate</code> e <code>date</code>, facilitando le integrazioni.</li>
+  </ul>
+
+  <h2>Descrizione della Classe e dei Metodi</h2>
+
+  <h2>Classe <code>BCBExchangeRateService</code></h2>
+  <h3>Descrizione</h3>
+  <p>Questa classe è responsabile della consultazione dei cambi del dollaro statunitense rispetto al real brasiliano direttamente dall'API ufficiale della Banca Centrale del Brasile. Permette sia di consultare i valori per date specifiche sia di cercare la migliore quotazione all'interno di un periodo, facilitando le applicazioni finanziarie che necessitano di dati aggiornati e affidabili.</p>
+
+  <h3>Argomenti del Costruttore</h3>
+  <table>
+    <thead><tr><th>Argomento</th><th>Tipo</th><th>Descrizione</th><th>Valore Predefinito</th></tr></thead>
+    <tbody>
+      <tr><td><code>timeout</code></td><td>int</td><td>Tempo massimo in secondi per le richieste HTTP</td><td>10</td></tr>
+    </tbody>
+  </table>
+
+  <h3>1. <code>__init__</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Inizializza un'istanza del servizio definendo il tempo massimo per le risposte delle richieste HTTP effettuate all'API del BCB.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>timeout</code> (int): tempo limite in secondi per le richieste.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li>Non restituisce alcun valore.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nessuna.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+service = BCBExchangeRateService(timeout=5)  # Timeout menor para conexões lentas
+</code></pre>
+
+  <h3>2. <code>_build_url</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Metodo privato che costruisce l'URL di consultazione dell'API della Banca Centrale per una data specifica, formattando la data nello standard richiesto.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>date</code> (datetime): data che verrà consultata nell'API.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>str</code>: URL formattato per eseguire la consultazione.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nessuna.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+from datetime import datetime
+service = BCBExchangeRateService()
+url = service._build_url(datetime(2024, 6, 10))
+print(url)
+# Exemplo de saída:
+# https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarDia(dataCotacao=@dataCotacao)?@dataCotacao='06-10-2024'&amp;$top=1&amp;$format=json
+</code></pre>
+
+  <h3>3. <code>_fetch_rate_for_date</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Metodo privato che tenta di ottenere la quotazione del dollaro per una data specifica utilizzando l'API della Banca Centrale. Restituisce la quotazione di vendita e la data della quotazione in caso di successo.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>date</code> (datetime): data per la quale verrà consultata la quotazione.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>(float, datetime)</code>: una tupla contenente il valore della quotazione (float) e la data della quotazione (datetime).</li>
+    <li><code>(None, None)</code>: nel caso in cui non sia possibile ottenere la quotazione per errore o assenza di dati.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nessuna in modo esplicito, ma le possibili eccezioni vengono catturate internamente.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+service = BCBExchangeRateService()
+rate, date = service._fetch_rate_for_date(datetime(2024, 6, 10))
+print(rate, date)
+# Saída esperada (se houver cotação nessa data):
+# 5.0892 2024-06-10 00:00:00
+</code></pre>
+
+  <h3>4. <code>get_latest_rate</code></h3>
+  <p><strong>Descrizione</strong></p>
+  <p>Cerca la migliore quotazione del dollaro rispetto al real disponibile negli ultimi <code>max_days_back</code> giorni a partire dal momento della chiamata, restituendo il valore e la data della quotazione più recente trovata.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>max_days_back</code> (int): numero di giorni precedenti in cui cercare la quotazione (default: 5).</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>dict</code>: con le chiavi:
+      <ul>
+        <li><code>rate</code> (float o None): migliore quotazione trovata.</li>
+        <li><code>date</code> (datetime o None): data di tale quotazione.</li>
+      </ul>
+    </li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nessuna in modo esplicito, gli errori vengono gestiti internamente.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <pre data-lang="python"><code>
+service = BCBExchangeRateService()
+result = service.get_latest_rate(3)
+print(f"Cotação: {result['rate']} em {result['date']}")
+# Saída possível:
+# Cotação: 5.0892 em 2024-06-10 00:00:00
+
+# python -m src.tokens_calculate.bcb
+</code></pre>
+
+  <p>Dunque, la classe <code>BCBExchangeRateService</code> è una soluzione pratica e affidabile per ottenere le quotazioni ufficiali del dollaro commerciale, utile per qualsiasi sistema che necessiti di un accesso facilitato e programmatico a tali dati.</p>
+</page>

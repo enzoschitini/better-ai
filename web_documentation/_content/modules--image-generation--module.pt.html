@@ -1,0 +1,61 @@
+<page data-lead="Módulo de ponta a ponta da geração de imagens: recebe o pedido da API, gera as imagens com o Gemini, grava o registro no MongoDB e os arquivos no Supabase Storage, e devolve as URLs.">
+  <div class="callout" data-kind="note"><p><strong>Fonte:</strong> <code>src/image_generation/module.py</code>. O notebook original desta página estava vazio; o conteúdo foi escrito a partir do código.</p></div>
+
+  <h2>Visão geral</h2>
+  <p>O arquivo define duas classes. <code>RequestProcessor</code> valida o que chega da requisição (configuração em JSON e imagens enviadas). <code>ImageGenerate</code> executa o fluxo de geração de imagens usando <code>ImageGeneratorService</code> e <code>PayloadBuilder</code>, e persiste o resultado.</p>
+  <p>O endpoint de geração em <code>src/web_services_network/routes/davinci.py</code> usa as duas classes.</p>
+
+  <h2>RequestProcessor</h2>
+  <p>Recebe a configuração como texto JSON (<code>config</code>) e a lista de arquivos (<code>files</code>), ambos opcionais. O método assíncrono <code>process()</code> devolve um dicionário com as chaves <code>config</code> (dicionário) e <code>image_bytes</code> (lista de bytes).</p>
+  <table>
+    <thead><tr><th>Etapa</th><th>Regra</th><th>Erro</th></tr></thead>
+    <tbody>
+      <tr><td><code>_process_config</code></td><td>Converte o texto de <code>config</code> com <code>json.loads</code>. Sem <code>config</code>, nada é feito.</td><td><code>HTTPException</code> com status <code>400</code> quando o JSON é inválido.</td></tr>
+      <tr><td><code>_process_files</code></td><td>Aceita apenas <code>image/jpeg</code> e <code>image/png</code>, com limite de 10 MB (<code>max_mb=10</code>), via <code>FilesPayloadBuilder</code>.</td><td><code>RuntimeError</code> com a mensagem "Erro ao carregar as imagens".</td></tr>
+    </tbody>
+  </table>
+
+  <h2>ImageGenerate</h2>
+  <p>O construtor recebe <code>user_input</code> (obrigatório), <code>instructions</code>, <code>config</code> e <code>image_bytes</code>. Os métodos são:</p>
+  <table>
+    <thead><tr><th>Método</th><th>Descrição</th></tr></thead>
+    <tbody>
+      <tr><td><code>generate</code></td><td>Cria um <code>ImageGeneratorService</code>, monta as partes e a configuração, chama o modelo e faz o parse das respostas.</td></tr>
+      <tr><td><code>build_payloads</code></td><td>Usa <code>PayloadBuilder</code> com um <code>jobId</code> gerado por <code>IDGenerator.timestamp(prefix="job_")</code> e devolve <code>mongo_payload</code>, <code>storage_payload</code> e <code>response_payload</code>.</td></tr>
+      <tr><td><code>save_to_mongoDB</code></td><td>Grava o <code>mongo_payload</code> em <code>DATABASE_NAME</code> / <code>COLLECTION_NAME</code> com <code>DocumentStore</code>.</td></tr>
+      <tr><td><code>save_to_supabase</code></td><td>Envia cada imagem do <code>storage_payload</code> ao bucket com <code>StorageRepository.upload_to_supabase</code>, usando o <code>id</code> da imagem como nome do arquivo.</td></tr>
+      <tr><td><code>save_results_local</code></td><td>Salva as imagens geradas na pasta local <code>img_test</code>, para testes. Não faz parte do <code>runner</code>.</td></tr>
+      <tr><td><code>runner</code></td><td>Executa o fluxo completo e devolve o <code>response_payload</code>.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Fluxo do runner</h3>
+  <ol>
+    <li><code>generate</code>: gera as imagens e agrega as respostas.</li>
+    <li><code>build_payloads</code>: separa o resultado em três payloads.</li>
+    <li><code>save_to_mongoDB</code>: persiste o registro (sem os bytes das imagens).</li>
+    <li><code>save_to_supabase</code>: persiste os arquivos de imagem.</li>
+    <li>Devolve o <code>response_payload</code>, com <code>text_response</code> e a lista de URLs em <code>images</code>.</li>
+  </ol>
+
+  <h2>Exemplo de uso</h2>
+  <pre data-lang="python"><code>
+from src.image_generation.module import ImageGenerate
+
+# Cria o gerador com o prompt e a configuração opcional
+generator = ImageGenerate(
+    user_input="Uma borboleta no estilo de Da Vinci",
+    instructions=None,
+    config={"aspect_ratio": "16:9", "number_of_images": 2},
+    image_bytes=None,
+)
+
+# Executa o fluxo completo e recebe as URLs
+response = generator.runner()
+print(response["images"])
+</code></pre>
+
+  <h2>Observações</h2>
+  <div class="callout" data-kind="warn"><p><strong>Erros genéricos.</strong> <code>build_payloads</code>, <code>save_to_mongoDB</code> e <code>save_to_supabase</code> capturam qualquer exceção e levantam um <code>RuntimeError</code> com mensagem fixa, sem encadear a causa original.</p></div>
+  <p>Os módulos de apoio estão documentados em <a href="@/modules/image-generation/image-generator-service">Image Generator Service</a>, <a href="@/modules/image-generation/utils/payload-builder">Payload Builder</a> e <a href="@/modules/image-generation/utils/config">Config</a>.</p>
+</page>

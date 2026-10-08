@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Use | BetterAI Docs</title>
+<meta name="description" content="Módulo para gerar embeddings de texto localmente com uma API fluente (encadeável), troca dinâmica de provedor e recuperação por similaridade.">
+<link rel="canonical" href="pages/pt/internal-source-code/vector-store/local-dynamic-embedding/use.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../../../../_design-system/css/tokens.css?v=7f43b250">
+<link rel="stylesheet" href="../../../../../_design-system/css/base.css?v=4a698b89">
+<link rel="stylesheet" href="../../../../../_design-system/css/layout.css?v=503e806e">
+<link rel="stylesheet" href="../../../../../_design-system/css/content.css?v=cfc5f8ef">
+<link rel="stylesheet" href="../../../../../_design-system/css/search.css?v=1ecf3252">
+<link rel="stylesheet" href="../../../../../_design-system/css/responsive.css?v=6efeec66">
+</head>
+<body>
+<a class="skip" href="#main">Ir para o conteúdo</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Criado por Enzo Schitini. Convido você a se conectar comigo no LinkedIn.</a></span>
+    <button type="button" aria-label="Fechar aviso"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../../pages/pt/index.html">
+        <img src="../../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Buscar na documentação">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Buscar...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="../../../../../pages/pt/getting-started/quickstart.html">Quickstart<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Idioma"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>PT</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="true"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="false"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="false"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Alternar tema claro e escuro"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Áreas da documentação"><a class="tab" href="../../../../../pages/pt/index.html">Visão geral</a><a class="tab" href="../../../../../pages/pt/getting-started/index.html">Introduction</a><a class="tab" href="../../../../../pages/pt/agents/index.html">Agents</a><a class="tab" href="../../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../../pages/pt/api/index.html">API</a><a class="tab" href="../../../../../pages/pt/modules/index.html">Modules</a><a class="tab" href="../../../../../pages/pt/internal-source-code/index.html" aria-current="page">Internal Services</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Internal Services</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Use</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Navegação da documentação">
+    <nav class="side"><div class="side-areas"><a href="../../../../../pages/pt/index.html">Visão geral</a><a href="../../../../../pages/pt/getting-started/index.html">Introduction</a><a href="../../../../../pages/pt/agents/index.html">Agents</a><a href="../../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../../pages/pt/api/index.html">API</a><a href="../../../../../pages/pt/modules/index.html">Modules</a><a href="../../../../../pages/pt/internal-source-code/index.html" aria-current="page">Internal Services</a></div><a class="side-link" href="../../../../../pages/pt/internal-source-code/index.html"><span>Visão geral</span></a><div class="side-group"><p class="side-title">Application Tracing</p><ul><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/application-tracing/logger-engine.html"><span>Logger Engine</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/application-tracing/payload-builder.html"><span>Payload Builder</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/application-tracing/tracing-core.html"><span>Tracing Core</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/application-tracing/use.html"><span>Use</span></a></li></ul></div><div class="side-group"><p class="side-title">Database</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>No SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/database/no-sql/local-manage.html"><span>Local Manage</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/database/no-sql/mongo-manager.html"><span>Mongo Manager</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/database/no-sql/router.html"><span>Router</span></a></li></ul></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/database/sql/supabase-database.html"><span>Supabase Database</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Storage</p><ul><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/storage/storage-menage-repository.html"><span>Storage Menage Repository</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Supabase</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/storage/supabase/storage-menager.html"><span>Storage Menager</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Token Calculate</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Exchange Rate</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/token-calculate/exchange-rate/bcb-exchange-rate-service.html"><span>BCB Exchange Rate Service</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/token-calculate/exchange-rate/exchange-rate-service.html"><span>Exchange Rate Service</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/token-calculate/model-pricing.html"><span>Model Pricing</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/token-calculate/token-counter.html"><span>Token Counter</span></a></li></ul></div><div class="side-group"><p class="side-title">Utils</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Load Request File</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/utils/load-request-file/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/utils/load-request-file/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/utils/loader-files.html"><span>Loader Files</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/utils/unique-id-factory.html"><span>Unique ID Factory</span></a></li></ul></div><div class="side-group"><p class="side-title">Vector Store</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="true"><span>Local Dynamic Embedding</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub"><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/vector-store/local-dynamic-embedding/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/vector-store/local-dynamic-embedding/use.html" aria-current="page"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/vector-store/pinecone-client.html"><span>Pinecone Client</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/vector-store/pinecone-embedding.html"><span>Pinecone Embedding</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/vector-store/pinecone-retriever.html"><span>Pinecone Retriever</span></a></li><li><a class="side-link" href="../../../../../pages/pt/internal-source-code/vector-store/retrieval-manager.html"><span>Retrieval Manager</span></a></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Vector Store / Local Dynamic Embedding</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Use</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copiar página</span></button>
+            </div>
+          </div>
+          <p class="lead">Módulo para gerar embeddings de texto localmente com uma API fluente (encadeável), troca dinâmica de provedor e recuperação por similaridade.</p>
+          <details class="toc-inline"><summary>Nesta página</summary><ul></ul></details>
+        </header>
+        <div class="prose"><p>Módulo para gerar <em>embeddings</em> de texto localmente com uma <strong>API fluente</strong> (encadeável), troca dinâmica de provedor e recuperação por similaridade.</p>
+  <p>O fluxo típico é: <strong>configurar → processar texto → acessar chunks → recuperar por similaridade → exportar</strong>.</p>
+
+  <h2 id="como-executar"><a class="anchor" href="#como-executar" aria-label="Link para esta seção">#</a>Como executar</h2>
+  <p>O módulo usa <em>imports</em> relativos (<code>EmbeddingFactory</code>), então precisa ser rodado como módulo, com a flag <code>-m</code>:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">python</span> <span class="t-n">-m</span> src.embedding.modules.local_embedding</code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>Rodar o arquivo direto (<code>python arquivo.py</code>) quebra por causa do import relativo.</p>
+
+  <h2 id="inicio-rapido"><a class="anchor" href="#inicio-rapido" aria-label="Link para esta seção">#</a>Início rápido</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> src.embedding.modules.local_embedding.module <span class="t-k">import</span> (
+    LocalDynamicEmbedding,
+    EmbeddingFactory,
+)
+
+<span class="t-c"># Monta o pipeline (encadeando as configurações)</span>
+pipeline = (
+    <span class="t-f">LocalDynamicEmbedding</span>()
+    .<span class="t-f">with_fake_embeddings</span>(size=<span class="t-n">384</span>)          <span class="t-c"># embeddings falsos p/ testes</span>
+    .<span class="t-f">with_splitter</span>(chunk_size=<span class="t-n">120</span>, chunk_overlap=<span class="t-n">20</span>)
+    .<span class="t-f">with_top_k</span>(<span class="t-n">3</span>)
+)
+
+<span class="t-c"># Processa um texto e recebe a quantidade de chunks gerados</span>
+qtd = pipeline.<span class="t-f">process_text</span>(<span class="t-s">&quot;seu texto...&quot;</span>, metadata={<span class="t-s">&quot;fonte&quot;</span>: <span class="t-s">&quot;exemplo&quot;</span>})
+
+<span class="t-c"># Recupera os trechos mais similares a uma consulta</span>
+resultados = pipeline.<span class="t-f">retrieve</span>(<span class="t-s">&quot;sua pergunta?&quot;</span>, include_embedding=<span class="t-n">True</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="provedores-disponiveis"><a class="anchor" href="#provedores-disponiveis" aria-label="Link para esta seção">#</a>Provedores disponíveis</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>EmbeddingFactory.<span class="t-f">available</span>()   <span class="t-c"># -&gt; lista os provedores registrados</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>Use para descobrir quais backends de embedding estão instalados/registrados no ambiente.</p>
+
+  <h2 id="construindo-o-pipeline-api-fluente"><a class="anchor" href="#construindo-o-pipeline-api-fluente" aria-label="Link para esta seção">#</a>Construindo o pipeline (API fluente)</h2>
+  <p>Cada método <code>with_*</code> retorna a própria instância, permitindo encadeamento. Se você <strong>não</strong> definir um provedor de embeddings, a classe cai no <code>fake</code> automaticamente.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Método</th><th>Efeito</th><th>Parâmetros</th></tr></thead>
+    <tbody>
+      <tr><td><code>.with_fake_embeddings(size=384)</code></td><td>Usa embeddings falsos (vetores de dimensão <code>size</code>) — ideal para testes sem dependências externas</td><td><code>size</code>: dimensão do vetor</td></tr>
+      <tr><td><code>.with_splitter(chunk_size, chunk_overlap)</code></td><td>Configura como o texto é dividido em chunks</td><td><code>chunk_size</code>: tamanho do chunk; <code>chunk_overlap</code>: sobreposição entre chunks</td></tr>
+      <tr><td><code>.with_top_k(k)</code></td><td>Define o número padrão de resultados retornados na recuperação</td><td><code>k</code>: quantidade de resultados</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="construtores-de-fabrica-troca-de-provedor-em-1-linha"><a class="anchor" href="#construtores-de-fabrica-troca-de-provedor-em-1-linha" aria-label="Link para esta seção">#</a>Construtores de fábrica (troca de provedor em 1 linha)</h3>
+  <p>Para usar um provedor real, existem construtores alternativos, por exemplo:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>pipeline_openai = LocalDynamicEmbedding.<span class="t-f">from_openai_embeddings</span>(
+    model=<span class="t-s">&quot;text-embedding-3-large&quot;</span>,
+    chunk_size=<span class="t-n">3000</span>,
+    chunk_overlap=<span class="t-n">300</span>,
+    top_k=<span class="t-n">5</span>,
+)</code></pre><button class="copy floating" type="button"></button></div></div>
+  <div class="callout" data-kind="info"><p>Requer as dependências do provedor (ex.: OpenAI) instaladas e configuradas.</p></div>
+
+  <h2 id="processando-texto"><a class="anchor" href="#processando-texto" aria-label="Link para esta seção">#</a>Processando texto</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>qtd = pipeline.<span class="t-f">process_text</span>(texto, metadata={<span class="t-s">&quot;fonte&quot;</span>: <span class="t-s">&quot;apostila_energia&quot;</span>})</code></pre><button class="copy floating" type="button"></button></div></div>
+  <ul>
+    <li><strong>Retorno:</strong> número de chunks gerados <strong>nesta chamada</strong> (<code>int</code>).</li>
+    <li><strong><code>metadata</code></strong> (opcional): dicionário anexado a cada chunk gerado a partir desse texto.</li>
+    <li>Pode ser chamado várias vezes; os chunks se acumulam.</li>
+  </ul>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>pipeline.total_chunks   <span class="t-c"># total acumulado de chunks em todas as chamadas</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="acessando-os-chunks"><a class="anchor" href="#acessando-os-chunks" aria-label="Link para esta seção">#</a>Acessando os chunks</h2>
+  <p><code>pipeline.chunks</code> é a lista de objetos chunk. Cada chunk expõe:</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Atributo</th><th>Descrição</th></tr></thead>
+    <tbody>
+      <tr><td><code>chunk.index</code></td><td>Índice do chunk</td></tr>
+      <tr><td><code>chunk.content</code></td><td>Texto do chunk</td></tr>
+      <tr><td><code>chunk.length</code></td><td>Comprimento do texto</td></tr>
+      <tr><td><code>chunk.dim</code></td><td>Dimensão do vetor de embedding</td></tr>
+      <tr><td><code>chunk.metadata</code></td><td>Metadados associados</td></tr>
+      <tr><td><code>chunk.embedding</code></td><td>Vetor de embedding (lista de floats)</td></tr>
+    </tbody>
+  </table></div>
+  <p>Exemplo:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">for</span> chunk <span class="t-k">in</span> pipeline.chunks:
+    preview = chunk.content[:<span class="t-n">60</span>].<span class="t-f">replace</span>(<span class="t-s">&quot;\n&quot;</span>, <span class="t-s">&quot; &quot;</span>)
+    <span class="t-f">print</span>(f<span class="t-s">&quot;[{chunk.index}] len={chunk.length} dim={chunk.dim} meta={chunk.metadata}&quot;</span>)
+    <span class="t-f">print</span>(f<span class="t-s">&quot;     texto: {preview}...&quot;</span>)
+    <span class="t-f">print</span>(f<span class="t-s">&quot;     embedding[:3]: {chunk.embedding[:3]}&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="recuperacao-por-similaridade"><a class="anchor" href="#recuperacao-por-similaridade" aria-label="Link para esta seção">#</a>Recuperação por similaridade</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>resultados = pipeline.<span class="t-f">retrieve</span>(<span class="t-s">&quot;como gerar eletricidade a partir do vento?&quot;</span>,
+                               include_embedding=<span class="t-n">True</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+  <ul>
+    <li><strong>Retorno:</strong> lista de dicionários ordenados por relevância. Cada item contém:
+      <ul>
+        <li><code>score</code> — pontuação de similaridade (<code>float</code>)</li>
+        <li><code>content</code> — texto do trecho recuperado</li>
+        <li><code>embedding</code> — vetor do trecho (somente se <code>include_embedding=True</code>)</li>
+      </ul>
+    </li>
+    <li>A quantidade de resultados segue o <code>top_k</code> configurado.</li>
+  </ul>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">for</span> i, r <span class="t-k">in</span> <span class="t-f">enumerate</span>(pipeline.<span class="t-f">retrieve</span>(consulta, include_embedding=<span class="t-n">True</span>), <span class="t-n">1</span>):
+    <span class="t-f">print</span>(f<span class="t-s">&quot;#{i} score={r['score']:.4f} | dim={len(r['embedding'])}&quot;</span>)
+    <span class="t-f">print</span>(f<span class="t-s">&quot;   {r['content'][:70]}...&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="exportando-os-chunks-pronto-para-json"><a class="anchor" href="#exportando-os-chunks-pronto-para-json" aria-label="Link para esta seção">#</a>Exportando os chunks (pronto para JSON)</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>dados = pipeline.<span class="t-f">get_chunks</span>(include_embedding=<span class="t-n">False</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+  <ul>
+    <li><strong>Retorno:</strong> lista de dicionários serializáveis (ideal para <code>json.dumps</code>).</li>
+    <li>Use <code>include_embedding=False</code> para omitir os vetores e gerar uma saída enxuta.</li>
+  </ul>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">import</span> json
+exemplo = pipeline.<span class="t-f">get_chunks</span>(include_embedding=<span class="t-n">False</span>)[<span class="t-n">0</span>]
+<span class="t-f">print</span>(json.<span class="t-f">dumps</span>(exemplo, ensure_ascii=<span class="t-n">False</span>, indent=<span class="t-n">2</span>))</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="exemplo-completo"><a class="anchor" href="#exemplo-completo" aria-label="Link para esta seção">#</a>Exemplo completo</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> src.embedding.modules.local_embedding.module <span class="t-k">import</span> (
+    LocalDynamicEmbedding, EmbeddingFactory,
+)
+<span class="t-k">import</span> json
+
+<span class="t-f">print</span>(<span class="t-s">&quot;Provedores disponíveis:&quot;</span>, EmbeddingFactory.<span class="t-f">available</span>())
+
+texto = (
+    <span class="t-s">&quot;A energia solar é uma fonte renovável...\n\n&quot;</span>
+    <span class="t-s">&quot;A energia eólica aproveita a força dos ventos...\n\n&quot;</span>
+    <span class="t-s">&quot;Já os combustíveis fósseis são fontes não renováveis...\n\n&quot;</span>
+    <span class="t-s">&quot;O uso de baterias é essencial para armazenar energia...&quot;</span>
+)
+
+<span class="t-c"># 1) Configuração (sem embeddings -&gt; usa fake automaticamente)</span>
+pipeline = (
+    <span class="t-f">LocalDynamicEmbedding</span>()
+    .<span class="t-f">with_fake_embeddings</span>(size=<span class="t-n">384</span>)
+    .<span class="t-f">with_splitter</span>(chunk_size=<span class="t-n">120</span>, chunk_overlap=<span class="t-n">20</span>)
+    .<span class="t-f">with_top_k</span>(<span class="t-n">3</span>)
+)
+
+<span class="t-c"># 2) Processamento</span>
+qtd = pipeline.<span class="t-f">process_text</span>(texto, metadata={<span class="t-s">&quot;fonte&quot;</span>: <span class="t-s">&quot;apostila_energia&quot;</span>})
+<span class="t-f">print</span>(f<span class="t-s">&quot;Chunks gerados: {qtd} | total: {pipeline.total_chunks}&quot;</span>)
+
+<span class="t-c"># 3) Inspeção dos chunks</span>
+<span class="t-k">for</span> chunk <span class="t-k">in</span> pipeline.chunks:
+    <span class="t-f">print</span>(f<span class="t-s">&quot;[{chunk.index}] dim={chunk.dim} meta={chunk.metadata}&quot;</span>)
+
+<span class="t-c"># 4) Recuperação</span>
+<span class="t-k">for</span> i, r <span class="t-k">in</span> <span class="t-f">enumerate</span>(pipeline.<span class="t-f">retrieve</span>(<span class="t-s">&quot;energia do vento?&quot;</span>, include_embedding=<span class="t-n">True</span>), <span class="t-n">1</span>):
+    <span class="t-f">print</span>(f<span class="t-s">&quot;#{i} score={r['score']:.4f} -&gt; {r['content'][:60]}...&quot;</span>)
+
+<span class="t-c"># 5) Exportação JSON</span>
+<span class="t-f">print</span>(json.<span class="t-f">dumps</span>(pipeline.<span class="t-f">get_chunks</span>(include_embedding=<span class="t-n">False</span>)[<span class="t-n">0</span>],
+                 ensure_ascii=<span class="t-n">False</span>, indent=<span class="t-n">2</span>))</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="referencia-rapida-da-api"><a class="anchor" href="#referencia-rapida-da-api" aria-label="Link para esta seção">#</a>Referência rápida da API</h2>
+  <p><strong><code>EmbeddingFactory</code></strong></p>
+  <ul>
+    <li><code>EmbeddingFactory.available()</code> → lista de provedores</li>
+  </ul>
+  <p><strong><code>LocalDynamicEmbedding</code></strong></p>
+  <ul>
+    <li><code>LocalDynamicEmbedding()</code> → instância vazia (fallback: fake)</li>
+    <li><code>.with_fake_embeddings(size=384)</code> → <em>self</em></li>
+    <li><code>.with_splitter(chunk_size, chunk_overlap)</code> → <em>self</em></li>
+    <li><code>.with_top_k(k)</code> → <em>self</em></li>
+    <li><code>.from_openai_embeddings(model, chunk_size, chunk_overlap, top_k)</code> → nova instância (classmethod)</li>
+    <li><code>.process_text(texto, metadata=None)</code> → <code>int</code> (chunks gerados)</li>
+    <li><code>.total_chunks</code> → <code>int</code> (acumulado)</li>
+    <li><code>.chunks</code> → lista de objetos chunk (<code>.index</code>, <code>.content</code>, <code>.length</code>, <code>.dim</code>, <code>.metadata</code>, <code>.embedding</code>)</li>
+    <li><code>.retrieve(consulta, include_embedding=False)</code> → lista de dicts (<code>score</code>, <code>content</code>, [<code>embedding</code>])</li>
+    <li><code>.get_chunks(include_embedding=False)</code> → lista de dicts serializáveis</li>
+  </ul>
+
+  <h2 id="observacoes"><a class="anchor" href="#observacoes" aria-label="Link para esta seção">#</a>Observações</h2>
+  <ul>
+    <li>Sem provedor configurado, o pipeline usa <strong>fake embeddings</strong> — perfeito para testar o fluxo sem depender de APIs externas.</li>
+    <li>Trocar de provedor é uma única linha (via construtor de fábrica), sem mudar o restante do código.</li>
+    <li>Sempre execute como módulo (<code>python -m ...</code>) por causa dos imports relativos.</li>
+  </ul>
+
+  <div class="callout" data-kind="note"><p>Esta documentação descreve a <strong>API pública observável</strong> a partir do arquivo de demonstração. Detalhes internos de implementação (algoritmo de similaridade, formato exato do splitter, provedores registrados) dependem do código-fonte do módulo. Se quiser, me envie <code>module.py</code> e eu complemento com esses detalhes.</p></div></div>
+        <div class="feedback"></div>
+        <p class="source">Fonte: <code>src/embedding/modules/local_embedding/test/use.py</code></p>
+        <nav class="pager" aria-label="Páginas vizinhas"><a class="pager-link prev" href="../../../../../pages/pt/internal-source-code/vector-store/local-dynamic-embedding/documentation.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Anterior</small><span>Documentation</span></div></a><a class="pager-link next" href="../../../../../pages/pt/internal-source-code/vector-store/pinecone-client.html"><div><small>Próxima</small><span>Pinecone Client</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="Nesta página"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="../../../../../pages/pt/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+          <p>Where intelligence finds purpose.</p>
+          <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>Repositório no GitHub</a>
+        </div>
+        <div class="foot-col"><h2>Documentação</h2><a href="../../../../../pages/pt/getting-started/index.html">Introduction</a><a href="../../../../../pages/pt/agents/index.html">Agents</a><a href="../../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../../pages/pt/api/index.html">API</a><a href="../../../../../pages/pt/modules/index.html">Modules</a><a href="../../../../../pages/pt/internal-source-code/index.html">Internal Services</a></div>
+        <div class="foot-col"><h2>Recursos</h2><a href="../../../../../pages/pt/getting-started/quickstart.html">Quickstart</a><a href="../../../../../pages/pt/getting-started/licence.html">Licence</a><a href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener">Código-fonte</a><a href="https://github.com/enzoschitini/better-ai/issues" target="_blank" rel="noopener">Reportar um problema</a></div>
+        <div class="foot-col"><h2>Criador</h2><div class="foot-me"><img src="../../../../../assets/img/profile.jpg" alt="" width="44" height="44"><div><strong>Enzo Schitini</strong><span>Data Scientist &amp; AI Engineer</span></div></div><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/enzoschitini" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 BetterAI &middot; Licença MIT</span>
+        <span>Criado por <a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Enzo Schitini</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Buscar na documentação">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Buscar páginas e seções" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Resultados"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>navegar</span></span>
+    <span><kbd>Enter</kbd><span>abrir</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "pt", "root": "../../../../../", "index": "../../../../../search-pt.json", "alt": {"pt": "pages/pt/internal-source-code/vector-store/local-dynamic-embedding/use.html", "it": "pages/it/internal-source-code/vector-store/local-dynamic-embedding/use.html", "en": "pages/en/internal-source-code/vector-store/local-dynamic-embedding/use.html"}, "i": {"noResults": "Nada encontrado para “%s”. Tente o nome de um módulo, como “Pinecone”."}};</script>
+<script src="../../../../../_design-system/js/ds.js?v=9a5e2954"></script>
+<script src="../../../../../_design-system/js/docs.js?v=6f602c0a"></script>
+</body>
+</html>

@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Use | BetterAI Docs</title>
+<meta name="description" content="Module for generating text embeddings locally with a fluent (chainable) API, dynamic provider switching and similarity retrieval.">
+<link rel="canonical" href="pages/en/internal-source-code/vector-store/local-dynamic-embedding/use.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../../../../_design-system/css/tokens.css?v=7f43b250">
+<link rel="stylesheet" href="../../../../../_design-system/css/base.css?v=4a698b89">
+<link rel="stylesheet" href="../../../../../_design-system/css/layout.css?v=503e806e">
+<link rel="stylesheet" href="../../../../../_design-system/css/content.css?v=cfc5f8ef">
+<link rel="stylesheet" href="../../../../../_design-system/css/search.css?v=1ecf3252">
+<link rel="stylesheet" href="../../../../../_design-system/css/responsive.css?v=6efeec66">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Created by Enzo Schitini. I invite you to connect with me on LinkedIn.</a></span>
+    <button type="button" aria-label="Dismiss notice"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../../pages/en/index.html">
+        <img src="../../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Search the documentation">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Search...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="../../../../../pages/en/getting-started/quickstart.html">Quickstart<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Language"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>EN</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="false"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="false"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="true"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light and dark theme"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Documentation areas"><a class="tab" href="../../../../../pages/en/index.html">Overview</a><a class="tab" href="../../../../../pages/en/getting-started/index.html">Introduction</a><a class="tab" href="../../../../../pages/en/agents/index.html">Agents</a><a class="tab" href="../../../../../pages/en/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../../pages/en/api/index.html">API</a><a class="tab" href="../../../../../pages/en/modules/index.html">Modules</a><a class="tab" href="../../../../../pages/en/internal-source-code/index.html" aria-current="page">Internal Services</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Internal Services</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Use</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Documentation navigation">
+    <nav class="side"><div class="side-areas"><a href="../../../../../pages/en/index.html">Overview</a><a href="../../../../../pages/en/getting-started/index.html">Introduction</a><a href="../../../../../pages/en/agents/index.html">Agents</a><a href="../../../../../pages/en/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../../pages/en/api/index.html">API</a><a href="../../../../../pages/en/modules/index.html">Modules</a><a href="../../../../../pages/en/internal-source-code/index.html" aria-current="page">Internal Services</a></div><a class="side-link" href="../../../../../pages/en/internal-source-code/index.html"><span>Overview</span></a><div class="side-group"><p class="side-title">Application Tracing</p><ul><li><a class="side-link" href="../../../../../pages/en/internal-source-code/application-tracing/logger-engine.html"><span>Logger Engine</span></a></li><li><a class="side-link" href="../../../../../pages/en/internal-source-code/application-tracing/payload-builder.html"><span>Payload Builder</span></a></li><li><a class="side-link" href="../../../../../pages/en/internal-source-code/application-tracing/tracing-core.html"><span>Tracing Core</span></a></li><li><a class="side-link" href="../../../../../pages/en/internal-source-code/application-tracing/use.html"><span>Use</span></a></li></ul></div><div class="side-group"><p class="side-title">Database</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>No SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/en/internal-source-code/database/no-sql/local-manage.html"><span>Local Manage</span></a></li><li><a class="side-link" href="../../../../../pages/en/internal-source-code/database/no-sql/mongo-manager.html"><span>Mongo Manager</span></a></li><li><a class="side-link" href="../../../../../pages/en/internal-source-code/database/no-sql/router.html"><span>Router</span></a></li></ul></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/en/internal-source-code/database/sql/supabase-database.html"><span>Supabase Database</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Storage</p><ul><li><a class="side-link" href="../../../../../pages/en/internal-source-code/storage/storage-menage-repository.html"><span>Storage Menage Repository</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Supabase</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/en/internal-source-code/storage/supabase/storage-menager.html"><span>Storage Menager</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Token Calculate</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Exchange Rate</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/en/internal-source-code/token-calculate/exchange-rate/bcb-exchange-rate-service.html"><span>BCB Exchange Rate Service</span></a></li><li><a class="side-link" href="../../../../../pages/en/internal-source-code/token-calculate/exchange-rate/exchange-rate-service.html"><span>Exchange Rate Service</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/en/internal-source-code/token-calculate/model-pricing.html"><span>Model Pricing</span></a></li><li><a class="side-link" href="../../../../../pages/en/internal-source-code/token-calculate/token-counter.html"><span>Token Counter</span></a></li></ul></div><div class="side-group"><p class="side-title">Utils</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Load Request File</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../../pages/en/internal-source-code/utils/load-request-file/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../../pages/en/internal-source-code/utils/load-request-file/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/en/internal-source-code/utils/loader-files.html"><span>Loader Files</span></a></li><li><a class="side-link" href="../../../../../pages/en/internal-source-code/utils/unique-id-factory.html"><span>Unique ID Factory</span></a></li></ul></div><div class="side-group"><p class="side-title">Vector Store</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="true"><span>Local Dynamic Embedding</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub"><li><a class="side-link" href="../../../../../pages/en/internal-source-code/vector-store/local-dynamic-embedding/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../../pages/en/internal-source-code/vector-store/local-dynamic-embedding/use.html" aria-current="page"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../../pages/en/internal-source-code/vector-store/pinecone-client.html"><span>Pinecone Client</span></a></li><li><a class="side-link" href="../../../../../pages/en/internal-source-code/vector-store/pinecone-embedding.html"><span>Pinecone Embedding</span></a></li><li><a class="side-link" href="../../../../../pages/en/internal-source-code/vector-store/pinecone-retriever.html"><span>Pinecone Retriever</span></a></li><li><a class="side-link" href="../../../../../pages/en/internal-source-code/vector-store/retrieval-manager.html"><span>Retrieval Manager</span></a></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Vector Store / Local Dynamic Embedding</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Use</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copy page</span></button>
+            </div>
+          </div>
+          <p class="lead">Module for generating text embeddings locally with a fluent (chainable) API, dynamic provider switching and similarity retrieval.</p>
+          <details class="toc-inline"><summary>On this page</summary><ul></ul></details>
+        </header>
+        <div class="prose"><p>Module for generating text <em>embeddings</em> locally with a <strong>fluent API</strong> (chainable), dynamic provider switching and similarity retrieval.</p>
+  <p>The typical flow is: <strong>configure → process text → access chunks → retrieve by similarity → export</strong>.</p>
+
+  <h2 id="how-to-run"><a class="anchor" href="#how-to-run" aria-label="Link para esta seção">#</a>How to run</h2>
+  <p>The module uses relative <em>imports</em> (<code>EmbeddingFactory</code>), so it must be run as a module, with the <code>-m</code> flag:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">python</span> <span class="t-n">-m</span> src.embedding.modules.local_embedding</code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>Running the file directly (<code>python arquivo.py</code>) breaks because of the relative import.</p>
+
+  <h2 id="quick-start"><a class="anchor" href="#quick-start" aria-label="Link para esta seção">#</a>Quick start</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> src.embedding.modules.local_embedding.module <span class="t-k">import</span> (
+    LocalDynamicEmbedding,
+    EmbeddingFactory,
+)
+
+<span class="t-c"># Monta o pipeline (encadeando as configurações)</span>
+pipeline = (
+    <span class="t-f">LocalDynamicEmbedding</span>()
+    .<span class="t-f">with_fake_embeddings</span>(size=<span class="t-n">384</span>)          <span class="t-c"># embeddings falsos p/ testes</span>
+    .<span class="t-f">with_splitter</span>(chunk_size=<span class="t-n">120</span>, chunk_overlap=<span class="t-n">20</span>)
+    .<span class="t-f">with_top_k</span>(<span class="t-n">3</span>)
+)
+
+<span class="t-c"># Processa um texto e recebe a quantidade de chunks gerados</span>
+qtd = pipeline.<span class="t-f">process_text</span>(<span class="t-s">&quot;seu texto...&quot;</span>, metadata={<span class="t-s">&quot;fonte&quot;</span>: <span class="t-s">&quot;exemplo&quot;</span>})
+
+<span class="t-c"># Recupera os trechos mais similares a uma consulta</span>
+resultados = pipeline.<span class="t-f">retrieve</span>(<span class="t-s">&quot;sua pergunta?&quot;</span>, include_embedding=<span class="t-n">True</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="available-providers"><a class="anchor" href="#available-providers" aria-label="Link para esta seção">#</a>Available providers</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>EmbeddingFactory.<span class="t-f">available</span>()   <span class="t-c"># -&gt; lista os provedores registrados</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>Use it to find out which embedding backends are installed/registered in the environment.</p>
+
+  <h2 id="building-the-pipeline-fluent-api"><a class="anchor" href="#building-the-pipeline-fluent-api" aria-label="Link para esta seção">#</a>Building the pipeline (fluent API)</h2>
+  <p>Each <code>with_*</code> method returns the instance itself, allowing chaining. If you do <strong>not</strong> set an embeddings provider, the class falls back to <code>fake</code> automatically.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Method</th><th>Effect</th><th>Parameters</th></tr></thead>
+    <tbody>
+      <tr><td><code>.with_fake_embeddings(size=384)</code></td><td>Uses fake embeddings (vectors of dimension <code>size</code>) — ideal for tests without external dependencies</td><td><code>size</code>: vector dimension</td></tr>
+      <tr><td><code>.with_splitter(chunk_size, chunk_overlap)</code></td><td>Configures how the text is split into chunks</td><td><code>chunk_size</code>: chunk size; <code>chunk_overlap</code>: overlap between chunks</td></tr>
+      <tr><td><code>.with_top_k(k)</code></td><td>Sets the default number of results returned in retrieval</td><td><code>k</code>: number of results</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="factory-constructors-switch-provider-in-1-line"><a class="anchor" href="#factory-constructors-switch-provider-in-1-line" aria-label="Link para esta seção">#</a>Factory constructors (switch provider in 1 line)</h3>
+  <p>To use a real provider, there are alternative constructors, for example:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>pipeline_openai = LocalDynamicEmbedding.<span class="t-f">from_openai_embeddings</span>(
+    model=<span class="t-s">&quot;text-embedding-3-large&quot;</span>,
+    chunk_size=<span class="t-n">3000</span>,
+    chunk_overlap=<span class="t-n">300</span>,
+    top_k=<span class="t-n">5</span>,
+)</code></pre><button class="copy floating" type="button"></button></div></div>
+  <div class="callout" data-kind="info"><p>Requires the provider's dependencies (e.g. OpenAI) to be installed and configured.</p></div>
+
+  <h2 id="processing-text"><a class="anchor" href="#processing-text" aria-label="Link para esta seção">#</a>Processing text</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>qtd = pipeline.<span class="t-f">process_text</span>(texto, metadata={<span class="t-s">&quot;fonte&quot;</span>: <span class="t-s">&quot;apostila_energia&quot;</span>})</code></pre><button class="copy floating" type="button"></button></div></div>
+  <ul>
+    <li><strong>Returns:</strong> number of chunks generated <strong>in this call</strong> (<code>int</code>).</li>
+    <li><strong><code>metadata</code></strong> (optional): dictionary attached to each chunk generated from this text.</li>
+    <li>It can be called several times; the chunks accumulate.</li>
+  </ul>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>pipeline.total_chunks   <span class="t-c"># total acumulado de chunks em todas as chamadas</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="accessing-the-chunks"><a class="anchor" href="#accessing-the-chunks" aria-label="Link para esta seção">#</a>Accessing the chunks</h2>
+  <p><code>pipeline.chunks</code> is the list of chunk objects. Each chunk exposes:</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Attribute</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>chunk.index</code></td><td>Chunk index</td></tr>
+      <tr><td><code>chunk.content</code></td><td>Chunk text</td></tr>
+      <tr><td><code>chunk.length</code></td><td>Text length</td></tr>
+      <tr><td><code>chunk.dim</code></td><td>Embedding vector dimension</td></tr>
+      <tr><td><code>chunk.metadata</code></td><td>Associated metadata</td></tr>
+      <tr><td><code>chunk.embedding</code></td><td>Embedding vector (list of floats)</td></tr>
+    </tbody>
+  </table></div>
+  <p>Example:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">for</span> chunk <span class="t-k">in</span> pipeline.chunks:
+    preview = chunk.content[:<span class="t-n">60</span>].<span class="t-f">replace</span>(<span class="t-s">&quot;\n&quot;</span>, <span class="t-s">&quot; &quot;</span>)
+    <span class="t-f">print</span>(f<span class="t-s">&quot;[{chunk.index}] len={chunk.length} dim={chunk.dim} meta={chunk.metadata}&quot;</span>)
+    <span class="t-f">print</span>(f<span class="t-s">&quot;     texto: {preview}...&quot;</span>)
+    <span class="t-f">print</span>(f<span class="t-s">&quot;     embedding[:3]: {chunk.embedding[:3]}&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="similarity-retrieval"><a class="anchor" href="#similarity-retrieval" aria-label="Link para esta seção">#</a>Similarity retrieval</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>resultados = pipeline.<span class="t-f">retrieve</span>(<span class="t-s">&quot;como gerar eletricidade a partir do vento?&quot;</span>,
+                               include_embedding=<span class="t-n">True</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+  <ul>
+    <li><strong>Returns:</strong> list of dictionaries sorted by relevance. Each item contains:
+      <ul>
+        <li><code>score</code> — similarity score (<code>float</code>)</li>
+        <li><code>content</code> — text of the retrieved passage</li>
+        <li><code>embedding</code> — vector of the passage (only if <code>include_embedding=True</code>)</li>
+      </ul>
+    </li>
+    <li>The number of results follows the configured <code>top_k</code>.</li>
+  </ul>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">for</span> i, r <span class="t-k">in</span> <span class="t-f">enumerate</span>(pipeline.<span class="t-f">retrieve</span>(consulta, include_embedding=<span class="t-n">True</span>), <span class="t-n">1</span>):
+    <span class="t-f">print</span>(f<span class="t-s">&quot;#{i} score={r['score']:.4f} | dim={len(r['embedding'])}&quot;</span>)
+    <span class="t-f">print</span>(f<span class="t-s">&quot;   {r['content'][:70]}...&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="exporting-the-chunks-json-ready"><a class="anchor" href="#exporting-the-chunks-json-ready" aria-label="Link para esta seção">#</a>Exporting the chunks (JSON-ready)</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>dados = pipeline.<span class="t-f">get_chunks</span>(include_embedding=<span class="t-n">False</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+  <ul>
+    <li><strong>Returns:</strong> list of serializable dictionaries (ideal for <code>json.dumps</code>).</li>
+    <li>Use <code>include_embedding=False</code> to omit the vectors and produce a lean output.</li>
+  </ul>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">import</span> json
+exemplo = pipeline.<span class="t-f">get_chunks</span>(include_embedding=<span class="t-n">False</span>)[<span class="t-n">0</span>]
+<span class="t-f">print</span>(json.<span class="t-f">dumps</span>(exemplo, ensure_ascii=<span class="t-n">False</span>, indent=<span class="t-n">2</span>))</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="full-example"><a class="anchor" href="#full-example" aria-label="Link para esta seção">#</a>Full example</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> src.embedding.modules.local_embedding.module <span class="t-k">import</span> (
+    LocalDynamicEmbedding, EmbeddingFactory,
+)
+<span class="t-k">import</span> json
+
+<span class="t-f">print</span>(<span class="t-s">&quot;Provedores disponíveis:&quot;</span>, EmbeddingFactory.<span class="t-f">available</span>())
+
+texto = (
+    <span class="t-s">&quot;A energia solar é uma fonte renovável...\n\n&quot;</span>
+    <span class="t-s">&quot;A energia eólica aproveita a força dos ventos...\n\n&quot;</span>
+    <span class="t-s">&quot;Já os combustíveis fósseis são fontes não renováveis...\n\n&quot;</span>
+    <span class="t-s">&quot;O uso de baterias é essencial para armazenar energia...&quot;</span>
+)
+
+<span class="t-c"># 1) Configuração (sem embeddings -&gt; usa fake automaticamente)</span>
+pipeline = (
+    <span class="t-f">LocalDynamicEmbedding</span>()
+    .<span class="t-f">with_fake_embeddings</span>(size=<span class="t-n">384</span>)
+    .<span class="t-f">with_splitter</span>(chunk_size=<span class="t-n">120</span>, chunk_overlap=<span class="t-n">20</span>)
+    .<span class="t-f">with_top_k</span>(<span class="t-n">3</span>)
+)
+
+<span class="t-c"># 2) Processamento</span>
+qtd = pipeline.<span class="t-f">process_text</span>(texto, metadata={<span class="t-s">&quot;fonte&quot;</span>: <span class="t-s">&quot;apostila_energia&quot;</span>})
+<span class="t-f">print</span>(f<span class="t-s">&quot;Chunks gerados: {qtd} | total: {pipeline.total_chunks}&quot;</span>)
+
+<span class="t-c"># 3) Inspeção dos chunks</span>
+<span class="t-k">for</span> chunk <span class="t-k">in</span> pipeline.chunks:
+    <span class="t-f">print</span>(f<span class="t-s">&quot;[{chunk.index}] dim={chunk.dim} meta={chunk.metadata}&quot;</span>)
+
+<span class="t-c"># 4) Recuperação</span>
+<span class="t-k">for</span> i, r <span class="t-k">in</span> <span class="t-f">enumerate</span>(pipeline.<span class="t-f">retrieve</span>(<span class="t-s">&quot;energia do vento?&quot;</span>, include_embedding=<span class="t-n">True</span>), <span class="t-n">1</span>):
+    <span class="t-f">print</span>(f<span class="t-s">&quot;#{i} score={r['score']:.4f} -&gt; {r['content'][:60]}...&quot;</span>)
+
+<span class="t-c"># 5) Exportação JSON</span>
+<span class="t-f">print</span>(json.<span class="t-f">dumps</span>(pipeline.<span class="t-f">get_chunks</span>(include_embedding=<span class="t-n">False</span>)[<span class="t-n">0</span>],
+                 ensure_ascii=<span class="t-n">False</span>, indent=<span class="t-n">2</span>))</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="quick-api-reference"><a class="anchor" href="#quick-api-reference" aria-label="Link para esta seção">#</a>Quick API reference</h2>
+  <p><strong><code>EmbeddingFactory</code></strong></p>
+  <ul>
+    <li><code>EmbeddingFactory.available()</code> → list of providers</li>
+  </ul>
+  <p><strong><code>LocalDynamicEmbedding</code></strong></p>
+  <ul>
+    <li><code>LocalDynamicEmbedding()</code> → empty instance (fallback: fake)</li>
+    <li><code>.with_fake_embeddings(size=384)</code> → <em>self</em></li>
+    <li><code>.with_splitter(chunk_size, chunk_overlap)</code> → <em>self</em></li>
+    <li><code>.with_top_k(k)</code> → <em>self</em></li>
+    <li><code>.from_openai_embeddings(model, chunk_size, chunk_overlap, top_k)</code> → new instance (classmethod)</li>
+    <li><code>.process_text(texto, metadata=None)</code> → <code>int</code> (chunks generated)</li>
+    <li><code>.total_chunks</code> → <code>int</code> (accumulated)</li>
+    <li><code>.chunks</code> → list of chunk objects (<code>.index</code>, <code>.content</code>, <code>.length</code>, <code>.dim</code>, <code>.metadata</code>, <code>.embedding</code>)</li>
+    <li><code>.retrieve(consulta, include_embedding=False)</code> → list of dicts (<code>score</code>, <code>content</code>, [<code>embedding</code>])</li>
+    <li><code>.get_chunks(include_embedding=False)</code> → list of serializable dicts</li>
+  </ul>
+
+  <h2 id="notes"><a class="anchor" href="#notes" aria-label="Link para esta seção">#</a>Notes</h2>
+  <ul>
+    <li>Without a configured provider, the pipeline uses <strong>fake embeddings</strong> — perfect for testing the flow without depending on external APIs.</li>
+    <li>Switching provider is a single line (via a factory constructor), without changing the rest of the code.</li>
+    <li>Always run as a module (<code>python -m ...</code>) because of the relative imports.</li>
+  </ul>
+
+  <div class="callout" data-kind="note"><p>This documentation describes the <strong>observable public API</strong> from the demo file. Internal implementation details (similarity algorithm, exact splitter format, registered providers) depend on the module's source code. If you want, send me <code>module.py</code> and I will complete it with those details.</p></div></div>
+        <div class="feedback"></div>
+        <p class="source">Source: <code>src/embedding/modules/local_embedding/test/use.py</code></p>
+        <nav class="pager" aria-label="Neighboring pages"><a class="pager-link prev" href="../../../../../pages/en/internal-source-code/vector-store/local-dynamic-embedding/documentation.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Previous</small><span>Documentation</span></div></a><a class="pager-link next" href="../../../../../pages/en/internal-source-code/vector-store/pinecone-client.html"><div><small>Next</small><span>Pinecone Client</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="On this page"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="../../../../../pages/en/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+          <p>Where intelligence finds purpose.</p>
+          <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>Repository on GitHub</a>
+        </div>
+        <div class="foot-col"><h2>Documentation</h2><a href="../../../../../pages/en/getting-started/index.html">Introduction</a><a href="../../../../../pages/en/agents/index.html">Agents</a><a href="../../../../../pages/en/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../../pages/en/api/index.html">API</a><a href="../../../../../pages/en/modules/index.html">Modules</a><a href="../../../../../pages/en/internal-source-code/index.html">Internal Services</a></div>
+        <div class="foot-col"><h2>Resources</h2><a href="../../../../../pages/en/getting-started/quickstart.html">Quickstart</a><a href="../../../../../pages/en/getting-started/licence.html">Licence</a><a href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener">Source code</a><a href="https://github.com/enzoschitini/better-ai/issues" target="_blank" rel="noopener">Report an issue</a></div>
+        <div class="foot-col"><h2>Creator</h2><div class="foot-me"><img src="../../../../../assets/img/profile.jpg" alt="" width="44" height="44"><div><strong>Enzo Schitini</strong><span>Data Scientist &amp; AI Engineer</span></div></div><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/enzoschitini" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 BetterAI &middot; MIT License</span>
+        <span>Created by <a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Enzo Schitini</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Search the documentation">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Search pages and sections" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Results"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>navigate</span></span>
+    <span><kbd>Enter</kbd><span>open</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "en", "root": "../../../../../", "index": "../../../../../search-en.json", "alt": {"pt": "pages/pt/internal-source-code/vector-store/local-dynamic-embedding/use.html", "it": "pages/it/internal-source-code/vector-store/local-dynamic-embedding/use.html", "en": "pages/en/internal-source-code/vector-store/local-dynamic-embedding/use.html"}, "i": {"noResults": "Nothing found for “%s”. Try a module name, such as “Pinecone”."}};</script>
+<script src="../../../../../_design-system/js/ds.js?v=9a5e2954"></script>
+<script src="../../../../../_design-system/js/docs.js?v=6f602c0a"></script>
+</body>
+</html>

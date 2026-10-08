@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Database | BetterAI Docs</title>
+<meta name="description" content="BetterAI Docs">
+<link rel="canonical" href="pages/pt/agents/agno-agents/utils/database.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../../../../_design-system/css/tokens.css?v=7f43b250">
+<link rel="stylesheet" href="../../../../../_design-system/css/base.css?v=4a698b89">
+<link rel="stylesheet" href="../../../../../_design-system/css/layout.css?v=503e806e">
+<link rel="stylesheet" href="../../../../../_design-system/css/content.css?v=cfc5f8ef">
+<link rel="stylesheet" href="../../../../../_design-system/css/search.css?v=1ecf3252">
+<link rel="stylesheet" href="../../../../../_design-system/css/responsive.css?v=6efeec66">
+</head>
+<body>
+<a class="skip" href="#main">Ir para o conteúdo</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Criado por Enzo Schitini. Convido você a se conectar comigo no LinkedIn.</a></span>
+    <button type="button" aria-label="Fechar aviso"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../../pages/pt/index.html">
+        <img src="../../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Buscar na documentação">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Buscar...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="../../../../../pages/pt/getting-started/quickstart.html">Quickstart<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Idioma"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>PT</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="true"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="false"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="false"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Alternar tema claro e escuro"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Áreas da documentação"><a class="tab" href="../../../../../pages/pt/index.html">Visão geral</a><a class="tab" href="../../../../../pages/pt/getting-started/index.html">Introduction</a><a class="tab" href="../../../../../pages/pt/agents/index.html" aria-current="page">Agents</a><a class="tab" href="../../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../../pages/pt/api/index.html">API</a><a class="tab" href="../../../../../pages/pt/modules/index.html">Modules</a><a class="tab" href="../../../../../pages/pt/internal-source-code/index.html">Internal Services</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Agents</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Database</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Navegação da documentação">
+    <nav class="side"><div class="side-areas"><a href="../../../../../pages/pt/index.html">Visão geral</a><a href="../../../../../pages/pt/getting-started/index.html">Introduction</a><a href="../../../../../pages/pt/agents/index.html" aria-current="page">Agents</a><a href="../../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../../pages/pt/api/index.html">API</a><a href="../../../../../pages/pt/modules/index.html">Modules</a><a href="../../../../../pages/pt/internal-source-code/index.html">Internal Services</a></div><a class="side-link" href="../../../../../pages/pt/agents/index.html"><span>Visão geral</span></a><div class="side-group"><p class="side-title">Agno Agents</p><ul><li><a class="side-link" href="../../../../../pages/pt/agents/agno-agents/agnoui.html"><span>AgnoUI</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="true"><span>Utils</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub"><li><a class="side-link" href="../../../../../pages/pt/agents/agno-agents/utils/database.html" aria-current="page"><span>Database</span></a></li><li><a class="side-link" href="../../../../../pages/pt/agents/agno-agents/utils/model-gateway.html"><span>Model Gateway</span></a></li></ul></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Agno Agents / Utils</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Database</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copiar página</span></button>
+            </div>
+          </div>
+          
+          <details class="toc-inline"><summary>Nesta página</summary><ul></ul></details>
+        </header>
+        <div class="prose"><h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão Geral</h2>
+  <p>A classe <code>Database</code> atua como uma <strong>fábrica de conexão</strong> com bancos de dados, fornecendo uma interface unificada para conectar-se tanto a um banco SQLite local quanto a um banco Postgres hospedado no Supabase. Ela abstrai detalhes de configuração e escolhas de implementação, permitindo que o desenvolvedor selecione o tipo de banco apenas passando parâmetros simples, sem precisar lidar com configurações complexas.</p>
+  <p>Esse design é útil quando você tem ambientes diversos, como desenvolvimento local e produção na nuvem, e deseja uma forma consistente e elegante de inicializar conexões com diferentes bancos de dados, mantendo o restante da aplicação desacoplado da camada de persistência.</p>
+
+  <h2 id="fluxo-de-execucao"><a class="anchor" href="#fluxo-de-execucao" aria-label="Link para esta seção">#</a>Fluxo de Execução</h2>
+  <ol>
+    <li>Ao instanciar a classe <code>Database</code>, você chama seu construtor (na verdade usa o método <code>__new__</code> customizado).</li>
+    <li>O parâmetro <code>local</code> decide se a conexão será com SQLite local (<code>local=True</code>) ou Supabase Postgres (<code>local=False</code>).</li>
+    <li>Se for local, chama-se o método <code>_local_database</code>, que constrói a conexão do tipo <code>SqliteDb</code> usando o arquivo <code>.db</code>.</li>
+    <li>Caso contrário, chama-se <code>_supabase</code> que cria a conexão do tipo <code>PostgresDb</code>, montando a URL do banco usando variáveis de ambiente ou parâmetro passado.</li>
+    <li>Métodos estáticos auxiliares geram nomes de schema, caminhos ou URLs conforme parâmetros e padrões internos.</li>
+    <li>Por fim, o objeto da respectiva classe de banco de dados (<code>SqliteDb</code> ou <code>PostgresDb</code>) é retornado, pronto para uso.</li>
+  </ol>
+
+  <h2 id="tabela-de-metodos-da-classe"><a class="anchor" href="#tabela-de-metodos-da-classe" aria-label="Link para esta seção">#</a>Tabela de Métodos da Classe</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Método</th><th>Descrição</th></tr></thead>
+    <tbody>
+      <tr><td><code>__new__</code></td><td>Controla a criação do objeto, decide qual banco usar</td></tr>
+      <tr><td><code>_get_schema_name</code></td><td>Retorna o nome do schema para Postgres</td></tr>
+      <tr><td><code>_get_database_local_storage</code></td><td>Construção do caminho do arquivo SQLite</td></tr>
+      <tr><td><code>_get_database_url</code></td><td>Gera ou retorna a URL do banco Postgres</td></tr>
+      <tr><td><code>_supabase</code></td><td>Cria e configura o objeto de conexão Postgres</td></tr>
+      <tr><td><code>_local_database</code></td><td>Cria e configura o objeto de SQLite</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="variaveis-de-ambiente"><a class="anchor" href="#variaveis-de-ambiente" aria-label="Link para esta seção">#</a>Variáveis de Ambiente</h2>
+  <ul>
+    <li><code>SUPABASE_PROJECT_HOST</code>: Host do projeto Supabase para construção da URL de conexão.</li>
+    <li><code>SUPABASE_DATABASE_PASSWORD</code>: Senha do banco Postgres do Supabase.</li>
+  </ul>
+
+  <h2 id="pontos-importantes-da-arquitetura-e-insights"><a class="anchor" href="#pontos-importantes-da-arquitetura-e-insights" aria-label="Link para esta seção">#</a>Pontos Importantes da Arquitetura e Insights</h2>
+  <ul>
+    <li>Usa o método mágico <code>__new__</code> para implementar o padrão de <strong>Factory</strong>, retornando diferentes tipos de objetos conforme parâmetros.</li>
+    <li>O encapsulamento garante que detalhes específicos do banco (URLs, nomes de tabelas) ficam centralizados, facilitando manutenção.</li>
+    <li>Os métodos estáticos são usados para lógica de composição de strings, separando responsabilidades.</li>
+    <li>A classe depende das classes <code>SqliteDb</code> e <code>PostgresDb</code>, que representam as conexões efetivas aos bancos.</li>
+    <li>Variáveis de ambiente são usadas para manter dados sensíveis fora do código, seguindo boas práticas.</li>
+    <li>Permite injeção de parâmetros para maior flexibilidade (ex: nome do banco, URL customizada).</li>
+  </ul>
+
+  <h2 id="descricao-da-classe-e-metodos"><a class="anchor" href="#descricao-da-classe-e-metodos" aria-label="Link para esta seção">#</a>Descrição da Classe e Métodos</h2>
+
+  <h2 id="classe-database"><a class="anchor" href="#classe-database" aria-label="Link para esta seção">#</a>Classe <code>Database</code></h2>
+  <h3 id="descricao"><a class="anchor" href="#descricao" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Classe fábrica para facilitar a conexão com bancos SQLite locais ou Supabase Postgres, abstraindo a complexidade de configuração e conexão.</p>
+  <h3 id="argumentos-do-construtor"><a class="anchor" href="#argumentos-do-construtor" aria-label="Link para esta seção">#</a>Argumentos do Construtor</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argumento</th><th>Tipo</th><th>Descrição</th><th>Valor Padrão</th></tr></thead>
+    <tbody>
+      <tr><td><code>local</code></td><td><code>bool</code></td><td>Define se conecta localmente (SQLite), caso contrário Supabase Postgres</td><td>False</td></tr>
+      <tr><td><code>database_name</code></td><td><code>str | None</code></td><td>Nome do banco ou schema, opcional</td><td>None</td></tr>
+      <tr><td><code>database_url</code></td><td><code>str | None</code></td><td>URL completa para conexão remota, opcional</td><td>None</td></tr>
+    </tbody>
+  </table></div>
+  <h3 id="metodos"><a class="anchor" href="#metodos" aria-label="Link para esta seção">#</a>Métodos</h3>
+
+  <h3 id="1-new"><a class="anchor" href="#1-new" aria-label="Link para esta seção">#</a>1. <code>__new__</code></h3>
+  <h3 id="descricao-2"><a class="anchor" href="#descricao-2" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Método especial que controla a criação da instância da classe. Decide, conforme parâmetros, se será criado um objeto <code>SqliteDb</code> para banco local ou <code>PostgresDb</code> para Supabase.</p>
+  <h3 id="argumentos"><a class="anchor" href="#argumentos" aria-label="Link para esta seção">#</a>Argumentos</h3>
+  <ul>
+    <li><code>local</code> (bool): indica uso local ou remoto.</li>
+    <li><code>database_name</code> (str | None): nome do banco/schema.</li>
+    <li><code>database_url</code> (str | None): URL do banco remoto.</li>
+  </ul>
+  <h3 id="retornos"><a class="anchor" href="#retornos" aria-label="Link para esta seção">#</a>Retornos</h3>
+  <ul>
+    <li><code>SqliteDb</code> ou <code>PostgresDb</code>: objeto configurado para interagir com o banco correspondente.</li>
+  </ul>
+  <h3 id="raises"><a class="anchor" href="#raises" aria-label="Link para esta seção">#</a>Raises</h3>
+  <p>Nenhum.</p>
+  <h3 id="exemplos"><a class="anchor" href="#exemplos" aria-label="Link para esta seção">#</a>Exemplos</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-c"># Conecta a banco SQLite local padrão</span>
+db_local = <span class="t-f">Database</span>(local=<span class="t-n">True</span>)
+
+<span class="t-c"># Conecta a banco Supabase com nome específico</span>
+db_supabase = <span class="t-f">Database</span>(local=<span class="t-n">False</span>, database_name=<span class="t-s">&quot;test_schema&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-get-schema-name"><a class="anchor" href="#2-get-schema-name" aria-label="Link para esta seção">#</a>2. <code>_get_schema_name</code></h3>
+  <h3 id="descricao-3"><a class="anchor" href="#descricao-3" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Retorna o nome do schema para conexão Postgres, usando o nome passado ou o default "agent_db".</p>
+  <h3 id="argumentos-2"><a class="anchor" href="#argumentos-2" aria-label="Link para esta seção">#</a>Argumentos</h3>
+  <ul>
+    <li><code>database_name</code> (str | None): nome do schema.</li>
+  </ul>
+  <h3 id="retornos-2"><a class="anchor" href="#retornos-2" aria-label="Link para esta seção">#</a>Retornos</h3>
+  <ul>
+    <li><code>str</code>: nome do schema a ser usado.</li>
+  </ul>
+  <h3 id="raises-2"><a class="anchor" href="#raises-2" aria-label="Link para esta seção">#</a>Raises</h3>
+  <p>Nenhum.</p>
+  <h3 id="exemplos-2"><a class="anchor" href="#exemplos-2" aria-label="Link para esta seção">#</a>Exemplos</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>Database.<span class="t-f">_get_schema_name</span>(<span class="t-s">&quot;prod_schema&quot;</span>)  <span class="t-c"># Retorna &quot;prod_schema&quot;</span>
+Database.<span class="t-f">_get_schema_name</span>(<span class="t-n">None</span>)           <span class="t-c"># Retorna &quot;agent_db&quot;</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-get-database-local-storage"><a class="anchor" href="#3-get-database-local-storage" aria-label="Link para esta seção">#</a>3. <code>_get_database_local_storage</code></h3>
+  <h3 id="descricao-4"><a class="anchor" href="#descricao-4" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Monta o caminho do arquivo <code>.db</code> para o banco SQLite local conforme o nome fornecido.</p>
+  <h3 id="argumentos-3"><a class="anchor" href="#argumentos-3" aria-label="Link para esta seção">#</a>Argumentos</h3>
+  <ul>
+    <li><code>database_name</code> (str | None): nome do arquivo sem extensão.</li>
+  </ul>
+  <h3 id="retornos-3"><a class="anchor" href="#retornos-3" aria-label="Link para esta seção">#</a>Retornos</h3>
+  <ul>
+    <li><code>str</code>: caminho completo do arquivo SQLite.</li>
+  </ul>
+  <h3 id="raises-3"><a class="anchor" href="#raises-3" aria-label="Link para esta seção">#</a>Raises</h3>
+  <p>Nenhum.</p>
+  <h3 id="exemplos-3"><a class="anchor" href="#exemplos-3" aria-label="Link para esta seção">#</a>Exemplos</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>Database.<span class="t-f">_get_database_local_storage</span>(<span class="t-s">&quot;testdb&quot;</span>)  <span class="t-c"># &quot;src/agents/database/testdb.db&quot;</span>
+Database.<span class="t-f">_get_database_local_storage</span>(<span class="t-n">None</span>)      <span class="t-c"># &quot;src/agents/database/agno.db&quot;</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-get-database-url"><a class="anchor" href="#4-get-database-url" aria-label="Link para esta seção">#</a>4. <code>_get_database_url</code></h3>
+  <h3 id="descricao-5"><a class="anchor" href="#descricao-5" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Retorna a URL de conexão para o banco Postgres do Supabase. Usa a URL passada, se fornecida, ou constrói a partir das variáveis de ambiente.</p>
+  <h3 id="argumentos-4"><a class="anchor" href="#argumentos-4" aria-label="Link para esta seção">#</a>Argumentos</h3>
+  <ul>
+    <li><code>database_url</code> (str | None): URL completa opcional.</li>
+  </ul>
+  <h3 id="retornos-4"><a class="anchor" href="#retornos-4" aria-label="Link para esta seção">#</a>Retornos</h3>
+  <ul>
+    <li><code>str</code>: URL de conexão ao banco.</li>
+  </ul>
+  <h3 id="raises-4"><a class="anchor" href="#raises-4" aria-label="Link para esta seção">#</a>Raises</h3>
+  <p>Nenhum.</p>
+  <h3 id="exemplos-4"><a class="anchor" href="#exemplos-4" aria-label="Link para esta seção">#</a>Exemplos</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-c"># Usando URL direta</span>
+Database.<span class="t-f">_get_database_url</span>(<span class="t-s">&quot;postgresql://user:pass@host:5432/db&quot;</span>)
+
+<span class="t-c"># Usando ENV-SUPABASE_PROJECT_HOST e SUPABASE_DATABASE_PASSWORD</span>
+Database.<span class="t-f">_get_database_url</span>(<span class="t-n">None</span>)  <span class="t-c"># Exemplo: &quot;postgresql://postgres:password@db.projecthost:5432/postgres&quot;</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="5-supabase"><a class="anchor" href="#5-supabase" aria-label="Link para esta seção">#</a>5. <code>_supabase</code></h3>
+  <h3 id="descricao-6"><a class="anchor" href="#descricao-6" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Cria uma instância de <code>PostgresDb</code> configurada para Supabase, com nome do schema e URL definidos.</p>
+  <h3 id="argumentos-5"><a class="anchor" href="#argumentos-5" aria-label="Link para esta seção">#</a>Argumentos</h3>
+  <ul>
+    <li><code>database_url</code> (str | None): URL da conexão remota.</li>
+    <li><code>database_name</code> (str | None): nome do schema.</li>
+  </ul>
+  <h3 id="retornos-5"><a class="anchor" href="#retornos-5" aria-label="Link para esta seção">#</a>Retornos</h3>
+  <ul>
+    <li><code>PostgresDb</code>: objeto configurado para uso com Supabase.</li>
+  </ul>
+  <h3 id="raises-5"><a class="anchor" href="#raises-5" aria-label="Link para esta seção">#</a>Raises</h3>
+  <p>Nenhum.</p>
+  <h3 id="exemplos-5"><a class="anchor" href="#exemplos-5" aria-label="Link para esta seção">#</a>Exemplos</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>db = Database.<span class="t-f">_supabase</span>(database_url=<span class="t-n">None</span>, database_name=<span class="t-s">&quot;my_schema&quot;</span>)
+<span class="t-c"># db é uma instância de PostgresDb pronta para manipular o banco remoto</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="6-local-database"><a class="anchor" href="#6-local-database" aria-label="Link para esta seção">#</a>6. <code>_local_database</code></h3>
+  <h3 id="descricao-7"><a class="anchor" href="#descricao-7" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Cria uma instância de <code>SqliteDb</code> configurada para uso local, definindo o caminho do arquivo .db e tabelas.</p>
+  <h3 id="argumentos-6"><a class="anchor" href="#argumentos-6" aria-label="Link para esta seção">#</a>Argumentos</h3>
+  <ul>
+    <li><code>database_name</code> (str | None): nome do arquivo do banco local.</li>
+  </ul>
+  <h3 id="retornos-6"><a class="anchor" href="#retornos-6" aria-label="Link para esta seção">#</a>Retornos</h3>
+  <ul>
+    <li><code>SqliteDb</code>: objeto configurado para banco SQLite local.</li>
+  </ul>
+  <h3 id="raises-6"><a class="anchor" href="#raises-6" aria-label="Link para esta seção">#</a>Raises</h3>
+  <p>Nenhum.</p>
+  <h3 id="exemplos-6"><a class="anchor" href="#exemplos-6" aria-label="Link para esta seção">#</a>Exemplos</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>db = Database.<span class="t-f">_local_database</span>(database_name=<span class="t-s">&quot;localdb&quot;</span>)
+<span class="t-c"># db é uma instância de SqliteDb pronta para manipulação local</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <p>Essa documentação fornece uma visão completa e didática da classe <code>Database</code>, facilitando seu entendimento e uso prático.</p></div>
+        <div class="feedback"></div>
+        <p class="source">Fonte: <code>src/agents/utils/database.py</code></p>
+        <nav class="pager" aria-label="Páginas vizinhas"><a class="pager-link prev" href="../../../../../pages/pt/agents/agno-agents/agnoui.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Anterior</small><span>AgnoUI</span></div></a><a class="pager-link next" href="../../../../../pages/pt/agents/agno-agents/utils/model-gateway.html"><div><small>Próxima</small><span>Model Gateway</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="Nesta página"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="../../../../../pages/pt/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+          <p>Where intelligence finds purpose.</p>
+          <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>Repositório no GitHub</a>
+        </div>
+        <div class="foot-col"><h2>Documentação</h2><a href="../../../../../pages/pt/getting-started/index.html">Introduction</a><a href="../../../../../pages/pt/agents/index.html">Agents</a><a href="../../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../../pages/pt/api/index.html">API</a><a href="../../../../../pages/pt/modules/index.html">Modules</a><a href="../../../../../pages/pt/internal-source-code/index.html">Internal Services</a></div>
+        <div class="foot-col"><h2>Recursos</h2><a href="../../../../../pages/pt/getting-started/quickstart.html">Quickstart</a><a href="../../../../../pages/pt/getting-started/licence.html">Licence</a><a href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener">Código-fonte</a><a href="https://github.com/enzoschitini/better-ai/issues" target="_blank" rel="noopener">Reportar um problema</a></div>
+        <div class="foot-col"><h2>Criador</h2><div class="foot-me"><img src="../../../../../assets/img/profile.jpg" alt="" width="44" height="44"><div><strong>Enzo Schitini</strong><span>Data Scientist &amp; AI Engineer</span></div></div><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/enzoschitini" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 BetterAI &middot; Licença MIT</span>
+        <span>Criado por <a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Enzo Schitini</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Buscar na documentação">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Buscar páginas e seções" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Resultados"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>navegar</span></span>
+    <span><kbd>Enter</kbd><span>abrir</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "pt", "root": "../../../../../", "index": "../../../../../search-pt.json", "alt": {"pt": "pages/pt/agents/agno-agents/utils/database.html", "it": "pages/it/agents/agno-agents/utils/database.html", "en": "pages/en/agents/agno-agents/utils/database.html"}, "i": {"noResults": "Nada encontrado para “%s”. Tente o nome de um módulo, como “Pinecone”."}};</script>
+<script src="../../../../../_design-system/js/ds.js?v=9a5e2954"></script>
+<script src="../../../../../_design-system/js/docs.js?v=6f602c0a"></script>
+</body>
+</html>

@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Logger Engine | BetterAI Docs</title>
+<meta name="description" content="Questa è una documentazione dettagliata e didattica della classe LoggerEngine, progettata per essere il nucleo della tracciabilità e del monitoraggio delle applicazioni Python.">
+<link rel="canonical" href="pages/it/internal-source-code/application-tracing/logger-engine.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../../../_design-system/css/tokens.css?v=7f43b250">
+<link rel="stylesheet" href="../../../../_design-system/css/base.css?v=4a698b89">
+<link rel="stylesheet" href="../../../../_design-system/css/layout.css?v=503e806e">
+<link rel="stylesheet" href="../../../../_design-system/css/content.css?v=cfc5f8ef">
+<link rel="stylesheet" href="../../../../_design-system/css/search.css?v=1ecf3252">
+<link rel="stylesheet" href="../../../../_design-system/css/responsive.css?v=6efeec66">
+</head>
+<body>
+<a class="skip" href="#main">Vai al contenuto</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Creato da Enzo Schitini. Ti invito a connetterti con me su LinkedIn.</a></span>
+    <button type="button" aria-label="Chiudi avviso"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../pages/it/index.html">
+        <img src="../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Cerca nella documentazione">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Cerca...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="../../../../pages/it/getting-started/quickstart.html">Quickstart<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Lingua"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>IT</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="false"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="true"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="false"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Cambia tema chiaro o scuro"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Aree della documentazione"><a class="tab" href="../../../../pages/it/index.html">Panoramica</a><a class="tab" href="../../../../pages/it/getting-started/index.html">Introduction</a><a class="tab" href="../../../../pages/it/agents/index.html">Agents</a><a class="tab" href="../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../pages/it/api/index.html">API</a><a class="tab" href="../../../../pages/it/modules/index.html">Modules</a><a class="tab" href="../../../../pages/it/internal-source-code/index.html" aria-current="page">Internal Services</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Internal Services</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Logger Engine</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Navigazione della documentazione">
+    <nav class="side"><div class="side-areas"><a href="../../../../pages/it/index.html">Panoramica</a><a href="../../../../pages/it/getting-started/index.html">Introduction</a><a href="../../../../pages/it/agents/index.html">Agents</a><a href="../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/it/api/index.html">API</a><a href="../../../../pages/it/modules/index.html">Modules</a><a href="../../../../pages/it/internal-source-code/index.html" aria-current="page">Internal Services</a></div><a class="side-link" href="../../../../pages/it/internal-source-code/index.html"><span>Panoramica</span></a><div class="side-group"><p class="side-title">Application Tracing</p><ul><li><a class="side-link" href="../../../../pages/it/internal-source-code/application-tracing/logger-engine.html" aria-current="page"><span>Logger Engine</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/application-tracing/payload-builder.html"><span>Payload Builder</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/application-tracing/tracing-core.html"><span>Tracing Core</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/application-tracing/use.html"><span>Use</span></a></li></ul></div><div class="side-group"><p class="side-title">Database</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>No SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/internal-source-code/database/no-sql/local-manage.html"><span>Local Manage</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/database/no-sql/mongo-manager.html"><span>Mongo Manager</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/database/no-sql/router.html"><span>Router</span></a></li></ul></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/internal-source-code/database/sql/supabase-database.html"><span>Supabase Database</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Storage</p><ul><li><a class="side-link" href="../../../../pages/it/internal-source-code/storage/storage-menage-repository.html"><span>Storage Menage Repository</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Supabase</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/internal-source-code/storage/supabase/storage-menager.html"><span>Storage Menager</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Token Calculate</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Exchange Rate</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/internal-source-code/token-calculate/exchange-rate/bcb-exchange-rate-service.html"><span>BCB Exchange Rate Service</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/token-calculate/exchange-rate/exchange-rate-service.html"><span>Exchange Rate Service</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/token-calculate/model-pricing.html"><span>Model Pricing</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/token-calculate/token-counter.html"><span>Token Counter</span></a></li></ul></div><div class="side-group"><p class="side-title">Utils</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Load Request File</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/internal-source-code/utils/load-request-file/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/utils/load-request-file/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/utils/loader-files.html"><span>Loader Files</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/utils/unique-id-factory.html"><span>Unique ID Factory</span></a></li></ul></div><div class="side-group"><p class="side-title">Vector Store</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Local Dynamic Embedding</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/it/internal-source-code/vector-store/local-dynamic-embedding/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/vector-store/local-dynamic-embedding/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/vector-store/pinecone-client.html"><span>Pinecone Client</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/vector-store/pinecone-embedding.html"><span>Pinecone Embedding</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/vector-store/pinecone-retriever.html"><span>Pinecone Retriever</span></a></li><li><a class="side-link" href="../../../../pages/it/internal-source-code/vector-store/retrieval-manager.html"><span>Retrieval Manager</span></a></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Application Tracing</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Logger Engine</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copia pagina</span></button>
+            </div>
+          </div>
+          <p class="lead">Questa è una documentazione dettagliata e didattica della classe LoggerEngine, progettata per essere il nucleo della tracciabilità e del monitoraggio delle applicazioni Python.</p>
+          <details class="toc-inline"><summary>In questa pagina</summary><ul></ul></details>
+        </header>
+        <div class="prose"><h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
+  <p>LoggerEngine non è un semplice formattatore di messaggi; è un orchestratore di telemetria. La sua funzione principale è centralizzare la cattura degli eventi di sistema e decidere, in base a configurazioni dinamiche (variabili d'ambiente o parametri di istanza), dove questi dati devono andare: console, file locali o un database NoSQL (MongoDB).</p>
+  <p>L'obiettivo principale è garantire che lo sviluppatore abbia log strutturati. Invece di semplici righe di testo, la classe trasforma ogni evento in un oggetto dati ricco, facilitando gli audit e la ricerca degli errori negli ambienti di produzione.</p>
+
+  <h2 id="flusso-di-esecuzione"><a class="anchor" href="#flusso-di-esecuzione" aria-label="Link para esta seção">#</a>Flusso di Esecuzione</h2>
+  <p>Per capire come opera la classe, immagina il seguente percorso compiuto da un'informazione:</p>
+  <ol>
+    <li><strong>Chiamata del Metodo <code>log()</code></strong>: L'utente invia il messaggio, il livello (INFO, ERROR, ecc.) e i metadati.</li>
+    <li><strong>Risoluzione delle Configurazioni</strong>: Il motore verifica se deve seguire la configurazione globale della classe o se c'è stata un'istruzione specifica per quella chiamata (es: forzare il salvataggio in MongoDB solo per un errore critico).</li>
+    <li><strong>Costruzione del Payload</strong>: I dati grezzi vengono inviati a un "Builder" che standardizza il formato (aggiunge timestamp, ID univoci e formatta il JSON).</li>
+    <li><strong>Configurazione del Logger</strong>: La classe prepara gli "Handler" (le uscite). Se <code>save_logs</code> è True, apre un canale verso il file; se deve mostrare sulla console, definisce il livello di verbosità.</li>
+    <li><strong>Emissione e Persistenza</strong>: Il messaggio viene mostrato a schermo e, contemporaneamente, il payload strutturato viene inviato a MongoDB.</li>
+  </ol>
+
+  <h2 id="riepilogo-dei-metodi"><a class="anchor" href="#riepilogo-dei-metodi" aria-label="Link para esta seção">#</a>Riepilogo dei Metodi</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Metodo</th><th>Responsabilità</th></tr></thead>
+    <tbody>
+      <tr><td><code>_get_env_bool</code></td><td>Legge le variabili d'ambiente (OS) e le converte in booleano in modo sicuro.</td></tr>
+      <tr><td><code>_resolve_config</code></td><td>Decide quali flag (salvare, mostrare, rendere persistente) verranno usate nell'esecuzione corrente.</td></tr>
+      <tr><td><code>_build_payloads</code></td><td>Trasforma gli argomenti in messaggi leggibili e oggetti JSON strutturati.</td></tr>
+      <tr><td><code>_get_logger</code></td><td>Configura la libreria nativa <code>logging</code> di Python (Handler e Formatter).</td></tr>
+      <tr><td><code>_emit_log</code></td><td>Esegue l'invio finale del messaggio alle uscite di testo.</td></tr>
+      <tr><td><code>_save_to_mongo</code></td><td>Gestisce la comunicazione e l'inserimento dei log nel database.</td></tr>
+      <tr><td><code>log</code></td><td><strong>Punto di ingresso unico.</strong> Orchestra l'esecuzione di tutti i metodi precedenti.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="architettura-e-spunti"><a class="anchor" href="#architettura-e-spunti" aria-label="Link para esta seção">#</a>Architettura e Spunti</h2>
+  <ul>
+    <li><strong>Configurazione Ibrida</strong>: La classe utilizza uno schema di priorità: <code>Variável de Ambiente</code> &gt; <code>Argumento do Método</code> &gt; <code>Valor Padrão da Instância</code>. Questo permette di cambiare il comportamento del log senza modificare il codice, cambiando soltanto l'ambiente.</li>
+    <li><strong>Disaccoppiamento dei Payload</strong>: Nota che la classe distingue il "messaggio di testo" (che gli umani leggono sulla console) dal "payload di dati" (che le macchine elaborano in MongoDB).</li>
+    <li><strong>Tracciabilità Univoca</strong>: L'uso di un <code>log_id</code> generato automaticamente permette di tracciare una specifica transazione attraverso più file o collezioni del database.</li>
+  </ul>
+
+  <h2 id="dettaglio-tecnico"><a class="anchor" href="#dettaglio-tecnico" aria-label="Link para esta seção">#</a>Dettaglio Tecnico</h2>
+
+  <h2 id="classe-loggerengine"><a class="anchor" href="#classe-loggerengine" aria-label="Link para esta seção">#</a>Classe LoggerEngine</h2>
+  <p><strong>Descrizione</strong><br>Gestore centralizzato di log strutturati. Permette il controllo dinamico della verbosità e la persistenza dei dati in più destinazioni, garantendo la standardizzazione in tutta l'applicazione.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>log_id</code> (str): Identificatore univoco della transazione.</li>
+    <li><code>flag</code> (str): Identificatore dell'origine (es: "AuthService").</li>
+    <li><code>file_name</code> (str): Nome del modulo Python di origine.</li>
+    <li><code>log_file_name</code> (str): Prefisso del file di log locale.</li>
+    <li><code>show_info_logs</code> (bool): Abilita/Disabilita il livello INFO sulla console.</li>
+    <li><code>show_metadata</code> (bool): Definisce se i dati extra compaiono nel testo del log.</li>
+    <li><code>save_logs</code> (bool): Abilita la scrittura su file <code>.log</code>.</li>
+    <li><code>save_mongo</code> (bool): Abilita la persistenza in MongoDB.</li>
+    <li><code>format_metadata</code> (bool): Applica una formattazione visiva ai metadati.</li>
+  </ul>
+
+  <h2 id="1-metodo-log"><a class="anchor" href="#1-metodo-log" aria-label="Link para esta seção">#</a>1. Metodo log()</h2>
+  <p><strong>Descrizione</strong><br>Metodo principale e pubblico. Funge da "direttore d'orchestra" della classe: riceve i dati e attiva i metodi privati nell'ordine corretto per elaborare il log.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>level</code> (str): Livello di gravità (es: "INFO", "WARNING", "ERROR", "CRITICAL").</li>
+    <li><code>func_name</code> (str, opzionale): Nome della funzione in cui è stato generato il log.</li>
+    <li><code>message</code> (str, opzionale): Testo esplicativo dell'evento.</li>
+    <li><code>metadata</code> (dict, opzionale): Dizionario con dati tecnici aggiuntivi.</li>
+    <li><code>save_logs / save_mongo / show_info_logs / show_metadata</code> (bool, opzionale): Parametri per sovrascrivere il comportamento predefinito dell'istanza solo per questo log.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>dict</code>: Restituisce il payload completo che è stato generato e/o reso persistente.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>AttributeError</code>: Se il <code>level</code> indicato non è un livello di log valido.</li>
+    <li><code>ConnectionError</code>: Se il salvataggio in MongoDB fallisce.</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>logger = <span class="t-f">LoggerEngine</span>(flag=<span class="t-s">&quot;API_GATEWAY&quot;</span>, save_mongo=<span class="t-n">True</span>)
+
+<span class="t-c"># Exemplo simples</span>
+logger.<span class="t-f">log</span>(level=<span class="t-s">&quot;INFO&quot;</span>, message=<span class="t-s">&quot;Servidor iniciado na porta 8080&quot;</span>)
+
+<span class="t-c"># Exemplo complexo com metadados e sobrescrita</span>
+logger.<span class="t-f">log</span>(
+    level=<span class="t-s">&quot;ERROR&quot;</span>,
+    func_name=<span class="t-s">&quot;process_payment&quot;</span>,
+    message=<span class="t-s">&quot;Falha na transação&quot;</span>,
+    metadata={<span class="t-s">&quot;user_id&quot;</span>: <span class="t-n">123</span>, <span class="t-s">&quot;error_code&quot;</span>: <span class="t-s">&quot;ST-404&quot;</span>},
+    save_logs=<span class="t-n">True</span> <span class="t-c"># Força salvar em arquivo este erro específico</span>
+)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="2-metodo-get-env-bool"><a class="anchor" href="#2-metodo-get-env-bool" aria-label="Link para esta seção">#</a>2. Metodo _get_env_bool()</h2>
+  <p><strong>Descrizione</strong><br>Utilità interna per catturare in modo sicuro le configurazioni del sistema operativo, trattando stringhe come "true", "1" o "yes" come valori booleani veri.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>env_name</code> (str): Il nome della chiave della variabile d'ambiente.</li>
+    <li><code>default</code> (bool): Il valore di ritorno nel caso in cui la variabile non sia definita.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>bool</code>: Lo stato logico risolto.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>KeyError</code>: Se il valore presente nella variabile d'ambiente non è valido (non convertibile in booleano).</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-c"># Se no terminal: export SHOW_INFO_LOGS=True</span>
+val = engine.<span class="t-f">_get_env_bool</span>(<span class="t-s">&quot;SHOW_INFO_LOGS&quot;</span>, <span class="t-n">False</span>)
+<span class="t-c"># val será True</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="3-metodo-resolve-config"><a class="anchor" href="#3-metodo-resolve-config" aria-label="Link para esta seção">#</a>3. Metodo _resolve_config()</h2>
+  <p><strong>Descrizione</strong><br>Questo metodo agisce come il cervello decisionale della classe. Confronta le configurazioni globali (definite quando si istanzia la classe) con quelle locali (passate al momento del log). Se un parametro viene inviato come <code>None</code>, assume il valore predefinito dell'istanza.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>save_logs</code> (bool/None): Volontà di salvare su file per questo evento.</li>
+    <li><code>save_mongo</code> (bool/None): Volontà di rendere persistente nel database per questo evento.</li>
+    <li><code>show_info_logs</code> (bool/None): Volontà di mostrare il livello INFO sulla console.</li>
+    <li><code>show_metadata</code> (bool/None): Volontà di mostrare i metadati sulla console.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>dict</code>: Un dizionario con le chiavi e i loro valori booleani finali (Es: <code>{'save_logs': True, ...}</code>).</li>
+  </ul>
+  <p><strong>Esempi</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-c"># Instância configurada para NÃO salvar nada</span>
+engine = <span class="t-f">LoggerEngine</span>(save_logs=<span class="t-n">False</span>)
+
+<span class="t-c"># Chamada forçando o salvamento</span>
+config = engine.<span class="t-f">_resolve_config</span>(save_logs=<span class="t-n">True</span>, save_mongo=<span class="t-n">None</span>, ...)
+<span class="t-c"># config['save_logs'] será True (sobrescrita)</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="4-metodo-build-payloads"><a class="anchor" href="#4-metodo-build-payloads" aria-label="Link para esta seção">#</a>4. Metodo _build_payloads()</h2>
+  <p><strong>Descrizione</strong><br>Responsabile della standardizzazione dei dati. Separa il "messaggio per gli umani" (stringa formattata) dal "payload per le macchine" (dizionario strutturato). Utilizza internamente una classe ausiliaria (<code>PayloadBuilder</code>) per garantire che tutti i log del sistema abbiano lo stesso aspetto.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>level</code> (str): Livello del log.</li>
+    <li><code>func_name</code> (str): Nome della funzione di origine.</li>
+    <li><code>message</code> (str): Testo del messaggio.</li>
+    <li><code>metadata</code> (dict): Dati extra.</li>
+    <li><code>show_metadata</code> (bool): Definisce se il dizionario dei metadati deve essere inserito nella stringa di testo.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>tuple</code>: <code>(display_message: str, mongo_payload: dict)</code></li>
+  </ul>
+
+  <h2 id="5-metodo-get-logger"><a class="anchor" href="#5-metodo-get-logger" aria-label="Link para esta seção">#</a>5. Metodo _get_logger()</h2>
+  <p><strong>Descrizione</strong><br>Configura l'infrastruttura della Python Standard Library (<code>logging</code>). Crea l'oggetto che "parla" davvero con la console e con il file system, definendo colori, formati di data e il file verso cui inviare il testo.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>save_logs</code> (bool): Se True, aggiunge un <code>FileHandler</code>.</li>
+    <li><code>show_info_logs</code> (bool): Definisce il <code>level</code> minimo del logger (DEBUG, INFO o WARNING).</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>logging.Logger</code>: L'oggetto logger pronto all'uso.</li>
+  </ul>
+
+  <h2 id="6-metodo-emit-log"><a class="anchor" href="#6-metodo-emit-log" aria-label="Link para esta seção">#</a>6. Metodo _emit_log()</h2>
+  <p><strong>Descrizione</strong><br>È il grilletto finale. Dopo che tutto è configurato e il messaggio è formattato, questo metodo identifica il livello richiesto (info, error, debug) e invia il comando all'oggetto logger.</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>logger</code> (logging.Logger): L'istanza configurata nel metodo precedente.</li>
+    <li><code>level</code> (str): La gravità.</li>
+    <li><code>message</code> (str): Il messaggio finale già formattato.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>AttributeError</code>: Se provi a usare un livello che non esiste (es: <code>logger.log(level="BATATA")</code>).</li>
+  </ul>
+
+  <h2 id="7-metodo-save-to-mongo"><a class="anchor" href="#7-metodo-save-to-mongo" aria-label="Link para esta seção">#</a>7. Metodo _save_to_mongo()</h2>
+  <p><strong>Descrizione</strong><br>Esegue la persistenza persistente. Prende il payload strutturato e lo invia a una collezione in MongoDB. Questo è cruciale per le dashboard future (come Grafana o Kibana).</p>
+  <p><strong>Argomenti</strong></p>
+  <ul>
+    <li><code>mongo_metadata</code> (dict): Il payload completo generato da <code>_build_payloads</code>.</li>
+  </ul>
+  <p><strong>Valori di ritorno</strong></p>
+  <ul>
+    <li><code>str</code>: L'ID del documento inserito nel database.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li><code>ConnectionError</code>: Se il database è fuori servizio o le credenziali sono errate.</li>
+  </ul>
+
+  <h2 id="riepilogo-del-ciclo-di-vita-del-log"><a class="anchor" href="#riepilogo-del-ciclo-di-vita-del-log" aria-label="Link para esta seção">#</a>Riepilogo del Ciclo di Vita del Log</h2>
+  <p>Per visualizzare come interagiscono questi metodi, immagina questa sequenza:</p>
+  <ol>
+    <li><strong>User</strong> chiama <code>log()</code>.</li>
+    <li><code>log()</code> chiama <code>_resolve_config()</code> per conoscere le regole.</li>
+    <li><code>log()</code> chiama <code>_build_payloads()</code> per preparare i dati.</li>
+    <li><code>log()</code> chiama <code>_get_logger()</code> per preparare l'uscita.</li>
+    <li><code>log()</code> chiama <code>_emit_log()</code> per stampare a schermo/su file.</li>
+    <li><code>log()</code> chiama <code>_save_to_mongo()</code> per salvare nel database.</li>
+  </ol></div>
+        <div class="feedback"></div>
+        <p class="source">Fonte: <code>src/tracing/logger_engine.py</code></p>
+        <nav class="pager" aria-label="Pagine vicine"><a class="pager-link prev" href="../../../../pages/it/internal-source-code/index.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Precedente</small><span>Internal Services: panoramica</span></div></a><a class="pager-link next" href="../../../../pages/it/internal-source-code/application-tracing/payload-builder.html"><div><small>Successiva</small><span>Payload Builder</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="In questa pagina"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="../../../../pages/it/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+          <p>Where intelligence finds purpose.</p>
+          <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>Repository su GitHub</a>
+        </div>
+        <div class="foot-col"><h2>Documentazione</h2><a href="../../../../pages/it/getting-started/index.html">Introduction</a><a href="../../../../pages/it/agents/index.html">Agents</a><a href="../../../../pages/it/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/it/api/index.html">API</a><a href="../../../../pages/it/modules/index.html">Modules</a><a href="../../../../pages/it/internal-source-code/index.html">Internal Services</a></div>
+        <div class="foot-col"><h2>Risorse</h2><a href="../../../../pages/it/getting-started/quickstart.html">Quickstart</a><a href="../../../../pages/it/getting-started/licence.html">Licence</a><a href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener">Codice sorgente</a><a href="https://github.com/enzoschitini/better-ai/issues" target="_blank" rel="noopener">Segnala un problema</a></div>
+        <div class="foot-col"><h2>Creatore</h2><div class="foot-me"><img src="../../../../assets/img/profile.jpg" alt="" width="44" height="44"><div><strong>Enzo Schitini</strong><span>Data Scientist &amp; AI Engineer</span></div></div><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/enzoschitini" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 BetterAI &middot; Licenza MIT</span>
+        <span>Creato da <a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Enzo Schitini</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Cerca nella documentazione">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Cerca pagine e sezioni" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Risultati"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>naviga</span></span>
+    <span><kbd>Enter</kbd><span>apri</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "it", "root": "../../../../", "index": "../../../../search-it.json", "alt": {"pt": "pages/pt/internal-source-code/application-tracing/logger-engine.html", "it": "pages/it/internal-source-code/application-tracing/logger-engine.html", "en": "pages/en/internal-source-code/application-tracing/logger-engine.html"}, "i": {"noResults": "Nessun risultato per “%s”. Prova con il nome di un modulo, come “Pinecone”."}};</script>
+<script src="../../../../_design-system/js/ds.js?v=9a5e2954"></script>
+<script src="../../../../_design-system/js/docs.js?v=6f602c0a"></script>
+</body>
+</html>

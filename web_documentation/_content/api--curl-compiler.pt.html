@@ -1,0 +1,286 @@
+<page data-lead="A classe CurlCompiler foi criada para facilitar a interpretação e execução programática de comandos curl no ambiente Python, utilizando a biblioteca requests.">
+  <h2>Visão Geral</h2>
+  <p>A classe <code>CurlCompiler</code> foi criada para facilitar a interpretação e execução programática de comandos <code>curl</code> no ambiente Python, utilizando a biblioteca <code>requests</code>. Ela resolve o problema de automatizar requisições HTTP que seriam normalmente feitas via terminal, permitindo o parsing detalhado do comando <code>curl</code> para identificar método HTTP, cabeçalhos, autenticação, corpo da requisição e URL.</p>
+  <p>Na prática, esta classe permite que desenvolvedores peguem qualquer comando <code>curl</code> e:</p>
+  <ul>
+    <li>obtenham seus componentes de forma estruturada (método, headers, dados),</li>
+    <li>executem a requisição HTTP diretamente via código Python,</li>
+    <li>imprimam as respostas de forma legível,</li>
+    <li>gerem snippets Python equivalentes para reaproveitamento.</li>
+  </ul>
+  <p>Isso é especialmente útil em cenários de testes de APIs, integração de sistemas ou quando o comando <code>curl</code> é gerado por outras ferramentas e precisa ser utilizado programaticamente.</p>
+
+  <h2>Fluxo de Execução</h2>
+  <ol>
+    <li><strong>Inicialização do objeto</strong>: Cria-se uma instância da classe <code>CurlCompiler</code>, podendo definir timeout e se a verificação SSL está ativa ou não.</li>
+    <li><strong>Compilar comando curl</strong>: Ao passar o comando <code>curl</code> como string ao método <code>compile</code>, ele será quebrado em tokens para extrair método HTTP, headers, body, autenticação e URL.</li>
+    <li><strong>Validação da compilação</strong>: O comando é validado para garantir que possua URL e método HTTP válidos.</li>
+    <li><strong>Execução da requisição</strong>: Usando o método <code>execute</code>, a classe compila o comando e dispara a requisição HTTP com base nos dados extraídos.</li>
+    <li><strong>Tratar resposta</strong>: A resposta HTTP recebida pode ser convertida em dicionário para manipulações via <code>response_to_dict</code>, impressa de forma formatada com <code>pretty_print_response</code> ou inspecionada manualmente.</li>
+    <li><strong>Geração de código Python</strong>: Pode-se gerar um snippet em Python equivalente ao comando <code>curl</code> com <code>generate_python_code</code> para reutilização ou documentação.</li>
+  </ol>
+
+  <h2>Tabela de Métodos da Classe</h2>
+  <table>
+    <thead><tr><th>Método</th><th>Descrição</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Inicializa a classe com configurações de timeout e verificação SSL</td></tr>
+      <tr><td><code>compile</code></td><td>Parseia o comando curl e devolve seus componentes em um dicionário</td></tr>
+      <tr><td><code>execute</code></td><td>Compila e executa o comando curl, devolvendo a resposta HTTP</td></tr>
+      <tr><td><code>call_endpoint</code></td><td>Executa a requisição HTTP com parâmetros definidos manualmente</td></tr>
+      <tr><td><code>response_to_dict</code></td><td>Converte response <code>requests</code> em dicionário para fácil manipulação</td></tr>
+      <tr><td><code>pretty_print_response</code></td><td>Imprime a resposta HTTP formatada para leitura</td></tr>
+      <tr><td><code>get_domain</code></td><td>Extrai o domínio de uma URL fornecida</td></tr>
+      <tr><td><code>generate_python_code</code></td><td>Gera código Python equivalente ao comando curl</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Pontos Importantes da Arquitetura e Insights</h2>
+  <ul>
+    <li>A classe usa parsing lexical via <code>shlex</code> para lidar corretamente com strings e espaços no comando <code>curl</code>.</li>
+    <li>Implementa um encapsulamento claro: parsing, execução, manipulação da resposta e geração de código ficam separados em métodos.</li>
+    <li>A decisão de definir automaticamente o método POST caso contenha body em um comando originalmente GET é prática comum e facilita o uso.</li>
+    <li>Utiliza a biblioteca <code>requests</code> diretamente para execução, garantindo compatibilidade e robustez.</li>
+    <li>O método <code>compile</code> cobre as opções principais do curl (método, headers, auth básica, dados) e é extensível.</li>
+    <li>A geração de código Python permite integrar comandos curl externos rapidamente sem retrabalho manual.</li>
+  </ul>
+
+  <h2>Descrição da Classe e Métodos</h2>
+
+  <h2>Classe <code>CurlCompiler</code></h2>
+
+  <h3>Descrição</h3>
+  <p>Classe que permite interpretar comandos <code>curl</code> para executar requisições HTTP via Python, facilitando automação, testes e integração de APIs. Faz parsing completo do comando para recuperar método, URL, cabeçalhos, autenticação e dados, e executar o chamado usando a biblioteca <code>requests</code>. Também possibilita manipulação fácil e exibição da resposta.</p>
+
+  <h3>Argumentos do Construtor</h3>
+  <table>
+    <thead><tr><th>Argumento</th><th>Tipo</th><th>Descrição</th><th>Valor Padrão</th></tr></thead>
+    <tbody>
+      <tr><td>timeout</td><td>int</td><td>Tempo limite em segundos para as requisições HTTP</td><td>30</td></tr>
+      <tr><td>verify_ssl</td><td>bool</td><td>Define se a verificação de certificado SSL é feita</td><td>True</td></tr>
+    </tbody>
+  </table>
+
+  <h3>1. <code>__init__</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Inicializa o objeto <code>CurlCompiler</code> configurando o timeout para requisições HTTP e se a verificação SSL deve ser feita.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>timeout (int): tempo máximo em segundos para a requisição (default 30).</li>
+    <li>verify_ssl (bool): ativa/desativa verificação SSL (default True).</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>Não retorna valor.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Não se aplica.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+client = CurlCompiler(timeout=10, verify_ssl=False)
+</code></pre>
+
+  <h3>2. <code>compile</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Recebe um comando <code>curl</code> (string), faz o parsing completo para extrair método HTTP, URL, headers, autenticação e corpo da requisição. Retorna um dicionário estruturado com essas informações prontas para consumo.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>curl_command (str): string contendo o comando curl completo.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>dict: dicionário contendo chaves <code>method</code>, <code>url</code>, <code>headers</code>, <code>params</code>, <code>data</code>, <code>json</code>, <code>auth</code>.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>ValueError: se o comando não iniciar com "curl" ou se não contiver URL/metodo HTTP válidos.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+curl = 'curl -X POST https://api.exemplo.com -H "Content-Type: application/json" -d \'{"key":"value"}\''
+compiled = client.compile(curl)
+print(compiled['method'])  # "POST"
+print(compiled['url'])     # "https://api.exemplo.com"
+print(compiled['json'])    # {"key": "value"}
+</code></pre>
+
+  <h3>3. <code>execute</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Compila o comando <code>curl</code> e executa a requisição HTTP retornando o objeto <code>requests.Response</code>.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>curl_command (str): comando curl a ser executado.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>requests.Response: resposta recebida do servidor.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Propaga exceções da compilação e da execução HTTP (ex: ValueError, requests exceptions).</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+response = client.execute('curl -X GET https://httpbin.org/get')
+print(response.status_code)  # 200
+print(response.text)         # Conteúdo da resposta
+</code></pre>
+
+  <h3>4. <code>call_endpoint</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Executa uma chamada HTTP direta usando parâmetros explícitos (método, url, headers, body, autenticação).</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>method (str): método HTTP ('GET', 'POST', etc.)</li>
+    <li>url (str): URL do endpoint</li>
+    <li>headers (dict, opcional): headers HTTP</li>
+    <li>data (qualquer, opcional): corpo da requisição em formato raw/texto</li>
+    <li>json_data (qualquer, opcional): corpo da requisição em JSON serializável</li>
+    <li>auth (tuple, opcional): par (username, password) para autenticação básica</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>requests.Response: resposta da requisição HTTP.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Propaga exceções do requests.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+resp = client.call_endpoint(
+    method='POST',
+    url='https://api.exemplo.com',
+    headers={'Content-Type': 'application/json'},
+    json_data={'msg': 'oi'}
+)
+print(resp.status_code)
+</code></pre>
+
+  <h3>5. <code>response_to_dict</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Converte o objeto <code>requests.Response</code> em dicionário contendo status, headers, corpo (JSON ou texto) e flag de sucesso.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>response (requests.Response): objeto de resposta HTTP.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>dict: dicionário contendo as chaves <code>status_code</code>, <code>headers</code>, <code>body</code>, <code>success</code>.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Não se aplica.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+resp_dict = client.response_to_dict(response)
+print(resp_dict['status_code'])  # Exemplo: 200
+print(resp_dict['body'])         # Conteúdo da resposta
+</code></pre>
+
+  <h3>6. <code>pretty_print_response</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Imprime de forma formatada e legível os detalhes da resposta HTTP, incluindo status, headers e corpo.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>response (requests.Response): resposta HTTP a ser impressa.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>None</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Não se aplica.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+client.pretty_print_response(response)
+# Status: 200
+# Headers: { ... }
+# Body: { ... }
+</code></pre>
+
+  <h3>7. <code>get_domain</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Extrai o domínio (host) a partir de uma URL completa.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>url (str): URL da qual extrair o domínio.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>str: domínio extraído, por exemplo, "httpbin.org".</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Não se aplica.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+domain = client.get_domain("https://httpbin.org/post")
+print(domain)  # httpbin.org
+</code></pre>
+
+  <h3>8. <code>generate_python_code</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Gera um snippet de código Python usando <code>requests</code> que implementa o mesmo comportamento do comando <code>curl</code> recebido.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>curl_command (str): comando curl para ser convertido.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>str: código Python formatado e indentado.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Propaga erros da compilação do comando curl.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <pre data-lang="python"><code>
+code = client.generate_python_code('curl -X POST https://api.exemplo.com -H "Content-Type: application/json" -d \'{"key":"value"}\'')
+print(code)
+</code></pre>
+  <p>Exemplo esperado do output:</p>
+  <pre data-lang="python"><code>
+# =========================================================
+# EXEMPLO DE USO
+# =========================================================
+
+if __name__ == "__main__":
+
+    curl = '''
+    curl -X POST "https://httpbin.org/post" \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer TOKEN_123" \
+    -d '{"message":"hello world","value":123}'
+    '''
+
+    curl = '''
+    curl --location --request POST 'http://localhost:8000/embedding'
+    '''
+
+    client = CurlCompiler(timeout=15)
+
+    # Compilar CURL
+    compiled = client.compile(curl)
+
+    print("\nCURL COMPILADO:")
+    print(json.dumps(compiled, indent=4, ensure_ascii=False))
+
+    # Executar
+    response = client.execute(curl)
+
+    # Mostrar resposta
+    client.pretty_print_response(response)
+
+    # Gerar código equivalente
+    print("\nCÓDIGO PYTHON GERADO:\n")
+    print(client.generate_python_code(curl))
+</code></pre>
+  <p>Esta documentação fornece uma visão completa e didática do funcionamento da classe <code>CurlCompiler</code> e seus principais métodos, habilitando desenvolvedores a utilizá-la de forma eficiente para parsing e execução automatizada de comandos <code>curl</code> em Python.</p>
+</page>

@@ -1,0 +1,53 @@
+<page data-lead="Builds a rich markdown context from a deep web search, using TavilyDeepResearch as the search engine.">
+  <h2>Context Builder - <code>/deep-research/context-builder</code></h2>
+  <endpoint method="POST" path="/deep-research/context-builder"></endpoint>
+  <p>Builds a rich markdown context from a deep web search, using <strong>TavilyDeepResearch</strong> as the search engine. Ideal for feeding RAG pipelines, report generation or prompt enrichment.</p>
+
+  <h3>Parameters</h3>
+  <table>
+    <thead><tr><th>Parameter</th><th>Type</th><th>Description</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><code>query</code></td><td><code>string</code></td><td>Question or central topic of the search. Defines what will be searched.</td><td><code>"Principais tendências de IA em 2026?"</code></td></tr>
+      <tr><td><code>search_depth</code></td><td><code>"basic"</code> | <code>"advanced"</code></td><td>Search depth. <code>basic</code> for a quick overview, <code>advanced</code> for a broader and more detailed search.</td><td><code>"advanced"</code></td></tr>
+      <tr><td><code>max_results</code></td><td><code>integer</code> (1–100)</td><td>Maximum number of results to retrieve and include in the context.</td><td><code>35</code></td></tr>
+      <tr><td><code>topic</code></td><td><code>string</code></td><td>Category or domain of the search. Guides the type of source prioritized. Common values: <code>general</code>, <code>news</code>, <code>finance</code>.</td><td><code>"news"</code></td></tr>
+      <tr><td><code>include_answer</code></td><td><code>boolean</code></td><td>If <code>true</code>, includes in the context an automatically generated answer based on the results found.</td><td><code>true</code></td></tr>
+      <tr><td><code>min_score</code></td><td><code>float</code> (0.0–1.0)</td><td>Minimum relevance score. Results below this threshold are discarded. Higher values = more precise but smaller context.</td><td><code>0.5</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Request</h3>
+  <pre data-lang="bash"><code>
+curl --location 'http://localhost:8000/deep-research/context-builder' \
+--header 'Content-Type: application/json' \
+--header 'X-API-Key: ******' \
+--data '{
+    "query": "Principais tendências de IA em 2026?",
+    "search_depth": "advanced",
+    "max_results": 35,
+    "topic": "general",
+    "include_answer": true,
+    "min_score": 0.5
+}'
+</code></pre>
+
+  <h3>Response</h3>
+  <pre data-lang="json"><code>
+{
+    "job_id": "job_1779392104064657200TsJh",
+    "status": "success",
+    "status_code": 200,
+    "result": {
+        "markdown": "...",
+        "urls": [
+            "https://example.com"
+        ]
+    },
+    "time": {
+        "start": "2026-05-21 16:35:04",
+        "end": "2026-05-21 16:35:11",
+        "duration_seconds": 7.0
+    }
+}
+</code></pre>
+</page>

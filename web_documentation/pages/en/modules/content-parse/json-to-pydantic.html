@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Json To Pydantic | BetterAI Docs</title>
+<meta name="description" content="The JsonToPydantic class was developed to make it easier to dynamically convert JSON dictionaries into Pydantic models with automatic field typing.">
+<link rel="canonical" href="pages/en/modules/content-parse/json-to-pydantic.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../../../_design-system/css/tokens.css?v=7f43b250">
+<link rel="stylesheet" href="../../../../_design-system/css/base.css?v=4a698b89">
+<link rel="stylesheet" href="../../../../_design-system/css/layout.css?v=503e806e">
+<link rel="stylesheet" href="../../../../_design-system/css/content.css?v=cfc5f8ef">
+<link rel="stylesheet" href="../../../../_design-system/css/search.css?v=1ecf3252">
+<link rel="stylesheet" href="../../../../_design-system/css/responsive.css?v=6efeec66">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Created by Enzo Schitini. I invite you to connect with me on LinkedIn.</a></span>
+    <button type="button" aria-label="Dismiss notice"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../pages/en/index.html">
+        <img src="../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Search the documentation">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Search...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="../../../../pages/en/getting-started/quickstart.html">Quickstart<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Language"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>EN</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="false"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="false"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="true"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Toggle light and dark theme"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Documentation areas"><a class="tab" href="../../../../pages/en/index.html">Overview</a><a class="tab" href="../../../../pages/en/getting-started/index.html">Introduction</a><a class="tab" href="../../../../pages/en/agents/index.html">Agents</a><a class="tab" href="../../../../pages/en/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../pages/en/api/index.html">API</a><a class="tab" href="../../../../pages/en/modules/index.html" aria-current="page">Modules</a><a class="tab" href="../../../../pages/en/internal-source-code/index.html">Internal Services</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Modules</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Json To Pydantic</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Documentation navigation">
+    <nav class="side"><div class="side-areas"><a href="../../../../pages/en/index.html">Overview</a><a href="../../../../pages/en/getting-started/index.html">Introduction</a><a href="../../../../pages/en/agents/index.html">Agents</a><a href="../../../../pages/en/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/en/api/index.html">API</a><a href="../../../../pages/en/modules/index.html" aria-current="page">Modules</a><a href="../../../../pages/en/internal-source-code/index.html">Internal Services</a></div><a class="side-link" href="../../../../pages/en/modules/index.html"><span>Overview</span></a><div class="side-group"><p class="side-title">Content Parse</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Content Parsing Agent</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/en/modules/content-parse/content-parsing-agent/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../pages/en/modules/content-parse/content-parsing-agent/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/en/modules/content-parse/document-parse.html"><span>Document Parse</span></a></li><li><a class="side-link" href="../../../../pages/en/modules/content-parse/field-metadata-parser.html"><span>Field Metadata Parser</span></a></li><li><a class="side-link" href="../../../../pages/en/modules/content-parse/generate-pydantic-schema.html"><span>Generate Pydantic Schema</span></a></li><li><a class="side-link" href="../../../../pages/en/modules/content-parse/json-to-pydantic.html" aria-current="page"><span>Json To Pydantic</span></a></li></ul></div><div class="side-group"><p class="side-title">Deep Research</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Tavily Research</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/en/modules/deep-research/tavily-research/context-builder.html"><span>Context Builder</span></a></li><li><a class="side-link" href="../../../../pages/en/modules/deep-research/tavily-research/tavily-core.html"><span>Tavily Core</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Image Generation</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Cost Calculator</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/en/modules/image-generation/cost-calculator/cost-calculator.html"><span>Cost Calculator</span></a></li><li><a class="side-link" href="../../../../pages/en/modules/image-generation/cost-calculator/pricing-table.html"><span>Pricing Table</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/en/modules/image-generation/image-generator-service.html"><span>Image Generator Service</span></a></li><li><a class="side-link" href="../../../../pages/en/modules/image-generation/module.html"><span>Module</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Utils</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/en/modules/image-generation/utils/config.html"><span>Config</span></a></li><li><a class="side-link" href="../../../../pages/en/modules/image-generation/utils/gemini-client.html"><span>Gemini Client</span></a></li><li><a class="side-link" href="../../../../pages/en/modules/image-generation/utils/params-validator.html"><span>Params Validator</span></a></li><li><a class="side-link" href="../../../../pages/en/modules/image-generation/utils/payload-builder.html"><span>Payload Builder</span></a></li></ul></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Content Parse</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Json To Pydantic</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copy page</span></button>
+            </div>
+          </div>
+          <p class="lead">The JsonToPydantic class was developed to make it easier to dynamically convert JSON dictionaries into Pydantic models with automatic field typing.</p>
+          <details class="toc-inline"><summary>On this page</summary><ul></ul></details>
+        </header>
+        <div class="prose"><h2 id="overview"><a class="anchor" href="#overview" aria-label="Link para esta seção">#</a>Overview</h2>
+  <p>The <code>JsonToPydantic</code> class was developed to make it easier to dynamically convert JSON dictionaries into Pydantic models with automatic field typing. This process is very useful when working with unstructured or variable JSON data, and there is a need to validate and manipulate that data using the robustness that Pydantic offers.</p>
+  <p>Basically, the class lets you turn an arbitrary JSON into a Pydantic class generated at runtime, inferring the basic types of the values (such as string, integer, float, boolean, lists and dictionaries). This simplifies workflows that involve data validation, testing or manipulation where the JSON schema is not defined beforehand.</p>
+  <p>In practice, just create an instance of <code>JsonToPydantic</code>, pass the JSON as a dictionary to the class methods, and automatically get typed models and instances, ready for validation and easier access to the data.</p>
+
+  <h2 id="execution-flow"><a class="anchor" href="#execution-flow" aria-label="Link para esta seção">#</a>Execution Flow</h2>
+  <ol>
+    <li>Instantiates the <code>JsonToPydantic</code> class, optionally passing a name for the Pydantic model that will be created (<code>model_name</code>).</li>
+    <li>Calls the <code>build_model</code> method passing a JSON dictionary to create a dynamic Pydantic model. This method infers the field types based on the values in the dictionary.</li>
+    <li>Uses the <code>parse</code> method to create an instance of the previously generated Pydantic model, filled with the data from the JSON dictionary.</li>
+    <li>If any step fails (type inference, model construction, instantiation), the class raises <code>RuntimeError</code> exceptions to indicate explanatory errors.</li>
+  </ol>
+
+  <h2 id="class-methods-table"><a class="anchor" href="#class-methods-table" aria-label="Link para esta seção">#</a>Class Methods Table</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Method</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Initializes the class by setting the name of the Pydantic model.</td></tr>
+      <tr><td><code>_infer_type</code></td><td>Identifies the Python type of a value for field typing.</td></tr>
+      <tr><td><code>build_model</code></td><td>Dynamically creates a Pydantic model based on the dictionary.</td></tr>
+      <tr><td><code>parse</code></td><td>Creates a model instance filled with the JSON data.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="key-architecture-points-and-insights"><a class="anchor" href="#key-architecture-points-and-insights" aria-label="Link para esta seção">#</a>Key Architecture Points and Insights</h2>
+  <ul>
+    <li>The class uses the <code>pydantic</code> library to create models dynamically (<code>create_model</code>) and for robust data validation.</li>
+    <li>The inference done by the <code>_infer_type</code> method covers common Python types and returns <code>Any</code> when the type is not clearly identified.</li>
+    <li>The use of <code>RuntimeError</code> exceptions with specific messages makes it easier to understand possible failures in the flow.</li>
+    <li>The class does not depend on external environment variables to work.</li>
+    <li>The approach adopted makes it easier to create dynamic schemas, which is useful for systems that consume JSONs with a variable structure or one unknown at development time.</li>
+  </ul>
+
+  <h2 id="class-and-methods-description"><a class="anchor" href="#class-and-methods-description" aria-label="Link para esta seção">#</a>Class and Methods Description</h2>
+
+  <h2 id="jsontopydantic-class"><a class="anchor" href="#jsontopydantic-class" aria-label="Link para esta seção">#</a><code>JsonToPydantic</code> Class</h2>
+
+  <h3 id="description"><a class="anchor" href="#description" aria-label="Link para esta seção">#</a>Description</h3>
+  <p>Class for dynamically creating Pydantic models from JSON dictionaries, allowing automatic validation and typing of the fields according to the data received.</p>
+
+  <h3 id="constructor-arguments"><a class="anchor" href="#constructor-arguments" aria-label="Link para esta seção">#</a>Constructor Arguments</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argument</th><th>Type</th><th>Description</th><th>Default Value</th></tr></thead>
+    <tbody>
+      <tr><td>model_name</td><td>str</td><td>Name of the Pydantic model created</td><td>"DynamicModel"</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="methods"><a class="anchor" href="#methods" aria-label="Link para esta seção">#</a>Methods</h3>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Initializes the object by setting the name of the Pydantic model that will be created dynamically.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>model_name (str): Name of the Pydantic model (optional).</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>Returns no value.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>None.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>converter = <span class="t-f">JsonToPydantic</span>()  <span class="t-c"># modelo padrão &quot;DynamicModel&quot;</span>
+converter_custom = <span class="t-f">JsonToPydantic</span>(<span class="t-s">&quot;MeuModelo&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-infer-type"><a class="anchor" href="#2-infer-type" aria-label="Link para esta seção">#</a>2. <code>_infer_type</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Identifies the Python type corresponding to the given value to define the type of the field in the model.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>value (Any): Value to be analyzed and typed.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>Type: Corresponding Python type (str, int, float, bool, list, dict or Any).</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>RuntimeError: If an error occurs during type inference.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>tipo = converter.<span class="t-f">_infer_type</span>(<span class="t-s">&quot;texto&quot;</span>)  <span class="t-c"># retorna &lt;class 'str'&gt;</span>
+tipo = converter.<span class="t-f">_infer_type</span>(<span class="t-n">123</span>)      <span class="t-c"># retorna &lt;class 'int'&gt;</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-build-model"><a class="anchor" href="#3-build-model" aria-label="Link para esta seção">#</a>3. <code>build_model</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Builds and returns a dynamically generated Pydantic model with fields and types based on the given JSON dictionary.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>data (Dict[str, Any]): Dictionary with data for inferring the model.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>Type[BaseModel]: Class of the Pydantic model created.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>RuntimeError: If an error occurs during model creation.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>modelo = converter.<span class="t-f">build_model</span>({<span class="t-s">&quot;nome&quot;</span>: <span class="t-s">&quot;Ana&quot;</span>, <span class="t-s">&quot;idade&quot;</span>: <span class="t-n">30</span>})
+<span class="t-c"># Retorna um modelo equivalente a:</span>
+<span class="t-c"># class DynamicModel(BaseModel):</span>
+<span class="t-c">#     nome: str</span>
+<span class="t-c">#     idade: int</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-parse"><a class="anchor" href="#4-parse" aria-label="Link para esta seção">#</a>4. <code>parse</code></h3>
+  <p><strong>Description</strong></p>
+  <p>Generates a Pydantic model from the data and returns an instance filled with that data.</p>
+  <p><strong>Arguments</strong></p>
+  <ul>
+    <li>data (Dict[str, Any]): JSON dictionary to be converted into a model instance.</li>
+  </ul>
+  <p><strong>Returns</strong></p>
+  <ul>
+    <li>BaseModel: Instance of the Pydantic model with the validated data.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>RuntimeError: If a failure occurs in creating or validating the instance.</li>
+  </ul>
+  <p><strong>Examples</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">if</span> __name__ == <span class="t-s">&quot;__main__&quot;</span>:
+    data = {
+        <span class="t-s">&quot;text&quot;</span>: <span class="t-s">&quot;A empresa TechNova está crescendo rapidamente.&quot;</span>,
+        <span class="t-s">&quot;task&quot;</span>: <span class="t-s">&quot;Se o nome da empresa for TechNova, troque por BetterAI&quot;</span>
+    }
+    parser = <span class="t-f">JsonToPydantic</span>(<span class="t-s">&quot;ResearchRequest&quot;</span>)
+    request = parser.<span class="t-f">parse</span>(data)
+
+    <span class="t-f">print</span>(request)
+    <span class="t-f">print</span>(<span class="t-f">type</span>(request))
+
+<span class="t-c"># python -m src.content_parse.pydantic_shema</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="mapping-of-schema-forms"><a class="anchor" href="#mapping-of-schema-forms" aria-label="Link para esta seção">#</a>Mapping of schema forms</h2>
+
+  <h3 id="1-inputs-accepted-by-the-route"><a class="anchor" href="#1-inputs-accepted-by-the-route" aria-label="Link para esta seção">#</a>1. Inputs accepted by the route</h3>
+  <p>Request format: <code>multipart/form-data</code>.</p>
+  <p>Fields:</p>
+  <ul>
+    <li><code>job_id</code> (required): <code>str</code></li>
+    <li><code>metadata</code> (required): <code>str</code> containing valid JSON</li>
+    <li><code>document_schema</code> (required): <code>str</code> containing valid JSON</li>
+    <li><code>file</code> (required): file</li>
+    <li><code>config</code> (optional): <code>str</code> containing valid JSON</li>
+  </ul>
+  <p>File rules on this route:</p>
+  <ul>
+    <li>Allowed extensions: <code>txt</code>, <code>md</code>, <code>pdf</code>, <code>docx</code></li>
+    <li>Maximum size: <code>50 MB</code></li>
+  </ul>
+  <p>Common input errors:</p>
+  <ul>
+    <li><code>Invalid JSON in metadata</code></li>
+    <li><code>Invalid JSON in schema</code></li>
+    <li><code>Invalid JSON in config</code></li>
+  </ul>
+
+  <h3 id="2-important-who-interprets-the-document-schema"><a class="anchor" href="#2-important-who-interprets-the-document-schema" aria-label="Link para esta seção">#</a>2. Important: who interprets the <code>document_schema</code></h3>
+  <ul>
+    <li><code>document_schema</code> is <strong>not</strong> converted by <code>JsonToPydantic</code>.</li>
+    <li>On the route, it is converted by <code>GeneratePydanticSchema</code> + <code>FieldMetadataParser</code>.</li>
+    <li><code>JsonToPydantic</code> is used in the agent for <code>input_data</code> and <code>config_data</code>.</li>
+  </ul>
+
+  <h3 id="3-all-forms-of-document-schema-accepted-in-practice"><a class="anchor" href="#3-all-forms-of-document-schema-accepted-in-practice" aria-label="Link para esta seção">#</a>3. All forms of <code>document_schema</code> accepted in practice</h3>
+
+  <h3 id="3-1-simple-declarative-field"><a class="anchor" href="#3-1-simple-declarative-field" aria-label="Link para esta seção">#</a>3.1 Simple declarative field</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+    <span class="t-f">&quot;summary&quot;</span>: {
+        <span class="t-f">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>,
+        <span class="t-f">&quot;description&quot;</span>: <span class="t-s">&quot;Resumo do conteúdo do arquivo&quot;</span>
+    }
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-2-declarative-field-with-required-default-example"><a class="anchor" href="#3-2-declarative-field-with-required-default-example" aria-label="Link para esta seção">#</a>3.2 Declarative field with <code>required</code>, <code>default</code>, <code>example</code></h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+    <span class="t-f">&quot;title&quot;</span>: {
+        <span class="t-f">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>,
+        <span class="t-f">&quot;required&quot;</span>: <span class="t-k">true</span>,
+        <span class="t-f">&quot;description&quot;</span>: <span class="t-s">&quot;Título principal&quot;</span>,
+        <span class="t-f">&quot;example&quot;</span>: <span class="t-s">&quot;Relatório de Q2&quot;</span>
+    },
+    <span class="t-f">&quot;confidence&quot;</span>: {
+        <span class="t-f">&quot;type&quot;</span>: <span class="t-s">&quot;float&quot;</span>,
+        <span class="t-f">&quot;required&quot;</span>: <span class="t-k">false</span>,
+        <span class="t-f">&quot;default&quot;</span>: <span class="t-n">0.0</span>,
+        <span class="t-f">&quot;description&quot;</span>: <span class="t-s">&quot;Confianca da extração&quot;</span>
+    }
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-3-declarative-field-with-size-validation"><a class="anchor" href="#3-3-declarative-field-with-size-validation" aria-label="Link para esta seção">#</a>3.3 Declarative field with size validation</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+    <span class="t-f">&quot;abstract&quot;</span>: {
+        <span class="t-f">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>,
+        <span class="t-f">&quot;description&quot;</span>: <span class="t-s">&quot;Resumo detalhado&quot;</span>,
+        <span class="t-f">&quot;min_length&quot;</span>: <span class="t-n">20</span>,
+        <span class="t-f">&quot;max_length&quot;</span>: <span class="t-n">500</span>
+    }
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-4-declarative-list-of-primitives"><a class="anchor" href="#3-4-declarative-list-of-primitives" aria-label="Link para esta seção">#</a>3.4 Declarative list of primitives</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+    <span class="t-f">&quot;keywords&quot;</span>: {
+        <span class="t-f">&quot;type&quot;</span>: <span class="t-s">&quot;list&quot;</span>,
+        <span class="t-f">&quot;items&quot;</span>: {
+            <span class="t-f">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>
+        },
+        <span class="t-f">&quot;description&quot;</span>: <span class="t-s">&quot;Palavras-chave&quot;</span>
+    }
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-5-declarative-list-of-objects"><a class="anchor" href="#3-5-declarative-list-of-objects" aria-label="Link para esta seção">#</a>3.5 Declarative list of objects</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+    <span class="t-f">&quot;entities&quot;</span>: {
+        <span class="t-f">&quot;type&quot;</span>: <span class="t-s">&quot;list&quot;</span>,
+        <span class="t-f">&quot;items&quot;</span>: {
+            <span class="t-f">&quot;type&quot;</span>: <span class="t-s">&quot;object&quot;</span>,
+            <span class="t-f">&quot;properties&quot;</span>: {
+                <span class="t-f">&quot;name&quot;</span>: {
+                    <span class="t-f">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>,
+                    <span class="t-f">&quot;description&quot;</span>: <span class="t-s">&quot;Nome&quot;</span>
+                },
+                <span class="t-f">&quot;category&quot;</span>: {
+                    <span class="t-f">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>,
+                    <span class="t-f">&quot;description&quot;</span>: <span class="t-s">&quot;Categoria&quot;</span>
+                },
+                <span class="t-f">&quot;score&quot;</span>: {
+                    <span class="t-f">&quot;type&quot;</span>: <span class="t-s">&quot;float&quot;</span>,
+                    <span class="t-f">&quot;description&quot;</span>: <span class="t-s">&quot;Pontuação&quot;</span>
+                }
+            }
+        }
+    }
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-6-automatic-inference-by-example-without-type"><a class="anchor" href="#3-6-automatic-inference-by-example-without-type" aria-label="Link para esta seção">#</a>3.6 Automatic inference by example (without <code>type</code>)</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+    <span class="t-f">&quot;summary&quot;</span>: <span class="t-s">&quot;texto exemplo&quot;</span>,
+    <span class="t-f">&quot;score&quot;</span>: <span class="t-n">0.98</span>,
+    <span class="t-f">&quot;approved&quot;</span>: <span class="t-k">true</span>
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-7-nested-object-inference"><a class="anchor" href="#3-7-nested-object-inference" aria-label="Link para esta seção">#</a>3.7 Nested object inference</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+    <span class="t-f">&quot;invoice&quot;</span>: {
+        <span class="t-f">&quot;number&quot;</span>: <span class="t-s">&quot;INV-001&quot;</span>,
+        <span class="t-f">&quot;total&quot;</span>: <span class="t-n">199.9</span>,
+        <span class="t-f">&quot;paid&quot;</span>: <span class="t-k">false</span>
+    }
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-8-list-of-objects-inference"><a class="anchor" href="#3-8-list-of-objects-inference" aria-label="Link para esta seção">#</a>3.8 List of objects inference</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+    <span class="t-f">&quot;items&quot;</span>: [
+        {
+            <span class="t-f">&quot;sku&quot;</span>: <span class="t-s">&quot;A-1&quot;</span>,
+            <span class="t-f">&quot;quantity&quot;</span>: <span class="t-n">2</span>,
+            <span class="t-f">&quot;unit_price&quot;</span>: <span class="t-n">49.9</span>
+        }
+    ]
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-9-inference-with-an-empty-list"><a class="anchor" href="#3-9-inference-with-an-empty-list" aria-label="Link para esta seção">#</a>3.9 Inference with an empty list</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+    <span class="t-f">&quot;items&quot;</span>: []
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>In this case, the type becomes a generic list.</p>
+
+  <h3 id="3-10-hybrid-schema-declarative-inference-in-the-same-payload"><a class="anchor" href="#3-10-hybrid-schema-declarative-inference-in-the-same-payload" aria-label="Link para esta seção">#</a>3.10 Hybrid schema (declarative + inference in the same payload)</h3>
+  <div class="code plain"><div class="code-body"><pre data-lang="json"><code>{
+    <span class="t-f">&quot;summary&quot;</span>: {
+        <span class="t-f">&quot;type&quot;</span>: <span class="t-s">&quot;str&quot;</span>,
+        <span class="t-f">&quot;description&quot;</span>: <span class="t-s">&quot;Resumo final&quot;</span>
+    },
+    <span class="t-f">&quot;stats&quot;</span>: {
+        <span class="t-f">&quot;pages&quot;</span>: <span class="t-n">12</span>,
+        <span class="t-f">&quot;language&quot;</span>: <span class="t-s">&quot;pt-BR&quot;</span>
+    }
+}</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="4-type-mapping-in-declarative-mode"><a class="anchor" href="#4-type-mapping-in-declarative-mode" aria-label="Link para esta seção">#</a>4. Type mapping in declarative mode</h3>
+  <p>Values recognized in <code>type</code>:</p>
+  <ul>
+    <li><code>str</code></li>
+    <li><code>int</code></li>
+    <li><code>float</code></li>
+    <li><code>bool</code></li>
+    <li><code>list</code></li>
+    <li><code>dict</code></li>
+  </ul>
+  <p>If the type is not recognized, it falls back to <code>Any</code>.</p>
+
+  <h3 id="5-important-rules-and-limitations"><a class="anchor" href="#5-important-rules-and-limitations" aria-label="Link para esta seção">#</a>5. Important rules and limitations</h3>
+  <ol>
+    <li>If the field is a <code>dict</code> and has a <code>type</code> key, it is treated as declarative metadata.</li>
+    <li>For <code>type = "list"</code>, <code>items</code> is required.</li>
+    <li>A declarative list of objects requires <code>items.type = "object"</code> with <code>properties</code>.</li>
+    <li>Fields without <code>required</code> are optional by default.</li>
+    <li>The parser accepts a hybrid structure, mixing declarative and inferred fields.</li>
+  </ol></div>
+        <div class="feedback"></div>
+        <p class="source">Source: <code>src/content_parse/pydantic_schema.py</code></p>
+        <nav class="pager" aria-label="Neighboring pages"><a class="pager-link prev" href="../../../../pages/en/modules/content-parse/generate-pydantic-schema.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Previous</small><span>Generate Pydantic Schema</span></div></a><a class="pager-link next" href="../../../../pages/en/modules/deep-research/tavily-research/context-builder.html"><div><small>Next</small><span>Context Builder</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="On this page"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="../../../../pages/en/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+          <p>Where intelligence finds purpose.</p>
+          <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>Repository on GitHub</a>
+        </div>
+        <div class="foot-col"><h2>Documentation</h2><a href="../../../../pages/en/getting-started/index.html">Introduction</a><a href="../../../../pages/en/agents/index.html">Agents</a><a href="../../../../pages/en/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/en/api/index.html">API</a><a href="../../../../pages/en/modules/index.html">Modules</a><a href="../../../../pages/en/internal-source-code/index.html">Internal Services</a></div>
+        <div class="foot-col"><h2>Resources</h2><a href="../../../../pages/en/getting-started/quickstart.html">Quickstart</a><a href="../../../../pages/en/getting-started/licence.html">Licence</a><a href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener">Source code</a><a href="https://github.com/enzoschitini/better-ai/issues" target="_blank" rel="noopener">Report an issue</a></div>
+        <div class="foot-col"><h2>Creator</h2><div class="foot-me"><img src="../../../../assets/img/profile.jpg" alt="" width="44" height="44"><div><strong>Enzo Schitini</strong><span>Data Scientist &amp; AI Engineer</span></div></div><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/enzoschitini" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 BetterAI &middot; MIT License</span>
+        <span>Created by <a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Enzo Schitini</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Search the documentation">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Search pages and sections" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Results"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>navigate</span></span>
+    <span><kbd>Enter</kbd><span>open</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "en", "root": "../../../../", "index": "../../../../search-en.json", "alt": {"pt": "pages/pt/modules/content-parse/json-to-pydantic.html", "it": "pages/it/modules/content-parse/json-to-pydantic.html", "en": "pages/en/modules/content-parse/json-to-pydantic.html"}, "i": {"noResults": "Nothing found for “%s”. Try a module name, such as “Pinecone”."}};</script>
+<script src="../../../../_design-system/js/ds.js?v=9a5e2954"></script>
+<script src="../../../../_design-system/js/docs.js?v=6f602c0a"></script>
+</body>
+</html>

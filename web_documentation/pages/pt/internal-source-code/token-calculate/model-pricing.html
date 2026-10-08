@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Model Pricing | BetterAI Docs</title>
+<meta name="description" content="A classe ModelPricing foi criada para representar um modelo de precificação de linguagens naturais baseadas em tokens, permitindo calcular o custo associado ao processamento de entradas e saídas em diferentes modelos de linguagem.">
+<link rel="canonical" href="pages/pt/internal-source-code/token-calculate/model-pricing.html">
+<script>
+  // Tema antes da pintura, para nao piscar.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('betterai-docs-theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = t;
+  })();
+</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../../../_design-system/css/tokens.css?v=7f43b250">
+<link rel="stylesheet" href="../../../../_design-system/css/base.css?v=4a698b89">
+<link rel="stylesheet" href="../../../../_design-system/css/layout.css?v=503e806e">
+<link rel="stylesheet" href="../../../../_design-system/css/content.css?v=cfc5f8ef">
+<link rel="stylesheet" href="../../../../_design-system/css/search.css?v=1ecf3252">
+<link rel="stylesheet" href="../../../../_design-system/css/responsive.css?v=6efeec66">
+</head>
+<body>
+<a class="skip" href="#main">Ir para o conteúdo</a>
+
+<header class="header" id="header">
+  <div class="banner" id="banner">
+    <span><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Criado por Enzo Schitini. Convido você a se conectar comigo no LinkedIn.</a></span>
+    <button type="button" aria-label="Fechar aviso"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="bar">
+    <div class="row1">
+      <a class="brand" href="../../../../pages/pt/index.html">
+        <img src="../../../../assets/img/logo-icon.png" alt="" onerror="this.hidden=true">
+        <span class="brand-name">BetterAI</span>
+        <span class="brand-sub">Docs</span>
+      </a>
+      <button class="search-trigger" type="button" data-open-search aria-label="Buscar na documentação">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg><span>Buscar...</span><kbd>Ctrl K</kbd>
+      </button>
+      <div class="actions">
+        <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>GitHub</a>
+        <a class="btn-cta" href="../../../../pages/pt/getting-started/quickstart.html">Quickstart<svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a>
+        <div class="lang">
+          <button class="lang-btn" id="langBtn" type="button" aria-haspopup="menu"
+                  aria-expanded="false" aria-label="Idioma"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg><b>PT</b></button>
+          <ul class="lang-menu" id="langMenu" role="menu" hidden><li role="none"><button type="button" role="menuitemradio" data-lang="pt" aria-checked="true"><span>Português</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="it" aria-checked="false"><span>Italiano</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li><li role="none"><button type="button" role="menuitemradio" data-lang="en" aria-checked="false"><span>English</span><svg class="ico ck" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button></li></ul>
+        </div>
+        <button class="icon-btn" type="button" data-theme-toggle aria-label="Alternar tema claro e escuro"></button>
+      </div>
+    </div>
+    <nav class="tabs-row" aria-label="Áreas da documentação"><a class="tab" href="../../../../pages/pt/index.html">Visão geral</a><a class="tab" href="../../../../pages/pt/getting-started/index.html">Introduction</a><a class="tab" href="../../../../pages/pt/agents/index.html">Agents</a><a class="tab" href="../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a class="tab" href="../../../../pages/pt/api/index.html">API</a><a class="tab" href="../../../../pages/pt/modules/index.html">Modules</a><a class="tab" href="../../../../pages/pt/internal-source-code/index.html" aria-current="page">Internal Services</a></nav>
+    <div class="subbar">
+      <button type="button" data-menu-toggle aria-controls="side" aria-expanded="false">
+        <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Internal Services</span>
+      </button>
+      <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      <span class="here">Model Pricing</span>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="shell">
+  <aside class="side-wrap" id="side" aria-label="Navegação da documentação">
+    <nav class="side"><div class="side-areas"><a href="../../../../pages/pt/index.html">Visão geral</a><a href="../../../../pages/pt/getting-started/index.html">Introduction</a><a href="../../../../pages/pt/agents/index.html">Agents</a><a href="../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/pt/api/index.html">API</a><a href="../../../../pages/pt/modules/index.html">Modules</a><a href="../../../../pages/pt/internal-source-code/index.html" aria-current="page">Internal Services</a></div><a class="side-link" href="../../../../pages/pt/internal-source-code/index.html"><span>Visão geral</span></a><div class="side-group"><p class="side-title">Application Tracing</p><ul><li><a class="side-link" href="../../../../pages/pt/internal-source-code/application-tracing/logger-engine.html"><span>Logger Engine</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/application-tracing/payload-builder.html"><span>Payload Builder</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/application-tracing/tracing-core.html"><span>Tracing Core</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/application-tracing/use.html"><span>Use</span></a></li></ul></div><div class="side-group"><p class="side-title">Database</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>No SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/database/no-sql/local-manage.html"><span>Local Manage</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/database/no-sql/mongo-manager.html"><span>Mongo Manager</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/database/no-sql/router.html"><span>Router</span></a></li></ul></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>SQL</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/database/sql/supabase-database.html"><span>Supabase Database</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Storage</p><ul><li><a class="side-link" href="../../../../pages/pt/internal-source-code/storage/storage-menage-repository.html"><span>Storage Menage Repository</span></a></li><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Supabase</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/storage/supabase/storage-menager.html"><span>Storage Menager</span></a></li></ul></li></ul></div><div class="side-group"><p class="side-title">Token Calculate</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Exchange Rate</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/token-calculate/exchange-rate/bcb-exchange-rate-service.html"><span>BCB Exchange Rate Service</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/token-calculate/exchange-rate/exchange-rate-service.html"><span>Exchange Rate Service</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/token-calculate/model-pricing.html" aria-current="page"><span>Model Pricing</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/token-calculate/token-counter.html"><span>Token Counter</span></a></li></ul></div><div class="side-group"><p class="side-title">Utils</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Load Request File</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/utils/load-request-file/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/utils/load-request-file/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/utils/loader-files.html"><span>Loader Files</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/utils/unique-id-factory.html"><span>Unique ID Factory</span></a></li></ul></div><div class="side-group"><p class="side-title">Vector Store</p><ul><li><button class="side-link side-folder" type="button" aria-expanded="false"><span>Local Dynamic Embedding</span><svg class="ico chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button><ul class="side-sub" hidden><li><a class="side-link" href="../../../../pages/pt/internal-source-code/vector-store/local-dynamic-embedding/documentation.html"><span>Documentation</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/vector-store/local-dynamic-embedding/use.html"><span>Use</span></a></li></ul></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/vector-store/pinecone-client.html"><span>Pinecone Client</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/vector-store/pinecone-embedding.html"><span>Pinecone Embedding</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/vector-store/pinecone-retriever.html"><span>Pinecone Retriever</span></a></li><li><a class="side-link" href="../../../../pages/pt/internal-source-code/vector-store/retrieval-manager.html"><span>Retrieval Manager</span></a></li></ul></div></nav>
+  </aside>
+  <div class="main">
+    <div class="main-row">
+      <main class="article" id="main">
+        <header>
+          <div class="eyebrow">Token Calculate</div>
+          <div class="title-row">
+            <h1 class="page-title" tabindex="-1">Model Pricing</h1>
+            <div class="copy-page">
+              <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copiar página</span></button>
+            </div>
+          </div>
+          <p class="lead">A classe ModelPricing foi criada para representar um modelo de precificação de linguagens naturais baseadas em tokens, permitindo calcular o custo associado ao processamento de entradas e saídas em diferentes modelos de linguagem.</p>
+          <details class="toc-inline"><summary>Nesta página</summary><ul></ul></details>
+        </header>
+        <div class="prose"><h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão Geral</h2>
+  <p>A classe <code>ModelPricing</code> foi criada para representar um modelo de precificação de linguagens naturais baseadas em tokens, permitindo calcular o custo associado ao processamento de entradas e saídas em diferentes modelos de linguagem. Ela resolve o problema de precificar o uso de modelos de linguagem, convertendo custos por milhão de tokens para custos unitários, facilitando a estimativa financeira para chamadas a APIs ou uso de modelos.</p>
+  <p>Na prática, essa classe pode ser usada para obter o custo de uma requisição que envolva uma certa quantidade de tokens de entrada e saída de forma rápida e direta, bastando informar o modelo desejado. Isso é útil para quem trabalha com APIs de processamento de linguagem, permitindo estimar gastos e controlar o uso baseado em tokens.</p>
+
+  <h2 id="fluxo-de-execucao"><a class="anchor" href="#fluxo-de-execucao" aria-label="Link para esta seção">#</a>Fluxo de Execução</h2>
+  <ol>
+    <li>Inicializa-se uma instância da classe <code>ModelPricing</code> passando o nome do modelo como parâmetro. Caso o modelo não seja suportado, uma exceção é lançada.</li>
+    <li>Através dos métodos <code>input_rate_per_token</code> e <code>output_rate_per_token</code>, obtém-se o custo unitário por token de entrada e saída, respectivamente, convertendo os valores que são originalmente definidos por milhão de tokens.</li>
+    <li>Multiplicam-se esses valores pelo número real de tokens processados para calcular o custo total de entrada e saída.</li>
+    <li>O resultado final é o custo estimado em dólares para o uso do modelo referente à quantidade de tokens informada.</li>
+  </ol>
+
+  <h2 id="tabela-de-metodos-da-classe"><a class="anchor" href="#tabela-de-metodos-da-classe" aria-label="Link para esta seção">#</a>Tabela de Métodos da Classe</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Método</th><th>Descrição</th></tr></thead>
+    <tbody>
+      <tr><td><code>__init__</code></td><td>Inicializa o objeto com o modelo escolhido, validando-o.</td></tr>
+      <tr><td><code>input_rate_per_token</code></td><td>Retorna o custo unitário por token de entrada.</td></tr>
+      <tr><td><code>output_rate_per_token</code></td><td>Retorna o custo unitário por token de saída.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 id="pontos-importantes-da-arquitetura-e-insights"><a class="anchor" href="#pontos-importantes-da-arquitetura-e-insights" aria-label="Link para esta seção">#</a>Pontos Importantes da Arquitetura e Insights</h2>
+  <ul>
+    <li>A precificação é armazenada em <code>COST_MODELS</code>, um dicionário que associa o nome do modelo aos custos por milhão de tokens para entrada e saída.</li>
+    <li>O método de cálculo converte o custo por milhão para custo por token dividindo o valor por 1.000.000, garantindo flexibilidade para diferentes escalas.</li>
+    <li>Essa abordagem encapsula a precificação em uma classe, facilitando a manutenção e extensão para novos modelos, bastando adicionar entradas no dicionário.</li>
+    <li>Ao validar o modelo na inicialização, evita-se erros posteriores durante o cálculo, garantindo segurança na utilização da classe.</li>
+  </ul>
+
+  <h2 id="descricao-da-classe-e-metodos"><a class="anchor" href="#descricao-da-classe-e-metodos" aria-label="Link para esta seção">#</a>Descrição da Classe e Métodos</h2>
+
+  <h2 id="classe-modelpricing"><a class="anchor" href="#classe-modelpricing" aria-label="Link para esta seção">#</a>Classe <code>ModelPricing</code></h2>
+  <h3 id="descricao"><a class="anchor" href="#descricao" aria-label="Link para esta seção">#</a>Descrição</h3>
+  <p>Classe para cálculo do custo de uso de modelos de linguagem, baseado na quantidade de tokens de entrada e saída e nos preços definidos por modelo. Proporciona uma interface simples para converter preços por milhão de tokens em preços unitários.</p>
+
+  <h3 id="argumentos-do-construtor"><a class="anchor" href="#argumentos-do-construtor" aria-label="Link para esta seção">#</a>Argumentos do Construtor</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Argumento</th><th>Tipo</th><th>Descrição</th><th>Valor Padrão</th></tr></thead>
+    <tbody>
+      <tr><td>model</td><td>str</td><td>O nome do modelo para o qual calcular os custos.</td><td>Nenhum</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="metodos"><a class="anchor" href="#metodos" aria-label="Link para esta seção">#</a>Métodos</h3>
+
+  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Inicializa a instância da classe verificando se o modelo informado existe na base de preços suportados, e atribui os preços correspondentes.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>model (str): nome do modelo de linguagem utilizado para consultar os preços.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>Não retorna valor.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>ValueError: Se o modelo informado não estiver listado nos modelos suportados.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>model_pricing = <span class="t-f">ModelPricing</span>(<span class="t-s">&quot;gpt-4.1-mini&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="2-input-rate-per-token"><a class="anchor" href="#2-input-rate-per-token" aria-label="Link para esta seção">#</a>2. <code>input_rate_per_token</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Calcula e retorna o custo por token de entrada (input), baseado no preço por milhão de tokens configurado.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>float: custo em dólares por token de entrada.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>input_cost_per_token = model_pricing.<span class="t-f">input_rate_per_token</span>()
+<span class="t-c"># Retorna algo como 0.0000004 para &quot;gpt-4.1-mini&quot;</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h3 id="3-output-rate-per-token"><a class="anchor" href="#3-output-rate-per-token" aria-label="Link para esta seção">#</a>3. <code>output_rate_per_token</code></h3>
+  <p><strong>Descrição</strong></p>
+  <p>Calcula e retorna o custo por token de saída (output), baseado no preço por milhão de tokens configurado.</p>
+  <p><strong>Argumentos</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Retornos</strong></p>
+  <ul>
+    <li>float: custo em dólares por token de saída.</li>
+  </ul>
+  <p><strong>Raises</strong></p>
+  <ul>
+    <li>Nenhum.</li>
+  </ul>
+  <p><strong>Exemplos</strong></p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>output_cost_per_token = model_pricing.<span class="t-f">output_rate_per_token</span>()
+<span class="t-c"># Retorna algo como 0.0000016 para &quot;gpt-4.1-mini&quot;</span></code></pre><button class="copy floating" type="button"></button></div></div>
+
+  <h2 id="exemplo-completo-de-uso"><a class="anchor" href="#exemplo-completo-de-uso" aria-label="Link para esta seção">#</a>Exemplo Completo de Uso</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>model = <span class="t-s">&quot;gpt-4.1-mini&quot;</span>
+input_token_count = <span class="t-n">946</span>
+output_token_count = <span class="t-n">255</span>
+
+model_pricing = <span class="t-f">ModelPricing</span>(model)
+input_cost = model_pricing.<span class="t-f">input_rate_per_token</span>() * input_token_count
+output_cost = model_pricing.<span class="t-f">output_rate_per_token</span>() * output_token_count
+
+<span class="t-f">print</span>(f<span class="t-s">&quot;Custo de entrada (USD): {input_cost:.6f}&quot;</span>)
+<span class="t-f">print</span>(f<span class="t-s">&quot;Custo de saída (USD): {output_cost:.6f}&quot;</span>)
+
+<span class="t-c"># python -m src.tokens_calculate.model_pricing</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>Saída esperada:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang=""><code>Custo de entrada (USD): 0.000378
+Custo de saída (USD): 0.000408</code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>Este exemplo ilustra como calcular o custo total com base em contagens de tokens reais para um modelo específico, facilitando controle financeiro e análise de custos para chamadas a modelos de linguagem.</p></div>
+        <div class="feedback"></div>
+        <p class="source">Fonte: <code>src/tokens_calculate/model_pricing.py</code></p>
+        <nav class="pager" aria-label="Páginas vizinhas"><a class="pager-link prev" href="../../../../pages/pt/internal-source-code/token-calculate/exchange-rate/exchange-rate-service.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Anterior</small><span>Exchange Rate Service</span></div></a><a class="pager-link next" href="../../../../pages/pt/internal-source-code/token-calculate/token-counter.html"><div><small>Próxima</small><span>Token Counter</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
+      </main>
+      <aside class="toc" id="toc" data-toc aria-label="Nesta página"></aside>
+    </div>
+    <footer class="site-foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="../../../../pages/pt/index.html"><span class="brand-name">BetterAI</span><span class="brand-sub">Docs</span></a>
+          <p>Where intelligence finds purpose.</p>
+          <a class="btn-soft" href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>Repositório no GitHub</a>
+        </div>
+        <div class="foot-col"><h2>Documentação</h2><a href="../../../../pages/pt/getting-started/index.html">Introduction</a><a href="../../../../pages/pt/agents/index.html">Agents</a><a href="../../../../pages/pt/streamlit-applications/index.html">Streamlit Applications</a><a href="../../../../pages/pt/api/index.html">API</a><a href="../../../../pages/pt/modules/index.html">Modules</a><a href="../../../../pages/pt/internal-source-code/index.html">Internal Services</a></div>
+        <div class="foot-col"><h2>Recursos</h2><a href="../../../../pages/pt/getting-started/quickstart.html">Quickstart</a><a href="../../../../pages/pt/getting-started/licence.html">Licence</a><a href="https://github.com/enzoschitini/better-ai" target="_blank" rel="noopener">Código-fonte</a><a href="https://github.com/enzoschitini/better-ai/issues" target="_blank" rel="noopener">Reportar um problema</a></div>
+        <div class="foot-col"><h2>Criador</h2><div class="foot-me"><img src="../../../../assets/img/profile.jpg" alt="" width="44" height="44"><div><strong>Enzo Schitini</strong><span>Data Scientist &amp; AI Engineer</span></div></div><a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">LinkedIn</a><a href="https://github.com/enzoschitini" target="_blank" rel="noopener">GitHub</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 BetterAI &middot; Licença MIT</span>
+        <span>Criado por <a href="https://www.linkedin.com/in/enzoschitini" target="_blank" rel="noopener">Enzo Schitini</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+<div class="scrim"></div>
+
+<dialog class="search" id="search" aria-label="Buscar na documentação">
+  <div class="search-field">
+    <svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+    <input id="q" type="search" placeholder="Buscar páginas e seções" autocomplete="off" spellcheck="false" aria-controls="results">
+    <kbd>Esc</kbd>
+  </div>
+  <ul class="results" id="results" role="listbox" aria-label="Resultados"></ul>
+  <div class="search-foot">
+    <span><kbd>&#8593;</kbd><kbd>&#8595;</kbd><span>navegar</span></span>
+    <span><kbd>Enter</kbd><span>abrir</span></span>
+  </div>
+</dialog>
+
+<script>window.DOCS = {"lang": "pt", "root": "../../../../", "index": "../../../../search-pt.json", "alt": {"pt": "pages/pt/internal-source-code/token-calculate/model-pricing.html", "it": "pages/it/internal-source-code/token-calculate/model-pricing.html", "en": "pages/en/internal-source-code/token-calculate/model-pricing.html"}, "i": {"noResults": "Nada encontrado para “%s”. Tente o nome de um módulo, como “Pinecone”."}};</script>
+<script src="../../../../_design-system/js/ds.js?v=9a5e2954"></script>
+<script src="../../../../_design-system/js/docs.js?v=6f602c0a"></script>
+</body>
+</html>
