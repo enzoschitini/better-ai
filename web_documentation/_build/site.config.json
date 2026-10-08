@@ -16,6 +16,7 @@
     "agents/agno-agents/agnoui": "src/dev_tools/AgnoUI.bat",
     "agents/agno-agents/utils/database": "src/agents/utils/database.py",
     "agents/agno-agents/utils/model-gateway": "src/agents/utils/model_gateway.py",
+    "internal-source-code/application-tracing/use": "src/tracing/tracing_test.py",
     "streamlit-applications/acquarello": "src/web_applications/applications/acquarello.py",
     "streamlit-applications/content-generator": "src/web_applications/applications/content_generator.py"
   },
