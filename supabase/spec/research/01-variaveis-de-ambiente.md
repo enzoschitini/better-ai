@@ -1,10 +1,12 @@
 # Variáveis de ambiente do Supabase — Guia de obtenção
 
+> **Material de pesquisa (refinamento técnico).** A visão geral citada aqui como "00" / "visão geral" agora vive em [../spec.md](../spec.md). As "Questões em aberto" deste arquivo estão **consolidadas e resolvidas em [../decisions.md](../decisions.md)**, que prevalece em caso de divergência. Tarefas de implementação: [../tasks.md](../tasks.md).
+
 > **Para o Claude (ou qualquer agente) que for executar este processo:** este arquivo descreve o que precisa ser obtido na plataforma do Supabase e como trazer para o projeto. Leia inteiro antes de agir. Em caso de dúvida, pergunte ao usuário. Nunca invente valores.
 
 ## 1. Por que este arquivo existe
 
-A nova integração (ver [00-visao-geral.md](00-visao-geral.md)) precisa de credenciais e endereços do projeto Supabase, que só existem na plataforma. O usuário não sabe de antemão quais são nem onde se obtêm. Este guia define **o que obter, de onde e para onde levar**.
+A nova integração (ver [spec.md](../spec.md)) precisa de credenciais e endereços do projeto Supabase, que só existem na plataforma. O usuário não sabe de antemão quais são nem onde se obtêm. Este guia define **o que obter, de onde e para onde levar**.
 
 ## 2. O que precisa ser obtido
 

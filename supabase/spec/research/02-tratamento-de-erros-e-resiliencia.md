@@ -1,6 +1,8 @@
 # Tratamento de erros e resiliência
 
-> Status: **rascunho de planejamento** (nenhum código escrito). Complementa [00-visao-geral.md](00-visao-geral.md) e [01-variaveis-de-ambiente.md](01-variaveis-de-ambiente.md). Itens marcados como **[PROPOSTA]** são sugestões a validar; decisões pendentes estão em "Questões em aberto". Nomes de classes e exceções são provisórios.
+> **Material de pesquisa (refinamento técnico).** A visão geral citada aqui como "00" / "visão geral" agora vive em [../spec.md](../spec.md). As "Questões em aberto" deste arquivo estão **consolidadas e resolvidas em [../decisions.md](../decisions.md)**, que prevalece em caso de divergência. Tarefas de implementação: [../tasks.md](../tasks.md).
+
+> Status: **rascunho de planejamento** (nenhum código escrito). Complementa [spec.md](../spec.md) e [01-variaveis-de-ambiente.md](01-variaveis-de-ambiente.md). Itens marcados como **[PROPOSTA]** são sugestões a validar; decisões pendentes estão em "Questões em aberto". Nomes de classes e exceções são provisórios.
 
 ## 1. Contexto e objetivo
 
@@ -428,7 +430,7 @@ Consultadas para este documento:
 
 Do planejamento do projeto:
 
-- [00-visao-geral.md](00-visao-geral.md)
+- [spec.md](../spec.md)
 - [01-variaveis-de-ambiente.md](01-variaveis-de-ambiente.md)
 
 Pendentes de consulta na etapa de implementação (não consultadas aqui): classes de exceção exatas do `supabase-py`/`postgrest-py`/`storage3` na versão fixada no `uv.lock`; opções de timeout do cliente HTTP usado pelo SDK; limites de arquivo e de timeout de instrução do projeto na plataforma.

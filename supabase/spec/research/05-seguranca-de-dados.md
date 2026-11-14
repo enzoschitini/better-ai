@@ -1,7 +1,9 @@
 # Segurança de dados — Chaves, RLS, Storage, validação e logs
 
+> **Material de pesquisa (refinamento técnico).** A visão geral citada aqui como "00" / "visão geral" agora vive em [../spec.md](../spec.md). As "Questões em aberto" deste arquivo estão **consolidadas e resolvidas em [../decisions.md](../decisions.md)**, que prevalece em caso de divergência. Tarefas de implementação: [../tasks.md](../tasks.md).
+
 > Status: **rascunho de planejamento** (nenhum código escrito ainda).
-> Complementa [00-visao-geral.md](00-visao-geral.md) e [01-variaveis-de-ambiente.md](01-variaveis-de-ambiente.md). Itens marcados como **[PROPOSTA]** são sugestões a validar; decisões pendentes estão em "Questões em aberto".
+> Complementa [spec.md](../spec.md) e [01-variaveis-de-ambiente.md](01-variaveis-de-ambiente.md). Itens marcados como **[PROPOSTA]** são sugestões a validar; decisões pendentes estão em "Questões em aberto".
 > Os fatos sobre o Supabase vêm da documentação oficial consultada (ver "Referências"). O Supabase renomeia recursos com frequência; reconferir antes de implementar.
 
 ## 1. Contexto e premissas
@@ -297,4 +299,4 @@ Complementa a seção 3.2 da visão geral.
 - Controle de acesso do Storage: <https://supabase.com/docs/guides/storage/security/access-control>
 - Fundamentos de buckets (público x privado): <https://supabase.com/docs/guides/storage/buckets/fundamentals>
 - Referência `createSignedUrl` (expiração em segundos): <https://supabase.com/docs/reference/javascript/storage-from-createsignedurl>
-- Documentos do projeto: [00-visao-geral.md](00-visao-geral.md), [01-variaveis-de-ambiente.md](01-variaveis-de-ambiente.md)
+- Documentos do projeto: [spec.md](../spec.md), [01-variaveis-de-ambiente.md](01-variaveis-de-ambiente.md)

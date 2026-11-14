@@ -1,7 +1,9 @@
 # Configuração centralizada da integração Supabase
 
+> **Material de pesquisa (refinamento técnico).** A visão geral citada aqui como "00" / "visão geral" agora vive em [../spec.md](../spec.md). As "Questões em aberto" deste arquivo estão **consolidadas e resolvidas em [../decisions.md](../decisions.md)**, que prevalece em caso de divergência. Tarefas de implementação: [../tasks.md](../tasks.md).
+
 > **Status: rascunho de planejamento.** Nenhum código foi escrito. Itens marcados como **[PROPOSTA]** são sugestões a validar; decisões que dependem do usuário estão em "Questões em aberto" (seção 11), cada uma com recomendação.
-> Documentos relacionados: [00-visao-geral.md](00-visao-geral.md) (princípios, três classes, logs, desacoplamento) e [01-variaveis-de-ambiente.md](01-variaveis-de-ambiente.md) (como obter e onde guardar as variáveis).
+> Documentos relacionados: [spec.md](../spec.md) (princípios, três classes, logs, desacoplamento) e [01-variaveis-de-ambiente.md](01-variaveis-de-ambiente.md) (como obter e onde guardar as variáveis).
 
 ## 1. Contexto e objetivo
 
@@ -88,7 +90,7 @@ SettingsError: configuração do Supabase inválida (ambiente: prod)
   Inválidas:
     - SBX_HTTP_TIMEOUT_SECONDS: deve ser número > 0
     - SBX_LOG_LEVEL: deve ser um de DEBUG, INFO, WARNING, ERROR
-  Ver: supabase/01-variaveis-de-ambiente.md e supabase/.env.example
+  Ver: supabase/spec/research/01-variaveis-de-ambiente.md e supabase/.env.example
 ```
 
 Nenhum valor aparece.

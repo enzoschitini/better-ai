@@ -1,6 +1,8 @@
 # Modelagem de dados da Frente A (Tabelas)
 
-> Status: **rascunho de planejamento** (nenhum código escrito). Itens marcados como **[PROPOSTA]** são sugestões a validar; decisões pendentes estão em "Questões em aberto". Complementa [00-visao-geral.md](00-visao-geral.md) e [01-variaveis-de-ambiente.md](01-variaveis-de-ambiente.md).
+> **Material de pesquisa (refinamento técnico).** A visão geral citada aqui como "00" / "visão geral" agora vive em [../spec.md](../spec.md). As "Questões em aberto" deste arquivo estão **consolidadas e resolvidas em [../decisions.md](../decisions.md)**, que prevalece em caso de divergência. Tarefas de implementação: [../tasks.md](../tasks.md).
+
+> Status: **rascunho de planejamento** (nenhum código escrito). Itens marcados como **[PROPOSTA]** são sugestões a validar; decisões pendentes estão em "Questões em aberto". Complementa [spec.md](../spec.md) e [01-variaveis-de-ambiente.md](01-variaveis-de-ambiente.md).
 
 ## 1. Contexto e escopo
 
@@ -25,7 +27,7 @@ Fora deste documento: contratos de arquivos (frente B), logs, configuração/cre
 
 ### 2.2 Recomendação
 
-**Opção C (híbrida)**. O núcleo trabalha com um repositório genérico parametrizado por um tipo de entidade; cada tabela é descrita por um **descritor de tabela** (nome, schema, chave primária, modelo Pydantic opcional). Sem modelo, a entidade é `dict`. Isso responde à questão em aberto 4 de `00-visao-geral.md`.
+**Opção C (híbrida)**. O núcleo trabalha com um repositório genérico parametrizado por um tipo de entidade; cada tabela é descrita por um **descritor de tabela** (nome, schema, chave primária, modelo Pydantic opcional). Sem modelo, a entidade é `dict`. Isso responde à questão em aberto 4 de `spec.md`.
 
 Regra prática **[PROPOSTA]**: modelos tipados para tabelas de uso recorrente e contrato estável; `dict` para exploração, scripts e tabelas ainda não estabilizadas.
 
@@ -178,7 +180,7 @@ Responsabilidades:
 - `to_wire` converte `UUID`, `datetime`, `Decimal`, `Enum`, `set` em tipos JSON; nunca depende de `default=str` genérico (esconde erros).
 - Mapeamento de nomes: por padrão, **nome do campo = nome da coluna** (snake_case). Alias só quando necessário (`Field(alias=...)`), declarado no modelo.
 - Colunas extras vindas do banco: modelo configurável para **ignorar** extras na leitura (tolera evolução do schema) e **proibir** extras na escrita (pega erros de digitação). **[PROPOSTA]**
-- Falha de desserialização vira erro de domínio (`MappingError`/`SchemaMismatch`) citando tabela e campo, sem registrar o conteúdo do registro nos logs (regra de logs de `00-visao-geral.md`).
+- Falha de desserialização vira erro de domínio (`MappingError`/`SchemaMismatch`) citando tabela e campo, sem registrar o conteúdo do registro nos logs (regra de logs de `spec.md`).
 
 ## 9. Validação de dados na entrada
 
@@ -202,7 +204,7 @@ Fluxo previsto **[PROPOSTA]**:
 
 Nenhum arquivo do núcleo (contrato, adapter, tradutor de queries, classe integradora) é editado. Comportamentos específicos de uma tabela (ex.: coluna de soft delete, validação extra) entram por **dados no descritor** ou por **decoradores/estratégias** sobre o repositório, não por `if tabela == ...` no núcleo.
 
-A tabela precisa existir no banco; **criar tabela/DDL está fora de escopo** (ver `00-visao-geral.md`, seção 5).
+A tabela precisa existir no banco; **criar tabela/DDL está fora de escopo** (ver `spec.md`, seção 5).
 
 ## 11. Objetos de valor para metadados de arquivo (relação com a frente B)
 
@@ -248,7 +250,7 @@ A frente de arquivos (storage) e a de tabelas são independentes (uma não conhe
 5. **Timestamps sem fuso na entrada**: recusar ou assumir UTC? Recomendação: recusar.
 6. **Estratégia de paginação**: offset basta ou algumas tabelas pedem cursor? Recomendação: offset na v1, cursor sob demanda.
 7. **Schemas além de `public`** e relações embutidas (joins via select) na v1? Recomendação: schema configurável por descritor; relações embutidas só na v2.
-8. **Síncrono ou assíncrono** (questão 2 de `00-visao-geral.md`) afeta as assinaturas deste contrato (`async def` ou não). Recomendação: decidir antes de fechar contratos; os desenhos acima valem nos dois casos.
+8. **Síncrono ou assíncrono** (questão 2 de `spec.md`) afeta as assinaturas deste contrato (`async def` ou não). Recomendação: decidir antes de fechar contratos; os desenhos acima valem nos dois casos.
 9. **Geração de tipos a partir do schema do banco** (para manter modelos alinhados): vale adotar? Recomendação: avaliar depois da v1; começar com modelos escritos à mão e teste de verificação contra o schema.
 
 ## 15. Referências

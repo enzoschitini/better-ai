@@ -1,7 +1,9 @@
 # Estratégia de testes da integração Supabase
 
+> **Material de pesquisa (refinamento técnico).** A visão geral citada aqui como "00" / "visão geral" agora vive em [../spec.md](../spec.md). As "Questões em aberto" deste arquivo estão **consolidadas e resolvidas em [../decisions.md](../decisions.md)**, que prevalece em caso de divergência. Tarefas de implementação: [../tasks.md](../tasks.md).
+
 > Status: **rascunho de planejamento** (nenhum código escrito). Itens marcados como **[PROPOSTA]** são sugestões a validar; decisões pendentes estão em **Questões em aberto** (seção 14).
-> Documentos relacionados: [00-visao-geral.md](00-visao-geral.md) e [01-variaveis-de-ambiente.md](01-variaveis-de-ambiente.md).
+> Documentos relacionados: [spec.md](../spec.md) e [01-variaveis-de-ambiente.md](01-variaveis-de-ambiente.md).
 
 ## 1. Contexto e objetivo
 
@@ -543,6 +545,6 @@ URLs consultadas ou usadas como fundamento:
 - Supabase, desenvolvimento local e migrations (CLI, `supabase start`, `supabase db reset`, `seed.sql`, buckets por `config.toml` e limitações do ambiente local): <https://supabase.com/docs/guides/local-development/database-migrations>
 - Supabase, visão geral do desenvolvimento local (ponto de entrada indicado): <https://supabase.com/docs/guides/local-development/overview>
 - Supabase, quickstart com Flask (referência já adotada nos docs 00 e 01): <https://supabase.com/docs/guides/getting-started/quickstarts/flask>
-- Documentos internos: [00-visao-geral.md](00-visao-geral.md), [01-variaveis-de-ambiente.md](01-variaveis-de-ambiente.md)
+- Documentos internos: [spec.md](../spec.md), [01-variaveis-de-ambiente.md](01-variaveis-de-ambiente.md)
 
 Observação: recomendações sobre `pytest` (fixtures, marcadores, `skipif`, `caplog`, `capsys`, `monkeypatch`) e sobre `pytest-cov`/`pytest-socket` baseiam-se em prática consolidada da comunidade; confirmar versões e opções atuais na documentação dessas ferramentas antes de implementar.

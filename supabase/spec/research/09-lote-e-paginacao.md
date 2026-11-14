@@ -1,7 +1,9 @@
 # Operações em lote e paginação
 
+> **Material de pesquisa (refinamento técnico).** A visão geral citada aqui como "00" / "visão geral" agora vive em [../spec.md](../spec.md). As "Questões em aberto" deste arquivo estão **consolidadas e resolvidas em [../decisions.md](../decisions.md)**, que prevalece em caso de divergência. Tarefas de implementação: [../tasks.md](../tasks.md).
+
 > Status: **rascunho de planejamento** (nenhum código escrito). Itens marcados como **[PROPOSTA]** são sugestões a validar; decisões pendentes estão em "Questões em aberto".
-> Complementa [00-visao-geral.md](00-visao-geral.md) e [01-variaveis-de-ambiente.md](01-variaveis-de-ambiente.md). Vale para a classe de tabelas (e, na seção 9, para a de arquivos). Nada aqui importa ou se baseia na integração Supabase antiga.
+> Complementa [spec.md](../spec.md) e [01-variaveis-de-ambiente.md](01-variaveis-de-ambiente.md). Vale para a classe de tabelas (e, na seção 9, para a de arquivos). Nada aqui importa ou se baseia na integração Supabase antiga.
 
 ## 1. Contexto e objetivo
 

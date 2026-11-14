@@ -1,7 +1,9 @@
 # Arquivos grandes e Storage — Planejamento da classe de arquivos
 
+> **Material de pesquisa (refinamento técnico).** A visão geral citada aqui como "00" / "visão geral" agora vive em [../spec.md](../spec.md). As "Questões em aberto" deste arquivo estão **consolidadas e resolvidas em [../decisions.md](../decisions.md)**, que prevalece em caso de divergência. Tarefas de implementação: [../tasks.md](../tasks.md).
+
 > Status: **rascunho de planejamento** (nenhum código escrito). Itens marcados como **[PROPOSTA]** são sugestões a validar; decisões pendentes estão na seção "Questões em aberto".
-> Complementa [00-visao-geral.md](00-visao-geral.md) (seções 3.1 a 3.3 e 4.2) e [01-variaveis-de-ambiente.md](01-variaveis-de-ambiente.md). Vale para a **classe de arquivos** (nome provisório `SupabaseStorage`), uma das três classes da integração; a integradora apenas delega.
+> Complementa [spec.md](../spec.md) (seções 3.1 a 3.3 e 4.2) e [01-variaveis-de-ambiente.md](01-variaveis-de-ambiente.md). Vale para a **classe de arquivos** (nome provisório `SupabaseStorage`), uma das três classes da integração; a integradora apenas delega.
 
 ## 1. Contexto e objetivo
 
@@ -302,4 +304,4 @@ URLs consultadas (2026-11-14):
 - Uploads padrão: <https://supabase.com/docs/guides/storage/uploads/standard-uploads>
 - Download e entrega de arquivos (URL pública/assinada): <https://supabase.com/docs/guides/storage/serving/downloads>
 - Referência Python, listagem: <https://supabase.com/docs/reference/python/storage-from-list>
-- Base do projeto: [00-visao-geral.md](00-visao-geral.md), [01-variaveis-de-ambiente.md](01-variaveis-de-ambiente.md)
+- Base do projeto: [spec.md](../spec.md), [01-variaveis-de-ambiente.md](01-variaveis-de-ambiente.md)

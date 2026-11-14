@@ -1,7 +1,9 @@
 # Consistência entre as frentes (tabelas x arquivos)
 
+> **Material de pesquisa (refinamento técnico).** A visão geral citada aqui como "00" / "visão geral" agora vive em [../spec.md](../spec.md). As "Questões em aberto" deste arquivo estão **consolidadas e resolvidas em [../decisions.md](../decisions.md)**, que prevalece em caso de divergência. Tarefas de implementação: [../tasks.md](../tasks.md).
+
 > Status: **rascunho de planejamento** (nenhum código escrito). Itens marcados como **[PROPOSTA]** são sugestões a validar; decisões que dependem do usuário estão em **Questões em aberto** (seção 12), cada uma com recomendação.
-> Complementa [00-visao-geral.md](00-visao-geral.md) e [01-variaveis-de-ambiente.md](01-variaveis-de-ambiente.md).
+> Complementa [spec.md](../spec.md) e [01-variaveis-de-ambiente.md](01-variaveis-de-ambiente.md).
 
 ## 1. Contexto e problema
 
@@ -171,7 +173,7 @@ Seguindo 00 seção 3.2 (nível configurável, cores, sem segredos):
 
 ## 13. Referências
 
-- Visão geral do projeto: [00-visao-geral.md](00-visao-geral.md)
+- Visão geral do projeto: [spec.md](../spec.md)
 - Variáveis de ambiente: [01-variaveis-de-ambiente.md](01-variaveis-de-ambiente.md)
 - Supabase, exclusão de dados no Postgres: <https://supabase.com/docs/guides/database/postgres/data-deletion>
 - Supabase, controle de acesso do Storage: <https://supabase.com/docs/guides/storage/security/access-control>
