@@ -2,6 +2,7 @@
 
 Integração **nova e independente** do backend com o Supabase: CRUD de tabelas, arquivos em buckets e uma fachada única que combina as duas. Não importa nada do código existente do projeto (`src/`).
 
+- **Guia de uso completo (receitas, arquitetura e referência): [GUIA_DE_USO.md](GUIA_DE_USO.md)**
 - Especificação (SDD): [spec/](spec/README.md) · decisões: [spec/decisions.md](spec/decisions.md) · tarefas: [spec/tasks.md](spec/tasks.md)
 - Código: [bai_supabase/](bai_supabase/) · testes: [tests/](tests/)
 
