@@ -64,6 +64,24 @@ A integração é composta por **três classes**, cada uma com uma responsabilid
 
 Patterns previstos: **Facade** (classe integradora), **Factory** (montagem das três classes e do cliente), **Adapter** (isolar o SDK), **Dependency Injection** (composição).
 
+## 3.2 Logs
+
+A integração terá um padrão próprio de logs, pensado para depuração no terminal:
+
+- **Nível configurável** (ex.: `INFO`, `ERROR`, `DEBUG`), definido por configuração/variável de ambiente, sem alterar código.
+- **Verboso, mas legível:** trazer detalhes úteis (operação, tabela/bucket, identificadores, duração, resultado), sem poluir. O detalhe vem em campos organizados, não em texto solto.
+- **Cores por tipo/nível** no terminal (ex.: info, aviso, erro, debug com cores distintas) para facilitar a leitura.
+- **Nunca registrar segredos** (chaves, tokens, conteúdo sensível de arquivos ou registros).
+- O logger é uma **dependência injetada** (contrato próprio), de modo que as classes não dependam de uma biblioteca específica e os testes possam trocá-lo.
+
+## 3.3 Independência da integração atual
+
+Todo o código novo ficará **dentro desta pasta (`supabase/`)**, totalmente **desacoplado** do que existe hoje no projeto:
+
+- Não importa módulos da integração antiga, e a antiga não importa esta.
+- Permite **testar e validar isoladamente** primeiro.
+- Só **num segundo momento** será planejada a integração com o restante do projeto (fase separada, com seu próprio planejamento).
+
 ## 4. Escopo funcional
 
 ### 4.1 Frente A — Tabelas
