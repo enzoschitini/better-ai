@@ -31,4 +31,4 @@ Especificação seguindo **Spec-Driven Development (SDD)** para a nova integraç
 `constitution` > `decisions` > `spec` > `plan` > `tasks` > `research`. Em divergência, vale o documento mais à esquerda.
 
 ## Status
-Planejamento concluído. **Próximo passo:** Fase 0 de [tasks.md](tasks.md) (confirmar D-01 a D-08). Nenhum código foi escrito.
+Implementação concluída e validada offline e contra um projeto Supabase real de teste. **Pendente:** cobertura e revisão final (T-501 a T-505) e os itens "não validado" de [../README.md](../README.md).

@@ -10,14 +10,14 @@ Consolida e resolve as "Questões em aberto" de [research/](research/) e as **co
 
 | ID | Decisão | Recomendação | Alternativa | Status |
 |---|---|---|---|---|
-| D-01 | **SDK ou REST direto** | SDK oficial `supabase-py` atrás do adapter (já é dependência: `supabase~=2.27.3`). O mapeamento de erros usa status/`code` normalizados, então trocar para REST depois só afeta `adapters/`. | REST direto (PostgREST + Storage) | ❓ |
-| D-02 | **Síncrono ou assíncrono** | **Contratos síncronos** + wrapper assíncrono por thread (`asyncio.to_thread`). Motivos: `supabase-py` tem cliente síncrono, o upload resumable (TUS) em Python é síncrono, e o wrapper cobre o uso em FastAPI sem bloquear o event loop. | Contratos assíncronos nativos | ❓ |
-| D-03 | **Prefixo das variáveis** | Nomes próprios `SBX_*` (isolados dos `SUPABASE_*` da integração antiga). Fallback legado opcional, **desligado** por padrão e proibido em homol/prod. | Reutilizar `SUPABASE_*` | ❓ |
-| D-04 | **Primeiros casos de uso reais** (quais tabelas, colunas e buckets; visibilidade dos buckets) | Definir antes da Fase 3. Alimenta as allowlists, os descritores de tabela e a política de URLs. Até lá, os buckets são tratados como **privados**. | n/a | ❓ |
-| D-05 | **Plano do Supabase e limites reais** (limite global de upload, `max-rows`, rate limits) | Levantar na plataforma, **somente leitura**, via [research/01](research/01-variaveis-de-ambiente.md). | n/a | ❓ |
-| D-06 | **Um projeto Supabase por ambiente** (dev/homol/prod) e projeto dedicado de testes | Sim: projetos, chaves e `.env` separados; nunca chave de produção em dev. | Um projeto só, separado por schema/bucket | ❓ |
-| D-07 | **Nome do pacote Python interno** | `supabase/bai_supabase/` (evita sombrear o SDK `supabase`). A pasta `supabase/` não ganha `__init__.py`. Testes rodam com `pythonpath = supabase`. | Outro nome | ❓ |
-| D-08 | **Adicionar `pytest` (e plugins) ao grupo `dev` do `pyproject.toml`** | Sim, isolado em `supabase/tests/`, sem exigir adoção no resto do projeto. | Script ad-hoc como no resto do repo | ❓ |
+| D-01 | **SDK ou REST direto** | SDK oficial `supabase-py` atrás do adapter (já é dependência: `supabase~=2.27.3`). O mapeamento de erros usa status/`code` normalizados, então trocar para REST depois só afeta `adapters/`. | REST direto (PostgREST + Storage) | ✅ (adotada ao iniciar a implementação) |
+| D-02 | **Síncrono ou assíncrono** | **Contratos síncronos** + wrapper assíncrono por thread (`asyncio.to_thread`). Motivos: `supabase-py` tem cliente síncrono, o upload resumable (TUS) em Python é síncrono, e o wrapper cobre o uso em FastAPI sem bloquear o event loop. | Contratos assíncronos nativos | ✅ (adotada ao iniciar a implementação) |
+| D-03 | **Prefixo das variáveis** | Nomes próprios `SBX_*` (isolados dos `SUPABASE_*` da integração antiga). Fallback legado opcional, **desligado** por padrão e proibido em homol/prod. | Reutilizar `SUPABASE_*` | ✅ (adotada ao iniciar a implementação) |
+| D-04 | **Primeiros casos de uso reais** (quais tabelas, colunas e buckets; visibilidade dos buckets) | Definir antes da Fase 3. Alimenta as allowlists, os descritores de tabela e a política de URLs. Até lá, os buckets são tratados como **privados**. | n/a | ✅ (adotada ao iniciar a implementação) |
+| D-05 | **Plano do Supabase e limites reais** (limite global de upload, `max-rows`, rate limits) | Levantar na plataforma, **somente leitura**, via [research/01](research/01-variaveis-de-ambiente.md). | n/a | ✅ (adotada ao iniciar a implementação) |
+| D-06 | **Um projeto Supabase por ambiente** (dev/homol/prod) e projeto dedicado de testes | Sim: projetos, chaves e `.env` separados; nunca chave de produção em dev. | Um projeto só, separado por schema/bucket | ✅ (adotada ao iniciar a implementação) |
+| D-07 | **Nome do pacote Python interno** | `supabase/bai_supabase/` (evita sombrear o SDK `supabase`). A pasta `supabase/` não ganha `__init__.py`. Testes rodam com `pythonpath = supabase`. | Outro nome | ✅ (adotada ao iniciar a implementação) |
+| D-08 | **Adicionar `pytest` (e plugins) ao grupo `dev` do `pyproject.toml`** | Sim, isolado em `supabase/tests/`, sem exigir adoção no resto do projeto. | Script ad-hoc como no resto do repo | ✅ (adotada ao iniciar a implementação) |
 
 ## 2. Contradições entre os documentos e como foram resolvidas
 
