@@ -205,15 +205,16 @@
   <div class="table-wrap"><table>
     <thead><tr><th>Service</th><th>Command</th><th>Port</th><th>When to use</th></tr></thead>
     <tbody>
-      <tr><td>API (FastAPI)</td><td><code>uvicorn web_services:app --reload</code></td><td><code>8000</code></td><td>Programmatic access to the AI modules over HTTP</td></tr>
+      <tr><td>API (FastAPI)</td><td><code>python -m uvicorn web_services:app --reload</code></td><td><code>8000</code></td><td>Programmatic access to the AI modules over HTTP</td></tr>
       <tr><td>Interface (Streamlit)</td><td><code>streamlit run web_app.py</code></td><td><code>8501</code></td><td>Visual use of the applications (Acquarello, Content Generator)</td></tr>
     </tbody>
   </table></div>
   <div class="callout" data-kind="info"><p><strong>Prerequisites:</strong> virtual environment activated (step 3), dependencies installed (step 4) and <code>.env</code> file configured (step 5).</p></div>
 
   <h3 id="6-1-api-fastapi-uvicorn"><a class="anchor" href="#6-1-api-fastapi-uvicorn" aria-label="Link para esta seção">#</a>6.1. API (FastAPI + Uvicorn)</h3>
-  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">uvicorn</span> web_services:app <span class="t-n">--reload</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">python</span> -m uvicorn web_services:app <span class="t-n">--reload</span></code></pre><button class="copy floating" type="button"></button></div></div>
   <p>The <code>--reload</code> flag restarts the server automatically on every code change — recommended for development only.</p>
+  <div class="callout" data-kind="info"><p><strong>Why <code>python -m uvicorn</code>?</strong> If the project folder (or <code>.venv</code>) was moved or renamed, the venv's <code>uvicorn.exe</code> fails with <code>uv trampoline failed to canonicalize script path</code>. Calling it through <code>python -m</code> avoids the problem. Alternatives: <code>uv run uvicorn web_services:app --reload</code>, or recreate the venv with <code>Remove-Item -Recurse -Force .venv; uv sync</code>.</p></div>
   <div class="code plain"><div class="code-body"><pre data-lang=""><code>INFO:     Will watch for changes in these directories: ['C:\\Users\\user_name\\better-ai']
 INFO:     Uvicorn running on http://localhost:8000 (Press CTRL+C to quit)
 INFO:     Started reloader process [24960] using StatReload

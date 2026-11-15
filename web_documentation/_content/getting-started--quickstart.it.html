@@ -139,7 +139,7 @@ LOCAL=false
   <table>
     <thead><tr><th>Servizio</th><th>Comando</th><th>Porta</th><th>Quando usarlo</th></tr></thead>
     <tbody>
-      <tr><td>API (FastAPI)</td><td><code>uvicorn web_services:app --reload</code></td><td><code>8000</code></td><td>Consumo programmatico dei moduli di IA via HTTP</td></tr>
+      <tr><td>API (FastAPI)</td><td><code>python -m uvicorn web_services:app --reload</code></td><td><code>8000</code></td><td>Consumo programmatico dei moduli di IA via HTTP</td></tr>
       <tr><td>Interfaccia (Streamlit)</td><td><code>streamlit run web_app.py</code></td><td><code>8501</code></td><td>Uso visuale delle applicazioni (Acquarello, Content Generator)</td></tr>
     </tbody>
   </table>
@@ -150,6 +150,7 @@ LOCAL=false
 uvicorn web_services:app --reload
 </code></pre>
   <p>Il flag <code>--reload</code> riavvia il server automaticamente a ogni modifica del codice — consigliato solo in sviluppo.</p>
+  <div class="callout" data-kind="info"><p><strong>Perché <code>python -m uvicorn</code>?</strong> Se la cartella del progetto (o la <code>.venv</code>) è stata spostata o rinominata, l'eseguibile <code>uvicorn.exe</code> della venv fallisce con l'errore <code>uv trampoline failed to canonicalize script path</code>. Chiamarlo tramite <code>python -m</code> evita il problema. Alternative: <code>uv run uvicorn web_services:app --reload</code>, oppure ricreare la venv con <code>Remove-Item -Recurse -Force .venv; uv sync</code>.</p></div>
   <pre><code>
 INFO:     Will watch for changes in these directories: ['C:\\Users\\user_name\\better-ai']
 INFO:     Uvicorn running on http://localhost:8000 (Press CTRL+C to quit)

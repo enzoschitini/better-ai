@@ -195,7 +195,7 @@ O projeto expõe **dois serviços independentes**, que podem ser executados sepa
 
 | **Serviço** | **Comando** | **Porta** | **Quando usar** |
 | --- | --- | --- | --- |
-| API (FastAPI) | `uvicorn web_services:app --reload` | `8000` | Consumo programático dos módulos de IA via HTTP |
+| API (FastAPI) | `python -m uvicorn web_services:app --reload` | `8000` | Consumo programático dos módulos de IA via HTTP |
 | Interface (Streamlit) | `streamlit run web_app.py` | `8501` | Uso visual das aplicações (Acquarello, Content Generator) |
 
 > **Pré-requisitos:** ambiente virtual ativado (passo 3), dependências instaladas (passo 4) e arquivo `.env` configurado (passo 5).
@@ -206,10 +206,12 @@ O projeto expõe **dois serviços independentes**, que podem ser executados sepa
 #### **6.1. API (FastAPI + Uvicorn)**
 
 ```
-uvicorn web_services:app --reload
+python -m uvicorn web_services:app --reload
 ```
 
 A flag `--reload` reinicia o servidor automaticamente a cada alteração no código — recomendada apenas em desenvolvimento.
+
+> **Por que `python -m uvicorn`?** Se a pasta do projeto (ou a `.venv`) foi movida/renomeada, o executável `uvicorn.exe` da venv quebra com o erro `uv trampoline failed to canonicalize script path`. Chamar via `python -m` evita o problema. Alternativas: `uv run uvicorn web_services:app --reload`, ou recriar a venv com `Remove-Item -Recurse -Force .venv; uv sync`.
 
 ```
 INFO:     Will watch for changes in these directories: ['C:\\Users\\user_name\\better-ai']

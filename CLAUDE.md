@@ -20,7 +20,7 @@ Dependency management is via `uv` (see `pyproject.toml` / `uv.lock`; `requiremen
 uv sync
 
 # run the FastAPI service (matches Procfile, but locally use web_services:app)
-uvicorn web_services:app --reload
+python -m uvicorn web_services:app --reload
 
 # run the Streamlit app
 streamlit run web_app.py
