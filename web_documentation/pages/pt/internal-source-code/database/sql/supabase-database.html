@@ -79,114 +79,228 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copiar página</span></button>
             </div>
           </div>
-          <p class="lead">Esta documentação detalha a arquitetura e o funcionamento do motor de persistência de dados criado para interagir com o Supabase, utilizando uma abordagem híbrida entre a API REST (via cliente oficial) e o acesso direto ao PostgreSQL (via psycopg2).</p>
+          <p class="lead">Documentação da integração do BetterAI com as tabelas do Supabase: como obter a integração, declarar tabelas e executar CRUD, consultas, paginação e operações em lote.</p>
           <details class="toc-inline"><summary>Nesta página</summary><ul></ul></details>
         </header>
         <div class="prose"><h2 id="visao-geral"><a class="anchor" href="#visao-geral" aria-label="Link para esta seção">#</a>Visão Geral</h2>
-  <p>O código implementa uma camada de abstração de banco de dados dividida em duas responsabilidades principais: <strong>Gerenciamento de Conexão</strong> e <strong>Motor de Consultas (Query Engine)</strong>.</p>
-  <p>Diferente de abordagens que dependem apenas de bibliotecas de alto nível, este projeto foca na performance e no controle transacional robusto, permitindo execuções SQL puras, manipulação de JSONB e operações em lote (bulk operations) com segurança.</p>
-
+  <p>O acesso às tabelas do Supabase é feito por uma única integração, localizada em <code>src/database/supabase_integration/</code>. Os fluxos do projeto não criam clientes do SDK <code>supabase</code> nem escrevem SQL: pedem a integração ao ponto de composição e operam sobre repositórios de tabela.</p>
+  <ul>
+    <li><strong><code>get_supabase()</code></strong> (<code>src/database/supabase_provider.py</code>): devolve a integração compartilhada do processo, criada na primeira chamada a partir das variáveis <code>SBX_*</code>.</li>
+    <li><strong><code>TableDescriptor</code></strong>: descreve uma tabela (nome, chave primária, colunas permitidas, colunas gerenciadas pelo servidor, modelo).</li>
+    <li><strong><code>sb.tables.table("nome")</code></strong>: devolve o <code>TableRepository</code> com as operações de CRUD, consulta, paginação e lote.</li>
+    <li><strong><code>Query</code></strong>, <strong><code>Condition</code></strong>, <strong><code>FilterGroup</code></strong>, <strong><code>Sort</code></strong>, <strong><code>PageRequest</code></strong>: objetos de consulta independentes do SDK.</li>
+  </ul>
+  <div class="callout" data-kind="info"><p>A integração fala com o Supabase pela API REST (PostgREST). Não há execução de SQL cru: filtros, ordenações e escritas são descritos com os objetos de consulta e validados antes de ir à rede.</p></div>
   <h2 id="fluxo-de-execucao"><a class="anchor" href="#fluxo-de-execucao" aria-label="Link para esta seção">#</a>Fluxo de Execução</h2>
-  <p>O fluxo de uma operação comum segue estes passos:</p>
+  <p>O fluxo de uma operação de tabela segue estes passos:</p>
   <ol>
-    <li><strong>Inicialização:</strong> O <code>SupabaseConnection</code> carrega as variáveis de ambiente e valida as credenciais.</li>
-    <li><strong>Lazy Loading:</strong> A conexão com o banco PostgreSQL só é aberta no momento em que a primeira query é solicitada.</li>
-    <li><strong>Injeção de Dependência:</strong> O <code>SupabaseQueryEngineer</code> recebe o método de conexão.</li>
-    <li><strong>Execução &amp; Contexto:</strong> O motor de consulta abre um cursor, executa o SQL e, em caso de sucesso, realiza o <code>commit</code>.</li>
-    <li><strong>Tratamento de Erro:</strong> Se algo falhar, um <code>rollback</code> automático é acionado para manter a integridade dos dados.</li>
+    <li><strong>Configuração:</strong> <code>get_supabase()</code> lê as variáveis <code>SBX_*</code>, valida tudo de uma vez e falha cedo, listando só os nomes ausentes ou inválidos.</li>
+    <li><strong>Registro:</strong> as tabelas declaradas em <code>_table_descriptors()</code> são registradas na criação da integração.</li>
+    <li><strong>Repositório:</strong> <code>sb.tables.table("nome")</code> devolve o repositório da tabela, desde que ela esteja registrada e permitida.</li>
+    <li><strong>Validação:</strong> colunas, filtros e valores são validados antes da rede (<code>ValidationError</code>, <code>MappingError</code>).</li>
+    <li><strong>Execução:</strong> a chamada passa pelo executor de resiliência (timeout de orçamento e retry com backoff, só em operações idempotentes).</li>
+    <li><strong>Resultado:</strong> a linha, a lista, a página ou o resultado de lote volta como <code>dict</code> (ou como o <code>model</code> do descritor); qualquer falha vira uma exceção do domínio (<code>SupabaseIntegrationError</code> e subclasses).</li>
   </ol>
-
-  <h2 id="tabela-de-metodos"><a class="anchor" href="#tabela-de-metodos" aria-label="Link para esta seção">#</a>Tabela de Métodos</h2>
+  <h2 id="configuracao"><a class="anchor" href="#configuracao" aria-label="Link para esta seção">#</a>Configuração</h2>
+  <p>A configuração vem das variáveis de ambiente <code>SBX_*</code>. As usadas pelas tabelas são:</p>
   <div class="table-wrap"><table>
-    <thead><tr><th>Classe</th><th>Método</th><th>Descrição Breve</th></tr></thead>
+    <thead><tr><th>Variável</th><th>Descrição</th></tr></thead>
     <tbody>
-      <tr><td><strong>SupabaseConnection</strong></td><td><code>get_connection()</code></td><td>Retorna uma conexão ativa, reconectando se necessário.</td></tr>
-      <tr><td><strong>SupabaseConnection</strong></td><td><code>close()</code></td><td>Encerra a conexão física com o banco de dados.</td></tr>
-      <tr><td><strong>SupabaseQueryEngineer</strong></td><td><code>select()</code></td><td>Executa consultas de leitura e retorna uma lista de dicionários.</td></tr>
-      <tr><td><strong>SupabaseQueryEngineer</strong></td><td><code>execute()</code></td><td>Executa comandos de escrita (Insert, Update, Delete).</td></tr>
-      <tr><td><strong>SupabaseQueryEngineer</strong></td><td><code>execute_many()</code></td><td>Executa o mesmo comando SQL para uma lista de múltiplos parâmetros.</td></tr>
+      <tr><td><code>SBX_URL</code></td><td>URL https do projeto Supabase (obrigatória)</td></tr>
+      <tr><td><code>SBX_SECRET_KEY</code></td><td>Chave secret do backend (obrigatória; nunca no frontend)</td></tr>
+      <tr><td><code>SBX_TABLES_ALLOWLIST</code></td><td>Tabelas permitidas, separadas por vírgula (obrigatória em prod)</td></tr>
+      <tr><td><code>SBX_DB_SCHEMA</code></td><td>Schema Postgres (padrão <code>public</code>)</td></tr>
+      <tr><td><code>SBX_TABLES_DEFAULT_PAGE_SIZE</code></td><td>Tamanho de página padrão (50)</td></tr>
+      <tr><td><code>SBX_TABLES_MAX_PAGE_SIZE</code></td><td>Teto do tamanho de página (padrão <code>min(1000, server max rows)</code>)</td></tr>
+      <tr><td><code>SBX_TABLES_BATCH_SIZE</code></td><td>Tamanho de cada chunk nas operações em lote (500)</td></tr>
+      <tr><td><code>SBX_TABLES_SERVER_MAX_ROWS</code></td><td><code>max-rows</code> real do projeto Supabase (1000)</td></tr>
+      <tr><td><code>SBX_TABLES_QUERY_TIMEOUT_SECONDS</code></td><td>Timeout das consultas em segundos (10)</td></tr>
+      <tr><td><code>SBX_TABLES_BATCH_TIMEOUT_SECONDS</code></td><td>Timeout das operações em lote em segundos (60)</td></tr>
     </tbody>
   </table></div>
+  <div class="callout" data-kind="warn"><p><strong>Regras de ambiente.</strong> Em <code>homol</code> e <code>prod</code> o arquivo <code>.env</code> é proibido (use as variáveis da plataforma) e <code>prod</code> exige <code>SBX_TABLES_ALLOWLIST</code>. Uma tabela nova precisa de um <code>TableDescriptor</code> <strong>e</strong> estar na allowlist. A lista completa está em <code>src/database/supabase_integration/.env.example</code>.</p></div>
+  <h2 id="obtendo-a-integracao"><a class="anchor" href="#obtendo-a-integracao" aria-label="Link para esta seção">#</a>Obtendo a Integração</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> src.database.supabase_provider <span class="t-k">import</span> get_supabase
 
+sb = <span class="t-f">get_supabase</span>()  <span class="t-c"># Integração compartilhada do processo</span>
+items = sb.tables.<span class="t-f">table</span>(<span class="t-s">&quot;sbx_test_items&quot;</span>)  <span class="t-c"># Repositório da tabela</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <p>As tabelas usadas pelos fluxos são declaradas em <code>_table_descriptors()</code>, em <code>src/database/supabase_provider.py</code>. Adicionar uma tabela é adicionar um descritor, sem editar mais nenhum código existente:</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> src.database.supabase_integration <span class="t-k">import</span> TableDescriptor
+
+<span class="t-k">def</span> <span class="t-f">_table_descriptors</span>():
+    <span class="t-k">return</span> (
+        <span class="t-f">TableDescriptor</span>(
+            <span class="t-s">&quot;sbx_test_items&quot;</span>,
+            columns=(<span class="t-s">&quot;id&quot;</span>, <span class="t-s">&quot;name&quot;</span>, <span class="t-s">&quot;qty&quot;</span>, <span class="t-s">&quot;created_at&quot;</span>),  <span class="t-c"># Allowlist de colunas</span>
+            server_managed_columns=(<span class="t-s">&quot;id&quot;</span>, <span class="t-s">&quot;created_at&quot;</span>),  <span class="t-c"># Preenchidas pelo servidor</span>
+            sort_key=<span class="t-s">&quot;created_at&quot;</span>,  <span class="t-c"># Habilita paginação por keyset</span>
+        ),
+    )</code></pre><button class="copy floating" type="button"></button></div></div>
+  <h2 id="tabledescriptor"><a class="anchor" href="#tabledescriptor" aria-label="Link para esta seção">#</a>TableDescriptor</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Campo</th><th>Significado</th></tr></thead>
+    <tbody>
+      <tr><td><code>name</code></td><td>Nome da tabela. Precisa estar em <code>SBX_TABLES_ALLOWLIST</code> se ela existir.</td></tr>
+      <tr><td><code>schema</code></td><td>Schema Postgres (padrão <code>public</code>).</td></tr>
+      <tr><td><code>primary_key</code></td><td>Coluna da chave primária, usada por <code>get_by_id</code>, <code>update</code>, <code>delete</code> e no desempate da ordenação (padrão <code>id</code>).</td></tr>
+      <tr><td><code>model</code></td><td><code>None</code> devolve <code>dict</code>; também aceita <code>dataclass</code> ou classe estilo Pydantic.</td></tr>
+      <tr><td><code>server_managed_columns</code></td><td>Colunas que o servidor preenche (<code>id</code>, <code>created_at</code>). Não são enviadas no insert quando <code>None</code> e são recusadas no <code>update</code>.</td></tr>
+      <tr><td><code>columns</code></td><td>Allowlist de colunas para filtro, ordenação, escrita e seleção. <code>None</code> não restringe. Precisa conter a chave primária e a <code>sort_key</code>.</td></tr>
+      <tr><td><code>sort_key</code></td><td>Coluna estável e não nula que habilita a paginação por keyset (ex.: <code>created_at</code>).</td></tr>
+    </tbody>
+  </table></div>
+  <h2 id="create"><a class="anchor" href="#create" aria-label="Link para esta seção">#</a>Create</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>novo = items.<span class="t-f">insert</span>({<span class="t-s">&quot;name&quot;</span>: <span class="t-s">&quot;Ana&quot;</span>, <span class="t-s">&quot;qty&quot;</span>: <span class="t-n">1</span>})  <span class="t-c"># Devolve a linha gravada, já com id e created_at</span>
+<span class="t-f">print</span>(novo[<span class="t-s">&quot;id&quot;</span>])
+
+lote = items.<span class="t-f">insert_many</span>(  <span class="t-c"># Lote: um resultado por item</span>
+    [{<span class="t-s">&quot;name&quot;</span>: f<span class="t-s">&quot;item-{i}&quot;</span>, <span class="t-s">&quot;qty&quot;</span>: i} <span class="t-k">for</span> i <span class="t-k">in</span> <span class="t-f">range</span>(<span class="t-n">25</span>)],
+    <span class="t-f">BatchOptions</span>(batch_size=<span class="t-n">10</span>, mode=<span class="t-s">&quot;continue&quot;</span>),
+)
+<span class="t-f">print</span>(lote.total, lote.succeeded, lote.failed, lote.all_ok, lote.stopped_early)
+<span class="t-k">for</span> it <span class="t-k">in</span> lote.items:
+    <span class="t-k">if</span> <span class="t-k">not</span> it.ok:
+        <span class="t-f">print</span>(<span class="t-s">&quot;failed item&quot;</span>, it.index, <span class="t-f">type</span>(it.error).__name__)</code></pre><button class="copy floating" type="button"></button></div></div>
+  <h2 id="read"><a class="anchor" href="#read" aria-label="Link para esta seção">#</a>Read</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>um = items.<span class="t-f">get_by_id</span>(novo[<span class="t-s">&quot;id&quot;</span>])  <span class="t-c"># RecordNotFoundError se não existe</span>
+
+achados = items.<span class="t-f">find</span>(Query.<span class="t-f">where</span>(<span class="t-f">Condition</span>(<span class="t-s">&quot;name&quot;</span>, Op.ILIKE, <span class="t-s">&quot;an%&quot;</span>)))  <span class="t-c"># Lista vazia se nada casa</span>
+iguais = items.<span class="t-f">find</span>(Query.<span class="t-f">eq</span>(<span class="t-s">&quot;qty&quot;</span>, <span class="t-n">5</span>))
+
+q = <span class="t-f">Query</span>(
+    filter=<span class="t-f">FilterGroup</span>(items=(
+        <span class="t-f">Condition</span>(<span class="t-s">&quot;qty&quot;</span>, Op.GTE, <span class="t-n">5</span>),
+        <span class="t-f">FilterGroup</span>(items=(<span class="t-f">Condition</span>(<span class="t-s">&quot;qty&quot;</span>, Op.EQ, <span class="t-n">7</span>), <span class="t-f">Condition</span>(<span class="t-s">&quot;qty&quot;</span>, Op.EQ, <span class="t-n">9</span>)), logic=<span class="t-s">&quot;or&quot;</span>),
+    )),  <span class="t-c"># qty &gt;= 5 AND (qty = 7 OR qty = 9)</span>
+    sorts=(<span class="t-f">Sort</span>(<span class="t-s">&quot;name&quot;</span>),),
+    columns=(<span class="t-s">&quot;id&quot;</span>, <span class="t-s">&quot;name&quot;</span>, <span class="t-s">&quot;qty&quot;</span>),  <span class="t-c"># Projeção opcional</span>
+)
+pag = items.<span class="t-f">list</span>(q, <span class="t-f">PageRequest</span>(limit=<span class="t-n">10</span>, offset=<span class="t-n">0</span>, include_count=<span class="t-n">True</span>))
+<span class="t-f">print</span>(pag.items, pag.total, pag.has_more)
+
+<span class="t-k">for</span> linha <span class="t-k">in</span> items.<span class="t-f">iterate</span>(q, page_size=<span class="t-n">100</span>):  <span class="t-c"># Varredura de tabela grande, uma página por vez</span>
+    ...</code></pre><button class="copy floating" type="button"></button></div></div>
+  <div class="callout" data-kind="warn"><p><code>find()</code> carrega todas as linhas que casam em memória. Para tabelas grandes use <code>iterate()</code>.</p></div>
+  <h2 id="update"><a class="anchor" href="#update" aria-label="Link para esta seção">#</a>Update</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>atual = items.<span class="t-f">update</span>(novo[<span class="t-s">&quot;id&quot;</span>], {<span class="t-s">&quot;qty&quot;</span>: <span class="t-n">5</span>})  <span class="t-c"># RecordNotFoundError se não existe</span>
+n = items.<span class="t-f">update_where</span>(<span class="t-f">Condition</span>(<span class="t-s">&quot;name&quot;</span>, Op.LIKE, <span class="t-s">&quot;item-%&quot;</span>), {<span class="t-s">&quot;qty&quot;</span>: <span class="t-n">0</span>})  <span class="t-c"># Devolve o número de linhas afetadas</span>
+items.<span class="t-f">upsert</span>({<span class="t-s">&quot;id&quot;</span>: novo[<span class="t-s">&quot;id&quot;</span>], <span class="t-s">&quot;name&quot;</span>: <span class="t-s">&quot;Ana&quot;</span>, <span class="t-s">&quot;qty&quot;</span>: <span class="t-n">999</span>}, on_conflict=<span class="t-s">&quot;id&quot;</span>)  <span class="t-c"># Insere ou atualiza</span>
+items.<span class="t-f">upsert_many</span>([{<span class="t-s">&quot;id&quot;</span>: <span class="t-n">1</span>, <span class="t-s">&quot;name&quot;</span>: <span class="t-s">&quot;A&quot;</span>}, {<span class="t-s">&quot;id&quot;</span>: <span class="t-n">2</span>, <span class="t-s">&quot;name&quot;</span>: <span class="t-s">&quot;B&quot;</span>}], on_conflict=<span class="t-s">&quot;id&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
+  <h2 id="delete"><a class="anchor" href="#delete" aria-label="Link para esta seção">#</a>Delete</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>r = items.<span class="t-f">delete</span>(novo[<span class="t-s">&quot;id&quot;</span>])  <span class="t-c"># Idempotente</span>
+<span class="t-f">print</span>(r.removed, r.removed_count)  <span class="t-c"># removed=False se já não existia</span>
+items.<span class="t-f">delete_where</span>(<span class="t-f">Condition</span>(<span class="t-s">&quot;name&quot;</span>, Op.LIKE, <span class="t-s">&quot;item-%&quot;</span>))  <span class="t-c"># Filtro vazio é recusado (ValidationError)</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <div class="callout" data-kind="danger"><p><code>update_where</code> e <code>delete_where</code> recusam filtro vazio (<code>ValidationError</code>). É a proteção contra alterar ou apagar a tabela inteira.</p></div>
+  <h2 id="consultas"><a class="anchor" href="#consultas" aria-label="Link para esta seção">#</a>Consultas</h2>
+  <p><code>Query</code> tem <code>filter</code>, <code>sorts</code> e <code>columns</code>. Atalhos: <code>Query.where(*conditions)</code> (AND entre as condições) e <code>Query.eq(coluna, valor)</code>. Um <code>FilterGroup</code> combina <code>Condition</code> ou outros grupos com <code>logic="and"</code> ou <code>"or"</code> (profundidade máxima 8).</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Operador</th><th>Significado</th><th>Regra do valor</th></tr></thead>
+    <tbody>
+      <tr><td><code>EQ</code>, <code>NEQ</code>, <code>GT</code>, <code>GTE</code>, <code>LT</code>, <code>LTE</code></td><td>Comparações</td><td>Escalar não nulo (use <code>IS_NULL</code>/<code>NOT_NULL</code> para nulos)</td></tr>
+      <tr><td><code>IN</code></td><td>Pertence a</td><td>Lista, tupla ou conjunto, até 1000 itens</td></tr>
+      <tr><td><code>LIKE</code>, <code>ILIKE</code></td><td>Padrão com <code>%</code></td><td>Texto</td></tr>
+      <tr><td><code>IS_NULL</code>, <code>NOT_NULL</code></td><td>Nulo / não nulo</td><td>O valor é ignorado</td></tr>
+      <tr><td><code>CONTAINS</code></td><td><code>@&gt;</code> em jsonb ou array</td><td>Lista, dict ou texto</td></tr>
+    </tbody>
+  </table></div>
+  <p>Valores aceitos nas escritas: <code>str</code>, <code>int</code>, <code>bool</code>, <code>float</code> finito, <code>Decimal</code> (enviado como texto), <code>datetime</code> <strong>com fuso</strong> (convertido para UTC), <code>date</code>, <code>time</code>, <code>UUID</code>, <code>Enum</code>, <code>dict</code>, <code>list</code>, <code>tuple</code> e <code>set</code>. Qualquer outro tipo levanta <code>MappingError</code>.</p>
+  <h2 id="paginacao"><a class="anchor" href="#paginacao" aria-label="Link para esta seção">#</a>Paginação</h2>
+  <p><code>PageRequest(limit=None, offset=0, cursor=None, include_count=False)</code> pede uma página e <code>Page</code> devolve <code>items</code>, <code>limit</code>, <code>offset</code>, <code>next_cursor</code>, <code>total</code> e <code>has_more</code>. Sem <code>limit</code>, vale <code>SBX_TABLES_DEFAULT_PAGE_SIZE</code>; pedir mais que o teto efetivo reduz o valor com aviso, sem erro.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th></th><th>Offset (padrão)</th><th>Keyset (opcional)</th></tr></thead>
+    <tbody>
+      <tr><td>Quando</td><td>Páginas rasas ou saltar para a página N</td><td>Varrer tabelas grandes e páginas profundas</td></tr>
+      <tr><td>Exige</td><td>Nada</td><td><code>sort_key</code> no descritor e ordenação compatível</td></tr>
+      <tr><td>Custo</td><td>Cresce com o offset</td><td>Constante</td></tr>
+      <tr><td>Estabilidade</td><td>Pode repetir ou pular linhas se os dados mudam</td><td>Estável</td></tr>
+    </tbody>
+  </table></div>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> src.database.supabase_integration.tables <span class="t-k">import</span> KEYSET_START
+
+cursor = KEYSET_START  <span class="t-c"># Abre a cadeia de páginas</span>
+<span class="t-k">while</span> cursor:
+    pag = items.<span class="t-f">list</span>(<span class="t-f">Query</span>(), <span class="t-f">PageRequest</span>(limit=<span class="t-n">100</span>, cursor=cursor))
+    <span class="t-k">for</span> linha <span class="t-k">in</span> pag.items:
+        ...
+    cursor = pag.next_cursor  <span class="t-c"># None na última página</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <div class="callout" data-kind="note"><p>O cursor é opaco e assinado pela consulta: usá-lo com outro filtro ou direção de ordenação levanta <code>ValidationError</code>.</p></div>
+  <h2 id="operacoes-em-lote"><a class="anchor" href="#operacoes-em-lote" aria-label="Link para esta seção">#</a>Operações em Lote</h2>
+  <p><code>insert_many</code> e <code>upsert_many</code> recebem <code>BatchOptions(batch_size=None, mode="continue")</code>. Cada chunk é uma requisição atômica no Postgres; não há atomicidade entre chunks. O lote inteiro é validado antes de qualquer envio.</p>
+  <ul>
+    <li><code>mode="continue"</code>: um chunk que falha por dado ou conflito é dividido ao meio até isolar os itens ruins; o restante é gravado.</li>
+    <li><code>mode="stop"</code>: para no primeiro chunk com falha e marca <code>stopped_early=True</code> se sobrou lote.</li>
+    <li><code>BatchResult</code> tem <code>items</code> (lista de <code>ItemOutcome</code> com <code>index</code>, <code>ok</code>, <code>entity</code>, <code>error</code>), <code>stopped_early</code> e as propriedades <code>total</code>, <code>succeeded</code>, <code>failed</code> e <code>all_ok</code>.</li>
+  </ul>
+  <h2 id="entidades-tipadas"><a class="anchor" href="#entidades-tipadas" aria-label="Link para esta seção">#</a>Entidades Tipadas</h2>
+  <p>Por padrão as linhas são <code>dict</code>. Para trabalhar com <code>dataclass</code> ou classe estilo Pydantic, informe <code>model</code> no descritor. <code>insert</code> e <code>upsert</code> aceitam o modelo ou <code>dict</code>; as leituras devolvem o modelo; <code>update(id, {...})</code> recebe sempre um <code>dict</code> de alterações.</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> dataclasses <span class="t-k">import</span> dataclass
+<span class="t-k">from</span> datetime <span class="t-k">import</span> datetime
+<span class="t-k">from</span> typing <span class="t-k">import</span> Optional
+<span class="t-k">from</span> uuid <span class="t-k">import</span> UUID
+
+@dataclass
+<span class="t-k">class</span> Item:
+    id: UUID
+    name: str
+    qty: int = <span class="t-n">0</span>
+    created_at: Optional[datetime] = <span class="t-n">None</span>
+
+<span class="t-f">TableDescriptor</span>(<span class="t-s">&quot;sbx_test_items&quot;</span>, model=Item, server_managed_columns=(<span class="t-s">&quot;id&quot;</span>, <span class="t-s">&quot;created_at&quot;</span>))
+
+novo = items.<span class="t-f">insert</span>(<span class="t-f">Item</span>(id=<span class="t-n">None</span>, name=<span class="t-s">&quot;Ana&quot;</span>, qty=<span class="t-n">1</span>))  <span class="t-c"># id=None é omitido (coluna do servidor)</span>
+outro = items.<span class="t-f">get_by_id</span>(novo.id)  <span class="t-c"># Leituras devolvem Item</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <h2 id="tabela-de-metodos"><a class="anchor" href="#tabela-de-metodos" aria-label="Link para esta seção">#</a>Tabela de Métodos</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Método</th><th>Retorno</th><th>Descrição Breve</th><th>Retry automático</th></tr></thead>
+    <tbody>
+      <tr><td><code>get_by_id(id)</code></td><td>entidade</td><td>Busca por chave primária; <code>RecordNotFoundError</code> se não existe.</td><td>Sim</td></tr>
+      <tr><td><code>find(query=None)</code></td><td><code>list</code></td><td>Todas as linhas que casam, em memória; <code>[]</code> se nada casa.</td><td>Sim</td></tr>
+      <tr><td><code>list(query=None, page=None)</code></td><td><code>Page</code></td><td>Uma página, por offset ou keyset.</td><td>Sim</td></tr>
+      <tr><td><code>iterate(query=None, page_size=None)</code></td><td>iterador</td><td>Varredura preguiçosa, uma página por vez.</td><td>Sim</td></tr>
+      <tr><td><code>insert(entity)</code></td><td>entidade</td><td>Grava uma linha e devolve a linha gravada.</td><td>Não</td></tr>
+      <tr><td><code>insert_many(entities, options=None)</code></td><td><code>BatchResult</code></td><td>Grava em lote, com resultado por item.</td><td>Não</td></tr>
+      <tr><td><code>update(id, changes)</code></td><td>entidade</td><td>Atualiza por chave primária; <code>RecordNotFoundError</code> se não existe.</td><td>Sim</td></tr>
+      <tr><td><code>update_where(filter, changes)</code></td><td><code>int</code></td><td>Atualiza por filtro e devolve as linhas afetadas; filtro vazio é recusado.</td><td>Sim</td></tr>
+      <tr><td><code>upsert(entity, on_conflict=None)</code></td><td>entidade</td><td>Insere ou atualiza; <code>on_conflict</code> padrão é a chave primária.</td><td>Sim</td></tr>
+      <tr><td><code>upsert_many(entities, on_conflict=None, options=None)</code></td><td><code>BatchResult</code></td><td>Upsert em lote.</td><td>Sim</td></tr>
+      <tr><td><code>delete(id)</code></td><td><code>DeleteResult</code></td><td>Remove por chave primária; idempotente.</td><td>Sim</td></tr>
+      <tr><td><code>delete_where(filter)</code></td><td><code>DeleteResult</code></td><td>Remove por filtro; filtro vazio é recusado.</td><td>Sim</td></tr>
+    </tbody>
+  </table></div>
+  <h2 id="tratamento-de-erros"><a class="anchor" href="#tratamento-de-erros" aria-label="Link para esta seção">#</a>Tratamento de Erros</h2>
+  <p>Nenhuma exceção do SDK (<code>supabase</code>, <code>postgrest</code>, <code>httpx</code>) chega ao código do projeto: tudo vira <code>SupabaseIntegrationError</code> ou uma subclasse, com a causa original em <code>__cause__</code>.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Exceção</th><th>Quando</th></tr></thead>
+    <tbody>
+      <tr><td><code>ConfigurationError</code></td><td>Tabela não registrada ou fora da allowlist; tabela ou coluna inexistente no banco.</td></tr>
+      <tr><td><code>ValidationError</code></td><td>Entrada inválida, detectada antes da rede (coluna fora da allowlist, filtro vazio, valor inválido).</td></tr>
+      <tr><td><code>MappingError</code></td><td>Falha ao converter valor ou linha; cita tabela e campo, nunca o valor.</td></tr>
+      <tr><td><code>RecordNotFoundError</code></td><td><code>get_by_id</code> ou <code>update</code> sem linha correspondente.</td></tr>
+      <tr><td><code>DuplicateRecordError</code>, <code>ReferenceViolationError</code></td><td>Violação de unicidade (<code>23505</code>) ou de chave estrangeira (<code>23503</code>).</td></tr>
+      <tr><td><code>DataError</code></td><td>Tipo, not-null ou check rejeitados pelo banco.</td></tr>
+      <tr><td><code>PermissionDeniedError</code>, <code>AuthenticationError</code></td><td>Política de RLS negou o acesso; chave ou JWT inválido.</td></tr>
+      <tr><td><code>OperationTimeoutError</code>, <code>ServiceUnavailableError</code>, <code>RateLimitError</code></td><td>Falhas transitórias (<code>retryable=True</code>).</td></tr>
+    </tbody>
+  </table></div>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">try</span>:
+    items.<span class="t-f">get_by_id</span>(<span class="t-s">&quot;00000000-0000-0000-0000-000000000000&quot;</span>)
+<span class="t-k">except</span> RecordNotFoundError:
+    ...  <span class="t-c"># 404 no endpoint</span>
+<span class="t-k">except</span> ValidationError:
+    ...  <span class="t-c"># 422: entrada inválida</span>
+<span class="t-k">except</span> SupabaseIntegrationError <span class="t-k">as</span> e:  <span class="t-c"># Qualquer erro da integração</span>
+    <span class="t-f">print</span>(e.retryable, e.status, e.provider_code, e.attempts, e.outcome_unknown, e.correlation_id)</code></pre><button class="copy floating" type="button"></button></div></div>
+  <div class="callout" data-kind="warn"><p><code>insert</code> e <code>insert_many</code> nunca são repetidos automaticamente (não são idempotentes). Em timeout o erro traz <code>outcome_unknown=True</code>: confira no banco antes de tentar de novo.</p></div>
   <h2 id="arquitetura-e-insights"><a class="anchor" href="#arquitetura-e-insights" aria-label="Link para esta seção">#</a>Arquitetura e Insights</h2>
   <ul>
-    <li><strong>Resiliência (Auto-reconexão):</strong> O método <code>get_connection</code> realiza um "ping" (<code>SELECT 1</code>) no banco. Isso evita erros comuns de "broken pipe" em ambientes serverless ou quando a conexão fica ociosa por muito tempo.</li>
-    <li><strong>Resultados Tipados:</strong> O uso do <code>RealDictCursor</code> transforma as linhas do banco em dicionários Python nativos, facilitando o uso em APIs e manipulação de dados.</li>
-    <li><strong>Segurança (SQL Injection):</strong> O sistema utiliza parametrização (<code>%s</code>), delegando ao driver a limpeza dos dados, o que previne ataques de injeção de SQL.</li>
-  </ul>
-
-  <h2 id="documentacao-detalhada-das-classes"><a class="anchor" href="#documentacao-detalhada-das-classes" aria-label="Link para esta seção">#</a>Documentação Detalhada das Classes</h2>
-
-  <h2 id="classe-supabaseconnection"><a class="anchor" href="#classe-supabaseconnection" aria-label="Link para esta seção">#</a>Classe SupabaseConnection</h2>
-  <p><strong>Descrição</strong></p>
-  <p>Gerencia o ciclo de vida da conexão com o ecossistema Supabase. Ela valida se o ambiente está configurado corretamente e fornece uma interface para obter conexões PostgreSQL estáveis através do protocolo TCP.</p>
-  <p><strong>Argumentos</strong></p>
-  <ul>
-    <li>Não possui argumentos de inicialização (lê diretamente de <code>.env</code>).</li>
-  </ul>
-
-  <h2 id="metodos"><a class="anchor" href="#metodos" aria-label="Link para esta seção">#</a>Metodos</h2>
-  <p><strong>1. get_connection</strong></p>
-  <ul>
-    <li><strong>Descrição:</strong> Fornece uma instância de conexão <code>psycopg2</code>. Implementa o padrão Lazy Initialization.</li>
-    <li><strong>Argumentos:</strong> Nenhum.</li>
-    <li><strong>Retornos:</strong> <code>psycopg2.extensions.connection</code></li>
-    <li><strong>Raises:</strong> <code>Exception</code> se as credenciais estiverem incorretas ou o banco estiver inacessível.</li>
-    <li><strong>Exemplos:</strong> <code>conn = connection.get_connection()</code></li>
-  </ul>
-
-  <h2 id="classe-supabasequeryengineer"><a class="anchor" href="#classe-supabasequeryengineer" aria-label="Link para esta seção">#</a>Classe SupabaseQueryEngineer</h2>
-  <p><strong>Descrição</strong></p>
-  <p>O "cérebro" das operações de banco de dados. Esta classe isola a complexidade do SQL, gerenciando cursores e transações (Commit/Rollback) de forma transparente para o desenvolvedor.</p>
-  <p><strong>Argumentos</strong></p>
-  <ul>
-    <li><code>get_connection</code> (Callable): Uma função ou método que retorne uma conexão ativa.</li>
-  </ul>
-
-  <h2 id="metodos-2"><a class="anchor" href="#metodos-2" aria-label="Link para esta seção">#</a>Metodos</h2>
-  <p><strong>1. select</strong></p>
-  <ul>
-    <li><strong>Descrição:</strong> Executa queries de busca de dados.</li>
-    <li><strong>Argumentos:</strong>
-      <ul>
-        <li><code>query</code> (str): Comando SQL SELECT.</li>
-        <li><code>params</code> (tuple, opcional): Valores para substituir os placeholders <code>%s</code>.</li>
-      </ul>
-    </li>
-    <li><strong>Retornos:</strong> <code>List[Dict[str, Any]]</code> - Uma lista onde cada item é uma linha da tabela.</li>
-    <li><strong>Raises:</strong> <code>Exception</code> em caso de erro de sintaxe SQL ou falha de conexão.</li>
-    <li><strong>Exemplos:</strong> <code>engine.select("SELECT * FROM users WHERE name = %s", ("Enzo",))</code></li>
-  </ul>
-
-  <p><strong>2. execute</strong></p>
-  <ul>
-    <li><strong>Descrição:</strong> Executa comandos que alteram o estado do banco de dados (DDL ou DML).</li>
-    <li><strong>Argumentos:</strong>
-      <ul>
-        <li><code>query</code> (str): Comando SQL (INSERT, UPDATE, DELETE, CREATE, etc).</li>
-        <li><code>params</code> (tuple, opcional): Parâmetros da query.</li>
-      </ul>
-    </li>
-    <li><strong>Retornos:</strong> <code>None</code></li>
-    <li><strong>Raises:</strong> <code>Exception</code> com rollback automático em caso de falha.</li>
-    <li><strong>Exemplos:</strong> <code>engine.execute("UPDATE users SET name = %s", ("Novo Nome",))</code></li>
-  </ul>
-
-  <p><strong>3. execute_many</strong></p>
-  <ul>
-    <li><strong>Descrição:</strong> Otimiza a inserção ou atualização de grandes volumes de dados.</li>
-    <li><strong>Argumentos:</strong>
-      <ul>
-        <li><code>query</code> (str): Comando SQL parametrizado.</li>
-        <li><code>params_list</code> (List[tuple]): Lista contendo as tuplas de parâmetros para cada repetição.</li>
-      </ul>
-    </li>
-    <li><strong>Retornos:</strong> <code>None</code></li>
-    <li><strong>Raises:</strong> <code>Exception</code> se qualquer uma das operações falhar (anula o lote inteiro).</li>
-    <li><strong>Exemplos:</strong> <code>engine.execute_many("INSERT INTO logs (msg) VALUES (%s)", [("Erro 1",), ("Erro 2",)])</code></li>
+    <li><strong>Lista de permissões:</strong> a tabela precisa estar registrada e em <code>SBX_TABLES_ALLOWLIST</code>; as colunas de filtro, ordenação e escrita podem ser restritas por <code>columns</code>.</li>
+    <li><strong>Segredos protegidos:</strong> a chave <code>SBX_SECRET_KEY</code> é um <code>Secret</code> que nunca aparece em <code>repr</code>, logs ou mensagens de erro.</li>
+    <li><strong>Resiliência:</strong> só operações idempotentes têm retry com backoff e jitter, dentro de um orçamento de tempo (<code>SBX_RETRY_*</code>).</li>
+    <li><strong>Sem bloquear o event loop:</strong> em FastAPI use <code>create_async_integration</code>, que executa as chamadas em threads.</li>
+    <li><strong>Arquivo e registro juntos:</strong> para gravar um arquivo e o registro que aponta para ele, com compensação em caso de falha, veja a página de <a href="../../storage/supabase/storage-menager.html">Storage</a>.</li>
   </ul></div>
         <div class="feedback"></div>
-        <p class="source">Fonte: <code>src/database/relational_db/supabase_database.py</code></p>
+        <p class="source">Fonte: <code>src/database/supabase_integration/tables/</code></p>
         <nav class="pager" aria-label="Páginas vizinhas"><a class="pager-link prev" href="../../../../../pages/pt/internal-source-code/database/no-sql/router.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Anterior</small><span>Router</span></div></a><a class="pager-link next" href="../../../../../pages/pt/internal-source-code/storage/storage-menage-repository.html"><div><small>Próxima</small><span>Storage Menage Repository</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
       </main>
       <aside class="toc" id="toc" data-toc aria-label="Nesta página"></aside>

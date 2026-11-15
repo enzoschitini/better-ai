@@ -79,122 +79,194 @@
               <button class="cp-main" type="button" data-copy-page><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6.5A2.5 2.5 0 0 1 7.5 4H15"/></svg><span>Copia pagina</span></button>
             </div>
           </div>
-          <p class="lead">Questa è una documentazione dettagliata e didattica per il modulo di integrazione con Supabase Storage. Il codice è stato progettato seguendo i principi della Programmazione Orientata agli Oggetti (OOP) per facilitare la manutenzione e il riuso delle connessioni.</p>
+          <p class="lead">Documentazione dell'integrazione di BetterAI con Supabase Storage: come configurare i bucket e inviare, leggere, elencare e rimuovere file, anche insieme a un record di tabella.</p>
           <details class="toc-inline"><summary>In questa pagina</summary><ul></ul></details>
         </header>
-        <div class="prose"><h2 id="1-panoramica"><a class="anchor" href="#1-panoramica" aria-label="Link para esta seção">#</a>1. Panoramica</h2>
-  <p>Il modulo è composto da due classi principali che lavorano insieme per astrarre la complessità dell'API di Supabase. L'idea centrale è separare la <strong>configurazione della connessione</strong> (infrastruttura) dalla <strong>manipolazione dei file</strong> (logica di business).</p>
+        <div class="prose"><h2 id="panoramica"><a class="anchor" href="#panoramica" aria-label="Link para esta seção">#</a>Panoramica</h2>
+  <p>La gestione dei file nei bucket di Supabase avviene tramite la stessa integrazione delle tabelle, in <code>src/database/supabase_integration/</code>. I flussi del progetto non usano direttamente l'SDK <code>supabase</code>: chiedono l'integrazione e usano <code>sb.storage</code>.</p>
   <ul>
-    <li><strong>SupabaseConnection</strong>: Garantisce che la connessione con il server venga stabilita correttamente usando le variabili d'ambiente.</li>
-    <li><strong>StorageManager</strong>: Offre un'interfaccia semplificata per inviare, eliminare e recuperare i link dei file all'interno di uno specifico "bucket" (secchio/repository).</li>
+    <li><strong><code>get_supabase().storage</code></strong>: la classe dei file (<code>FileStore</code>) con <code>upload</code>, <code>download</code>, <code>download_to</code>, <code>signed_url</code>, <code>public_url</code>, <code>exists</code>, <code>list</code>, <code>delete</code> e <code>delete_prefix</code>.</li>
+    <li><strong><code>BytesSource</code>, <code>PathSource</code>, <code>StreamSource</code></strong>: le tre forme per fornire il contenuto da inviare.</li>
+    <li><strong><code>UploadOptions</code></strong>: bucket, cartella, percorso esplicito, politica di collisione, tipo di contenuto e metadati.</li>
+    <li><strong><code>StorageRepository</code></strong> (<code>src/storage/storage_repository.py</code>): wrapper del progetto per inviare immagini e ottenere l'URL pubblico, usato dalla generazione di immagini.</li>
   </ul>
-
-  <h2 id="2-flusso-di-esecuzione"><a class="anchor" href="#2-flusso-di-esecuzione" aria-label="Link para esta seção">#</a>2. Flusso di Esecuzione</h2>
-  <p>Per capire come interagiscono le classi, immagina il seguente flusso:</p>
+  <div class="callout" data-kind="info"><p>Tutte le operazioni validano l'input prima di andare in rete (bucket consentito, dimensione, estensione, tipo dichiarato e contenuto reale) e sollevano eccezioni di dominio invece di restituire <code>None</code>.</p></div>
+  <h2 id="flusso-di-upload"><a class="anchor" href="#flusso-di-upload" aria-label="Link para esta seção">#</a>Flusso di upload</h2>
   <ol>
-    <li><strong>Caricamento dell'Ambiente</strong>: Lo script legge il file <code>.env</code> per acquisire l'URL e la Chiave del progetto.</li>
-    <li><strong>Istanziazione</strong>: Quando crei uno <code>StorageManager</code>, questo verifica se hai già una connessione. In caso contrario, chiama automaticamente la <code>SupabaseConnection</code>.</li>
-    <li><strong>Accesso al Bucket</strong>: Il client si connette allo specifico bucket indicato all'inizio.</li>
-    <li><strong>Operazione</strong>: Chiami metodi semplici (come <code>upload_bytes</code>), e la classe gestisce la logica interna della libreria ufficiale di Supabase.</li>
+    <li><strong>Bucket:</strong> <code>UploadOptions.bucket</code> (o <code>SBX_BUCKET_DEFAULT</code>) viene risolto e verificato rispetto alla allowlist dei bucket.</li>
+    <li><strong>Validazione:</strong> dimensione (vuoto e oltre il tetto vengono rifiutati), estensione, tipo dichiarato e contenuto reale (magic bytes) devono concordare.</li>
+    <li><strong>Percorso:</strong> <code>path</code> esplicito, oppure generato come <code>&lt;folder&gt;/AAAA/MM/&lt;uuid&gt;&lt;ext&gt;</code>.</li>
+    <li><strong>Invio:</strong> upload standard oppure, oltre <code>SBX_STORAGE_RESUMABLE_THRESHOLD_BYTES</code> (6 MiB), upload resumable (TUS), letto in stream.</li>
+    <li><strong>Collisione:</strong> se il percorso esiste già, vale la <code>CollisionPolicy</code> (<code>REJECT</code>, <code>VERSION</code> o <code>OVERWRITE</code>).</li>
+    <li><strong>Risultato:</strong> uno <code>StoredFile</code> con <code>bucket</code>, <code>path</code>, <code>size</code>, <code>content_type</code>, <code>original_name</code>, <code>upload_mode</code> e <code>metadata</code>.</li>
   </ol>
-
-  <h2 id="3-riepilogo-dei-metodi"><a class="anchor" href="#3-riepilogo-dei-metodi" aria-label="Link para esta seção">#</a>3. Riepilogo dei Metodi</h2>
+  <h2 id="configurazione"><a class="anchor" href="#configurazione" aria-label="Link para esta seção">#</a>Configurazione</h2>
+  <p>La configurazione proviene dalle variabili d'ambiente <code>SBX_*</code>. Quelle usate dai file sono:</p>
   <div class="table-wrap"><table>
-    <thead><tr><th>Metodo</th><th>Classe</th><th>Breve Descrizione</th></tr></thead>
+    <thead><tr><th>Variabile</th><th>Descrizione</th></tr></thead>
     <tbody>
-      <tr><td><code>__init__</code></td><td><code>SupabaseConnection</code></td><td>Valida le credenziali e crea il client <code>Client</code>.</td></tr>
-      <tr><td><code>__init__</code></td><td><code>StorageManager</code></td><td>Definisce il bucket di destinazione e garantisce l'esistenza di un client attivo.</td></tr>
-      <tr><td><code>upload_bytes</code></td><td><code>StorageManager</code></td><td>Esegue l'upload di file binari (bytes) nello storage.</td></tr>
-      <tr><td><code>delete_files</code></td><td><code>StorageManager</code></td><td>Rimuove una lista di file in una sola volta.</td></tr>
-      <tr><td><code>get_url</code></td><td><code>StorageManager</code></td><td>Genera il link pubblico per visualizzare il file.</td></tr>
+      <tr><td><code>SBX_URL</code></td><td>URL https del progetto Supabase (obbligatoria)</td></tr>
+      <tr><td><code>SBX_SECRET_KEY</code></td><td>Chiave secret del backend (obbligatoria; mai nel frontend)</td></tr>
+      <tr><td><code>SBX_BUCKET_DEFAULT</code></td><td>Bucket predefinito (es.: <code>images</code>)</td></tr>
+      <tr><td><code>SBX_BUCKETS_ALLOWLIST</code></td><td>Bucket consentiti, separati da virgola (obbligatoria in prod)</td></tr>
+      <tr><td><code>SBX_BUCKETS_PUBLIC</code></td><td>Bucket pubblici; solo per questi <code>public_url</code> funziona</td></tr>
+      <tr><td><code>SBX_STORAGE_MAX_FILE_BYTES</code></td><td>Dimensione massima del file (50 MiB)</td></tr>
+      <tr><td><code>SBX_STORAGE_ALLOWED_MIME</code></td><td>Tipi MIME consentiti; accetta <code>image/*</code>; vuoto accetta qualsiasi</td></tr>
+      <tr><td><code>SBX_STORAGE_SIGNED_URL_TTL_SECONDS</code></td><td>Validità predefinita dell'URL firmato (300)</td></tr>
+      <tr><td><code>SBX_STORAGE_SIGNED_URL_MAX_TTL_SECONDS</code></td><td>Tetto della validità dell'URL firmato (3600)</td></tr>
+      <tr><td><code>SBX_STORAGE_RESUMABLE_THRESHOLD_BYTES</code></td><td>Dimensione oltre la quale l'upload diventa resumable (6 MiB)</td></tr>
+      <tr><td><code>SBX_STORAGE_MEMORY_CAP_BYTES</code></td><td>Tetto di memoria per <code>BytesSource</code> e <code>download</code> (32 MiB)</td></tr>
+      <tr><td><code>SBX_STORAGE_UPLOAD_TIMEOUT_SECONDS</code></td><td>Timeout dell'upload in secondi (120)</td></tr>
+      <tr><td><code>SBX_STORAGE_MAX_CONCURRENT_TRANSFERS</code></td><td>Trasferimenti simultanei (4)</td></tr>
     </tbody>
   </table></div>
+  <div class="callout" data-kind="warn"><p><strong>Bucket pubblico.</strong> Per generare l'URL pubblico delle immagini, il bucket deve essere in <code>SBX_BUCKETS_PUBLIC</code> (per esempio <code>SBX_BUCKET_DEFAULT=images</code>, <code>SBX_BUCKETS_PUBLIC=images</code>, <code>SBX_BUCKETS_ALLOWLIST=images</code>). In <code>homol</code> e <code>prod</code> il <code>.env</code> da file è vietato. L'elenco completo è in <code>src/database/supabase_integration/.env.example</code>.</p></div>
+  <h2 id="upload"><a class="anchor" href="#upload" aria-label="Link para esta seção">#</a>Upload</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> src.database.supabase_provider <span class="t-k">import</span> get_supabase
+<span class="t-k">from</span> src.database.supabase_integration <span class="t-k">import</span> BytesSource, PathSource, StreamSource, UploadOptions, CollisionPolicy
 
-  <h2 id="4-architettura-e-insight"><a class="anchor" href="#4-architettura-e-insight" aria-label="Link para esta seção">#</a>4. Architettura e Insight</h2>
+storage = <span class="t-f">get_supabase</span>().storage
+
+st = storage.<span class="t-f">upload</span>(
+    <span class="t-f">BytesSource</span>(b<span class="t-s">&quot;content&quot;</span>, filename=<span class="t-s">&quot;note.txt&quot;</span>, content_type=<span class="t-s">&quot;text/plain&quot;</span>),
+    <span class="t-f">UploadOptions</span>(folder=<span class="t-s">&quot;docs&quot;</span>),  <span class="t-c"># Percorso generato: docs/AAAA/MM/&lt;uuid&gt;.txt</span>
+)
+<span class="t-f">print</span>(st.bucket, st.path, st.size, st.upload_mode, st.content_type, st.original_name)
+
+big = storage.<span class="t-f">upload</span>(
+    <span class="t-f">PathSource</span>(<span class="t-s">&quot;video.mp4&quot;</span>, content_type=<span class="t-s">&quot;video/mp4&quot;</span>),  <span class="t-c"># Letto in stream; oltre 6 MiB diventa resumable (TUS)</span>
+    <span class="t-f">UploadOptions</span>(folder=<span class="t-s">&quot;videos&quot;</span>),
+)
+
+<span class="t-k">with</span> <span class="t-f">open</span>(<span class="t-s">&quot;report.pdf&quot;</span>, <span class="t-s">&quot;rb&quot;</span>) <span class="t-k">as</span> f:
+    storage.<span class="t-f">upload</span>(<span class="t-f">StreamSource</span>(f, size=<span class="t-n">None</span>, filename=<span class="t-s">&quot;report.pdf&quot;</span>, content_type=<span class="t-s">&quot;application/pdf&quot;</span>))  <span class="t-c"># Stream, per esempio l'UploadFile di FastAPI</span>
+
+storage.<span class="t-f">upload</span>(
+    <span class="t-f">BytesSource</span>(b<span class="t-s">&quot;v2&quot;</span>, filename=<span class="t-s">&quot;a.txt&quot;</span>, content_type=<span class="t-s">&quot;text/plain&quot;</span>),
+    <span class="t-f">UploadOptions</span>(path=st.path, collision=CollisionPolicy.VERSION),  <span class="t-c"># Collisione: scrive in un percorso nuovo (-v2)</span>
+)</code></pre><button class="copy floating" type="button"></button></div></div>
+  <h3 id="sorgenti-di-dati"><a class="anchor" href="#sorgenti-di-dati" aria-label="Link para esta seção">#</a>Sorgenti di dati</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Classe</th><th>Campi</th><th>Note</th></tr></thead>
+    <tbody>
+      <tr><td><code>BytesSource</code></td><td><code>data</code>, <code>filename</code>, <code>content_type</code></td><td>In memoria; oltre <code>SBX_STORAGE_MEMORY_CAP_BYTES</code> solleva <code>ValidationError</code> (usa <code>PathSource</code> o <code>StreamSource</code>).</td></tr>
+      <tr><td><code>PathSource</code></td><td><code>path</code>, <code>filename</code>, <code>content_type</code></td><td>Legge dal disco in stream; <code>filename</code> predefinito è il nome del file; file inesistente solleva <code>ValidationError</code>.</td></tr>
+      <tr><td><code>StreamSource</code></td><td><code>stream</code>, <code>size</code>, <code>filename</code>, <code>content_type</code>, <code>restartable</code></td><td>Con <code>size</code> e stream che permette <code>seek</code>, viene riletto in caso di retry; senza <code>size</code> viene copiato in un file temporaneo (i byte vengono contati e il tetto verificato).</td></tr>
+    </tbody>
+  </table></div>
+  <h3 id="uploadoptions"><a class="anchor" href="#uploadoptions" aria-label="Link para esta seção">#</a>UploadOptions</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Campo</th><th>Effetto</th></tr></thead>
+    <tbody>
+      <tr><td><code>bucket</code></td><td><code>None</code> usa <code>SBX_BUCKET_DEFAULT</code>; deve essere nella allowlist.</td></tr>
+      <tr><td><code>folder</code></td><td>Sottocartella logica (validata). Percorso generato: <code>&lt;folder&gt;/AAAA/MM/&lt;uuid&gt;&lt;ext&gt;</code>.</td></tr>
+      <tr><td><code>path</code></td><td>Percorso esplicito, che sostituisce la denominazione automatica ed è sempre validato.</td></tr>
+      <tr><td><code>collision</code></td><td><code>REJECT</code> (predefinito: <code>FileAlreadyExistsError</code>), <code>VERSION</code> (scrive in <code>nome-v2.ext</code>, <code>-v3</code>...) oppure <code>OVERWRITE</code> (sovrascrive, solo esplicito).</td></tr>
+      <tr><td><code>content_type</code></td><td>Tipo MIME dichiarato, confrontato con l'estensione e il contenuto.</td></tr>
+      <tr><td><code>metadata</code></td><td>Metadati <code>str</code> verso <code>str</code> (fino a 50 voci); l'integrazione aggiunge <code>original_name</code>.</td></tr>
+      <tr><td><code>cache_control_seconds</code></td><td><code>None</code> usa <code>SBX_STORAGE_CACHE_CONTROL_SECONDS</code>.</td></tr>
+      <tr><td><code>correlation_id</code></td><td>Identificatore per collegare i log dell'operazione.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout" data-kind="note"><p>Il tipo di contenuto viene scelto così: contenuto rilevato (se specifico), poi quello dichiarato, poi l'estensione, infine <code>application/octet-stream</code>. Estensione, tipo dichiarato e contenuto devono concordare, altrimenti solleva <code>ValidationError</code>. Nei bucket pubblici i tipi attivi (<code>.html</code>, <code>.svg</code>, <code>.js</code>, eseguibili) vengono rifiutati.</p></div>
+  <div class="callout" data-kind="info"><p>I percorsi degli oggetti accettano solo ASCII <code>[A-Za-z0-9._-]</code>, senza accenti né spazi, senza segmenti che iniziano con un punto e fino a 8 livelli. Nel percorso generato, il nome originale dell'utente va come metadato (<code>original_name</code>), non nel percorso.</p></div>
+  <h2 id="upload-di-immagini-nel-progetto"><a class="anchor" href="#upload-di-immagini-nel-progetto" aria-label="Link para esta seção">#</a>Upload di immagini nel progetto</h2>
+  <p>La generazione di immagini scrive i file tramite lo <code>StorageRepository</code>, che usa l'integrazione: costruisce il percorso <code>&lt;base_path&gt;/&lt;file_name&gt;</code>, invia i byte e restituisce l'URL pubblico. Se l'upload fallisce, solleva <code>RuntimeError</code> con la causa originale in <code>__cause__</code>.</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">from</span> src.storage.storage_repository <span class="t-k">import</span> StorageRepository
+
+repository = <span class="t-f">StorageRepository</span>(base_path=<span class="t-s">&quot;image_generations&quot;</span>, bucket_name=<span class="t-s">&quot;images&quot;</span>)
+
+url = repository.<span class="t-f">upload_to_supabase</span>(file_name=<span class="t-s">&quot;example_image.png&quot;</span>, byte_data=image_bytes)
+<span class="t-f">print</span>(url)  <span class="t-c"># URL pubblico del file nel bucket</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <h2 id="lettura"><a class="anchor" href="#lettura" aria-label="Link para esta seção">#</a>Lettura</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>data = storage.<span class="t-f">download</span>(st.path)  <span class="t-c"># bytes, limitato dal tetto di memoria (32 MiB)</span>
+storage.<span class="t-f">download_to</span>(big.path, <span class="t-s">&quot;out/video.mp4&quot;</span>)  <span class="t-c"># Stream diretto su disco, per file grandi</span>
+url = storage.<span class="t-f">signed_url</span>(st.path, ttl_seconds=<span class="t-n">300</span>)  <span class="t-c"># URL firmato; tetto 3600 s, oltre ValidationError</span>
+pub = storage.<span class="t-f">public_url</span>(st.path, bucket=<span class="t-s">&quot;images&quot;</span>)  <span class="t-c"># Solo per bucket in SBX_BUCKETS_PUBLIC</span>
+found = storage.<span class="t-f">exists</span>(st.path)
+page = storage.<span class="t-f">list</span>(prefix=<span class="t-s">&quot;docs&quot;</span>, limit=<span class="t-n">100</span>)  <span class="t-c"># Page[ObjectInfo]</span>
+<span class="t-k">for</span> o <span class="t-k">in</span> page.items:
+    <span class="t-f">print</span>(o.path, o.size, o.content_type, o.updated_at, o.is_folder)</code></pre><button class="copy floating" type="button"></button></div></div>
+  <div class="callout" data-kind="warn"><p><code>exists</code> restituisce <code>False</code> anche con 401 e 403 (limitazione dell'SDK): un problema di permessi può sembrare "non esiste".</p></div>
+  <h2 id="rimozione"><a class="anchor" href="#rimozione" aria-label="Link para esta seção">#</a>Rimozione</h2>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>rep = storage.<span class="t-f">delete</span>([st.path, big.path])  <span class="t-c"># Idempotente; report per percorso</span>
+<span class="t-f">print</span>(rep.requested, rep.removed, rep.failed)  <span class="t-c"># failed: {percorso: motivo}</span>
+storage.<span class="t-f">delete_prefix</span>(<span class="t-s">&quot;docs/2026/11&quot;</span>)  <span class="t-c"># DISTRUTTIVO: cancella tutto sotto il prefisso, ricorsivamente</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <div class="callout" data-kind="danger"><p>Gli errori parziali in <code>delete</code> non sollevano eccezioni: controlla <code>rep.failed</code>. <code>delete_prefix</code> è distruttivo e ricorsivo (profondità massima 16); il prefisso vuoto è vietato.</p></div>
+  <h2 id="tabella-dei-metodi"><a class="anchor" href="#tabella-dei-metodi" aria-label="Link para esta seção">#</a>Tabella dei metodi</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Metodo</th><th>Ritorno</th><th>Descrizione breve</th></tr></thead>
+    <tbody>
+      <tr><td><code>upload(source, options=None)</code></td><td><code>StoredFile</code></td><td>Valida e invia il file; <code>upload_mode</code> è <code>standard</code> o <code>resumable</code>.</td></tr>
+      <tr><td><code>download(path, bucket=None)</code></td><td><code>bytes</code></td><td>Scarica in memoria; rifiuta oggetti oltre il tetto (<code>use download_to</code>).</td></tr>
+      <tr><td><code>download_to(path, destination, bucket=None)</code></td><td><code>Path</code></td><td>Scarica in stream su disco e crea le cartelle padre.</td></tr>
+      <tr><td><code>signed_url(path, bucket=None, ttl_seconds=None)</code></td><td><code>str</code></td><td>URL temporaneo; non viene mai registrato nei log.</td></tr>
+      <tr><td><code>public_url(path, bucket=None)</code></td><td><code>str</code></td><td>URL pubblico, solo per bucket in <code>SBX_BUCKETS_PUBLIC</code>; costruito localmente, senza rete.</td></tr>
+      <tr><td><code>exists(path, bucket=None)</code></td><td><code>bool</code></td><td>Indica se l'oggetto esiste.</td></tr>
+      <tr><td><code>list(prefix="", bucket=None, limit=None, offset=0)</code></td><td><code>Page[ObjectInfo]</code></td><td>Elenca gli oggetti; le cartelle arrivano con <code>is_folder=True</code>.</td></tr>
+      <tr><td><code>delete(paths, bucket=None)</code></td><td><code>DeleteReport</code></td><td>Rimuove in blocchi; idempotente; gli errori vanno in <code>failed</code>.</td></tr>
+      <tr><td><code>delete_prefix(prefix, bucket=None)</code></td><td><code>DeleteReport</code></td><td>Rimuove tutto sotto il prefisso, ricorsivamente.</td></tr>
+    </tbody>
+  </table></div>
+  <h2 id="file-e-record-insieme"><a class="anchor" href="#file-e-record-insieme" aria-label="Link para esta seção">#</a>File e record insieme</h2>
+  <p>Quando il file deve essere scritto insieme a un record di tabella, usa le operazioni combinate della facciata. Seguono un ordine fisso e compensano in caso di errore: se il record fallisce dopo l'upload, il file viene cancellato. Le tabelle sono descritte nella pagina <a href="../../database/sql/supabase-database.html">Supabase Database</a>.</p>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>sb = <span class="t-f">get_supabase</span>()
+
+r = sb.<span class="t-f">save_file_with_record</span>(
+    <span class="t-s">&quot;sbx_test_items&quot;</span>,
+    <span class="t-f">BytesSource</span>(b<span class="t-s">&quot;content&quot;</span>, filename=<span class="t-s">&quot;contract.txt&quot;</span>, content_type=<span class="t-s">&quot;text/plain&quot;</span>),
+    <span class="t-k">lambda</span> f: {<span class="t-s">&quot;name&quot;</span>: <span class="t-s">&quot;contract&quot;</span>, <span class="t-s">&quot;bucket&quot;</span>: f.bucket, <span class="t-s">&quot;path&quot;</span>: f.path},  <span class="t-c"># Costruisce il record dal file scritto</span>
+    <span class="t-f">UploadOptions</span>(folder=<span class="t-s">&quot;contracts&quot;</span>),
+)
+r.<span class="t-f">raise_if_failed</span>()  <span class="t-c"># Solleva lo stesso errore originale, se c'è stato un errore</span>
+<span class="t-f">print</span>(r.status.value, r.record[<span class="t-s">&quot;id&quot;</span>])  <span class="t-c"># completa, parziale o fallita</span>
+
+sb.<span class="t-f">replace_file_in_record</span>(
+    <span class="t-s">&quot;sbx_test_items&quot;</span>, r.record[<span class="t-s">&quot;id&quot;</span>],
+    <span class="t-f">BytesSource</span>(b<span class="t-s">&quot;v2&quot;</span>, filename=<span class="t-s">&quot;contract.txt&quot;</span>, content_type=<span class="t-s">&quot;text/plain&quot;</span>),
+    <span class="t-k">lambda</span> f: {<span class="t-s">&quot;bucket&quot;</span>: f.bucket, <span class="t-s">&quot;path&quot;</span>: f.path},
+    old_ref=(r.stored_file.bucket, r.stored_file.path),  <span class="t-c"># Il file vecchio viene cancellato per ultimo</span>
+)
+
+sb.<span class="t-f">delete_record_and_file</span>(<span class="t-s">&quot;sbx_test_items&quot;</span>, r.record[<span class="t-s">&quot;id&quot;</span>], (r.stored_file.bucket, r.stored_file.path))  <span class="t-c"># Prima il record, poi il file</span></code></pre><button class="copy floating" type="button"></button></div></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th><code>status</code></th><th>Significato</th><th><code>orphan_possible</code></th></tr></thead>
+    <tbody>
+      <tr><td><code>completa</code></td><td>Tutti i passi sono stati completati.</td><td><code>False</code></td></tr>
+      <tr><td><code>falhou</code></td><td>Nulla è rimasto (errore prima di scrivere, o compensazione riuscita).</td><td><code>False</code></td></tr>
+      <tr><td><code>parcial</code></td><td>È rimasto qualcosa: file orfano o file vecchio non cancellato. Il log riporta <code>orfao_possivel=true</code> con bucket e path.</td><td><code>True</code></td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout" data-kind="warn"><p><code>raise_if_failed()</code> solleva anche nello stato <code>parcial</code>, anche quando il record è stato aggiornato. Leggi <code>r.status</code> prima di decidere.</p></div>
+  <h2 id="gestione-degli-errori"><a class="anchor" href="#gestione-degli-errori" aria-label="Link para esta seção">#</a>Gestione degli errori</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Eccezione</th><th>Quando</th></tr></thead>
+    <tbody>
+      <tr><td><code>ValidationError</code></td><td>Bucket fuori dalla allowlist, file vuoto, tipo discordante o non consentito, percorso non valido, URL firmato oltre il tetto, bucket non pubblico in <code>public_url</code>.</td></tr>
+      <tr><td><code>FileTooLargeError</code></td><td>File oltre <code>SBX_STORAGE_MAX_FILE_BYTES</code> o risposta 413 di Storage.</td></tr>
+      <tr><td><code>FileAlreadyExistsError</code></td><td>Il percorso esiste già con <code>CollisionPolicy.REJECT</code>.</td></tr>
+      <tr><td><code>FileNotFoundInStorageError</code></td><td>Oggetto inesistente (Storage usa 404 anche per "senza permesso").</td></tr>
+      <tr><td><code>PermissionDeniedError</code>, <code>AuthenticationError</code></td><td>La policy del bucket ha negato l'accesso; chiave non valida.</td></tr>
+      <tr><td><code>UploadError</code>, <code>DownloadError</code></td><td>Errore di storage non classificato.</td></tr>
+      <tr><td><code>OperationTimeoutError</code>, <code>ServiceUnavailableError</code>, <code>RateLimitError</code></td><td>Errori transitori (<code>retryable=True</code>).</td></tr>
+    </tbody>
+  </table></div>
+  <div class="code plain"><div class="code-body"><pre data-lang="python"><code><span class="t-k">try</span>:
+    storage.<span class="t-f">upload</span>(<span class="t-f">BytesSource</span>(data, filename=<span class="t-s">&quot;a.png&quot;</span>), <span class="t-f">UploadOptions</span>(path=<span class="t-s">&quot;images/a.png&quot;</span>))
+<span class="t-k">except</span> FileAlreadyExistsError:
+    ...  <span class="t-c"># Il percorso esiste già</span>
+<span class="t-k">except</span> SupabaseIntegrationError <span class="t-k">as</span> e:  <span class="t-c"># Qualsiasi errore dell'integrazione</span>
+    <span class="t-f">print</span>(e.retryable, e.outcome_unknown, e.correlation_id)</code></pre><button class="copy floating" type="button"></button></div></div>
+  <h2 id="architettura-e-insight"><a class="anchor" href="#architettura-e-insight" aria-label="Link para esta seção">#</a>Architettura e insight</h2>
   <ul>
-    <li><strong>Singleton Implicito vs Dependency Injection</strong>: La classe <code>StorageManager</code> accetta un <code>supabase_client</code> opzionale. Questo è ottimo per i test unitari o per riutilizzare una connessione già aperta in un'altra parte del sistema, evitando connessioni multiple non necessarie.</li>
-    <li><strong>Gestione degli errori</strong>: L'uso di blocchi <code>try/except</code> nei metodi di scrittura (upload/delete) evita che l'applicazione si blocchi in caso di errore di rete o di permessi.</li>
-    <li><strong>Sicurezza</strong>: L'uso di <code>dotenv</code> e <code>os.getenv</code> garantisce che le chiavi sensibili non siano mai esposte direttamente nel codice sorgente.</li>
-  </ul>
-
-  <h2 id="5-documentazione-dettagliata"><a class="anchor" href="#5-documentazione-dettagliata" aria-label="Link para esta seção">#</a>5. Documentazione Dettagliata</h2>
-
-  <h3 id="classe-supabaseconnection"><a class="anchor" href="#classe-supabaseconnection" aria-label="Link para esta seção">#</a>Classe SupabaseConnection</h3>
-  <p><strong>Descrizione</strong></p>
-  <p>Responsabile di centralizzare l'autenticazione. Funge da "fabbrica" di connessioni, garantendo che il client di Supabase sia correttamente configurato prima di qualsiasi operazione.</p>
-  <p><strong>Argomenti</strong></p>
-  <ul>
-    <li>Non ha argomenti diretti (utilizza le variabili d'ambiente <code>.env</code>).</li>
-  </ul>
-  <p><strong>Metodi</strong></p>
-
-  <h3 id="1-init"><a class="anchor" href="#1-init" aria-label="Link para esta seção">#</a>1. <code>__init__</code></h3>
-  <ul>
-    <li><strong>Descrizione</strong>: Individua le variabili <code>SUPABASE_URL</code> e <code>SUPABASE_SECRET_KEY</code>, validandole prima di istanziare il client ufficiale.</li>
-    <li><strong>Argomenti</strong>: Nessuno.</li>
-    <li><strong>Valori di ritorno</strong>: Nessuno (inizializza l'attributo <code>self.client</code>).</li>
-    <li><strong>Raises</strong>: <code>ValueError</code> se le chiavi non vengono trovate nell'ambiente.</li>
-    <li><strong>Esempi</strong>:</li>
-  </ul>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>conn = <span class="t-f">SupabaseConnection</span>()
-client = conn.client <span class="t-c"># Cliente pronto para uso</span></code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h3 id="classe-storagemanager"><a class="anchor" href="#classe-storagemanager" aria-label="Link para esta seção">#</a>Classe StorageManager</h3>
-  <p><strong>Descrizione</strong></p>
-  <p>Incapsula la logica di manipolazione dei bucket. È la classe "front-end" che lo sviluppatore userà per la maggior parte del tempo per gestire i file.</p>
-  <p><strong>Argomenti</strong></p>
-  <ul>
-    <li><code>bucket_name</code> (str): Il nome della cartella/repository in Supabase.</li>
-    <li><code>supabase_client</code> (Optional[Client]): Un'istanza esistente del client Supabase.</li>
-  </ul>
-  <p><strong>Metodi</strong></p>
-
-  <h3 id="1-upload-bytes"><a class="anchor" href="#1-upload-bytes" aria-label="Link para esta seção">#</a>1. <code>upload_bytes</code></h3>
-  <ul>
-    <li><strong>Descrizione</strong>: Invia un file allo storage a partire da dati in memoria (bytes).</li>
-    <li><strong>Argomenti</strong>:
-      <ul>
-        <li><code>path_on_storage</code> (str): Percorso/nome del file nella destinazione.</li>
-        <li><code>file_bytes</code> (bytes): Il contenuto binario del file.</li>
-        <li><code>content_type</code> (str): Tipo di file (es: <code>image/png</code>).</li>
-      </ul>
-    </li>
-    <li><strong>Valori di ritorno</strong>: <code>dict</code> con i metadati dell'upload o <code>None</code> in caso di errore.</li>
-    <li><strong>Raises</strong>: Cattura le eccezioni generiche e le stampa sulla console.</li>
-    <li><strong>Esempi</strong>:</li>
-  </ul>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>manager.<span class="t-f">upload_bytes</span>(<span class="t-s">&quot;docs/perfil.jpg&quot;</span>, foto_bytes, <span class="t-s">&quot;image/jpeg&quot;</span>)</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h3 id="2-delete-files"><a class="anchor" href="#2-delete-files" aria-label="Link para esta seção">#</a>2. <code>delete_files</code></h3>
-  <ul>
-    <li><strong>Descrizione</strong>: Elimina uno o più file contemporaneamente.</li>
-    <li><strong>Argomenti</strong>:
-      <ul>
-        <li><code>paths</code> (List[str]): Lista di percorsi (es: <code>["img1.jpg", "img2.jpg"]</code>).</li>
-      </ul>
-    </li>
-    <li><strong>Valori di ritorno</strong>: <code>dict</code> con lo stato della rimozione o <code>None</code>.</li>
-    <li><strong>Raises</strong>: Cattura le eccezioni di rete o di permessi.</li>
-    <li><strong>Esempi</strong>:</li>
-  </ul>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>manager.<span class="t-f">delete_files</span>([<span class="t-s">&quot;velho/foto1.png&quot;</span>, <span class="t-s">&quot;velho/foto2.png&quot;</span>])</code></pre><button class="copy floating" type="button"></button></div></div>
-
-  <h3 id="3-get-url"><a class="anchor" href="#3-get-url" aria-label="Link para esta seção">#</a>3. <code>get_url</code></h3>
-  <ul>
-    <li><strong>Descrizione</strong>: Ottiene l'indirizzo web pubblico per accedere a un file.</li>
-    <li><strong>Argomenti</strong>:
-      <ul>
-        <li><code>path</code> (str): Percorso del file all'interno del bucket.</li>
-      </ul>
-    </li>
-    <li><strong>Valori di ritorno</strong>: <code>str</code> contenente l'URL completo.</li>
-    <li><strong>Raises</strong>: <code>ValueError</code> se il percorso è vuoto.</li>
-    <li><strong>Esempi</strong>:</li>
-  </ul>
-  <div class="code plain"><div class="code-body"><pre data-lang="python"><code>link = manager.<span class="t-f">get_url</span>(<span class="t-s">&quot;produtos/celular.png&quot;</span>)
-<span class="t-f">print</span>(link) <span class="t-c"># https://xyz.supabase.co/storage/v1/object/public/...</span></code></pre><button class="copy floating" type="button"></button></div></div></div>
+    <li><strong>Upload resumable:</strong> oltre <code>SBX_STORAGE_RESUMABLE_THRESHOLD_BYTES</code> l'invio usa il protocollo TUS a chunk, senza caricare l'intero file in memoria.</li>
+    <li><strong>Retry sicuro:</strong> solo <code>OVERWRITE</code> viene ripetuto dall'esecutore. Con <code>REJECT</code> e <code>VERSION</code> un timeout diventa <code>outcome_unknown=True</code> e l'oggetto potrebbe essere stato scritto: controlla con <code>exists</code>.</li>
+    <li><strong>Nomi sicuri:</strong> il percorso generato non usa mai il nome dell'utente, evitando collisioni e caratteri non validi.</li>
+    <li><strong>Senza bloccare l'event loop:</strong> in FastAPI usa <code>create_async_integration</code>; <code>await asb.upload(...)</code> gira in un thread.</li>
+    <li><strong>Segreti protetti:</strong> la chiave <code>SBX_SECRET_KEY</code> e gli URL firmati non compaiono mai nei log o nei messaggi di errore.</li>
+  </ul></div>
         <div class="feedback"></div>
-        <p class="source">Fonte: <code>src/storage/supabase/storage_menager.py</code></p>
+        <p class="source">Fonte: <code>src/database/supabase_integration/storage/</code></p>
         <nav class="pager" aria-label="Pagine vicine"><a class="pager-link prev" href="../../../../../pages/it/internal-source-code/storage/storage-menage-repository.html"><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><div><small>Precedente</small><span>Storage Menage Repository</span></div></a><a class="pager-link next" href="../../../../../pages/it/internal-source-code/token-calculate/exchange-rate/bcb-exchange-rate-service.html"><div><small>Successiva</small><span>BCB Exchange Rate Service</span></div><svg class="ico " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></nav>
       </main>
       <aside class="toc" id="toc" data-toc aria-label="In questa pagina"></aside>
