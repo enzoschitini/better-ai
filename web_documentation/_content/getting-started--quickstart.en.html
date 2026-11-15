@@ -61,10 +61,11 @@ uv sync
       <tr><td><code>MONGO_HOST</code></td><td>MongoDB host</td></tr>
       <tr><td><code>MONGO_PORT</code></td><td>MongoDB port</td></tr>
       <tr><td><code>NOSQL_BACKEND</code></td><td>NoSQL backend in use (<code>local</code> or remote)</td></tr>
-      <tr><td><code>SUPABASE_URL</code></td><td>Supabase project URL</td></tr>
-      <tr><td><code>SUPABASE_SECRET_KEY</code></td><td>Supabase service secret key</td></tr>
-      <tr><td><code>SUPABASE_DATABASE_URL</code></td><td>Supabase Postgres database connection string</td></tr>
-      <tr><td><code>SUPABASE_PROJECT_NAME</code></td><td>Supabase project name</td></tr>
+      <tr><td><code>SBX_URL</code></td><td>Supabase project URL</td></tr>
+      <tr><td><code>SBX_SECRET_KEY</code></td><td>Supabase service secret key</td></tr>
+      <tr><td><code>SBX_BUCKET_DEFAULT</code></td><td>Default Supabase Storage bucket (e.g. <code>images</code>)</td></tr>
+      <tr><td><code>SBX_BUCKETS_PUBLIC</code></td><td>Public buckets (required to generate the public URL)</td></tr>
+      <tr><td><code>SBX_BUCKETS_ALLOWLIST</code></td><td>Allowed buckets (required in prod)</td></tr>
       <tr><td><code>SUPABASE_PROJECT_HOST</code></td><td>Supabase project host</td></tr>
       <tr><td><code>SUPABASE_DATABASE_PASSWORD</code></td><td>Supabase database password</td></tr>
       <tr><td><code>SHOW_INFO_LOGS</code></td><td>Shows informational logs (<code>true</code>/<code>false</code>)</td></tr>
@@ -114,10 +115,11 @@ MONGO_PORT=********************
 NOSQL_BACKEND=local
 
 # Supabase
-SUPABASE_URL=********************
-SUPABASE_SECRET_KEY=********************
-SUPABASE_DATABASE_URL=********************
-SUPABASE_PROJECT_NAME=better-ai-bucket-storage
+SBX_URL=********************
+SBX_SECRET_KEY=********************
+SBX_BUCKET_DEFAULT=images
+SBX_BUCKETS_PUBLIC=images
+SBX_BUCKETS_ALLOWLIST=images
 SUPABASE_PROJECT_HOST=********************
 SUPABASE_DATABASE_PASSWORD=********************
 
@@ -137,7 +139,7 @@ LOCAL=false
   <table>
     <thead><tr><th>Service</th><th>Command</th><th>Port</th><th>When to use</th></tr></thead>
     <tbody>
-      <tr><td>API (FastAPI)</td><td><code>uvicorn web_services:app --reload</code></td><td><code>8000</code></td><td>Programmatic access to the AI modules over HTTP</td></tr>
+      <tr><td>API (FastAPI)</td><td><code>python -m uvicorn web_services:app --reload</code></td><td><code>8000</code></td><td>Programmatic access to the AI modules over HTTP</td></tr>
       <tr><td>Interface (Streamlit)</td><td><code>streamlit run web_app.py</code></td><td><code>8501</code></td><td>Visual use of the applications (Acquarello, Content Generator)</td></tr>
     </tbody>
   </table>
@@ -148,6 +150,7 @@ LOCAL=false
 uvicorn web_services:app --reload
 </code></pre>
   <p>The <code>--reload</code> flag restarts the server automatically on every code change — recommended for development only.</p>
+  <div class="callout" data-kind="info"><p><strong>Why <code>python -m uvicorn</code>?</strong> If the project folder (or <code>.venv</code>) was moved or renamed, the venv's <code>uvicorn.exe</code> fails with <code>uv trampoline failed to canonicalize script path</code>. Calling it through <code>python -m</code> avoids the problem. Alternatives: <code>uv run uvicorn web_services:app --reload</code>, or recreate the venv with <code>Remove-Item -Recurse -Force .venv; uv sync</code>.</p></div>
   <pre><code>
 INFO:     Will watch for changes in these directories: ['C:\\Users\\user_name\\better-ai']
 INFO:     Uvicorn running on http://localhost:8000 (Press CTRL+C to quit)

@@ -18,7 +18,9 @@
     "agents/agno-agents/utils/model-gateway": "src/agents/utils/model_gateway.py",
     "internal-source-code/application-tracing/use": "src/tracing/tracing_test.py",
     "streamlit-applications/acquarello": "src/web_applications/applications/acquarello.py",
-    "streamlit-applications/content-generator": "src/web_applications/applications/content_generator.py"
+    "streamlit-applications/content-generator": "src/web_applications/applications/content_generator.py",
+    "internal-source-code/database/sql/supabase-database": "src/database/supabase_integration/tables/",
+    "internal-source-code/storage/supabase/storage-menager": "src/database/supabase_integration/storage/"
   },
   "footer": {
     "resources": [

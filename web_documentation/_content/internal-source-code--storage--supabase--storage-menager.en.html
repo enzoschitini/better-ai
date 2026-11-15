@@ -1,121 +1,197 @@
-<page data-lead="This is detailed, didactic documentation for the Supabase Storage integration module. The code was designed following Object-Oriented Programming (OOP) principles to make maintenance and connection reuse easier.">
-  <h2>1. Overview</h2>
-  <p>The module is made up of two main classes that work together to abstract the complexity of the Supabase API. The central idea is to separate the <strong>connection configuration</strong> (infrastructure) from <strong>file handling</strong> (business logic).</p>
+<page data-lead="Documentation of the BetterAI integration with Supabase Storage: how to configure buckets and upload, read, list and delete files, including together with a table record.">
+  <h2>Overview</h2>
+  <p>File management in Supabase buckets goes through the same integration as tables, in <code>src/database/supabase_integration/</code>. Project flows do not use the <code>supabase</code> SDK directly: they ask for the integration and use <code>sb.storage</code>.</p>
   <ul>
-    <li><strong>SupabaseConnection</strong>: Ensures the connection to the server is established correctly using environment variables.</li>
-    <li><strong>StorageManager</strong>: Offers a simplified interface to upload, delete and retrieve file links inside a specific "bucket" (container/repository).</li>
+    <li><strong><code>get_supabase().storage</code></strong>: the file class (<code>FileStore</code>) with <code>upload</code>, <code>download</code>, <code>download_to</code>, <code>signed_url</code>, <code>public_url</code>, <code>exists</code>, <code>list</code>, <code>delete</code> and <code>delete_prefix</code>.</li>
+    <li><strong><code>BytesSource</code>, <code>PathSource</code>, <code>StreamSource</code></strong>: the three ways to hand over the content to upload.</li>
+    <li><strong><code>UploadOptions</code></strong>: bucket, folder, explicit path, collision policy, content type and metadata.</li>
+    <li><strong><code>StorageRepository</code></strong> (<code>src/storage/storage_repository.py</code>): project wrapper to upload images and get the public URL, used by image generation.</li>
   </ul>
-
-  <h2>2. Execution Flow</h2>
-  <p>To understand how the classes interact, picture the following flow:</p>
+  <div class="callout" data-kind="info"><p>All operations validate the input before going over the network (allowed bucket, size, extension, declared type and real content) and raise domain exceptions instead of returning <code>None</code>.</p></div>
+  <h2>Upload Flow</h2>
   <ol>
-    <li><strong>Environment Loading</strong>: The script reads the <code>.env</code> file to capture the project URL and Key.</li>
-    <li><strong>Instantiation</strong>: When you create a <code>StorageManager</code>, it checks whether you already have a connection. If not, it calls <code>SupabaseConnection</code> automatically.</li>
-    <li><strong>Bucket Access</strong>: The client connects to the specific bucket given at the start.</li>
-    <li><strong>Operation</strong>: You call simple methods (such as <code>upload_bytes</code>), and the class handles the internal logic of the official Supabase library.</li>
+    <li><strong>Bucket:</strong> <code>UploadOptions.bucket</code> (or <code>SBX_BUCKET_DEFAULT</code>) is resolved and checked against the bucket allowlist.</li>
+    <li><strong>Validation:</strong> size (empty and above-ceiling files are rejected), extension, declared type and real content (magic bytes) must agree.</li>
+    <li><strong>Path:</strong> explicit <code>path</code>, or generated as <code>&lt;folder&gt;/YYYY/MM/&lt;uuid&gt;&lt;ext&gt;</code>.</li>
+    <li><strong>Transfer:</strong> standard upload or, above <code>SBX_STORAGE_RESUMABLE_THRESHOLD_BYTES</code> (6 MiB), resumable upload (TUS), read as a stream.</li>
+    <li><strong>Collision:</strong> if the path already exists, the <code>CollisionPolicy</code> applies (<code>REJECT</code>, <code>VERSION</code> or <code>OVERWRITE</code>).</li>
+    <li><strong>Result:</strong> a <code>StoredFile</code> with <code>bucket</code>, <code>path</code>, <code>size</code>, <code>content_type</code>, <code>original_name</code>, <code>upload_mode</code> and <code>metadata</code>.</li>
   </ol>
-
-  <h2>3. Methods Summary</h2>
+  <h2>Configuration</h2>
+  <p>Configuration comes from the <code>SBX_*</code> environment variables. The ones used by files are:</p>
   <table>
-    <thead><tr><th>Method</th><th>Class</th><th>Short Description</th></tr></thead>
+    <thead><tr><th>Variable</th><th>Description</th></tr></thead>
     <tbody>
-      <tr><td><code>__init__</code></td><td><code>SupabaseConnection</code></td><td>Validates credentials and creates the <code>Client</code> client.</td></tr>
-      <tr><td><code>__init__</code></td><td><code>StorageManager</code></td><td>Sets the target bucket and ensures an active client exists.</td></tr>
-      <tr><td><code>upload_bytes</code></td><td><code>StorageManager</code></td><td>Uploads binary files (bytes) to the storage.</td></tr>
-      <tr><td><code>delete_files</code></td><td><code>StorageManager</code></td><td>Removes a list of files at once.</td></tr>
-      <tr><td><code>get_url</code></td><td><code>StorageManager</code></td><td>Generates the public link to view the file.</td></tr>
+      <tr><td><code>SBX_URL</code></td><td>https URL of the Supabase project (required)</td></tr>
+      <tr><td><code>SBX_SECRET_KEY</code></td><td>Backend secret key (required; never in the frontend)</td></tr>
+      <tr><td><code>SBX_BUCKET_DEFAULT</code></td><td>Default bucket (e.g. <code>images</code>)</td></tr>
+      <tr><td><code>SBX_BUCKETS_ALLOWLIST</code></td><td>Allowed buckets, comma-separated (required in prod)</td></tr>
+      <tr><td><code>SBX_BUCKETS_PUBLIC</code></td><td>Public buckets; <code>public_url</code> only works for these</td></tr>
+      <tr><td><code>SBX_STORAGE_MAX_FILE_BYTES</code></td><td>Maximum file size (50 MiB)</td></tr>
+      <tr><td><code>SBX_STORAGE_ALLOWED_MIME</code></td><td>Allowed MIME types; accepts <code>image/*</code>; empty accepts any</td></tr>
+      <tr><td><code>SBX_STORAGE_SIGNED_URL_TTL_SECONDS</code></td><td>Default signed URL lifetime (300)</td></tr>
+      <tr><td><code>SBX_STORAGE_SIGNED_URL_MAX_TTL_SECONDS</code></td><td>Signed URL lifetime ceiling (3600)</td></tr>
+      <tr><td><code>SBX_STORAGE_RESUMABLE_THRESHOLD_BYTES</code></td><td>Size above which the upload becomes resumable (6 MiB)</td></tr>
+      <tr><td><code>SBX_STORAGE_MEMORY_CAP_BYTES</code></td><td>Memory ceiling for <code>BytesSource</code> and <code>download</code> (32 MiB)</td></tr>
+      <tr><td><code>SBX_STORAGE_UPLOAD_TIMEOUT_SECONDS</code></td><td>Upload timeout in seconds (120)</td></tr>
+      <tr><td><code>SBX_STORAGE_MAX_CONCURRENT_TRANSFERS</code></td><td>Concurrent transfers (4)</td></tr>
     </tbody>
   </table>
-
-  <h2>4. Architecture and Insights</h2>
-  <ul>
-    <li><strong>Implicit Singleton vs Dependency Injection</strong>: The <code>StorageManager</code> class accepts an optional <code>supabase_client</code>. This is great for unit tests or for reusing a connection already open elsewhere in the system, avoiding unnecessary multiple connections.</li>
-    <li><strong>Error Handling</strong>: Using <code>try/except</code> blocks in the write methods (upload/delete) keeps the application from crashing when a network or permission failure occurs.</li>
-    <li><strong>Security</strong>: Using <code>dotenv</code> and <code>os.getenv</code> ensures sensitive keys are never exposed directly in the source code.</li>
-  </ul>
-
-  <h2>5. Detailed Documentation</h2>
-
-  <h3>Class SupabaseConnection</h3>
-  <p><strong>Description</strong></p>
-  <p>Responsible for centralizing authentication. It works as a connection "factory", making sure the Supabase client is properly configured before any operation.</p>
-  <p><strong>Arguments</strong></p>
-  <ul>
-    <li>It has no direct arguments (it uses <code>.env</code> environment variables).</li>
-  </ul>
-  <p><strong>Methods</strong></p>
-
-  <h3>1. <code>__init__</code></h3>
-  <ul>
-    <li><strong>Description</strong>: Locates the <code>SUPABASE_URL</code> and <code>SUPABASE_SECRET_KEY</code> variables, validating them before instantiating the official client.</li>
-    <li><strong>Arguments</strong>: None.</li>
-    <li><strong>Returns</strong>: None (initializes the <code>self.client</code> attribute).</li>
-    <li><strong>Raises</strong>: <code>ValueError</code> if the keys are not found in the environment.</li>
-    <li><strong>Examples</strong>:</li>
-  </ul>
+  <div class="callout" data-kind="warn"><p><strong>Public bucket.</strong> To generate the public URL of images, the bucket must be in <code>SBX_BUCKETS_PUBLIC</code> (for example <code>SBX_BUCKET_DEFAULT=images</code>, <code>SBX_BUCKETS_PUBLIC=images</code>, <code>SBX_BUCKETS_ALLOWLIST=images</code>). In <code>homol</code> and <code>prod</code> the <code>.env</code> file is forbidden. The full list is in <code>src/database/supabase_integration/.env.example</code>.</p></div>
+  <h2>Upload</h2>
   <pre data-lang="python"><code>
-conn = SupabaseConnection()
-client = conn.client # Cliente pronto para uso
+from src.database.supabase_provider import get_supabase
+from src.database.supabase_integration import BytesSource, PathSource, StreamSource, UploadOptions, CollisionPolicy
+
+storage = get_supabase().storage
+
+st = storage.upload(
+    BytesSource(b"content", filename="note.txt", content_type="text/plain"),
+    UploadOptions(folder="docs"),  # Generated path: docs/YYYY/MM/&lt;uuid&gt;.txt
+)
+print(st.bucket, st.path, st.size, st.upload_mode, st.content_type, st.original_name)
+
+big = storage.upload(
+    PathSource("video.mp4", content_type="video/mp4"),  # Read as a stream; above 6 MiB it becomes resumable (TUS)
+    UploadOptions(folder="videos"),
+)
+
+with open("report.pdf", "rb") as f:
+    storage.upload(StreamSource(f, size=None, filename="report.pdf", content_type="application/pdf"))  # Stream, for example FastAPI's UploadFile
+
+storage.upload(
+    BytesSource(b"v2", filename="a.txt", content_type="text/plain"),
+    UploadOptions(path=st.path, collision=CollisionPolicy.VERSION),  # Collision: writes to a new path (-v2)
+)
 </code></pre>
-
-  <h3>Class StorageManager</h3>
-  <p><strong>Description</strong></p>
-  <p>Encapsulates the bucket handling logic. It is the "front-end" class the developer will use most of the time to manage files.</p>
-  <p><strong>Arguments</strong></p>
-  <ul>
-    <li><code>bucket_name</code> (str): The name of the folder/repository in Supabase.</li>
-    <li><code>supabase_client</code> (Optional[Client]): An existing instance of the Supabase client.</li>
-  </ul>
-  <p><strong>Methods</strong></p>
-
-  <h3>1. <code>upload_bytes</code></h3>
-  <ul>
-    <li><strong>Description</strong>: Sends a file to the storage from in-memory data (bytes).</li>
-    <li><strong>Arguments</strong>:
-      <ul>
-        <li><code>path_on_storage</code> (str): Path/name of the file at the destination.</li>
-        <li><code>file_bytes</code> (bytes): The binary content of the file.</li>
-        <li><code>content_type</code> (str): File type (e.g. <code>image/png</code>).</li>
-      </ul>
-    </li>
-    <li><strong>Returns</strong>: <code>dict</code> with upload metadata or <code>None</code> on error.</li>
-    <li><strong>Raises</strong>: Catches generic exceptions and prints them to the console.</li>
-    <li><strong>Examples</strong>:</li>
-  </ul>
+  <h3>Data sources</h3>
+  <table>
+    <thead><tr><th>Class</th><th>Fields</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>BytesSource</code></td><td><code>data</code>, <code>filename</code>, <code>content_type</code></td><td>In memory; above <code>SBX_STORAGE_MEMORY_CAP_BYTES</code> it raises <code>ValidationError</code> (use <code>PathSource</code> or <code>StreamSource</code>).</td></tr>
+      <tr><td><code>PathSource</code></td><td><code>path</code>, <code>filename</code>, <code>content_type</code></td><td>Reads from disk as a stream; <code>filename</code> defaults to the file name; a missing file raises <code>ValidationError</code>.</td></tr>
+      <tr><td><code>StreamSource</code></td><td><code>stream</code>, <code>size</code>, <code>filename</code>, <code>content_type</code>, <code>restartable</code></td><td>With <code>size</code> and a seekable stream, it is re-read on retry; without <code>size</code> it is copied to a temporary file (bytes are counted and the ceiling is checked).</td></tr>
+    </tbody>
+  </table>
+  <h3>UploadOptions</h3>
+  <table>
+    <thead><tr><th>Field</th><th>Effect</th></tr></thead>
+    <tbody>
+      <tr><td><code>bucket</code></td><td><code>None</code> uses <code>SBX_BUCKET_DEFAULT</code>; must be in the allowlist.</td></tr>
+      <tr><td><code>folder</code></td><td>Logical subfolder (validated). Generated path: <code>&lt;folder&gt;/YYYY/MM/&lt;uuid&gt;&lt;ext&gt;</code>.</td></tr>
+      <tr><td><code>path</code></td><td>Explicit path, which replaces automatic naming and is always validated.</td></tr>
+      <tr><td><code>collision</code></td><td><code>REJECT</code> (default: <code>FileAlreadyExistsError</code>), <code>VERSION</code> (writes to <code>name-v2.ext</code>, <code>-v3</code>...) or <code>OVERWRITE</code> (overwrites, explicit only).</td></tr>
+      <tr><td><code>content_type</code></td><td>Declared MIME type, checked against the extension and the content.</td></tr>
+      <tr><td><code>metadata</code></td><td><code>str</code> to <code>str</code> metadata (up to 50 entries); the integration adds <code>original_name</code>.</td></tr>
+      <tr><td><code>cache_control_seconds</code></td><td><code>None</code> uses <code>SBX_STORAGE_CACHE_CONTROL_SECONDS</code>.</td></tr>
+      <tr><td><code>correlation_id</code></td><td>Identifier to tie together the operation's logs.</td></tr>
+    </tbody>
+  </table>
+  <div class="callout" data-kind="note"><p>The content type is chosen as follows: detected content (if specific), then the declared one, then the extension, finally <code>application/octet-stream</code>. Extension, declared type and content must agree, otherwise <code>ValidationError</code> is raised. In public buckets, active types (<code>.html</code>, <code>.svg</code>, <code>.js</code>, executables) are rejected.</p></div>
+  <div class="callout" data-kind="info"><p>Object paths only accept ASCII <code>[A-Za-z0-9._-]</code>, with no accents or spaces, no segment starting with a dot and up to 8 levels. In the generated path, the user's original name goes in as metadata (<code>original_name</code>), not in the path.</p></div>
+  <h2>Image Upload in the Project</h2>
+  <p>Image generation writes files through <code>StorageRepository</code>, which uses the integration: it builds the path <code>&lt;base_path&gt;/&lt;file_name&gt;</code>, uploads the bytes and returns the public URL. If the upload fails, it raises <code>RuntimeError</code> with the original cause in <code>__cause__</code>.</p>
   <pre data-lang="python"><code>
-manager.upload_bytes("docs/perfil.jpg", foto_bytes, "image/jpeg")
-</code></pre>
+from src.storage.storage_repository import StorageRepository
 
-  <h3>2. <code>delete_files</code></h3>
-  <ul>
-    <li><strong>Description</strong>: Deletes one or more files at the same time.</li>
-    <li><strong>Arguments</strong>:
-      <ul>
-        <li><code>paths</code> (List[str]): List of paths (e.g. <code>["img1.jpg", "img2.jpg"]</code>).</li>
-      </ul>
-    </li>
-    <li><strong>Returns</strong>: <code>dict</code> with the removal status or <code>None</code>.</li>
-    <li><strong>Raises</strong>: Catches network or permission exceptions.</li>
-    <li><strong>Examples</strong>:</li>
-  </ul>
-  <pre data-lang="python"><code>
-manager.delete_files(["velho/foto1.png", "velho/foto2.png"])
-</code></pre>
+repository = StorageRepository(base_path="image_generations", bucket_name="images")
 
-  <h3>3. <code>get_url</code></h3>
-  <ul>
-    <li><strong>Description</strong>: Gets the public web address to access a file.</li>
-    <li><strong>Arguments</strong>:
-      <ul>
-        <li><code>path</code> (str): Path of the file inside the bucket.</li>
-      </ul>
-    </li>
-    <li><strong>Returns</strong>: <code>str</code> containing the full URL.</li>
-    <li><strong>Raises</strong>: <code>ValueError</code> if the path is empty.</li>
-    <li><strong>Examples</strong>:</li>
-  </ul>
-  <pre data-lang="python"><code>
-link = manager.get_url("produtos/celular.png")
-print(link) # https://xyz.supabase.co/storage/v1/object/public/...
+url = repository.upload_to_supabase(file_name="example_image.png", byte_data=image_bytes)
+print(url)  # Public URL of the file in the bucket
 </code></pre>
+  <h2>Read</h2>
+  <pre data-lang="python"><code>
+data = storage.download(st.path)  # bytes, limited by the memory ceiling (32 MiB)
+storage.download_to(big.path, "out/video.mp4")  # Streams straight to disk, for large files
+url = storage.signed_url(st.path, ttl_seconds=300)  # Signed URL; ceiling 3600 s, above that ValidationError
+pub = storage.public_url(st.path, bucket="images")  # Only for a bucket in SBX_BUCKETS_PUBLIC
+found = storage.exists(st.path)
+page = storage.list(prefix="docs", limit=100)  # Page[ObjectInfo]
+for o in page.items:
+    print(o.path, o.size, o.content_type, o.updated_at, o.is_folder)
+</code></pre>
+  <div class="callout" data-kind="warn"><p><code>exists</code> also returns <code>False</code> on 401 and 403 (an SDK limitation): a permission problem can look like "does not exist".</p></div>
+  <h2>Deletion</h2>
+  <pre data-lang="python"><code>
+rep = storage.delete([st.path, big.path])  # Idempotent; report per path
+print(rep.requested, rep.removed, rep.failed)  # failed: {path: reason}
+storage.delete_prefix("docs/2026/11")  # DESTRUCTIVE: deletes everything under the prefix, recursively
+</code></pre>
+  <div class="callout" data-kind="danger"><p>Partial failures in <code>delete</code> do not raise: check <code>rep.failed</code>. <code>delete_prefix</code> is destructive and recursive (maximum depth 16); an empty prefix is forbidden.</p></div>
+  <h2>Method Table</h2>
+  <table>
+    <thead><tr><th>Method</th><th>Return</th><th>Short Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>upload(source, options=None)</code></td><td><code>StoredFile</code></td><td>Validates and uploads the file; <code>upload_mode</code> is <code>standard</code> or <code>resumable</code>.</td></tr>
+      <tr><td><code>download(path, bucket=None)</code></td><td><code>bytes</code></td><td>Downloads into memory; rejects an object above the ceiling (<code>use download_to</code>).</td></tr>
+      <tr><td><code>download_to(path, destination, bucket=None)</code></td><td><code>Path</code></td><td>Streams the download to disk and creates parent folders.</td></tr>
+      <tr><td><code>signed_url(path, bucket=None, ttl_seconds=None)</code></td><td><code>str</code></td><td>Temporary URL; it is never logged.</td></tr>
+      <tr><td><code>public_url(path, bucket=None)</code></td><td><code>str</code></td><td>Public URL, only for a bucket in <code>SBX_BUCKETS_PUBLIC</code>; built locally, without network.</td></tr>
+      <tr><td><code>exists(path, bucket=None)</code></td><td><code>bool</code></td><td>Tells whether the object exists.</td></tr>
+      <tr><td><code>list(prefix="", bucket=None, limit=None, offset=0)</code></td><td><code>Page[ObjectInfo]</code></td><td>Lists objects; folders come with <code>is_folder=True</code>.</td></tr>
+      <tr><td><code>delete(paths, bucket=None)</code></td><td><code>DeleteReport</code></td><td>Deletes in batches; idempotent; failures go to <code>failed</code>.</td></tr>
+      <tr><td><code>delete_prefix(prefix, bucket=None)</code></td><td><code>DeleteReport</code></td><td>Deletes everything under the prefix, recursively.</td></tr>
+    </tbody>
+  </table>
+  <h2>File and Record Together</h2>
+  <p>When the file must be written together with a table record, use the facade's combined operations. They follow a fixed order and compensate on failure: if the record fails after the upload, the file is deleted. Tables are described on the <a href="@/internal-source-code/database/sql/supabase-database">Supabase Database</a> page.</p>
+  <pre data-lang="python"><code>
+sb = get_supabase()
+
+r = sb.save_file_with_record(
+    "sbx_test_items",
+    BytesSource(b"content", filename="contract.txt", content_type="text/plain"),
+    lambda f: {"name": "contract", "bucket": f.bucket, "path": f.path},  # Builds the record from the stored file
+    UploadOptions(folder="contracts"),
+)
+r.raise_if_failed()  # Raises the same original error, if there was a failure
+print(r.status.value, r.record["id"])  # completa, parcial or falhou
+
+sb.replace_file_in_record(
+    "sbx_test_items", r.record["id"],
+    BytesSource(b"v2", filename="contract.txt", content_type="text/plain"),
+    lambda f: {"bucket": f.bucket, "path": f.path},
+    old_ref=(r.stored_file.bucket, r.stored_file.path),  # The old file is deleted last
+)
+
+sb.delete_record_and_file("sbx_test_items", r.record["id"], (r.stored_file.bucket, r.stored_file.path))  # Record first, file after
+</code></pre>
+  <table>
+    <thead><tr><th><code>status</code></th><th>Meaning</th><th><code>orphan_possible</code></th></tr></thead>
+    <tbody>
+      <tr><td><code>completa</code></td><td>All steps completed.</td><td><code>False</code></td></tr>
+      <tr><td><code>falhou</code></td><td>Nothing was left behind (failure before writing, or successful compensation).</td><td><code>False</code></td></tr>
+      <tr><td><code>parcial</code></td><td>Something was left: an orphan file or an old file not deleted. The log carries <code>orfao_possivel=true</code> with bucket and path.</td><td><code>True</code></td></tr>
+    </tbody>
+  </table>
+  <div class="callout" data-kind="warn"><p><code>raise_if_failed()</code> also raises on the <code>parcial</code> status, even when the record was updated. Read <code>r.status</code> before deciding.</p></div>
+  <h2>Error Handling</h2>
+  <table>
+    <thead><tr><th>Exception</th><th>When</th></tr></thead>
+    <tbody>
+      <tr><td><code>ValidationError</code></td><td>Bucket outside the allowlist, empty file, mismatched or disallowed type, invalid path, signed URL above the ceiling, non-public bucket in <code>public_url</code>.</td></tr>
+      <tr><td><code>FileTooLargeError</code></td><td>File above <code>SBX_STORAGE_MAX_FILE_BYTES</code> or a 413 response from Storage.</td></tr>
+      <tr><td><code>FileAlreadyExistsError</code></td><td>The path already exists with <code>CollisionPolicy.REJECT</code>.</td></tr>
+      <tr><td><code>FileNotFoundInStorageError</code></td><td>Object does not exist (Storage also uses 404 for "no permission").</td></tr>
+      <tr><td><code>PermissionDeniedError</code>, <code>AuthenticationError</code></td><td>The bucket policy denied access; invalid key.</td></tr>
+      <tr><td><code>UploadError</code>, <code>DownloadError</code></td><td>Unclassified storage failure.</td></tr>
+      <tr><td><code>OperationTimeoutError</code>, <code>ServiceUnavailableError</code>, <code>RateLimitError</code></td><td>Transient failures (<code>retryable=True</code>).</td></tr>
+    </tbody>
+  </table>
+  <pre data-lang="python"><code>
+try:
+    storage.upload(BytesSource(data, filename="a.png"), UploadOptions(path="images/a.png"))
+except FileAlreadyExistsError:
+    ...  # The path already exists
+except SupabaseIntegrationError as e:  # Any integration error
+    print(e.retryable, e.outcome_unknown, e.correlation_id)
+</code></pre>
+  <h2>Architecture and Insights</h2>
+  <ul>
+    <li><strong>Resumable upload:</strong> above <code>SBX_STORAGE_RESUMABLE_THRESHOLD_BYTES</code> the transfer uses the TUS protocol in chunks, without loading the whole file into memory.</li>
+    <li><strong>Safe retry:</strong> only <code>OVERWRITE</code> is retried by the executor. With <code>REJECT</code> and <code>VERSION</code> a timeout becomes <code>outcome_unknown=True</code> and the object may have been written: check with <code>exists</code>.</li>
+    <li><strong>Safe names:</strong> the generated path never uses the user's name, which avoids collisions and invalid characters.</li>
+    <li><strong>Without blocking the event loop:</strong> in FastAPI use <code>create_async_integration</code>; <code>await asb.upload(...)</code> runs in a thread.</li>
+    <li><strong>Protected secrets:</strong> the <code>SBX_SECRET_KEY</code> key and signed URLs never appear in logs or error messages.</li>
+  </ul>
 </page>

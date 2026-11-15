@@ -3,7 +3,9 @@ from typing import List
 from datetime import datetime
 
 from src.image_generation.utils.config import GeneratedImage
-from src.storage.supabase.storage_menager import StorageManager
+from src.database.supabase_integration import BytesSource, UploadOptions
+from src.database.supabase_integration.errors import SupabaseIntegrationError
+from src.database.supabase_provider import get_supabase
 
 class StorageRepository:
     def __init__(self, base_path: str = None, bucket_name: str = None):
@@ -37,15 +39,22 @@ class StorageRepository:
         raise ValueError(f"Unsupported mime type for persistence: {mime_type}")
 
     def upload_to_supabase(self, file_name: str, byte_data: bytes) -> str:
-        manager = StorageManager(bucket_name=self.bucket_name)
+        """Envia os bytes para ``<base_path>/<file_name>`` no bucket e devolve a URL pública.
+
+        O tipo do arquivo é inferido da extensão e do conteúdo (a integração valida a coerência).
+        O bucket precisa estar em ``SBX_BUCKETS_PUBLIC`` para gerar URL pública.
+        """
         storage_name = f"{self.base_path}/{file_name}"
+        storage = get_supabase().storage
 
-        upload_res = manager.upload_bytes(storage_name, byte_data)
-
-        if not upload_res:
-            raise RuntimeError(f"Falha ao fazer upload para o Supabase: {storage_name}")
-
-        return manager.get_url(storage_name)
+        try:
+            stored = storage.upload(
+                BytesSource(byte_data, filename=file_name),
+                UploadOptions(bucket=self.bucket_name, path=storage_name),
+            )
+            return storage.public_url(stored.path, bucket=stored.bucket)
+        except SupabaseIntegrationError as exc:
+            raise RuntimeError(f"Falha ao fazer upload para o Supabase: {storage_name}") from exc
 
 if __name__ == "__main__":
     # Exemplo de uso
