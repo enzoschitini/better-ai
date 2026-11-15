@@ -121,7 +121,6 @@ Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
 | `SBX_URL` | URL do projeto Supabase (integração `src/database/supabase_integration`) |
 | `SBX_SECRET_KEY` | Chave secreta de serviço do Supabase |
 | `SBX_BUCKET_DEFAULT` / `SBX_BUCKETS_PUBLIC` / `SBX_BUCKETS_ALLOWLIST` | Bucket padrão (ex.: `images`), buckets públicos e allowlist de buckets |
-| `SUPABASE_DATABASE_URL` | String de conexão do banco Postgres do Supabase |
 | `SUPABASE_PROJECT_NAME` | Nome do projeto Supabase |
 | `SUPABASE_PROJECT_HOST` | Host do projeto Supabase |
 | `SUPABASE_DATABASE_PASSWORD` | Senha do banco de dados Supabase |
@@ -174,7 +173,6 @@ SBX_SECRET_KEY=********************
 SBX_BUCKET_DEFAULT=images
 SBX_BUCKETS_PUBLIC=images
 SBX_BUCKETS_ALLOWLIST=images
-SUPABASE_DATABASE_URL=********************
 SUPABASE_PROJECT_NAME=better-ai-bucket-storage
 SUPABASE_PROJECT_HOST=********************
 SUPABASE_DATABASE_PASSWORD=********************
