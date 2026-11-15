@@ -61,10 +61,11 @@ uv sync
       <tr><td><code>MONGO_HOST</code></td><td>Host di MongoDB</td></tr>
       <tr><td><code>MONGO_PORT</code></td><td>Porta di MongoDB</td></tr>
       <tr><td><code>NOSQL_BACKEND</code></td><td>Backend NoSQL utilizzato (<code>local</code> o remoto)</td></tr>
-      <tr><td><code>SUPABASE_URL</code></td><td>URL del progetto Supabase</td></tr>
-      <tr><td><code>SUPABASE_SECRET_KEY</code></td><td>Chiave segreta di servizio di Supabase</td></tr>
-      <tr><td><code>SUPABASE_DATABASE_URL</code></td><td>Stringa di connessione del database Postgres di Supabase</td></tr>
-      <tr><td><code>SUPABASE_PROJECT_NAME</code></td><td>Nome del progetto Supabase</td></tr>
+      <tr><td><code>SBX_URL</code></td><td>URL del progetto Supabase</td></tr>
+      <tr><td><code>SBX_SECRET_KEY</code></td><td>Chiave segreta di servizio di Supabase</td></tr>
+      <tr><td><code>SBX_BUCKET_DEFAULT</code></td><td>Bucket predefinito di Supabase Storage (es.: <code>images</code>)</td></tr>
+      <tr><td><code>SBX_BUCKETS_PUBLIC</code></td><td>Bucket pubblici (necessario per generare l'URL pubblico)</td></tr>
+      <tr><td><code>SBX_BUCKETS_ALLOWLIST</code></td><td>Bucket consentiti (obbligatoria in prod)</td></tr>
       <tr><td><code>SUPABASE_PROJECT_HOST</code></td><td>Host del progetto Supabase</td></tr>
       <tr><td><code>SUPABASE_DATABASE_PASSWORD</code></td><td>Password del database Supabase</td></tr>
       <tr><td><code>SHOW_INFO_LOGS</code></td><td>Mostra i log informativi (<code>true</code>/<code>false</code>)</td></tr>
@@ -114,10 +115,11 @@ MONGO_PORT=********************
 NOSQL_BACKEND=local
 
 # Supabase
-SUPABASE_URL=********************
-SUPABASE_SECRET_KEY=********************
-SUPABASE_DATABASE_URL=********************
-SUPABASE_PROJECT_NAME=better-ai-bucket-storage
+SBX_URL=********************
+SBX_SECRET_KEY=********************
+SBX_BUCKET_DEFAULT=images
+SBX_BUCKETS_PUBLIC=images
+SBX_BUCKETS_ALLOWLIST=images
 SUPABASE_PROJECT_HOST=********************
 SUPABASE_DATABASE_PASSWORD=********************
 
@@ -137,7 +139,7 @@ LOCAL=false
   <table>
     <thead><tr><th>Servizio</th><th>Comando</th><th>Porta</th><th>Quando usarlo</th></tr></thead>
     <tbody>
-      <tr><td>API (FastAPI)</td><td><code>uvicorn web_services:app --reload</code></td><td><code>8000</code></td><td>Consumo programmatico dei moduli di IA via HTTP</td></tr>
+      <tr><td>API (FastAPI)</td><td><code>python -m uvicorn web_services:app --reload</code></td><td><code>8000</code></td><td>Consumo programmatico dei moduli di IA via HTTP</td></tr>
       <tr><td>Interfaccia (Streamlit)</td><td><code>streamlit run web_app.py</code></td><td><code>8501</code></td><td>Uso visuale delle applicazioni (Acquarello, Content Generator)</td></tr>
     </tbody>
   </table>
@@ -148,6 +150,7 @@ LOCAL=false
 uvicorn web_services:app --reload
 </code></pre>
   <p>Il flag <code>--reload</code> riavvia il server automaticamente a ogni modifica del codice — consigliato solo in sviluppo.</p>
+  <div class="callout" data-kind="info"><p><strong>Perché <code>python -m uvicorn</code>?</strong> Se la cartella del progetto (o la <code>.venv</code>) è stata spostata o rinominata, l'eseguibile <code>uvicorn.exe</code> della venv fallisce con l'errore <code>uv trampoline failed to canonicalize script path</code>. Chiamarlo tramite <code>python -m</code> evita il problema. Alternative: <code>uv run uvicorn web_services:app --reload</code>, oppure ricreare la venv con <code>Remove-Item -Recurse -Force .venv; uv sync</code>.</p></div>
   <pre><code>
 INFO:     Will watch for changes in these directories: ['C:\\Users\\user_name\\better-ai']
 INFO:     Uvicorn running on http://localhost:8000 (Press CTRL+C to quit)
