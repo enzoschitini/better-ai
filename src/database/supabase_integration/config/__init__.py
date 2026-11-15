@@ -1,8 +1,8 @@
 """Configuração centralizada: fontes, objeto imutável e loader com validação agregada."""
 
-from bai_supabase.config.loader import SettingsLoader  # noqa: F401
-from bai_supabase.config.settings import SupabaseSettings  # noqa: F401
-from bai_supabase.config.sources import (  # noqa: F401
+from src.database.supabase_integration.config.loader import SettingsLoader  # noqa: F401
+from src.database.supabase_integration.config.settings import SupabaseSettings  # noqa: F401
+from src.database.supabase_integration.config.sources import (  # noqa: F401
     ChainedSource,
     DictSource,
     DotenvFileSource,

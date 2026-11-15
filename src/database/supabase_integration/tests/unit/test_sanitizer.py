@@ -5,8 +5,8 @@ import json
 
 import pytest
 
-from bai_supabase.contracts.secret import Secret
-from bai_supabase.logging.sanitizer import MASK, sanitize, sanitize_fields
+from src.database.supabase_integration.contracts.secret import Secret
+from src.database.supabase_integration.logging.sanitizer import MASK, sanitize, sanitize_fields
 
 JWT = "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoicGxhbnRhZG8ifQ.c2lnbmF0dXJhUExBTlRBREE"
 SB_SECRET = "sb_secret_PLANTED0123456789abcdef"

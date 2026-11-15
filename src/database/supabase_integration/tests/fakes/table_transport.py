@@ -9,9 +9,9 @@ from datetime import datetime
 from decimal import Decimal, InvalidOperation
 from typing import Any, Callable, Optional, Sequence
 
-from bai_supabase.contracts.query import Condition, Filter, FilterGroup, Op, Sort, is_empty_filter
-from bai_supabase.contracts.transports import SelectRequest, SelectResponse
-from bai_supabase.errors.exceptions import DuplicateRecordError, SupabaseIntegrationError, ValidationError
+from src.database.supabase_integration.contracts.query import Condition, Filter, FilterGroup, Op, Sort, is_empty_filter
+from src.database.supabase_integration.contracts.transports import SelectRequest, SelectResponse
+from src.database.supabase_integration.errors.exceptions import DuplicateRecordError, SupabaseIntegrationError, ValidationError
 
 
 class _Table:
@@ -230,10 +230,10 @@ class _SortKey:
 
 def build_repository(descriptor, *, transport=None, settings=None, executor=None, logger=None, **kwargs):
     """Monta um ``PostgresTableRepository`` com fakes. Devolve ``(repo, transport, executor, logger)``."""
-    from bai_supabase.contracts.settings import TablesSettings
-    from bai_supabase.tables.repository import PostgresTableRepository
-    from tests.fakes.executor import PassThroughExecutor
-    from tests.fakes.logger import CaptureLogger
+    from src.database.supabase_integration.contracts.settings import TablesSettings
+    from src.database.supabase_integration.tables.repository import PostgresTableRepository
+    from src.database.supabase_integration.tests.fakes.executor import PassThroughExecutor
+    from src.database.supabase_integration.tests.fakes.logger import CaptureLogger
 
     transport = transport or InMemoryTableTransport()
     executor = executor or PassThroughExecutor()

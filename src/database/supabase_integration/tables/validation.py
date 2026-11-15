@@ -11,7 +11,7 @@ import re
 from collections.abc import Mapping
 from typing import Any, Iterable, Optional, Sequence
 
-from bai_supabase.contracts.query import (
+from src.database.supabase_integration.contracts.query import (
     Condition,
     Filter,
     FilterGroup,
@@ -20,10 +20,10 @@ from bai_supabase.contracts.query import (
     Sort,
     is_empty_filter,
 )
-from bai_supabase.contracts.settings import TablesSettings
-from bai_supabase.contracts.tables import BatchOptions, TableDescriptor
-from bai_supabase.errors.exceptions import ConfigurationError, ValidationError
-from bai_supabase.tables.serialization import entity_kind, to_wire_value
+from src.database.supabase_integration.contracts.settings import TablesSettings
+from src.database.supabase_integration.contracts.tables import BatchOptions, TableDescriptor
+from src.database.supabase_integration.errors.exceptions import ConfigurationError, ValidationError
+from src.database.supabase_integration.tables.serialization import entity_kind, to_wire_value
 
 IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]{0,62}$")
 BATCH_MODES = ("stop", "continue")

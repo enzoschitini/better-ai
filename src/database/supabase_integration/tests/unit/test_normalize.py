@@ -9,8 +9,8 @@ from postgrest.exceptions import APIError
 from storage3.exceptions import StorageApiError
 from storage3.utils import StorageException
 
-from bai_supabase.adapters.normalize import map_exception, normalize_exception, sdk_errors
-from bai_supabase.errors import (
+from src.database.supabase_integration.adapters.normalize import map_exception, normalize_exception, sdk_errors
+from src.database.supabase_integration.errors import (
     AuthenticationError,
     DuplicateRecordError,
     FileAlreadyExistsError,

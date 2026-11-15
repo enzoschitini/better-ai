@@ -5,14 +5,14 @@ import io
 import httpx
 import pytest
 
-from bai_supabase.adapters.tus import TusClient, build_upload_metadata
-from bai_supabase.errors.exceptions import (
+from src.database.supabase_integration.adapters.tus import TusClient, build_upload_metadata
+from src.database.supabase_integration.errors.exceptions import (
     FileAlreadyExistsError,
     PermissionDeniedError,
     SupabaseIntegrationError,
     UploadError,
 )
-from tests.fakes.logger import CaptureLogger
+from src.database.supabase_integration.tests.fakes.logger import CaptureLogger
 
 SECRET = "sb_secret_PLANTED_KEY_123"
 BASE = "https://proj.supabase.test"

@@ -6,11 +6,11 @@ from uuid import uuid4
 
 import pytest
 
-from bai_supabase.contracts.query import Condition, FilterGroup, Op, Query, Sort
-from bai_supabase.contracts.settings import TablesSettings
-from bai_supabase.contracts.tables import BatchOptions, TableDescriptor
-from bai_supabase.errors.exceptions import ConfigurationError, SupabaseIntegrationError, ValidationError
-from bai_supabase.tables.validation import TableValidator, ensure_table_allowed, validate_descriptor, validate_identifier
+from src.database.supabase_integration.contracts.query import Condition, FilterGroup, Op, Query, Sort
+from src.database.supabase_integration.contracts.settings import TablesSettings
+from src.database.supabase_integration.contracts.tables import BatchOptions, TableDescriptor
+from src.database.supabase_integration.errors.exceptions import ConfigurationError, SupabaseIntegrationError, ValidationError
+from src.database.supabase_integration.tables.validation import TableValidator, ensure_table_allowed, validate_descriptor, validate_identifier
 
 
 def make(columns=None, **kw):

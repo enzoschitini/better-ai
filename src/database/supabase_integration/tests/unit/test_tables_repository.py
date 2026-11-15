@@ -3,10 +3,10 @@ from __future__ import annotations
 
 import pytest
 
-from bai_supabase.contracts.query import Condition, Op, Query
-from bai_supabase.contracts.settings import TablesSettings
-from bai_supabase.contracts.tables import TableDescriptor
-from bai_supabase.errors.exceptions import (
+from src.database.supabase_integration.contracts.query import Condition, Op, Query
+from src.database.supabase_integration.contracts.settings import TablesSettings
+from src.database.supabase_integration.contracts.tables import TableDescriptor
+from src.database.supabase_integration.errors.exceptions import (
     ConfigurationError,
     OperationTimeoutError,
     RecordNotFoundError,
@@ -14,7 +14,7 @@ from bai_supabase.errors.exceptions import (
     UnexpectedError,
     ValidationError,
 )
-from tests.fakes.table_transport import InMemoryTableTransport, build_repository
+from src.database.supabase_integration.tests.fakes.table_transport import InMemoryTableTransport, build_repository
 
 D = TableDescriptor("docs", server_managed_columns=("id",))
 SECRET = "SEGREDO-NO-VALOR"

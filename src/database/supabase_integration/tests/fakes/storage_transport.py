@@ -6,8 +6,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, BinaryIO, Optional, Sequence, Union
 
-from bai_supabase.contracts.transports import TransportObject
-from bai_supabase.errors.exceptions import (
+from src.database.supabase_integration.contracts.transports import TransportObject
+from src.database.supabase_integration.errors.exceptions import (
     FileAlreadyExistsError,
     FileNotFoundInStorageError,
     SupabaseIntegrationError,

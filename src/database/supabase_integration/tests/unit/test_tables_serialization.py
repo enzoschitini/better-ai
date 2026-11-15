@@ -10,9 +10,9 @@ from uuid import UUID, uuid4
 
 import pytest
 
-from bai_supabase.contracts.tables import TableDescriptor
-from bai_supabase.errors.exceptions import ConfigurationError, MappingError, ValidationError
-from bai_supabase.tables.serialization import EntityCodec, entity_kind, to_wire_value
+from src.database.supabase_integration.contracts.tables import TableDescriptor
+from src.database.supabase_integration.errors.exceptions import ConfigurationError, MappingError, ValidationError
+from src.database.supabase_integration.tables.serialization import EntityCodec, entity_kind, to_wire_value
 
 UTC = timezone.utc
 

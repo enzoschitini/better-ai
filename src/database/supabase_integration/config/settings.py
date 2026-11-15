@@ -8,8 +8,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field, fields
 from typing import Any
 
-from bai_supabase.contracts.secret import Secret
-from bai_supabase.contracts.settings import (
+from src.database.supabase_integration.contracts.secret import Secret
+from src.database.supabase_integration.contracts.settings import (
     ConnectionSettings,
     EnvironmentSettings,
     LoggingSettings,

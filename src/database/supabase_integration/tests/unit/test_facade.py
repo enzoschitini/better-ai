@@ -3,8 +3,8 @@ from __future__ import annotations
 
 import pytest
 
-from bai_supabase.config.settings import SupabaseSettings
-from bai_supabase.contracts import (
+from src.database.supabase_integration.config.settings import SupabaseSettings
+from src.database.supabase_integration.contracts import (
     BytesSource,
     CompositeStatus,
     ConnectionSettings,
@@ -13,15 +13,15 @@ from bai_supabase.contracts import (
     TableDescriptor,
     TablesSettings,
 )
-from bai_supabase.errors import (
+from src.database.supabase_integration.errors import (
     DuplicateRecordError,
     RecordNotFoundError,
     ServiceUnavailableError,
 )
-from bai_supabase.factories import create_integration
-from tests.fakes.logger import CaptureLogger
-from tests.fakes.storage_transport import InMemoryStorageTransport
-from tests.fakes.table_transport import InMemoryTableTransport
+from src.database.supabase_integration.factories import create_integration
+from src.database.supabase_integration.tests.fakes.logger import CaptureLogger
+from src.database.supabase_integration.tests.fakes.storage_transport import InMemoryStorageTransport
+from src.database.supabase_integration.tests.fakes.table_transport import InMemoryTableTransport
 
 BUCKET = "docs"
 

@@ -8,11 +8,11 @@ from datetime import datetime, timezone
 
 import pytest
 
-from bai_supabase.contracts.logging import LoggerContract
-from bai_supabase.contracts.secret import Secret
-from bai_supabase.contracts.settings import LoggingSettings
-from bai_supabase.errors import ConfigurationError
-from bai_supabase.logging import StructuredLogger, build_logger
+from src.database.supabase_integration.contracts.logging import LoggerContract
+from src.database.supabase_integration.contracts.secret import Secret
+from src.database.supabase_integration.contracts.settings import LoggingSettings
+from src.database.supabase_integration.errors import ConfigurationError
+from src.database.supabase_integration.logging import StructuredLogger, build_logger
 
 ANSI = re.compile(r"\x1b\[[0-9;]*m")
 SB_SECRET = "sb_secret_PLANTED0123456789abcdef"

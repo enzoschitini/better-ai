@@ -58,7 +58,7 @@ Como o projeto segue Liskov e DI, o fake em memória e o adapter real devem ser 
 | Cobertura (`pytest-cov`) | Integrada | Possível | Difícil |
 | Dependência extra | Sim (grupo dev) | Nenhuma | Nenhuma |
 
-Justificativa: o requisito de **pular testes de rede quando faltam variáveis**, **parametrizar contra fake e real** e **limpar recursos no teardown** é exatamente o que fixtures e marcadores do pytest resolvem com pouco código. O custo (uma dependência de desenvolvimento) é baixo. Isso **não conflita** com o repositório: a suíte nova é isolada em `supabase/tests/` e não exige que o restante do projeto adote pytest.
+Justificativa: o requisito de **pular testes de rede quando faltam variáveis**, **parametrizar contra fake e real** e **limpar recursos no teardown** é exatamente o que fixtures e marcadores do pytest resolvem com pouco código. O custo (uma dependência de desenvolvimento) é baixo. Isso **não conflita** com o repositório: a suíte nova é isolada em `src/database/supabase_integration/tests/` e não exige que o restante do projeto adote pytest.
 
 ### Dependências via `uv` **[PROPOSTA]**
 
@@ -118,7 +118,7 @@ supabase/
 Regras de organização:
 
 - Nomes de arquivo com prefixo `test_` só para o que o pytest deve coletar; `fakes/` e `support/` não são coletados.
-- Nada em `supabase/tests/` importa código fora de `supabase/`. Isso preserva o desacoplamento exigido em 00 §3.3.
+- Nada em `src/database/supabase_integration/tests/` importa código fora de `supabase/`. Isso preserva o desacoplamento exigido em 00 §3.3.
 - Um **teste de arquitetura** simples (ver seção 11) verifica que nenhum módulo de `supabase/` importa o código antigo do projeto.
 
 ## 5. Testes unitários (sem Supabase real)
@@ -305,7 +305,7 @@ Comportamento por padrão (sem flags):
 
 | Situação | Resultado |
 |---|---|
-| Rodar `pytest supabase/tests` sem `SUPABASE_TEST_*` | Unitários e contrato-com-fake rodam; `integration`/`e2e` são **puladas** com motivo explícito |
+| Rodar `pytest src/database/supabase_integration/tests` sem `SUPABASE_TEST_*` | Unitários e contrato-com-fake rodam; `integration`/`e2e` são **puladas** com motivo explícito |
 | Variáveis presentes, mas `SUPABASE_TEST_ALLOW_LIVE` ausente | Puladas com motivo "execução live não autorizada" |
 | Variáveis presentes e autorizadas, mas guarda reprova | **Aborta a sessão** (erro, não skip), porque indica risco |
 | Variáveis presentes, autorizadas e guarda ok | Rodam |
@@ -425,30 +425,30 @@ Comandos de referência (a partir da raiz do repositório; ajustar caminhos apó
 uv sync --group dev
 
 # apenas unitários e contrato com fake (padrão; sem rede, sem credenciais)
-uv run pytest supabase/tests -m "not integration and not e2e"
+uv run pytest src/database/supabase_integration/tests -m "not integration and not e2e"
 
 # tudo que for possível; integração/e2e são puladas se faltarem variáveis
-uv run pytest supabase/tests
+uv run pytest src/database/supabase_integration/tests
 
 # somente integração live (exige SUPABASE_TEST_* e SUPABASE_TEST_ALLOW_LIVE=1)
-uv run pytest supabase/tests -m integration
+uv run pytest src/database/supabase_integration/tests -m integration
 
 # somente a frente de arquivos / de tabelas
-uv run pytest supabase/tests -m storage
-uv run pytest supabase/tests -m tables
+uv run pytest src/database/supabase_integration/tests -m storage
+uv run pytest src/database/supabase_integration/tests -m tables
 
 # fluxos completos pela fachada
-uv run pytest supabase/tests -m e2e
+uv run pytest src/database/supabase_integration/tests -m e2e
 
 # cobertura (piso aplicado apenas aos testes offline)
-uv run pytest supabase/tests -m "not integration and not e2e" \
+uv run pytest src/database/supabase_integration/tests -m "not integration and not e2e" \
   --cov=supabase --cov-report=term-missing --cov-fail-under=90
 
 # modo estrito de CI: ausência de credenciais vira falha, não skip
-SUPABASE_TEST_REQUIRE_LIVE=1 uv run pytest supabase/tests -m "integration or e2e"
+SUPABASE_TEST_REQUIRE_LIVE=1 uv run pytest src/database/supabase_integration/tests -m "integration or e2e"
 
 # exibir logs em tempo real ao depurar um teste
-uv run pytest supabase/tests/unit/test_logging.py -s -o log_cli=true -o log_cli_level=DEBUG
+uv run pytest src/database/supabase_integration/tests/unit/test_logging.py -s -o log_cli=true -o log_cli_level=DEBUG
 ```
 
 Atenção ao **nome da pasta**: um diretório chamado `supabase/` na raiz pode **colidir com o pacote Python `supabase`** (o SDK oficial `supabase-py`) ao importar. Ver questão 4; é um risco concreto que afeta como os testes importam o código e deve ser resolvido na etapa de arquitetura (por exemplo, com um nome de pacote interno distinto do da pasta).
@@ -526,9 +526,9 @@ Um item só é considerado pronto quando **todos** os critérios dele passam e a
 | # | Questão | Recomendação |
 |---|---|---|
 | 1 | Qual ambiente de integração usar: projeto de teste na nuvem, stack local via Supabase CLI (Docker) ou ambos? | **Ambos**: local para desenvolvimento diário, nuvem para CI/verificação final. Mesma suíte, variáveis diferentes |
-| 2 | Adotar `pytest` como framework da suíte (mesmo o repo não tendo suíte pytest)? Aceita um grupo `dev` em `pyproject.toml`? | **Sim**, isolado em `supabase/tests/`, sem exigir adoção no resto do projeto |
+| 2 | Adotar `pytest` como framework da suíte (mesmo o repo não tendo suíte pytest)? Aceita um grupo `dev` em `pyproject.toml`? | **Sim**, isolado em `src/database/supabase_integration/tests/`, sem exigir adoção no resto do projeto |
 | 3 | Onde declarar dependências de teste: grupo `dev` no `pyproject.toml` da raiz ou um `pyproject` próprio em `supabase/`? | Grupo `dev` na raiz (uv é a fonte de verdade); revisitar se `supabase/` virar pacote independente |
-| 4 | O nome da pasta/pacote `supabase` colide com o pacote do SDK `supabase` ao importar. Como nomear o pacote Python interno? | Manter a pasta `supabase/` como contêiner de docs e testes, e dar ao pacote de código um nome interno distinto (ex.: `bai_supabase`); decidir na etapa de arquitetura |
+| 4 | O nome da pasta/pacote `supabase` colide com o pacote do SDK `supabase` ao importar. Como nomear o pacote Python interno? | Manter a pasta `supabase/` como contêiner de docs e testes, e dar ao pacote de código um nome interno distinto (ex.: `src.database.supabase_integration`); decidir na etapa de arquitetura |
 | 5 | Comportamento das cores em não-TTY/CI e com `NO_COLOR`: desativar automaticamente? | Desativar automaticamente fora de TTY ou com `NO_COLOR`, com opção de forçar por configuração |
 | 6 | Quais nomes de variáveis de teste (`SUPABASE_TEST_*`) e onde fica o `.env.test`? | Nomes próprios com prefixo `SUPABASE_TEST_`; `.env.test` na raiz, ignorado pelo Git, mais `.env.test.example` só com nomes |
 | 7 | Quem cria o projeto/buckets/tabelas de teste e aplica `test_schema.sql` (a integração não faz DDL)? | Preparação manual única (ou via Supabase CLI/migrations) fora da suíte; o guia 01 se aplica (somente leitura por agentes, sem criar nada sem pedido explícito) |

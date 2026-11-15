@@ -6,11 +6,11 @@ import threading
 import httpx
 import pytest
 
-from bai_supabase.adapters.client import SupabaseClientProvider
-from bai_supabase.contracts.secret import Secret
-from bai_supabase.contracts.settings import ConnectionSettings
-from bai_supabase.errors import ConfigurationError
-from tests.fakes.logger import CaptureLogger
+from src.database.supabase_integration.adapters.client import SupabaseClientProvider
+from src.database.supabase_integration.contracts.secret import Secret
+from src.database.supabase_integration.contracts.settings import ConnectionSettings
+from src.database.supabase_integration.errors import ConfigurationError
+from src.database.supabase_integration.tests.fakes.logger import CaptureLogger
 
 KEY = "CHAVE-SECRETA-PLANTADA-999"
 

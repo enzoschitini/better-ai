@@ -10,11 +10,11 @@ Ordem de execução da [spec](spec.md), seguindo o [plano](plan.md). **Nenhuma t
 
 - [x] **T-000** Confirmar as decisões D-01 a D-08 em [decisions.md](decisions.md) e trocar ❓ por ✅ (ou ajustar). *Critério:* nenhuma decisão ❓ restante.
 - [x] **T-001** Levantar credenciais e dados da plataforma seguindo [research/01](research/01-variaveis-de-ambiente.md) (Chrome primeiro; **somente leitura**; só nomes no relatório): Project URL, chave secreta, buckets (e visibilidade), tabelas candidatas, plano, limite global de upload, `max-rows`. Registrar em [decisions.md](decisions.md) (D-04, D-05). Dep: T-000. *Critério:* variáveis `SBX_*` acrescentadas ao `.env` sem tocar nas `SUPABASE_*` existentes; relatório sem valores.
-- [x] **T-002** Criar o esqueleto: `supabase/bai_supabase/` com subpacotes vazios do plano, `supabase/tests/`, `supabase/pytest.ini` (`pythonpath = .`). **Sem** `__init__.py` em `supabase/`. Dep: T-000.
-- [x] **T-003** Adicionar `pytest`, `pytest-socket`, `pytest-cov` (e `filetype`, cliente TUS se confirmados) ao `pyproject.toml` e rodar `uv sync`. Dep: T-000. *Critério:* `uv run pytest supabase/tests` executa e coleta zero testes sem erro.
+- [x] **T-002** Criar o esqueleto: `src/database/supabase_integration/` com subpacotes vazios do plano, `src/database/supabase_integration/tests/`, `src/database/supabase_integration/pytest.ini` (`pythonpath = .`). **Sem** `__init__.py` em `supabase/`. Dep: T-000.
+- [x] **T-003** Adicionar `pytest`, `pytest-socket`, `pytest-cov` (e `filetype`, cliente TUS se confirmados) ao `pyproject.toml` e rodar `uv sync`. Dep: T-000. *Critério:* `uv run pytest src/database/supabase_integration/tests` executa e coleta zero testes sem erro.
 - [x] **T-004** Teste de sombreamento: `python -c "import supabase; print(supabase.__file__)"` a partir da raiz **e** de `supabase/` aponta para o SDK em `.venv`. Dep: T-002. *Critério:* passa; vira teste permanente em `tests/architecture/`.
 - [ ] **T-005** Verificar no SDK instalado (versão do `uv.lock`): exceções reais de PostgREST e Storage, sintaxe de `range`/`count`, `upsert`, remoção em lote, `list`/`listV2`, opções de timeout do cliente HTTP, opção de TUS. Registrar achados em [decisions.md](decisions.md) §4. Dep: T-003. Ref: 02 §2, 07 §2, 09 §2.
-- [x] **T-006** Criar `supabase/.env.example` e `.env.test.example` (só nomes, conforme tabelas de [research/03](research/03-configuracao-centralizada.md) §5 com as decisões C-3, C-4, C-6). Dep: T-000.
+- [x] **T-006** Criar `src/database/supabase_integration/.env.example` e `.env.test.example` (só nomes, conforme tabelas de [research/03](research/03-configuracao-centralizada.md) §5 com as decisões C-3, C-4, C-6). Dep: T-000.
 
 ## Fase 1: fundação (sem rede)
 

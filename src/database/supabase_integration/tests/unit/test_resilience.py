@@ -3,10 +3,10 @@ from __future__ import annotations
 
 import pytest
 
-from bai_supabase.contracts.resilience import Operation, ResilienceExecutor, RetryPolicy
-from bai_supabase.contracts.secret import Secret
-from bai_supabase.contracts.settings import ConnectionSettings
-from bai_supabase.errors import (
+from src.database.supabase_integration.contracts.resilience import Operation, ResilienceExecutor, RetryPolicy
+from src.database.supabase_integration.contracts.secret import Secret
+from src.database.supabase_integration.contracts.settings import ConnectionSettings
+from src.database.supabase_integration.errors import (
     AuthenticationError,
     ConfigurationError,
     DuplicateRecordError,
@@ -16,9 +16,9 @@ from bai_supabase.errors import (
     ServiceUnavailableError,
     UnexpectedError,
 )
-from bai_supabase.resilience import ResilienceExecutorImpl, build_executor
-from bai_supabase.resilience.policies import backoff_ceiling
-from tests.fakes.logger import CaptureLogger
+from src.database.supabase_integration.resilience import ResilienceExecutorImpl, build_executor
+from src.database.supabase_integration.resilience.policies import backoff_ceiling
+from src.database.supabase_integration.tests.fakes.logger import CaptureLogger
 
 SECRET = "SEGREDO-PLANTADO-123"
 

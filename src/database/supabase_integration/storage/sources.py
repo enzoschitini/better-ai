@@ -14,9 +14,9 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import BinaryIO, Callable, ContextManager, Iterator, Optional
 
-from bai_supabase.contracts.storage import BytesSource, FileSource, PathSource, StreamSource
-from bai_supabase.errors.exceptions import FileTooLargeError, ValidationError
-from bai_supabase.storage.validators import HEAD_BYTES
+from src.database.supabase_integration.contracts.storage import BytesSource, FileSource, PathSource, StreamSource
+from src.database.supabase_integration.errors.exceptions import FileTooLargeError, ValidationError
+from src.database.supabase_integration.storage.validators import HEAD_BYTES
 
 _COPY_CHUNK = 1024 * 1024
 

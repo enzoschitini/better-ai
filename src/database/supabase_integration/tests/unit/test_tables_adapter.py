@@ -6,10 +6,10 @@ from typing import Any
 
 import pytest
 
-from bai_supabase.adapters.tables_transport import SupabaseTableTransport
-from bai_supabase.contracts.query import Condition, FilterGroup, Op, Sort
-from bai_supabase.contracts.transports import SelectRequest, TableTransport
-from bai_supabase.errors.exceptions import SupabaseIntegrationError, ValidationError
+from src.database.supabase_integration.adapters.tables_transport import SupabaseTableTransport
+from src.database.supabase_integration.contracts.query import Condition, FilterGroup, Op, Sort
+from src.database.supabase_integration.contracts.transports import SelectRequest, TableTransport
+from src.database.supabase_integration.errors.exceptions import SupabaseIntegrationError, ValidationError
 
 
 class FakeBuilder:
@@ -249,7 +249,7 @@ def test_provedor_e_chamado_a_cada_operacao():
 
 def test_modulo_nao_importa_o_sdk():
     import ast
-    import bai_supabase.adapters.tables_transport as mod
+    import src.database.supabase_integration.adapters.tables_transport as mod
 
     tree = ast.parse(open(mod.__file__, encoding="utf-8").read())
     imported = {n.names[0].name.split(".")[0] for n in ast.walk(tree) if isinstance(n, ast.Import)}

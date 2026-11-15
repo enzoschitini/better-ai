@@ -7,16 +7,16 @@ import httpx
 import pytest
 from storage3.exceptions import StorageApiError
 
-from bai_supabase.adapters.storage_transport import SupabaseStorageTransport
-from bai_supabase.contracts.transports import StorageTransport
-from bai_supabase.errors.exceptions import (
+from src.database.supabase_integration.adapters.storage_transport import SupabaseStorageTransport
+from src.database.supabase_integration.contracts.transports import StorageTransport
+from src.database.supabase_integration.errors.exceptions import (
     ConfigurationError,
     FileAlreadyExistsError,
     FileNotFoundInStorageError,
     ServiceUnavailableError,
     SupabaseIntegrationError,
 )
-from bai_supabase.storage.service import SizedStorageTransport
+from src.database.supabase_integration.storage.service import SizedStorageTransport
 
 SIGNED = "https://proj.supabase.test/storage/v1/object/sign/media/a/b.bin?token=SECRET-SIGNED-TOKEN"
 

@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Optional
 
-from bai_supabase.errors.exceptions import SupabaseIntegrationError
+from src.database.supabase_integration.errors.exceptions import SupabaseIntegrationError
 
 
 @dataclass(frozen=True)

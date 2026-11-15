@@ -166,5 +166,5 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-# Integracao Supabase (supabase/): credenciais de teste
-supabase/.env.test
+# Integracao Supabase (src/database/supabase_integration): credenciais de teste
+src/database/supabase_integration/.env.test

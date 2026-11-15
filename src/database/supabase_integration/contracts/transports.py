@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, BinaryIO, Optional, Protocol, Sequence, Union, runtime_checkable
 
-from bai_supabase.contracts.query import Filter, Sort
+from src.database.supabase_integration.contracts.query import Filter, Sort
 
 
 @dataclass(frozen=True)

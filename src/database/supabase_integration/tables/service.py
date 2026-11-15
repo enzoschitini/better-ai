@@ -8,14 +8,14 @@ from __future__ import annotations
 
 from typing import Any, Callable, Iterable, Optional
 
-from bai_supabase.contracts.logging import LoggerContract
-from bai_supabase.contracts.resilience import ResilienceExecutor
-from bai_supabase.contracts.settings import TablesSettings
-from bai_supabase.contracts.tables import TableDescriptor, TableRepository
-from bai_supabase.contracts.transports import TableTransport
-from bai_supabase.errors.exceptions import ConfigurationError
-from bai_supabase.tables.repository import PostgresTableRepository
-from bai_supabase.tables.validation import ensure_table_allowed, safe_name, validate_descriptor
+from src.database.supabase_integration.contracts.logging import LoggerContract
+from src.database.supabase_integration.contracts.resilience import ResilienceExecutor
+from src.database.supabase_integration.contracts.settings import TablesSettings
+from src.database.supabase_integration.contracts.tables import TableDescriptor, TableRepository
+from src.database.supabase_integration.contracts.transports import TableTransport
+from src.database.supabase_integration.errors.exceptions import ConfigurationError
+from src.database.supabase_integration.tables.repository import PostgresTableRepository
+from src.database.supabase_integration.tables.validation import ensure_table_allowed, safe_name, validate_descriptor
 
 RepositoryFactory = Callable[[TableDescriptor], TableRepository]
 

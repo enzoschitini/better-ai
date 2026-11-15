@@ -64,7 +64,7 @@ Built on **Agno** (`agno.agent.Agent`), not raw LangChain, even though LangChain
 - Relational/agent-state storage: Supabase Postgres in prod, local SQLite for dev — selected via the `Database` factory above, not per-call flags.
 - Vector store: Pinecone (`src/vector_store/`), namespaced per `PINECONE_NAMESPACE`/`PINECONE_GLOBAL_NAMESPACE`.
 - Document/NoSQL storage: MongoDB (`src/database/no_relational_db/`), gated by `NOSQL_BACKEND`/`SAVE_MONGO`.
-- File storage: Supabase Storage (`src/storage/`).
+- Supabase (tabelas + Storage): **sempre** pela integração `src/database/supabase_integration/` (config `SBX_*`, ver README da pasta). Fluxos obtêm a instância via `src.database.supabase_provider.get_supabase()`; não crie clientes do SDK `supabase` fora de `supabase_integration/adapters/`. `src/storage/storage_repository.py` é o wrapper de upload de imagens sobre ela.
 
 ### Config / environment
 

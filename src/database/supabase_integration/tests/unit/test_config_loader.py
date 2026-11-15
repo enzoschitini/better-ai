@@ -6,14 +6,14 @@ from pathlib import Path
 
 import pytest
 
-from bai_supabase.config import (
+from src.database.supabase_integration.config import (
     ChainedSource,
     DictSource,
     DotenvFileSource,
     LegacyFallbackSource,
     SettingsLoader,
 )
-from bai_supabase.errors import ConfigurationError, SettingsError
+from src.database.supabase_integration.errors import ConfigurationError, SettingsError
 
 SECRET = "sb_secret_PLANTED0123456789abcdef"
 URL = "https://projetoplantado.supabase.co"
@@ -206,7 +206,8 @@ def test_erro_agrega_todos_os_problemas_sem_valores():
     assert "ambiente: prod" in text and "Ausentes (obrigatórias):" in text and "Inválidas:" in text
     assert "- SBX_HTTP_TIMEOUT_SECONDS: deve ser número > 0" in text
     assert "- SBX_LOG_LEVEL: deve ser um de DEBUG, INFO, WARNING, ERROR" in text
-    assert "supabase/spec/research/01-variaveis-de-ambiente.md" in text and "supabase/.env.example" in text
+    assert "src/database/supabase_integration/docs/spec/research/01-variaveis-de-ambiente.md" in text
+    assert "src/database/supabase_integration/.env.example" in text
     assert "plantado" not in text
     assert isinstance(err, ConfigurationError)
 
@@ -309,7 +310,7 @@ def test_dotenv_de_arquivo_permitido_em_dev_e_encadeado(tmp_path):
 
 # --- avisos de variável desconhecida ---------------------------------------------------------
 def test_variavel_desconhecida_gera_aviso_so_com_nome():
-    from tests.fakes.logger import CaptureLogger
+    from src.database.supabase_integration.tests.fakes.logger import CaptureLogger
 
     log = CaptureLogger()
     loader = SettingsLoader(log)
@@ -401,9 +402,9 @@ def test_loader_so_usa_a_fonte_recebida(monkeypatch):
 
 
 def test_loader_e_settings_nao_leem_os_environ_fora_de_sources():
-    root = SUPABASE_DIR / "bai_supabase"
+    root = SUPABASE_DIR
     offenders = [
         str(p.relative_to(root)) for p in root.rglob("*.py")
-        if p.name != "sources.py" and re.search(r"os\.environ|getenv", p.read_text(encoding="utf-8"))
+        if p.relative_to(root).parts[0] not in {"tests", "examples"} and p.name != "sources.py" and re.search(r"os\.environ|getenv", p.read_text(encoding="utf-8"))
     ]
     assert offenders == []

@@ -12,8 +12,8 @@ import re
 from dataclasses import dataclass
 from typing import Callable
 
-from bai_supabase.contracts.storage import CollisionPolicy
-from bai_supabase.errors.exceptions import FileAlreadyExistsError, ValidationError
+from src.database.supabase_integration.contracts.storage import CollisionPolicy
+from src.database.supabase_integration.errors.exceptions import FileAlreadyExistsError, ValidationError
 
 MAX_VERSIONS = 1000
 _VERSION_SUFFIX = re.compile(r"-v\d+$")

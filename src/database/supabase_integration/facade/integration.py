@@ -10,11 +10,11 @@ from __future__ import annotations
 import uuid
 from typing import Any, Callable, Optional, Union
 
-from bai_supabase.contracts.logging import LoggerContract
-from bai_supabase.contracts.results import CompositeResult, CompositeStatus, StoredFile
-from bai_supabase.contracts.storage import CollisionPolicy, FileSource, FileStore, UploadOptions
-from bai_supabase.contracts.tables import TablesContract
-from bai_supabase.errors.exceptions import SupabaseIntegrationError
+from src.database.supabase_integration.contracts.logging import LoggerContract
+from src.database.supabase_integration.contracts.results import CompositeResult, CompositeStatus, StoredFile
+from src.database.supabase_integration.contracts.storage import CollisionPolicy, FileSource, FileStore, UploadOptions
+from src.database.supabase_integration.contracts.tables import TablesContract
+from src.database.supabase_integration.errors.exceptions import SupabaseIntegrationError
 
 FileRef = tuple[str, str]  # (bucket, path)
 

@@ -1,4 +1,4 @@
-# Guia de uso — integração Supabase (`bai_supabase`)
+# Guia de uso — integração Supabase (`src.database.supabase_integration`)
 
 Guia único de uso da integração: **receitas para copiar e colar** (partes 1 a 6), **arquitetura com esquemas** (parte 7) e **referência detalhada** de classes, métodos e parâmetros (parte 8). Quem só precisa usar pode parar na parte 6; quem precisa entender por que algo se comporta de certa forma segue para as partes 7 a 10.
 
@@ -41,7 +41,7 @@ alter table public.sbx_test_items enable row level security;  -- acesso só pela
 
 ### 1.2 Import: o detalhe do `sys.path`
 
-O pacote é `bai_supabase`, dentro de `supabase/`. A pasta `supabase/` **não tem `__init__.py`** de propósito (para não sombrear o SDK `supabase`). Portanto o que entra no `sys.path` é a **pasta `supabase/`**, nunca a raiz do repositório:
+O pacote é `src.database.supabase_integration`, dentro de `supabase/`. A pasta `supabase/` **não tem `__init__.py`** de propósito (para não sombrear o SDK `supabase`). Portanto o que entra no `sys.path` é a **pasta `supabase/`**, nunca a raiz do repositório:
 
 ```python
 import sys
@@ -58,13 +58,13 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from bai_supabase import (
+from src.database.supabase_integration import (
     create_integration_from_env, TableDescriptor,
     Query, Condition, Op, PageRequest, Sort,
     BytesSource, PathSource, StreamSource, UploadOptions, CollisionPolicy,
 )
-from bai_supabase.contracts import FilterGroup, BatchOptions
-from bai_supabase.errors import (
+from src.database.supabase_integration.contracts import FilterGroup, BatchOptions
+from src.database.supabase_integration.errors import (
     SupabaseIntegrationError, RecordNotFoundError, FileAlreadyExistsError, ValidationError,
 )
 
@@ -182,7 +182,7 @@ for linha in items.iterate(q, page_size=100):
 **Keyset (paginação por cursor)** — recomendada para páginas profundas; exige `sort_key` no descritor:
 
 ```python
-from bai_supabase.tables import KEYSET_START
+from src.database.supabase_integration.tables import KEYSET_START
 
 cursor = KEYSET_START                         # abre a cadeia
 while cursor:
@@ -341,8 +341,8 @@ Nenhuma exceção do SDK (`supabase`, `postgrest`, `storage3`, `httpx`) chega ao
 ```python
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, UploadFile
-from bai_supabase import create_async_integration, TableDescriptor, StreamSource, UploadOptions
-from bai_supabase.config import SettingsLoader, ChainedSource, EnvironmentSource, DotenvFileSource
+from src.database.supabase_integration import create_async_integration, TableDescriptor, StreamSource, UploadOptions
+from src.database.supabase_integration.config import SettingsLoader, ChainedSource, EnvironmentSource, DotenvFileSource
 
 DESCRIPTORS = [TableDescriptor("sbx_test_items", columns=("id", "name", "qty", "bucket", "path", "created_at"),
                                server_managed_columns=("id", "created_at"), sort_key="created_at")]
@@ -552,7 +552,7 @@ DotenvFileSource ──┼─► ChainedSource (1ª fonte com valor não vazio v
 
 ## 8. Referência detalhada
 
-### 8.1 Ponto de entrada — `bai_supabase.factories`
+### 8.1 Ponto de entrada — `src.database.supabase_integration.factories`
 
 | Função | Para quê | Parâmetros |
 |---|---|---|
@@ -715,7 +715,7 @@ SupabaseIntegrationError
 └── UnexpectedError                                           fallback: ampliar o mapeamento ao ver esta
 ```
 
-Mapeamento típico (função pura em [errors/mapper.py](bai_supabase/errors/mapper.py); o código do provedor prevalece sobre o status HTTP):
+Mapeamento típico (função pura em [errors/mapper.py](src.database.supabase_integration/errors/mapper.py); o código do provedor prevalece sobre o status HTTP):
 
 | Origem | Resultado |
 |---|---|
@@ -828,9 +828,9 @@ Uma tentativa é repetida **somente se** a operação for **idempotente** *e* a 
 Rodar da **raiz do repositório** (`better-ai/`):
 
 ```bash
-python -m pytest supabase/tests -m "not integration" -q          # offline, sem rede e sem credenciais
-python -m pytest supabase/tests/architecture -q                  # regras de dependência
-python -m pytest supabase/tests/integration -m integration -v -s # LIVE (projeto Supabase de TESTE; veja README.md)
+python -m pytest src/database/supabase_integration/tests -m "not integration" -q          # offline, sem rede e sem credenciais
+python -m pytest src/database/supabase_integration/tests/architecture -q                  # regras de dependência
+python -m pytest src/database/supabase_integration/tests/integration -m integration -v -s # LIVE (projeto Supabase de TESTE; veja README.md)
 ```
 
 Para testar o **seu** código sem rede, injete fakes: `create_integration(settings, table_transport=FakeTableTransport(), storage_transport=FakeStorageTransport(), logger=...)` — há implementações em [tests/fakes/](tests/fakes/). Os testes de contrato rodam a mesma bateria contra o fake e (futuramente) o adapter real.
@@ -848,9 +848,9 @@ Para testar o **seu** código sem rede, injete fakes: `create_integration(settin
 |---|---|
 | Nova tabela | novo `TableDescriptor` (+ `SBX_TABLES_ALLOWLIST`); nenhum código existente muda |
 | Mapear para modelo tipado | `TableDescriptor(model=MinhaDataclassOuPydantic)` |
-| Nomear arquivos preservando o nome | `create_integration(settings, naming=PreservedNameNaming())` (`from bai_supabase.storage import PreservedNameNaming`) |
+| Nomear arquivos preservando o nome | `create_integration(settings, naming=PreservedNameNaming())` (`from src.database.supabase_integration.storage import PreservedNameNaming`) |
 | Outro formato de log / destino | implementar `LoggerContract` e passar `logger=` |
-| Circuit breaker ou métricas | implementar `ExecutionPolicy` (`before_attempt`, `on_success`, `on_failure`), montar `build_executor(settings.connection, logger, policies=[...])` (`bai_supabase.resilience.executor`) e passar o resultado em `create_integration(..., executor=...)` |
+| Circuit breaker ou métricas | implementar `ExecutionPolicy` (`before_attempt`, `on_success`, `on_failure`), montar `build_executor(settings.connection, logger, policies=[...])` (`src.database.supabase_integration.resilience.executor`) e passar o resultado em `create_integration(..., executor=...)` |
 | Outro backend de dados (teste/outro provedor) | implementar `TableTransport` / `StorageTransport` e passar a `create_integration` |
 
 ### 10.4 Mapa de arquivos
@@ -863,7 +863,7 @@ supabase/
 ├── sb_crud.py / sb_bucket.py ← scripts de exemplo (tabelas / bucket)
 ├── spec/                     ← especificação (SDD), decisões e pesquisas
 ├── tests/                    ← unit, contract, architecture, integration (live), fakes
-└── bai_supabase/
+└── src.database.supabase_integration/
     ├── __init__.py           ← API pública (create_*, Query, Condition, Op, *Source, UploadOptions...)
     ├── factories/factory.py  ← composição
     ├── facade/               ← integration.py (combinadas) · async_wrapper.py

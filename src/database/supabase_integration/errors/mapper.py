@@ -23,7 +23,7 @@ import re
 from dataclasses import dataclass
 from typing import Optional
 
-from bai_supabase.errors.exceptions import (
+from src.database.supabase_integration.errors.exceptions import (
     AuthenticationError,
     ConfigurationError,
     ConflictError,
@@ -44,7 +44,7 @@ from bai_supabase.errors.exceptions import (
     UploadError,
     ValidationError,
 )
-from bai_supabase.errors.raw import RawError
+from src.database.supabase_integration.errors.raw import RawError
 
 _SAFE_CODE = re.compile(r"^[A-Za-z0-9_.:\- ]{1,64}$")
 _SAFE_TYPE = re.compile(r"^[A-Za-z_][A-Za-z0-9_.]{0,80}$")

@@ -1,7 +1,7 @@
 """Fontes de configuração: ambiente, .env, dict, encadeada e fallback legado."""
 from __future__ import annotations
 
-from bai_supabase.config import (
+from src.database.supabase_integration.config import (
     ChainedSource,
     DictSource,
     DotenvFileSource,
@@ -9,8 +9,8 @@ from bai_supabase.config import (
     LegacyFallbackSource,
     SettingsSource,
 )
-from bai_supabase.config.sources import no_color_requested, parse_dotenv
-from tests.fakes.logger import CaptureLogger
+from src.database.supabase_integration.config.sources import no_color_requested, parse_dotenv
+from src.database.supabase_integration.tests.fakes.logger import CaptureLogger
 
 LEGACY_SECRET = "legacy-valor-plantado-123"
 

@@ -6,9 +6,9 @@ from __future__ import annotations
 import asyncio
 from typing import Any, Callable, Optional, TypeVar
 
-from bai_supabase.contracts.results import CompositeResult
-from bai_supabase.contracts.storage import FileSource, UploadOptions
-from bai_supabase.facade.integration import FileRef, SupabaseIntegration
+from src.database.supabase_integration.contracts.results import CompositeResult
+from src.database.supabase_integration.contracts.storage import FileSource, UploadOptions
+from src.database.supabase_integration.facade.integration import FileRef, SupabaseIntegration
 
 T = TypeVar("T")
 

@@ -13,9 +13,9 @@ from __future__ import annotations
 import time
 from typing import Any, Callable, Sequence
 
-from bai_supabase.contracts.logging import LoggerContract
-from bai_supabase.contracts.results import BatchResult, ItemOutcome
-from bai_supabase.errors.exceptions import (
+from src.database.supabase_integration.contracts.logging import LoggerContract
+from src.database.supabase_integration.contracts.results import BatchResult, ItemOutcome
+from src.database.supabase_integration.errors.exceptions import (
     ConflictError,
     DataError,
     MappingError,

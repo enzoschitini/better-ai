@@ -1,18 +1,17 @@
-import sys
+# rode da raiz do repo: python -m src.database.supabase_integration.examples.sb_crud
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).resolve().parent))   # pasta supabase/ (onde está bai_supabase)
 
-from bai_supabase import (
+from src.database.supabase_integration import (
     create_integration_from_env, TableDescriptor,
     Query, Condition, Op, PageRequest, Sort,
     BytesSource, PathSource, UploadOptions, CollisionPolicy,
 )
-from bai_supabase.contracts import FilterGroup, BatchOptions
-from bai_supabase.errors import RecordNotFoundError, FileAlreadyExistsError, SupabaseIntegrationError
+from src.database.supabase_integration.contracts import FilterGroup, BatchOptions
+from src.database.supabase_integration.errors import RecordNotFoundError, FileAlreadyExistsError, SupabaseIntegrationError
 
 # Lê SBX_* do ambiente + .env (só em dev). Falha cedo, listando só os NOMES que faltam.
 sb = create_integration_from_env(
-    dotenv_path=Path(__file__).resolve().parents[1] / ".env",
+    dotenv_path=Path(".env"),
     descriptors=[
         TableDescriptor(
             "sbx_test_items",
@@ -35,4 +34,4 @@ q = Query(
 pag = items.list(q, PageRequest(limit=10, offset=0, include_count=True))
 print(pag.items, pag.total, pag.has_more) 
 
-# python supabase/sb_crud.py
+# python -m src.database.supabase_integration.examples.sb_crud

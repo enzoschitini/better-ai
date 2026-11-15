@@ -6,9 +6,9 @@ import pickle
 
 import pytest
 
-from bai_supabase.config import DictSource, SettingsLoader, SupabaseSettings
-from bai_supabase.contracts.secret import Secret
-from bai_supabase.contracts.settings import ConnectionSettings
+from src.database.supabase_integration.config import DictSource, SettingsLoader, SupabaseSettings
+from src.database.supabase_integration.contracts.secret import Secret
+from src.database.supabase_integration.contracts.settings import ConnectionSettings
 
 SECRET = "sb_secret_PLANTED0123456789abcdef"
 PUBLISHABLE = "sb_publishable_PLANTED9876543210zyxwvu"

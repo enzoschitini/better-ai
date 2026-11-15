@@ -11,7 +11,7 @@ from collections.abc import Iterable, Mapping
 from pathlib import Path
 from typing import Optional, Protocol, runtime_checkable
 
-from bai_supabase.contracts.logging import LoggerContract
+from src.database.supabase_integration.contracts.logging import LoggerContract
 
 #: Mapa fixo do fallback legado (research/03 §6).
 LEGACY_NAME_MAP: Mapping[str, str] = {

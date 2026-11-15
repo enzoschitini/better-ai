@@ -3,19 +3,19 @@ from __future__ import annotations
 
 import pytest
 
-from bai_supabase.contracts.resilience import Operation
-from bai_supabase.contracts.settings import TablesSettings
-from bai_supabase.contracts.tables import BatchOptions, TableDescriptor
-from bai_supabase.errors.exceptions import (
+from src.database.supabase_integration.contracts.resilience import Operation
+from src.database.supabase_integration.contracts.settings import TablesSettings
+from src.database.supabase_integration.contracts.tables import BatchOptions, TableDescriptor
+from src.database.supabase_integration.errors.exceptions import (
     DataError,
     DuplicateRecordError,
     MappingError,
     OperationTimeoutError,
     ValidationError,
 )
-from bai_supabase.tables.batch import BatchRunner
-from tests.fakes.logger import CaptureLogger
-from tests.fakes.table_transport import InMemoryTableTransport, build_repository
+from src.database.supabase_integration.tables.batch import BatchRunner
+from src.database.supabase_integration.tests.fakes.logger import CaptureLogger
+from src.database.supabase_integration.tests.fakes.table_transport import InMemoryTableTransport, build_repository
 
 D = TableDescriptor("docs", server_managed_columns=("id",))
 

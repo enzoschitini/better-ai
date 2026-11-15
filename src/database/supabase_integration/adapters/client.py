@@ -17,9 +17,9 @@ from typing import Any, Callable, Optional
 import httpx
 from supabase import ClientOptions, create_client
 
-from bai_supabase.contracts.logging import LoggerContract
-from bai_supabase.contracts.settings import ConnectionSettings
-from bai_supabase.errors.exceptions import ConfigurationError
+from src.database.supabase_integration.contracts.logging import LoggerContract
+from src.database.supabase_integration.contracts.settings import ConnectionSettings
+from src.database.supabase_integration.errors.exceptions import ConfigurationError
 
 ClientFactory = Callable[[str, str, Any], Any]
 HttpClientFactory = Callable[..., httpx.Client]

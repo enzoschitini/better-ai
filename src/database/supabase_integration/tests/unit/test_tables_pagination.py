@@ -6,12 +6,12 @@ import json
 
 import pytest
 
-from bai_supabase.contracts.query import Condition, Op, PageRequest, Query, Sort
-from bai_supabase.contracts.settings import TablesSettings
-from bai_supabase.contracts.tables import BatchOptions, TableDescriptor
-from bai_supabase.errors.exceptions import ServiceUnavailableError, ValidationError
-from bai_supabase.tables.pagination import KEYSET_START
-from tests.fakes.table_transport import InMemoryTableTransport, build_repository
+from src.database.supabase_integration.contracts.query import Condition, Op, PageRequest, Query, Sort
+from src.database.supabase_integration.contracts.settings import TablesSettings
+from src.database.supabase_integration.contracts.tables import BatchOptions, TableDescriptor
+from src.database.supabase_integration.errors.exceptions import ServiceUnavailableError, ValidationError
+from src.database.supabase_integration.tables.pagination import KEYSET_START
+from src.database.supabase_integration.tests.fakes.table_transport import InMemoryTableTransport, build_repository
 
 KS = TableDescriptor("docs", server_managed_columns=("id",), sort_key="n")
 PLAIN = TableDescriptor("docs", server_managed_columns=("id",))

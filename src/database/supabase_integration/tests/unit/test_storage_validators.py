@@ -1,9 +1,9 @@
 """Validadores da classe de arquivos (research/05 §7, research/07 §4-§5)."""
 import pytest
 
-from bai_supabase.contracts.settings import StorageSettings
-from bai_supabase.errors.exceptions import ConfigurationError, FileTooLargeError, ValidationError
-from bai_supabase.storage.validators import (
+from src.database.supabase_integration.contracts.settings import StorageSettings
+from src.database.supabase_integration.errors.exceptions import ConfigurationError, FileTooLargeError, ValidationError
+from src.database.supabase_integration.storage.validators import (
     FileValidator,
     extension_of,
     is_mime_allowed,

@@ -118,8 +118,9 @@ Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
 | `MONGO_HOST` | Host do MongoDB |
 | `MONGO_PORT` | Porta do MongoDB |
 | `NOSQL_BACKEND` | Backend NoSQL utilizado (`local` ou remoto) |
-| `SUPABASE_URL` | URL do projeto Supabase |
-| `SUPABASE_SECRET_KEY` | Chave secreta de serviço do Supabase |
+| `SBX_URL` | URL do projeto Supabase (integração `src/database/supabase_integration`) |
+| `SBX_SECRET_KEY` | Chave secreta de serviço do Supabase |
+| `SBX_BUCKET_DEFAULT` / `SBX_BUCKETS_PUBLIC` / `SBX_BUCKETS_ALLOWLIST` | Bucket padrão (ex.: `images`), buckets públicos e allowlist de buckets |
 | `SUPABASE_DATABASE_URL` | String de conexão do banco Postgres do Supabase |
 | `SUPABASE_PROJECT_NAME` | Nome do projeto Supabase |
 | `SUPABASE_PROJECT_HOST` | Host do projeto Supabase |
@@ -168,8 +169,11 @@ MONGO_PORT=********************
 NOSQL_BACKEND=local
 
 # Supabase
-SUPABASE_URL=********************
-SUPABASE_SECRET_KEY=********************
+SBX_URL=********************
+SBX_SECRET_KEY=********************
+SBX_BUCKET_DEFAULT=images
+SBX_BUCKETS_PUBLIC=images
+SBX_BUCKETS_ALLOWLIST=images
 SUPABASE_DATABASE_URL=********************
 SUPABASE_PROJECT_NAME=better-ai-bucket-storage
 SUPABASE_PROJECT_HOST=********************

@@ -12,10 +12,10 @@ import json
 from decimal import Decimal
 from typing import Any, Callable, Optional, Sequence
 
-from bai_supabase.adapters.normalize import sdk_errors
-from bai_supabase.contracts.query import Condition, Filter, Op, is_empty_filter
-from bai_supabase.contracts.transports import SelectRequest, SelectResponse
-from bai_supabase.errors.exceptions import UnexpectedError, ValidationError
+from src.database.supabase_integration.adapters.normalize import sdk_errors
+from src.database.supabase_integration.contracts.query import Condition, Filter, Op, is_empty_filter
+from src.database.supabase_integration.contracts.transports import SelectRequest, SelectResponse
+from src.database.supabase_integration.errors.exceptions import UnexpectedError, ValidationError
 
 _SIMPLE = {
     Op.EQ: "eq", Op.NEQ: "neq", Op.GT: "gt", Op.GTE: "gte", Op.LT: "lt", Op.LTE: "lte",

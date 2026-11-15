@@ -16,8 +16,8 @@ Consolida e resolve as "Questões em aberto" de [research/](research/) e as **co
 | D-04 | **Primeiros casos de uso reais** (quais tabelas, colunas e buckets; visibilidade dos buckets) | Definir antes da Fase 3. Alimenta as allowlists, os descritores de tabela e a política de URLs. Até lá, os buckets são tratados como **privados**. | n/a | ✅ (adotada ao iniciar a implementação) |
 | D-05 | **Plano do Supabase e limites reais** (limite global de upload, `max-rows`, rate limits) | Levantar na plataforma, **somente leitura**, via [research/01](research/01-variaveis-de-ambiente.md). | n/a | ✅ (adotada ao iniciar a implementação) |
 | D-06 | **Um projeto Supabase por ambiente** (dev/homol/prod) e projeto dedicado de testes | Sim: projetos, chaves e `.env` separados; nunca chave de produção em dev. | Um projeto só, separado por schema/bucket | ✅ (adotada ao iniciar a implementação) |
-| D-07 | **Nome do pacote Python interno** | `supabase/bai_supabase/` (evita sombrear o SDK `supabase`). A pasta `supabase/` não ganha `__init__.py`. Testes rodam com `pythonpath = supabase`. | Outro nome | ✅ (adotada ao iniciar a implementação) |
-| D-08 | **Adicionar `pytest` (e plugins) ao grupo `dev` do `pyproject.toml`** | Sim, isolado em `supabase/tests/`, sem exigir adoção no resto do projeto. | Script ad-hoc como no resto do repo | ✅ (adotada ao iniciar a implementação) |
+| D-07 | **Nome do pacote Python interno** | `src/database/supabase_integration/` (evita sombrear o SDK `supabase`). A pasta `supabase/` não ganha `__init__.py`. Testes rodam com `pythonpath = supabase`. | Outro nome | ✅ (adotada ao iniciar a implementação) |
+| D-08 | **Adicionar `pytest` (e plugins) ao grupo `dev` do `pyproject.toml`** | Sim, isolado em `src/database/supabase_integration/tests/`, sem exigir adoção no resto do projeto. | Script ad-hoc como no resto do repo | ✅ (adotada ao iniciar a implementação) |
 
 ## 2. Contradições entre os documentos e como foram resolvidas
 

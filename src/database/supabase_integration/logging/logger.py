@@ -15,10 +15,10 @@ from collections.abc import Callable, Iterable, Mapping
 from datetime import datetime, timezone
 from typing import Any, Optional, TextIO
 
-from bai_supabase.config.sources import no_color_requested
-from bai_supabase.contracts.settings import LoggingSettings
-from bai_supabase.errors import ConfigurationError
-from bai_supabase.logging.sanitizer import sanitize, sanitize_fields
+from src.database.supabase_integration.config.sources import no_color_requested
+from src.database.supabase_integration.contracts.settings import LoggingSettings
+from src.database.supabase_integration.errors import ConfigurationError
+from src.database.supabase_integration.logging.sanitizer import sanitize, sanitize_fields
 
 LEVELS: Mapping[str, int] = {"DEBUG": 10, "INFO": 20, "WARNING": 30, "ERROR": 40}
 COLOR_MODES = ("auto", "on", "off")
@@ -54,7 +54,7 @@ def _utc_now() -> datetime:
 
 
 class StructuredLogger:
-    """Implementa ``LoggerContract`` (``bai_supabase.contracts.logging``). Imutável após criada; ``bind`` devolve uma cópia."""
+    """Implementa ``LoggerContract`` (``src.database.supabase_integration.contracts.logging``). Imutável após criada; ``bind`` devolve uma cópia."""
 
     def __init__(
         self,

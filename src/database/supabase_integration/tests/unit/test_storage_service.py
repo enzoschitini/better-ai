@@ -5,9 +5,9 @@ import time
 
 import pytest
 
-from bai_supabase.contracts.resilience import Operation
-from bai_supabase.contracts.settings import StorageSettings
-from bai_supabase.contracts.storage import (
+from src.database.supabase_integration.contracts.resilience import Operation
+from src.database.supabase_integration.contracts.settings import StorageSettings
+from src.database.supabase_integration.contracts.storage import (
     BytesSource,
     CollisionPolicy,
     FileStore,
@@ -15,7 +15,7 @@ from bai_supabase.contracts.storage import (
     StreamSource,
     UploadOptions,
 )
-from bai_supabase.errors.exceptions import (
+from src.database.supabase_integration.errors.exceptions import (
     ConfigurationError,
     FileAlreadyExistsError,
     FileNotFoundInStorageError,
@@ -25,10 +25,10 @@ from bai_supabase.errors.exceptions import (
     ServiceUnavailableError,
     ValidationError,
 )
-from bai_supabase.storage import PreservedNameNaming, SupabaseStorage
-from tests.fakes.executor import PassThroughExecutor
-from tests.fakes.logger import CaptureLogger
-from tests.fakes.storage_transport import InMemoryStorageTransport
+from src.database.supabase_integration.storage import PreservedNameNaming, SupabaseStorage
+from src.database.supabase_integration.tests.fakes.executor import PassThroughExecutor
+from src.database.supabase_integration.tests.fakes.logger import CaptureLogger
+from src.database.supabase_integration.tests.fakes.storage_transport import InMemoryStorageTransport
 
 MiB = 1024 * 1024
 PNG = b"\x89PNG\r\n\x1a\n" + b"\x01" * 100

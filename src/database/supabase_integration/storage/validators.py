@@ -14,8 +14,8 @@ from typing import Optional
 
 import filetype
 
-from bai_supabase.contracts.settings import StorageSettings
-from bai_supabase.errors.exceptions import ConfigurationError, FileTooLargeError, ValidationError
+from src.database.supabase_integration.contracts.settings import StorageSettings
+from src.database.supabase_integration.errors.exceptions import ConfigurationError, FileTooLargeError, ValidationError
 
 #: Quantos bytes iniciais bastam para a detecção por conteúdo (magic bytes).
 HEAD_BYTES = 8192

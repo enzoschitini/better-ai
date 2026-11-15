@@ -23,9 +23,9 @@ from urllib.parse import urljoin
 
 import httpx
 
-from bai_supabase.adapters.normalize import sdk_errors
-from bai_supabase.contracts.logging import LoggerContract
-from bai_supabase.errors.exceptions import UploadError
+from src.database.supabase_integration.adapters.normalize import sdk_errors
+from src.database.supabase_integration.contracts.logging import LoggerContract
+from src.database.supabase_integration.errors.exceptions import UploadError
 
 TUS_VERSION = "1.0.0"
 DEFAULT_CHUNK_BYTES = 6 * 1024 * 1024

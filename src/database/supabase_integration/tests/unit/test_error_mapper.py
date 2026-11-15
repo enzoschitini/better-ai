@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from bai_supabase.errors import (
+from src.database.supabase_integration.errors import (
     AuthenticationError,
     ConfigurationError,
     ConflictError,
@@ -227,7 +227,7 @@ def test_unexpected_type_name_must_be_identifier():
 
 def test_storage_400_asset_already_exists_vira_file_already_exists():
     """Docs (resumable uploads): objeto existente sem x-upsert => 400 'Asset Already Exists'."""
-    from bai_supabase.errors import FileAlreadyExistsError, RawError, map_raw_error
+    from src.database.supabase_integration.errors import FileAlreadyExistsError, RawError, map_raw_error
 
     raw = RawError(origin="storage", status=400, code=None, message="Asset Already Exists")
     assert isinstance(map_raw_error(raw, operation="storage.upload"), FileAlreadyExistsError)
@@ -235,7 +235,7 @@ def test_storage_400_asset_already_exists_vira_file_already_exists():
 
 def test_storage_download_404_bucket_not_found_e_objeto_inexistente():
     """Quirk real (smoke): baixar objeto inexistente em bucket existente devolve 404 'Bucket not found'."""
-    from bai_supabase.errors import ConfigurationError, FileNotFoundInStorageError, RawError, map_raw_error
+    from src.database.supabase_integration.errors import ConfigurationError, FileNotFoundInStorageError, RawError, map_raw_error
 
     raw = RawError(origin="storage", status=404, code="Bucket not found", message="Bucket not found")
     assert isinstance(map_raw_error(raw, operation="storage.download"), FileNotFoundInStorageError)

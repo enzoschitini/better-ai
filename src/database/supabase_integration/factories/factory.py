@@ -10,24 +10,24 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Iterable, Optional, Union
 
-from bai_supabase.adapters.client import SupabaseClientProvider
-from bai_supabase.adapters.storage_transport import SupabaseStorageTransport
-from bai_supabase.adapters.tables_transport import SupabaseTableTransport
-from bai_supabase.adapters.tus import TusClient
-from bai_supabase.config.loader import SettingsLoader
-from bai_supabase.config.settings import SupabaseSettings
-from bai_supabase.config.sources import ChainedSource, DotenvFileSource, EnvironmentSource, SettingsSource
-from bai_supabase.contracts.logging import LoggerContract
-from bai_supabase.contracts.resilience import ResilienceExecutor
-from bai_supabase.contracts.storage import NamingStrategy
-from bai_supabase.contracts.tables import TableDescriptor
-from bai_supabase.contracts.transports import StorageTransport, TableTransport
-from bai_supabase.facade.async_wrapper import AsyncSupabaseIntegration
-from bai_supabase.facade.integration import SupabaseIntegration
-from bai_supabase.logging.logger import build_logger
-from bai_supabase.resilience.executor import build_executor
-from bai_supabase.storage.service import SupabaseStorage
-from bai_supabase.tables.service import SupabaseTables
+from src.database.supabase_integration.adapters.client import SupabaseClientProvider
+from src.database.supabase_integration.adapters.storage_transport import SupabaseStorageTransport
+from src.database.supabase_integration.adapters.tables_transport import SupabaseTableTransport
+from src.database.supabase_integration.adapters.tus import TusClient
+from src.database.supabase_integration.config.loader import SettingsLoader
+from src.database.supabase_integration.config.settings import SupabaseSettings
+from src.database.supabase_integration.config.sources import ChainedSource, DotenvFileSource, EnvironmentSource, SettingsSource
+from src.database.supabase_integration.contracts.logging import LoggerContract
+from src.database.supabase_integration.contracts.resilience import ResilienceExecutor
+from src.database.supabase_integration.contracts.storage import NamingStrategy
+from src.database.supabase_integration.contracts.tables import TableDescriptor
+from src.database.supabase_integration.contracts.transports import StorageTransport, TableTransport
+from src.database.supabase_integration.facade.async_wrapper import AsyncSupabaseIntegration
+from src.database.supabase_integration.facade.integration import SupabaseIntegration
+from src.database.supabase_integration.logging.logger import build_logger
+from src.database.supabase_integration.resilience.executor import build_executor
+from src.database.supabase_integration.storage.service import SupabaseStorage
+from src.database.supabase_integration.tables.service import SupabaseTables
 
 
 def create_integration(

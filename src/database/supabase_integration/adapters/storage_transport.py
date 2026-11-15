@@ -17,9 +17,9 @@ from typing import Any, BinaryIO, Callable, Optional, Protocol, Sequence, Union
 
 import httpx
 
-from bai_supabase.adapters.normalize import sdk_errors
-from bai_supabase.contracts.transports import TransportObject
-from bai_supabase.errors.exceptions import ConfigurationError
+from src.database.supabase_integration.adapters.normalize import sdk_errors
+from src.database.supabase_integration.contracts.transports import TransportObject
+from src.database.supabase_integration.errors.exceptions import ConfigurationError
 
 DEFAULT_CHUNK_BYTES = 6 * 1024 * 1024
 _DOWNLOAD_BLOCK = 1024 * 1024

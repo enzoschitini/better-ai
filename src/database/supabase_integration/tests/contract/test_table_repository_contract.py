@@ -10,12 +10,12 @@ from typing import Callable
 
 import pytest
 
-from bai_supabase.contracts.query import Condition, FilterGroup, Op, PageRequest, Query, Sort
-from bai_supabase.contracts.results import DeleteResult
-from bai_supabase.contracts.settings import TablesSettings
-from bai_supabase.contracts.tables import BatchOptions, TableDescriptor
-from bai_supabase.errors.exceptions import DuplicateRecordError, RecordNotFoundError, ValidationError
-from tests.fakes.table_transport import InMemoryTableTransport, build_repository
+from src.database.supabase_integration.contracts.query import Condition, FilterGroup, Op, PageRequest, Query, Sort
+from src.database.supabase_integration.contracts.results import DeleteResult
+from src.database.supabase_integration.contracts.settings import TablesSettings
+from src.database.supabase_integration.contracts.tables import BatchOptions, TableDescriptor
+from src.database.supabase_integration.errors.exceptions import DuplicateRecordError, RecordNotFoundError, ValidationError
+from src.database.supabase_integration.tests.fakes.table_transport import InMemoryTableTransport, build_repository
 
 
 def _in_memory(descriptor: TableDescriptor, settings: TablesSettings):

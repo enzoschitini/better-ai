@@ -9,8 +9,8 @@ import uuid
 from datetime import datetime, timezone
 from typing import Callable, Optional
 
-from bai_supabase.errors.exceptions import ValidationError
-from bai_supabase.storage.validators import (
+from src.database.supabase_integration.errors.exceptions import ValidationError
+from src.database.supabase_integration.storage.validators import (
     extension_for_mime,
     extension_of,
     slugify_filename,

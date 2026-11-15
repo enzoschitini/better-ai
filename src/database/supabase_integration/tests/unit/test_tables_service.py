@@ -3,13 +3,13 @@ from __future__ import annotations
 
 import pytest
 
-from bai_supabase.contracts.settings import TablesSettings
-from bai_supabase.contracts.tables import TableDescriptor, TablesContract
-from bai_supabase.errors.exceptions import ConfigurationError
-from bai_supabase.tables import PostgresTableRepository, SupabaseTables
-from tests.fakes.executor import PassThroughExecutor
-from tests.fakes.logger import CaptureLogger
-from tests.fakes.table_transport import InMemoryTableTransport
+from src.database.supabase_integration.contracts.settings import TablesSettings
+from src.database.supabase_integration.contracts.tables import TableDescriptor, TablesContract
+from src.database.supabase_integration.errors.exceptions import ConfigurationError
+from src.database.supabase_integration.tables import PostgresTableRepository, SupabaseTables
+from src.database.supabase_integration.tests.fakes.executor import PassThroughExecutor
+from src.database.supabase_integration.tests.fakes.logger import CaptureLogger
+from src.database.supabase_integration.tests.fakes.table_transport import InMemoryTableTransport
 
 
 def make(settings=None, **kw):

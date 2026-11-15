@@ -5,8 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Iterator, Optional, Protocol, Sequence, TypeVar, runtime_checkable
 
-from bai_supabase.contracts.query import Filter, Page, PageRequest, Query
-from bai_supabase.contracts.results import BatchResult, DeleteResult
+from src.database.supabase_integration.contracts.query import Filter, Page, PageRequest, Query
+from src.database.supabase_integration.contracts.results import BatchResult, DeleteResult
 
 E = TypeVar("E")
 K = TypeVar("K")

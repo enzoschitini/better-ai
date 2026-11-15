@@ -13,7 +13,7 @@
 ```
 supabase/
 ├── spec/                       # esta especificação (SDD)
-├── bai_supabase/               # pacote de código (sem __init__.py na pasta supabase/)
+├── src.database.supabase_integration/               # pacote de código (sem __init__.py na pasta supabase/)
 │   ├── config/                 # SupabaseSettings, SettingsSource, SettingsLoader
 │   ├── errors/                 # hierarquia de exceções + mapeador (função pura)
 │   ├── logging/                # contrato de logger, logger colorido, sanitizador
@@ -151,7 +151,7 @@ backend → SupabaseIntegration → TableRepository | FileStore
 ## 7. Riscos
 | Risco | Mitigação |
 |---|---|
-| Pasta `supabase/` sombrear o SDK `supabase` | D-07: sem `__init__.py` em `supabase/`, pacote `bai_supabase`; teste de que `import supabase` devolve o SDK |
+| Pasta `supabase/` sombrear o SDK `supabase` | D-07: sem `__init__.py` em `supabase/`, pacote `src.database.supabase_integration`; teste de que `import supabase` devolve o SDK |
 | Comportamento do SDK diferente do documentado | Contrato de adapter + bateria de contrato; confirmar exceções na versão do `uv.lock` (Fase 0) |
 | Limites reais do projeto diferentes dos padrões propostos | Valores configuráveis; levantar na plataforma (D-05) |
 | Fakes divergirem do comportamento real | Bateria de contrato roda nos dois |

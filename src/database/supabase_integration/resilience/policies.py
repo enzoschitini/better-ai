@@ -8,9 +8,9 @@ from __future__ import annotations
 
 from typing import Callable, Protocol, runtime_checkable
 
-from bai_supabase.contracts.resilience import Operation, RetryPolicy, TimeoutPolicy
-from bai_supabase.contracts.settings import ConnectionSettings
-from bai_supabase.errors.exceptions import (
+from src.database.supabase_integration.contracts.resilience import Operation, RetryPolicy, TimeoutPolicy
+from src.database.supabase_integration.contracts.settings import ConnectionSettings
+from src.database.supabase_integration.errors.exceptions import (
     OperationTimeoutError,
     RateLimitError,
     ServiceUnavailableError,

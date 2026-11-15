@@ -14,12 +14,12 @@ import hashlib
 import json
 from typing import Any, Callable, Iterator, Optional
 
-from bai_supabase.contracts.logging import LoggerContract
-from bai_supabase.contracts.query import Condition, Filter, FilterGroup, Op, Page, PageRequest, Query, Sort
-from bai_supabase.contracts.settings import TablesSettings
-from bai_supabase.contracts.tables import TableDescriptor
-from bai_supabase.contracts.transports import SelectRequest, SelectResponse
-from bai_supabase.errors.exceptions import SupabaseIntegrationError, ValidationError
+from src.database.supabase_integration.contracts.logging import LoggerContract
+from src.database.supabase_integration.contracts.query import Condition, Filter, FilterGroup, Op, Page, PageRequest, Query, Sort
+from src.database.supabase_integration.contracts.settings import TablesSettings
+from src.database.supabase_integration.contracts.tables import TableDescriptor
+from src.database.supabase_integration.contracts.transports import SelectRequest, SelectResponse
+from src.database.supabase_integration.errors.exceptions import SupabaseIntegrationError, ValidationError
 
 #: Cursor sentinela que abre uma cadeia keyset (não é base64: sem colisão com cursores reais).
 KEYSET_START = "~start"

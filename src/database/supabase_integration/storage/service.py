@@ -13,14 +13,14 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterator, Optional, Protocol, Sequence, Union, runtime_checkable
 
-from bai_supabase.contracts.logging import LoggerContract
-from bai_supabase.contracts.query import Page
-from bai_supabase.contracts.resilience import Operation, ResilienceExecutor
-from bai_supabase.contracts.results import DeleteReport, ObjectInfo, StoredFile
-from bai_supabase.contracts.settings import StorageSettings
-from bai_supabase.contracts.storage import CollisionPolicy, FileSource, NamingStrategy, UploadOptions
-from bai_supabase.contracts.transports import StorageTransport, TransportObject
-from bai_supabase.errors.exceptions import (
+from src.database.supabase_integration.contracts.logging import LoggerContract
+from src.database.supabase_integration.contracts.query import Page
+from src.database.supabase_integration.contracts.resilience import Operation, ResilienceExecutor
+from src.database.supabase_integration.contracts.results import DeleteReport, ObjectInfo, StoredFile
+from src.database.supabase_integration.contracts.settings import StorageSettings
+from src.database.supabase_integration.contracts.storage import CollisionPolicy, FileSource, NamingStrategy, UploadOptions
+from src.database.supabase_integration.contracts.transports import StorageTransport, TransportObject
+from src.database.supabase_integration.errors.exceptions import (
     ConfigurationError,
     ConflictError,
     FileAlreadyExistsError,
@@ -30,10 +30,10 @@ from bai_supabase.errors.exceptions import (
     SupabaseIntegrationError,
     ValidationError,
 )
-from bai_supabase.storage.collision import CollisionResolver
-from bai_supabase.storage.naming import DatedUuidNaming
-from bai_supabase.storage.sources import PreparedSource, prepare_source
-from bai_supabase.storage.validators import (
+from src.database.supabase_integration.storage.collision import CollisionResolver
+from src.database.supabase_integration.storage.naming import DatedUuidNaming
+from src.database.supabase_integration.storage.sources import PreparedSource, prepare_source
+from src.database.supabase_integration.storage.validators import (
     FileValidator,
     sanitize_original_name,
     validate_object_path,

@@ -7,8 +7,8 @@ from enum import Enum
 from pathlib import Path
 from typing import BinaryIO, Optional, Protocol, Sequence, Union, runtime_checkable
 
-from bai_supabase.contracts.query import Page
-from bai_supabase.contracts.results import DeleteReport, ObjectInfo, StoredFile
+from src.database.supabase_integration.contracts.query import Page
+from src.database.supabase_integration.contracts.results import DeleteReport, ObjectInfo, StoredFile
 
 
 # --- Fontes de dados -------------------------------------------------------------

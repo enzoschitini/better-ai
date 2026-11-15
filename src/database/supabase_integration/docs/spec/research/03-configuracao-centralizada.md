@@ -90,7 +90,7 @@ SettingsError: configuração do Supabase inválida (ambiente: prod)
   Inválidas:
     - SBX_HTTP_TIMEOUT_SECONDS: deve ser número > 0
     - SBX_LOG_LEVEL: deve ser um de DEBUG, INFO, WARNING, ERROR
-  Ver: supabase/spec/research/01-variaveis-de-ambiente.md e supabase/.env.example
+  Ver: src/database/supabase_integration/docs/spec/research/01-variaveis-de-ambiente.md e src/database/supabase_integration/.env.example
 ```
 
 Nenhum valor aparece.
@@ -229,7 +229,7 @@ Ponto de entrada (composição) ──▶ SettingsLoader(source) ──▶ Supab
 
 ## 9. Arquivo modelo de variáveis (só nomes)
 
-- **Local [PROPOSTA]:** `supabase/.env.example` (versionado). O doc 01 (seção 4) pede um modelo só com nomes; este é o mesmo arquivo, evitando dois modelos divergentes.
+- **Local [PROPOSTA]:** `src/database/supabase_integration/.env.example` (versionado). O doc 01 (seção 4) pede um modelo só com nomes; este é o mesmo arquivo, evitando dois modelos divergentes.
 - **Conteúdo:** uma linha por variável da seção 5, **sem valor** (`NOME=`), agrupada por fatia, com comentário curto indicando obrigatório/opcional, tipo e padrão. Segredos marcados `# SEGREDO`.
 - **Fonte da verdade:** a lista de parâmetros fica **definida no código do loader** (futuro) e espelhada na tabela da seção 5. O modelo é gerado/atualizado a partir dela; não editado à mão sem alterar a definição.
 - **Manutenção:**
@@ -252,7 +252,7 @@ Ponto de entrada (composição) ──▶ SettingsLoader(source) ──▶ Supab
 | Segurança de segredos | Seção 5 | Mascaramento em `repr`/log e mensagens sem valores (seção 3.1 e 4) |
 | Modelo só com nomes | Seção 4 (pedido) | Seção 9: local, conteúdo e manutenção |
 
-**Ajuste sugerido ao doc 01 (a aplicar quando o usuário decidir; este doc não o edita):** o relatório final do agente passa a listar as variáveis pelos **nomes definidos na seção 5** e a conferir contra o `supabase/.env.example`.
+**Ajuste sugerido ao doc 01 (a aplicar quando o usuário decidir; este doc não o edita):** o relatório final do agente passa a listar as variáveis pelos **nomes definidos na seção 5** e a conferir contra o `src/database/supabase_integration/.env.example`.
 
 ## 11. Questões em aberto
 
@@ -279,7 +279,7 @@ Ponto de entrada (composição) ──▶ SettingsLoader(source) ──▶ Supab
 7. Cada classe recebe apenas a sua fatia de configuração.
 8. Testes unitários rodam com `DictSource`, sem `.env` e sem rede.
 9. Em `prod`, ausência de allowlists ou `SBX_ENV` inválido falha na inicialização.
-10. `supabase/.env.example` contém exatamente os nomes da seção 5, sem valores, e o teste de consistência passa.
+10. `src/database/supabase_integration/.env.example` contém exatamente os nomes da seção 5, sem valores, e o teste de consistência passa.
 11. A integração nova inicializa e funciona com as variáveis antigas `SUPABASE_*` presentes e inalteradas no `.env` (coexistência).
 12. Mudar `SBX_LOG_LEVEL` e reiniciar altera o nível sem edição de código.
 

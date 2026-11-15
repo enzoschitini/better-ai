@@ -19,9 +19,9 @@ from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from typing import Any, Iterator, Optional
 
-from bai_supabase.errors.exceptions import SupabaseIntegrationError
-from bai_supabase.errors.mapper import map_raw_error
-from bai_supabase.errors.raw import RawError
+from src.database.supabase_integration.errors.exceptions import SupabaseIntegrationError
+from src.database.supabase_integration.errors.mapper import map_raw_error
+from src.database.supabase_integration.errors.raw import RawError
 
 try:  # as classes são usadas só para isinstance; a decisão principal é por atributos
     import httpx

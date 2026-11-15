@@ -10,24 +10,24 @@ import re
 from typing import Any, Optional
 from urllib.parse import urlsplit
 
-from bai_supabase.config.settings import SupabaseSettings
-from bai_supabase.config.sources import SettingsSource
-from bai_supabase.contracts.logging import LoggerContract
-from bai_supabase.contracts.secret import Secret
-from bai_supabase.contracts.settings import (
+from src.database.supabase_integration.config.settings import SupabaseSettings
+from src.database.supabase_integration.config.sources import SettingsSource
+from src.database.supabase_integration.contracts.logging import LoggerContract
+from src.database.supabase_integration.contracts.secret import Secret
+from src.database.supabase_integration.contracts.settings import (
     ConnectionSettings,
     EnvironmentSettings,
     LoggingSettings,
     StorageSettings,
     TablesSettings,
 )
-from bai_supabase.errors import SettingsError
+from src.database.supabase_integration.errors import SettingsError
 
 PREFIX = "SBX_"
-DOC_PATH = "supabase/spec/research/01-variaveis-de-ambiente.md"
-EXAMPLE_PATH = "supabase/.env.example"
+DOC_PATH = "src/database/supabase_integration/docs/spec/research/01-variaveis-de-ambiente.md"
+EXAMPLE_PATH = "src/database/supabase_integration/.env.example"
 
-#: Fonte da verdade dos nomes lidos (espelhada em ``supabase/.env.example``).
+#: Fonte da verdade dos nomes lidos (espelhada em ``src/database/supabase_integration/.env.example``).
 VARIABLE_NAMES: tuple[str, ...] = (
     # ambiente e conexão
     "SBX_ENV", "SBX_URL", "SBX_SECRET_KEY", "SBX_PUBLISHABLE_KEY", "SBX_DB_SCHEMA",

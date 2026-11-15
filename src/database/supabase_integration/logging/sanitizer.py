@@ -12,7 +12,7 @@ import re
 from collections.abc import Iterable, Mapping
 from typing import Any
 
-from bai_supabase.contracts.secret import Secret
+from src.database.supabase_integration.contracts.secret import Secret
 
 MASK = "***"
 

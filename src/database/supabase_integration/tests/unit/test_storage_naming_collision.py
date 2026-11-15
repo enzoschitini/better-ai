@@ -4,11 +4,11 @@ from datetime import datetime, timezone
 
 import pytest
 
-from bai_supabase.contracts.storage import CollisionPolicy, NamingStrategy
-from bai_supabase.errors.exceptions import FileAlreadyExistsError, ValidationError
-from bai_supabase.storage.collision import CollisionResolver, versioned_path
-from bai_supabase.storage.naming import DatedUuidNaming, PreservedNameNaming
-from bai_supabase.storage.validators import validate_object_path
+from src.database.supabase_integration.contracts.storage import CollisionPolicy, NamingStrategy
+from src.database.supabase_integration.errors.exceptions import FileAlreadyExistsError, ValidationError
+from src.database.supabase_integration.storage.collision import CollisionResolver, versioned_path
+from src.database.supabase_integration.storage.naming import DatedUuidNaming, PreservedNameNaming
+from src.database.supabase_integration.storage.validators import validate_object_path
 
 FIXED = uuid.UUID("12345678-1234-5678-1234-567812345678")
 

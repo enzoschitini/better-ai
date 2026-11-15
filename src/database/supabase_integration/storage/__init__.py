@@ -1,10 +1,10 @@
 """Frente B: classe de arquivos (research/07). Depende só de contratos e erros."""
 
-from bai_supabase.storage.collision import CollisionResolver, Resolution, versioned_path  # noqa: F401
-from bai_supabase.storage.naming import DatedUuidNaming, PreservedNameNaming  # noqa: F401
-from bai_supabase.storage.service import SizedStorageTransport, SupabaseStorage  # noqa: F401
-from bai_supabase.storage.sources import PreparedSource, prepare_source  # noqa: F401
-from bai_supabase.storage.validators import (  # noqa: F401
+from src.database.supabase_integration.storage.collision import CollisionResolver, Resolution, versioned_path  # noqa: F401
+from src.database.supabase_integration.storage.naming import DatedUuidNaming, PreservedNameNaming  # noqa: F401
+from src.database.supabase_integration.storage.service import SizedStorageTransport, SupabaseStorage  # noqa: F401
+from src.database.supabase_integration.storage.sources import PreparedSource, prepare_source  # noqa: F401
+from src.database.supabase_integration.storage.validators import (  # noqa: F401
     FileValidator,
     extension_of,
     is_mime_allowed,

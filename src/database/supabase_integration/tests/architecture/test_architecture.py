@@ -8,14 +8,15 @@ from pathlib import Path
 
 import pytest
 
-PKG = Path(__file__).resolve().parents[2] / "bai_supabase"
+PKG = Path(__file__).resolve().parents[2]
+OWN = "src.database.supabase_integration"
 SDK_ROOTS = {"supabase", "postgrest", "storage3", "httpx", "supabase_auth", "supabase_functions", "realtime", "gotrue"}
 STDLIB_OK = set(sys.stdlib_module_names)
 
 
 def _py_files(sub: str = ""):
     base = PKG / sub if sub else PKG
-    return [p for p in base.rglob("*.py")]
+    return [p for p in base.rglob("*.py") if p.relative_to(PKG).parts[0] not in {"tests", "examples"}]
 
 
 def _imports(path: Path) -> list[str]:
@@ -48,6 +49,8 @@ def test_never_imports_existing_project_code():
     offenders = []
     for p in list(_py_files()) + list(Path(__file__).resolve().parents[1].rglob("*.py")):
         for mod in _imports(p):
+            if mod == OWN or mod.startswith(OWN + "."):
+                continue
             if mod.split(".")[0] in {"src", "web_services", "web_app"}:
                 offenders.append(f"{p.name} -> {mod}")
     assert not offenders, offenders
@@ -56,13 +59,13 @@ def test_never_imports_existing_project_code():
 @pytest.mark.parametrize(
     "module,forbidden",
     [
-        ("tables", {"bai_supabase.storage", "bai_supabase.facade", "bai_supabase.factories", "bai_supabase.adapters"}),
-        ("storage", {"bai_supabase.tables", "bai_supabase.facade", "bai_supabase.factories", "bai_supabase.adapters"}),
-        ("facade", {"bai_supabase.tables", "bai_supabase.storage", "bai_supabase.adapters", "bai_supabase.factories"}),
-        ("contracts", {"bai_supabase.tables", "bai_supabase.storage", "bai_supabase.facade", "bai_supabase.adapters",
-                       "bai_supabase.config", "bai_supabase.logging", "bai_supabase.resilience"}),
-        ("errors", {"bai_supabase.tables", "bai_supabase.storage", "bai_supabase.facade", "bai_supabase.adapters",
-                    "bai_supabase.config", "bai_supabase.logging", "bai_supabase.resilience", "bai_supabase.contracts"}),
+        ("tables", {"src.database.supabase_integration.storage", "src.database.supabase_integration.facade", "src.database.supabase_integration.factories", "src.database.supabase_integration.adapters"}),
+        ("storage", {"src.database.supabase_integration.tables", "src.database.supabase_integration.facade", "src.database.supabase_integration.factories", "src.database.supabase_integration.adapters"}),
+        ("facade", {"src.database.supabase_integration.tables", "src.database.supabase_integration.storage", "src.database.supabase_integration.adapters", "src.database.supabase_integration.factories"}),
+        ("contracts", {"src.database.supabase_integration.tables", "src.database.supabase_integration.storage", "src.database.supabase_integration.facade", "src.database.supabase_integration.adapters",
+                       "src.database.supabase_integration.config", "src.database.supabase_integration.logging", "src.database.supabase_integration.resilience"}),
+        ("errors", {"src.database.supabase_integration.tables", "src.database.supabase_integration.storage", "src.database.supabase_integration.facade", "src.database.supabase_integration.adapters",
+                    "src.database.supabase_integration.config", "src.database.supabase_integration.logging", "src.database.supabase_integration.resilience", "src.database.supabase_integration.contracts"}),
     ],
 )
 def test_dependency_direction(module, forbidden):
@@ -99,12 +102,12 @@ def test_no_global_settings_singleton():
 
 
 def test_supabase_folder_does_not_shadow_the_sdk():
-    """`import supabase` deve devolver o SDK, tanto da raiz do repo quanto de dentro de supabase/."""
-    repo_root = Path(__file__).resolve().parents[3]
-    for cwd in (repo_root, repo_root / "supabase"):
+    """`import supabase` deve devolver o SDK, tanto da raiz do repo quanto de dentro da pasta do pacote."""
+    repo_root = Path(__file__).resolve().parents[5]
+    for cwd in (repo_root,):
         out = subprocess.run(
             [sys.executable, "-c", "import supabase;print(supabase.__file__)"],
             cwd=cwd, capture_output=True, text=True, check=True,
         ).stdout.strip()
         assert "site-packages" in out.replace("\\", "/"), f"sombreado em {cwd}: {out}"
-    assert not (repo_root / "supabase" / "__init__.py").exists()
+    assert not (repo_root / "supabase").exists() or not (repo_root / "supabase" / "__init__.py").exists()

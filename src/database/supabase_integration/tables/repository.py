@@ -13,18 +13,18 @@ from __future__ import annotations
 import time
 from typing import Any, Callable, Iterator, Optional, Sequence, TypeVar
 
-from bai_supabase.contracts.logging import LoggerContract
-from bai_supabase.contracts.query import Condition, Filter, Op, Page, PageRequest, Query
-from bai_supabase.contracts.resilience import Category, Operation, ResilienceExecutor
-from bai_supabase.contracts.results import BatchResult, DeleteResult
-from bai_supabase.contracts.settings import TablesSettings
-from bai_supabase.contracts.tables import BatchOptions, TableDescriptor
-from bai_supabase.contracts.transports import SelectRequest, SelectResponse, TableTransport
-from bai_supabase.errors.exceptions import RecordNotFoundError, UnexpectedError, ValidationError
-from bai_supabase.tables.batch import BatchRunner
-from bai_supabase.tables.pagination import Paginator
-from bai_supabase.tables.serialization import EntityCodec
-from bai_supabase.tables.validation import TableValidator, validate_descriptor
+from src.database.supabase_integration.contracts.logging import LoggerContract
+from src.database.supabase_integration.contracts.query import Condition, Filter, Op, Page, PageRequest, Query
+from src.database.supabase_integration.contracts.resilience import Category, Operation, ResilienceExecutor
+from src.database.supabase_integration.contracts.results import BatchResult, DeleteResult
+from src.database.supabase_integration.contracts.settings import TablesSettings
+from src.database.supabase_integration.contracts.tables import BatchOptions, TableDescriptor
+from src.database.supabase_integration.contracts.transports import SelectRequest, SelectResponse, TableTransport
+from src.database.supabase_integration.errors.exceptions import RecordNotFoundError, UnexpectedError, ValidationError
+from src.database.supabase_integration.tables.batch import BatchRunner
+from src.database.supabase_integration.tables.pagination import Paginator
+from src.database.supabase_integration.tables.serialization import EntityCodec
+from src.database.supabase_integration.tables.validation import TableValidator, validate_descriptor
 
 T = TypeVar("T")
 

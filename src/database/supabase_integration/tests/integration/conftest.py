@@ -5,8 +5,8 @@ import uuid
 
 import pytest
 
-from bai_supabase import TableDescriptor, create_integration
-from bai_supabase.config import DictSource, EnvironmentSource, SettingsLoader, DotenvFileSource, ChainedSource
+from src.database.supabase_integration import TableDescriptor, create_integration
+from src.database.supabase_integration.config import DictSource, EnvironmentSource, SettingsLoader, DotenvFileSource, ChainedSource
 from pathlib import Path
 
 ENV_TEST = Path(__file__).resolve().parents[2] / ".env.test"

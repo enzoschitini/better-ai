@@ -1,7 +1,7 @@
 """Contratos (interfaces) da integração. Sem dependência de outros módulos além de ``errors``."""
 
-from bai_supabase.contracts.logging import LoggerContract  # noqa: F401
-from bai_supabase.contracts.query import (  # noqa: F401
+from src.database.supabase_integration.contracts.logging import LoggerContract  # noqa: F401
+from src.database.supabase_integration.contracts.query import (  # noqa: F401
     Condition,
     Filter,
     FilterGroup,
@@ -12,13 +12,13 @@ from bai_supabase.contracts.query import (  # noqa: F401
     Sort,
     is_empty_filter,
 )
-from bai_supabase.contracts.resilience import (  # noqa: F401
+from src.database.supabase_integration.contracts.resilience import (  # noqa: F401
     Operation,
     ResilienceExecutor,
     RetryPolicy,
     TimeoutPolicy,
 )
-from bai_supabase.contracts.results import (  # noqa: F401
+from src.database.supabase_integration.contracts.results import (  # noqa: F401
     BatchResult,
     CompositeResult,
     CompositeStatus,
@@ -28,15 +28,15 @@ from bai_supabase.contracts.results import (  # noqa: F401
     ObjectInfo,
     StoredFile,
 )
-from bai_supabase.contracts.secret import Secret  # noqa: F401
-from bai_supabase.contracts.settings import (  # noqa: F401
+from src.database.supabase_integration.contracts.secret import Secret  # noqa: F401
+from src.database.supabase_integration.contracts.settings import (  # noqa: F401
     ConnectionSettings,
     EnvironmentSettings,
     LoggingSettings,
     StorageSettings,
     TablesSettings,
 )
-from bai_supabase.contracts.storage import (  # noqa: F401
+from src.database.supabase_integration.contracts.storage import (  # noqa: F401
     BytesSource,
     CollisionPolicy,
     FileSource,
@@ -46,13 +46,13 @@ from bai_supabase.contracts.storage import (  # noqa: F401
     StreamSource,
     UploadOptions,
 )
-from bai_supabase.contracts.tables import (  # noqa: F401
+from src.database.supabase_integration.contracts.tables import (  # noqa: F401
     BatchOptions,
     TableDescriptor,
     TableRepository,
     TablesContract,
 )
-from bai_supabase.contracts.transports import (  # noqa: F401
+from src.database.supabase_integration.contracts.transports import (  # noqa: F401
     SelectRequest,
     SelectResponse,
     StorageTransport,

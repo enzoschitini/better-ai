@@ -22,10 +22,10 @@ import time
 import uuid
 from typing import Callable, Optional, Sequence, TypeVar
 
-from bai_supabase.contracts.logging import LoggerContract
-from bai_supabase.contracts.resilience import Operation, RetryPolicy, TimeoutPolicy
-from bai_supabase.contracts.settings import ConnectionSettings
-from bai_supabase.errors.exceptions import (
+from src.database.supabase_integration.contracts.logging import LoggerContract
+from src.database.supabase_integration.contracts.resilience import Operation, RetryPolicy, TimeoutPolicy
+from src.database.supabase_integration.contracts.settings import ConnectionSettings
+from src.database.supabase_integration.errors.exceptions import (
     ConfigurationError,
     ConflictError,
     DataError,
@@ -35,7 +35,7 @@ from bai_supabase.errors.exceptions import (
     UnexpectedError,
     ValidationError,
 )
-from bai_supabase.resilience.policies import (
+from src.database.supabase_integration.resilience.policies import (
     ExecutionPolicy,
     can_retry,
     max_attempts_for,

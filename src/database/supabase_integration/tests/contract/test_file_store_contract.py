@@ -8,25 +8,25 @@ import io
 
 import pytest
 
-from bai_supabase.contracts.settings import StorageSettings
-from bai_supabase.contracts.storage import (
+from src.database.supabase_integration.contracts.settings import StorageSettings
+from src.database.supabase_integration.contracts.storage import (
     BytesSource,
     CollisionPolicy,
     FileStore,
     StreamSource,
     UploadOptions,
 )
-from bai_supabase.errors.exceptions import (
+from src.database.supabase_integration.errors.exceptions import (
     FileAlreadyExistsError,
     FileNotFoundInStorageError,
     FileTooLargeError,
     SupabaseIntegrationError,
     ValidationError,
 )
-from bai_supabase.storage import SupabaseStorage
-from tests.fakes.executor import PassThroughExecutor
-from tests.fakes.logger import CaptureLogger
-from tests.fakes.storage_transport import InMemoryStorageTransport
+from src.database.supabase_integration.storage import SupabaseStorage
+from src.database.supabase_integration.tests.fakes.executor import PassThroughExecutor
+from src.database.supabase_integration.tests.fakes.logger import CaptureLogger
+from src.database.supabase_integration.tests.fakes.storage_transport import InMemoryStorageTransport
 
 PNG = b"\x89PNG\r\n\x1a\n" + b"\x07" * 200
 

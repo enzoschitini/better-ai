@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Callable, TypeVar
 
-from bai_supabase.contracts.resilience import Operation
+from src.database.supabase_integration.contracts.resilience import Operation
 
 T = TypeVar("T")
 

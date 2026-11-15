@@ -21,8 +21,8 @@ from decimal import Decimal
 from typing import Any, Optional, Union
 from uuid import UUID
 
-from bai_supabase.contracts.tables import TableDescriptor
-from bai_supabase.errors.exceptions import ConfigurationError, MappingError, ValidationError
+from src.database.supabase_integration.contracts.tables import TableDescriptor
+from src.database.supabase_integration.errors.exceptions import ConfigurationError, MappingError, ValidationError
 
 DICT = "dict"
 DATACLASS = "dataclass"

@@ -1,7 +1,7 @@
 """Fatias de configuração (research/03 §3.2).
 
 As FATIAS vivem em ``contracts`` para que tabelas/arquivos dependam só de contratos.
-O carregamento/validação a partir do ambiente fica em ``bai_supabase.config``.
+O carregamento/validação a partir do ambiente fica em ``src.database.supabase_integration.config``.
 """
 
 from __future__ import annotations
@@ -9,7 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Optional
 
-from bai_supabase.contracts.secret import Secret
+from src.database.supabase_integration.contracts.secret import Secret
 
 MiB = 1024 * 1024
 

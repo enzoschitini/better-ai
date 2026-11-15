@@ -3,13 +3,13 @@ from __future__ import annotations
 
 import pytest
 
-from bai_supabase import TableDescriptor, create_integration_from_env
-from bai_supabase.config import DictSource, SettingsLoader
-from bai_supabase.errors import SettingsError
-from bai_supabase.facade import AsyncSupabaseIntegration, SupabaseIntegration
-from bai_supabase.factories import create_async_integration, create_integration
-from tests.fakes.storage_transport import InMemoryStorageTransport
-from tests.fakes.table_transport import InMemoryTableTransport
+from src.database.supabase_integration import TableDescriptor, create_integration_from_env
+from src.database.supabase_integration.config import DictSource, SettingsLoader
+from src.database.supabase_integration.errors import SettingsError
+from src.database.supabase_integration.facade import AsyncSupabaseIntegration, SupabaseIntegration
+from src.database.supabase_integration.factories import create_async_integration, create_integration
+from src.database.supabase_integration.tests.fakes.storage_transport import InMemoryStorageTransport
+from src.database.supabase_integration.tests.fakes.table_transport import InMemoryTableTransport
 
 SECRET = "chave-super-secreta-xyz"
 BASE = {"SBX_URL": "https://abc.supabase.co", "SBX_SECRET_KEY": SECRET, "SBX_BUCKET_DEFAULT": "docs"}
@@ -73,7 +73,7 @@ def test_segredo_nao_aparece_em_repr_da_fachada_nem_settings():
 def test_regressao_factory_liga_provedor_real_ao_transporte_de_storage_e_tabelas():
     """Bug achado no smoke real: a Factory passava ``client.storage`` onde o transporte esperava o
     cliente completo. Aqui o provedor real é usado com um SDK FALSO que imita a forma do cliente."""
-    from bai_supabase.adapters.client import SupabaseClientProvider
+    from src.database.supabase_integration.adapters.client import SupabaseClientProvider
 
     calls = []
 

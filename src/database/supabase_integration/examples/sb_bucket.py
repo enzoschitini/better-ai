@@ -1,12 +1,12 @@
-import sys; sys.path.insert(0, "supabase")   # só se não rodar de dentro de supabase/
+# rode da raiz do repo: python -m src.database.supabase_integration.examples.sb_bucket
 
-from bai_supabase import (
+from src.database.supabase_integration import (
     create_integration_from_env, TableDescriptor,
     Query, Condition, Op, PageRequest, Sort,
     BytesSource, PathSource, UploadOptions, CollisionPolicy,
 )
-from bai_supabase.contracts import FilterGroup, BatchOptions
-from bai_supabase.errors import RecordNotFoundError, FileAlreadyExistsError, SupabaseIntegrationError
+from src.database.supabase_integration.contracts import FilterGroup, BatchOptions
+from src.database.supabase_integration.errors import RecordNotFoundError, FileAlreadyExistsError, SupabaseIntegrationError
 
 # Lê SBX_* do ambiente + .env (só em dev). Falha cedo, listando só os NOMES que faltam.
 sb = create_integration_from_env(
@@ -29,4 +29,4 @@ st = sb.storage.upload(
 )
 print(st.bucket, st.path, st.size, st.upload_mode)
 
-# python supabase/sb_bucket.py
+# python -m src.database.supabase_integration.examples.sb_bucket

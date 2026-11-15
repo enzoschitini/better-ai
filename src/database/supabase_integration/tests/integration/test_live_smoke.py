@@ -3,9 +3,9 @@ from __future__ import annotations
 
 import pytest
 
-from bai_supabase import BytesSource, Condition, Op, Query, UploadOptions
-from bai_supabase.contracts import CompositeStatus
-from bai_supabase.errors import RecordNotFoundError
+from src.database.supabase_integration import BytesSource, Condition, Op, Query, UploadOptions
+from src.database.supabase_integration.contracts import CompositeStatus
+from src.database.supabase_integration.errors import RecordNotFoundError
 
 pytestmark = pytest.mark.integration
 

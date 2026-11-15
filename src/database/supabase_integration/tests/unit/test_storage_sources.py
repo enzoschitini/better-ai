@@ -3,9 +3,9 @@ import io
 
 import pytest
 
-from bai_supabase.contracts.storage import BytesSource, PathSource, StreamSource
-from bai_supabase.errors.exceptions import FileTooLargeError, ValidationError
-from bai_supabase.storage.sources import prepare_source
+from src.database.supabase_integration.contracts.storage import BytesSource, PathSource, StreamSource
+from src.database.supabase_integration.errors.exceptions import FileTooLargeError, ValidationError
+from src.database.supabase_integration.storage.sources import prepare_source
 
 KW = dict(max_bytes=10_000_000, memory_cap_bytes=1_000)
 PNG = b"\x89PNG\r\n\x1a\n" + b"\x01" * 100
