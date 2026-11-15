@@ -129,10 +129,11 @@
       <tr><td><code>MONGO_HOST</code></td><td>Host do MongoDB</td></tr>
       <tr><td><code>MONGO_PORT</code></td><td>Porta do MongoDB</td></tr>
       <tr><td><code>NOSQL_BACKEND</code></td><td>Backend NoSQL utilizado (<code>local</code> ou remoto)</td></tr>
-      <tr><td><code>SUPABASE_URL</code></td><td>URL do projeto Supabase</td></tr>
-      <tr><td><code>SUPABASE_SECRET_KEY</code></td><td>Chave secreta de serviço do Supabase</td></tr>
-      <tr><td><code>SUPABASE_DATABASE_URL</code></td><td>String de conexão do banco Postgres do Supabase</td></tr>
-      <tr><td><code>SUPABASE_PROJECT_NAME</code></td><td>Nome do projeto Supabase</td></tr>
+      <tr><td><code>SBX_URL</code></td><td>URL do projeto Supabase</td></tr>
+      <tr><td><code>SBX_SECRET_KEY</code></td><td>Chave secreta de serviço do Supabase</td></tr>
+      <tr><td><code>SBX_BUCKET_DEFAULT</code></td><td>Bucket padrão do Supabase Storage (ex.: <code>images</code>)</td></tr>
+      <tr><td><code>SBX_BUCKETS_PUBLIC</code></td><td>Buckets públicos (necessário para gerar a URL pública)</td></tr>
+      <tr><td><code>SBX_BUCKETS_ALLOWLIST</code></td><td>Buckets permitidos (obrigatória em prod)</td></tr>
       <tr><td><code>SUPABASE_PROJECT_HOST</code></td><td>Host do projeto Supabase</td></tr>
       <tr><td><code>SUPABASE_DATABASE_PASSWORD</code></td><td>Senha do banco de dados Supabase</td></tr>
       <tr><td><code>SHOW_INFO_LOGS</code></td><td>Exibe logs informativos (<code>true</code>/<code>false</code>)</td></tr>
@@ -181,10 +182,11 @@
 <span class="t-f">NOSQL_BACKEND</span>=local
 
 <span class="t-c"># Supabase</span>
-<span class="t-f">SUPABASE_URL</span>=********************
-<span class="t-f">SUPABASE_SECRET_KEY</span>=********************
-<span class="t-f">SUPABASE_DATABASE_URL</span>=********************
-<span class="t-f">SUPABASE_PROJECT_NAME</span>=better-ai-bucket-storage
+<span class="t-f">SBX_URL</span>=********************
+<span class="t-f">SBX_SECRET_KEY</span>=********************
+<span class="t-f">SBX_BUCKET_DEFAULT</span>=images
+<span class="t-f">SBX_BUCKETS_PUBLIC</span>=images
+<span class="t-f">SBX_BUCKETS_ALLOWLIST</span>=images
 <span class="t-f">SUPABASE_PROJECT_HOST</span>=********************
 <span class="t-f">SUPABASE_DATABASE_PASSWORD</span>=********************
 

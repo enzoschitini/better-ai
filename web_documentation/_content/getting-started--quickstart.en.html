@@ -61,10 +61,11 @@ uv sync
       <tr><td><code>MONGO_HOST</code></td><td>MongoDB host</td></tr>
       <tr><td><code>MONGO_PORT</code></td><td>MongoDB port</td></tr>
       <tr><td><code>NOSQL_BACKEND</code></td><td>NoSQL backend in use (<code>local</code> or remote)</td></tr>
-      <tr><td><code>SUPABASE_URL</code></td><td>Supabase project URL</td></tr>
-      <tr><td><code>SUPABASE_SECRET_KEY</code></td><td>Supabase service secret key</td></tr>
-      <tr><td><code>SUPABASE_DATABASE_URL</code></td><td>Supabase Postgres database connection string</td></tr>
-      <tr><td><code>SUPABASE_PROJECT_NAME</code></td><td>Supabase project name</td></tr>
+      <tr><td><code>SBX_URL</code></td><td>Supabase project URL</td></tr>
+      <tr><td><code>SBX_SECRET_KEY</code></td><td>Supabase service secret key</td></tr>
+      <tr><td><code>SBX_BUCKET_DEFAULT</code></td><td>Default Supabase Storage bucket (e.g. <code>images</code>)</td></tr>
+      <tr><td><code>SBX_BUCKETS_PUBLIC</code></td><td>Public buckets (required to generate the public URL)</td></tr>
+      <tr><td><code>SBX_BUCKETS_ALLOWLIST</code></td><td>Allowed buckets (required in prod)</td></tr>
       <tr><td><code>SUPABASE_PROJECT_HOST</code></td><td>Supabase project host</td></tr>
       <tr><td><code>SUPABASE_DATABASE_PASSWORD</code></td><td>Supabase database password</td></tr>
       <tr><td><code>SHOW_INFO_LOGS</code></td><td>Shows informational logs (<code>true</code>/<code>false</code>)</td></tr>
@@ -114,10 +115,11 @@ MONGO_PORT=********************
 NOSQL_BACKEND=local
 
 # Supabase
-SUPABASE_URL=********************
-SUPABASE_SECRET_KEY=********************
-SUPABASE_DATABASE_URL=********************
-SUPABASE_PROJECT_NAME=better-ai-bucket-storage
+SBX_URL=********************
+SBX_SECRET_KEY=********************
+SBX_BUCKET_DEFAULT=images
+SBX_BUCKETS_PUBLIC=images
+SBX_BUCKETS_ALLOWLIST=images
 SUPABASE_PROJECT_HOST=********************
 SUPABASE_DATABASE_PASSWORD=********************
 
