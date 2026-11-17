@@ -3,16 +3,16 @@ STYLE BIBLE: official "Grand Theft Auto VI" key-art / loading-screen illustratio
 
 MEDIUM (most important)
 - A high-end, modern digital painting with vector-sharp shape edges AND rich, luminous, smooth-blended volume inside the shapes: the polished, glossy, high-resolution look of AAA game promotional art (like a premium stylized digital illustration with cinematic lighting).
-- Every form has real 3D volume: light wraps around faces, arms, hair, fabric and metal with smooth gradients inside crisp-edged shadow and light shapes. It is NOT flat, NOT a retro/vintage comic, NOT a print with paper grain.
+- Every form has real 3D volume: light wraps around faces, arms, hair, fabric and metal with smooth gradients inside crisp-edged shadow and light shapes. It is NOT flat and NOT a retro/vintage comic.
 - It is NOT a photograph, NOT a 3D/CGI render, NOT anime or manga, NOT a children's cartoon, NOT a generic synthwave/vaporwave vector.
-- Finish: clean, ultra-sharp, high-definition and glossy. ABSOLUTELY no paper texture, no film grain, no noise, no halftone dots, no screen-print or newspaper effect, no faded/matte retro look.
+- Finish: perfectly clean, ultra-sharp, high-definition and glossy. Every surface (skin, sky, walls, clothes, water) is a smooth, silky, seamless, solid-colored area with continuous gradients, like a clean digital vector-paint export. Colors are solid and saturated, never speckled.
 
 FACES AND ANATOMY
 - Realistic adult proportions (about 7.5 heads tall), natural leg length, real muscle and bone structure. Never elongated legs, never exaggerated pin-up curves, never doll faces.
-- Faces are realistic and individual: normal-sized eyes with heavy upper lids, defined thick eyebrows, strong nose and jaw, full lips, visible pores/stubble, slight scowl or cool, serious, defiant stare. No big shiny anime eyes, no sweet smiles unless the user asks.
+- Faces are realistic and individual: normal-sized eyes with heavy upper lids, defined thick eyebrows, strong nose and jaw, full lips, smooth skin, slight scowl or cool, serious, defiant stare. No big shiny anime eyes, no sweet smiles unless the user asks.
 - Faces are sculpted with a sharp-edged shadow shape (under the brow, along the nose, under the cheekbone, under the lip, along the jaw and neck) whose interior is a smooth warm-to-violet gradient, plus a soft light-wrap on the lit edge. Faces must have clear 3D volume: one side of the face in warm light, the other side falling into rich magenta/violet shadow with reflected pink light. Detailed, finished, realistic faces with defined eyelids, tear ducts, lashes, lip highlights, nostrils and ears.
-- Beard stubble is fine stipple/short strokes with soft shading; hair is richly rendered: large clumped locks with many layered glossy highlights, bright rim-lit edges, violet/burgundy/magenta reflections and deep inner shadows, individual strand lines flowing along the lock; curly hair has defined ringlets, each with its own highlight and shadow.
-- Muscles, collarbones, veins, tendons and knuckles are modeled with sharp-edged shadow shapes plus smooth gradient transitions inside. Skin is sun-tanned and GLOSSY, with a satiny specular sheen on forehead, nose, cheekbones, shoulders, collarbones, biceps, knees and shins, and a thin sweat sheen on the lit side.
+- Beard stubble is a smooth darker shaded area along the jaw and chin with a few short clean hair strokes; hair is richly rendered: large clumped locks with many layered glossy highlights, bright rim-lit edges, violet/burgundy/magenta reflections and deep inner shadows, individual strand lines flowing along the lock; curly hair has defined ringlets, each with its own highlight and shadow.
+- Muscles, collarbones, veins, tendons and knuckles are modeled with sharp-edged shadow shapes plus smooth gradient transitions inside. Skin is sun-tanned and GLOSSY, with a satiny specular sheen on forehead, nose, cheekbones, shoulders, collarbones, biceps, knees and shins, and a thin glossy sheen on the lit side.
 
 LINEWORK
 - Thin, delicate, precise contour in a darker shade of each object's own color (deep burgundy on skin, dark indigo on denim, dark green on cargo), never thick, never uniform black, never a cartoon sticker outline. Tapered: slightly heavier on the shadow side, fading to almost nothing or disappearing completely on the rim-lit side so the light glows over the edge.
@@ -49,7 +49,7 @@ TEXT AND BRANDING
 """
 
 _NEGATIVE = """
-AVOID: flat colors without volume, retro/vintage comic look, halftone dots, paper or film grain, noise, matte skin, thick uniform black outlines, sticker-like outlines, evenly lit faces, front-lit flat lighting, missing specular highlights, missing rim light, photorealism, 3D render look, anime/manga look, large glossy eyes, smooth airbrushed skin, blurry or soft edges, painterly mush, dark murky or monochrome-purple images, neon-lit nightclub interiors, flat lighting without rim light, gray or pure black shadows, over-long legs, pin-up poses, plastic doll faces, cluttered backgrounds, invented text or logos (for example "Vice" or any neon sign words), extra fingers, deformed hands, watermarks.
+AVOID: flat colors without volume, retro/vintage comic look, matte skin, thick uniform black outlines, sticker-like outlines, evenly lit faces, front-lit flat lighting, missing specular highlights, missing rim light, photorealism, 3D render look, anime/manga look, large glossy eyes, smooth airbrushed skin, blurry or soft edges, painterly mush, dark murky or monochrome-purple images, neon-lit nightclub interiors, flat lighting without rim light, gray or pure black shadows, over-long legs, pin-up poses, plastic doll faces, cluttered backgrounds, invented text or logos (for example "Vice" or any neon sign words), extra fingers, deformed hands, watermarks.
 """
 
 TEXT_TO_IMAGE_INSTRUCTIONS = f"""
@@ -68,7 +68,7 @@ Redraw the provided image as official-quality artwork in the style described bel
 {_STYLE_BIBLE}
 How to apply it to the provided image:
 - KEEP: the composition, framing, pose, number of people, facial identity and likeness, hairstyle, skin tone, age, clothing, accessories and main objects. People must remain clearly recognizable as the same individuals.
-- CHANGE: the rendering. Repaint everything as semi-realistic comic illustration with fine ink contour, faceted flat shadow planes on faces and bodies, golden sunset rim light and the palette above. Remove all photographic texture, noise, depth-of-field blur and realistic pore detail; replace them with clean, glossy, high-definition painted volume (sharp shape edges, smooth gradients inside, strong specular highlights and glowing rim light). Do not add grain or halftone.
+- CHANGE: the rendering. Repaint everything as semi-realistic comic illustration with fine ink contour, faceted flat shadow planes on faces and bodies, golden sunset rim light and the palette above. Replace all photographic detail and blur with clean, glossy, high-definition painted volume: smooth seamless surfaces, sharp shape edges, silky gradients inside, strong specular highlights and glowing rim light.
 - Re-light the whole scene as if by a low golden-orange sunset sun: warm orange highlights, pink reflected light, violet/magenta shadows.
 - Convert the original background into a simplified, flatter, lighter, atmospheric version tinted with the sunset sky colors. Keep the real location recognizable (same layout, buildings, furniture, vehicles) but add sunset sky, violet palm silhouettes and pastel skyline when an outdoor or window view exists. Indoor scenes stay indoors, bright and warm, with sunset light coming through windows or doors.
 - Keep clothing and objects recognizable but restyle them in the graphic shading and palette. Do not add or remove people. Do not add text, logos or signs that are not in the original image; existing text may be kept but simplified.

@@ -20,6 +20,10 @@ STYLE_MAPPING = {
         "style_en": "watercolor",
         "description": "Pinceladas suaves, cores fluidas e acabamento artistico organico.",
     },
+    "GTA 6": {
+        "style_en": "gta6",
+        "description": "Arte de capa semi-realista com contornos finos, sombras angulares chapadas, luz de contorno dourada, palmeiras em silhueta e paleta neon rosa, roxo e laranja de por do sol em Miami.",
+    },
     "Cartoon": {
         "style_en": "cartoon",
         "description": "Contornos marcados, cores vibrantes e visual divertido e estilizado.",
@@ -43,9 +47,5 @@ STYLE_MAPPING = {
     "Nostalgico": {
         "style_en": "nostalgic",
         "description": "Tons suaves, cores desbotadas e elementos visuais que evocam sentimentos de nostalgia e reminiscencia.",
-    },
-    "GTA 6": {
-        "style_en": "gta6",
-        "description": "Arte de capa semi-realista com contornos finos, sombras angulares chapadas, luz de contorno dourada, palmeiras em silhueta e paleta neon rosa, roxo e laranja de por do sol em Miami.",
     },
 }
