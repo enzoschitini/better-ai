@@ -140,7 +140,7 @@ LOCAL=false
     <thead><tr><th>Serviço</th><th>Comando</th><th>Porta</th><th>Quando usar</th></tr></thead>
     <tbody>
       <tr><td>API (FastAPI)</td><td><code>python -m uvicorn web_services:app --reload</code></td><td><code>8000</code></td><td>Consumo programático dos módulos de IA via HTTP</td></tr>
-      <tr><td>Interface (Streamlit)</td><td><code>streamlit run web_app.py</code></td><td><code>8501</code></td><td>Uso visual das aplicações (Acquarello, Content Generator)</td></tr>
+      <tr><td>Interface (Streamlit)</td><td><code>python -m streamlit run web_app.py</code></td><td><code>8501</code></td><td>Uso visual das aplicações (Acquarello, Content Generator)</td></tr>
     </tbody>
   </table>
   <div class="callout" data-kind="info"><p><strong>Pré-requisitos:</strong> ambiente virtual ativado (passo 3), dependências instaladas (passo 4) e arquivo <code>.env</code> configurado (passo 5).</p></div>
@@ -213,8 +213,9 @@ curl -X GET "http://localhost:8000/health"
 
   <h3>6.2. Interface Streamlit</h3>
   <pre data-lang="bash"><code>
-streamlit run web_app.py
+python -m streamlit run web_app.py
 </code></pre>
+  <div class="callout" data-kind="info"><p><strong>Por que <code>python -m streamlit</code>?</strong> Se a pasta do projeto (ou a <code>.venv</code>) foi movida/renomeada, o executável <code>streamlit.exe</code> da venv quebra com o erro <code>uv trampoline failed to canonicalize script path</code>. Chamar via <code>python -m</code> evita o problema. Alternativas: <code>uv run streamlit run web_app.py</code>, ou recriar a venv com <code>Remove-Item -Recurse -Force .venv; uv sync</code>.</p></div>
   <p>A aplicação ficará disponível em <a href="http://localhost:8501">http://localhost:8501</a>, com as seguintes páginas:</p>
   <table>
     <thead><tr><th>Aplicação</th><th>URL</th><th>Documentação</th></tr></thead>

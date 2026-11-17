@@ -44,4 +44,8 @@ STYLE_MAPPING = {
         "style_en": "nostalgic",
         "description": "Tons suaves, cores desbotadas e elementos visuais que evocam sentimentos de nostalgia e reminiscencia.",
     },
+    "GTA 6": {
+        "style_en": "gta6",
+        "description": "Arte de capa semi-realista com contornos finos, sombras angulares chapadas, luz de contorno dourada, palmeiras em silhueta e paleta neon rosa, roxo e laranja de por do sol em Miami.",
+    },
 }
