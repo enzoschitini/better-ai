@@ -118,8 +118,85 @@ convincente o bastante para o pedido.
 **O que é.** Um pacote de configuração registrado uma vez e aplicado automaticamente sempre que aquele modelo for
 selecionado. Útil porque cada modelo "entende" prompts de um jeito diferente.
 
-**Campos:** `base_system_prompt`, `system_prompt_suffix`, `tool_description_overrides`, `excluded_tools`,
-`excluded_middleware`, `extra_middleware`, `general_purpose_subagent`.
+**Campos** (todos opcionais; o que você não define fica no padrão). Descrições conferidas no código-fonte de
+`deepagents.profiles.harness.harness_profiles` (0.7.x, API marcada como *beta*):
+
+| Campo | Tipo | Para que serve |
+|---|---|---|
+| `base_system_prompt` | `str \| None` | Slot `BASE` do prompt |
+| `system_prompt_suffix` | `str \| None` | Slot `SUFFIX`, no fim do prompt |
+| `tool_description_overrides` | `dict[str, str]` | Troca a descrição de ferramentas |
+| `excluded_tools` | `frozenset[str]` | Esconde ferramentas do modelo |
+| `excluded_middleware` | `frozenset[classe \| str]` | Remove middlewares da pilha |
+| `extra_middleware` | `Sequence \| Callable` | Acrescenta middlewares à pilha |
+| `general_purpose_subagent` | `GeneralPurposeSubagentProfile` | Ajusta ou desliga o subagente padrão |
+
+#### `base_system_prompt`
+Preenche o slot `BASE` (ordem final: `USER → BASE → SUFFIX`). Quando aplicado a uma pilha, **substitui** o prompt-base
+autoral dela. No agente principal esse prompt-base é vazio por padrão, então definir este campo **adiciona** texto logo
+depois do seu `system_prompt=`. Se um perfil define este campo e também `general_purpose_subagent.system_prompt`, o
+segundo vence para o subagente general-purpose. Na maioria dos casos você só precisa do `system_prompt_suffix`.
+
+#### `system_prompt_suffix`
+Texto anexado por **último** no prompt, depois do `USER` e do `BASE`, para ficar o mais perto possível do histórico da
+conversa. É o campo mais usado para calibrar um modelo ("responda em até 100 palavras", "pense passo a passo"). Vale
+para **todas** as pilhas que consultam o perfil: agente principal, subagentes declarativos cujo modelo resolve para
+este perfil e o subagente general-purpose. É o que o exemplo `05_harness_profile.py` usa.
+
+#### `tool_description_overrides`
+Dicionário `{nome_da_ferramenta: nova_descrição}` que reescreve o que o modelo lê sobre uma ferramenta. Funciona onde há
+um ponto estável de troca: ferramentas nativas de arquivos, a ferramenta `task` e ferramentas suas do tipo `BaseTool`
+ou dict. **Funções simples (callables) não são alteradas.**
+- Chave com nome errado, ou de ferramenta renomeada/removida, **não dá erro**: vira *no-op* silencioso. Confira o nome.
+- Ao sobrescrever `"task"`, mantenha o marcador `{available_agents}` no texto. Sem ele, o modelo não vê a lista de
+  subagentes e a ferramenta perde utilidade.
+- Depois de criado, o perfil é imutável (alterar o dict dá `TypeError`). Para mudar, registre de novo ou crie outro.
+
+#### `excluded_tools`
+Conjunto de nomes de ferramentas removidas do que o modelo enxerga. Vale para ferramentas suas e para as que os
+middlewares do Deep Agents injetam (por exemplo `execute`). Ao combinar perfis, as exclusões **se somam** (a do provedor
+mais a do modelo). É calibragem para o modelo, **não** uma barreira de segurança. Para esconder ferramentas de
+`FilesystemMiddleware` ou `SubAgentMiddleware` sem remover o middleware, use este campo.
+
+#### `excluded_middleware`
+Conjunto de middlewares a retirar da pilha, como **classe** (casa pelo tipo exato, sem subclasses) ou como **string** com
+o `.name` do middleware. Prefira a classe quando ela for importável, porque erro de digitação aparece já no import. A
+string serve para perfis em YAML/JSON, e `"SummarizationMiddleware"` funciona como apelido público. O filtro roda sobre a
+pilha inteira, inclusive middlewares passados em `create_deep_agent(middleware=[...])`. Restrições:
+- `FilesystemMiddleware` e `SubAgentMiddleware` **não podem ser excluídos** (são estrutura obrigatória) e dão
+  `ValueError` na criação do perfil.
+- Entrada que não casa com nenhum middleware da pilha é **rejeitada** (provável erro de digitação ou perfil velho).
+- Strings vazias, com `:` ou começando com `_` dão `ValueError`.
+
+#### `extra_middleware`
+Middlewares (instâncias de `AgentMiddleware`) acrescentados a **toda** pilha que o `create_deep_agent` monta: agente
+principal, subagente general-purpose e subagentes declarativos. Entram depois dos padrões do SDK e dos que você passou em
+`middleware=`, e antes da exclusão de ferramentas do perfil, do cache de prompt, da memória e do human-in-the-loop.
+Aceita uma sequência fixa ou uma **função sem argumentos** que devolve a sequência; use a função quando as instâncias não
+devem ser compartilhadas entre pilhas. **Não** se aplica a `CompiledSubAgent` nem a `AsyncSubAgent`. Só existe em código:
+não faz parte do `HarnessProfileConfig` (YAML/JSON).
+
+#### `general_purpose_subagent`
+Recebe um `GeneralPurposeSubagentProfile` que edita o subagente `general-purpose` adicionado automaticamente. Sem
+valor, ele roda com a descrição e o prompt padrão. Só afeta esse subagente padrão, e não um que você mesmo nomeie
+`general-purpose`. Campos do sub-perfil:
+- `enabled`: `None` herda (padrão: ligado), `True` força a inclusão, `False` remove o subagente. Se ele for removido e
+  você não passar outros subagentes síncronos em `subagents=`, a ferramenta `task` deixa de existir. É assim que se
+  remove a `task`, já que `SubAgentMiddleware` não pode ser excluído.
+- `description`: troca a descrição.
+- `system_prompt`: troca o prompt do subagente (vence o `base_system_prompt` do perfil).
+
+```python
+HarnessProfile(
+    system_prompt_suffix="Responda em no máximo 100 palavras.",
+    excluded_tools=frozenset({"execute"}),
+    tool_description_overrides={"ls": "Lista arquivos do diretório virtual."},
+    general_purpose_subagent=GeneralPurposeSubagentProfile(enabled=False),
+)
+```
+
+Para perfis em arquivo, `HarnessProfileConfig` guarda só o subconjunto declarativo (strings, listas, dicts), sem
+`extra_middleware` nem `excluded_middleware` em forma de classe, e pode ser passado direto a `register_harness_profile`.
 
 **Chaves de registro**
 - `"anthropic"` (só o provedor): vale para todos os modelos do provedor.
