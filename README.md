@@ -198,7 +198,7 @@ O projeto expõe **dois serviços independentes**, que podem ser executados sepa
 | **Serviço** | **Comando** | **Porta** | **Quando usar** |
 | --- | --- | --- | --- |
 | API (FastAPI) | `python -m uvicorn web_services:app --reload` | `8000` | Consumo programático dos módulos de IA via HTTP |
-| Interface (Streamlit) | `streamlit run web_app.py` | `8501` | Uso visual das aplicações (Acquarello, Content Generator) |
+| Interface (Streamlit) | `python -m streamlit run web_app.py` | `8501` | Uso visual das aplicações (Acquarello, Content Generator) |
 
 > **Pré-requisitos:** ambiente virtual ativado (passo 3), dependências instaladas (passo 4) e arquivo `.env` configurado (passo 5).
 > 
@@ -282,8 +282,10 @@ Cada resposta segue um formato padronizado com `job_id`, `status`, `result` e m�
 #### **6.2. Interface Streamlit**
 
 ```
-streamlit run web_app.py
+python -m streamlit run web_app.py
 ```
+
+> **Por que `python -m streamlit`?** Se a pasta do projeto (ou a `.venv`) foi movida/renomeada, o executável `streamlit.exe` da venv quebra com o erro `uv trampoline failed to canonicalize script path`. Chamar via `python -m` evita o problema. Alternativas: `uv run streamlit run web_app.py`, ou recriar a venv com `Remove-Item -Recurse -Force .venv; uv sync`.
 
 A aplicação ficará disponível em http://localhost:8501, com as seguintes páginas:
 
