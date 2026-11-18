@@ -1,83 +1,26 @@
 {
   "messages": [
     {
-      "content": "Che cos'è langgraph?",
+      "content": "oi",
       "additional_kwargs": {},
       "response_metadata": {},
       "type": "human",
       "name": null,
-      "id": "29fcc3b7-880e-42e2-b00f-559bbe96c1f7"
+      "id": "3677babd-7853-46e5-ba99-ad3fe1b2419d"
     },
     {
       "content": [
         {
-          "id": "ws_02583fe534749ecc006afdc197182887d280958500c9de3ee5",
-          "action": {
-            "query": "site.docs.langchain.com oss python langgraph overview",
-            "type": "search",
-            "queries": [
-              "site.docs.langchain.com oss python langgraph overview"
-            ]
-          },
-          "status": "completed",
-          "type": "web_search_call"
-        },
-        {
-          "id": "ws_02583fe534749ecc006afdc19a118087d29b68792a3428c1e0",
-          "action": {
-            "type": "open_page",
-            "url": "https://docs.langchain.com/oss/python/langgraph/overview"
-          },
-          "status": "completed",
-          "type": "web_search_call"
-        },
-        {
           "type": "text",
-          "text": "**LangGraph è un framework open source per costruire agenti AI e flussi di lavoro a più passaggi**, mantenendo il controllo su cosa viene eseguito, in quale ordine e con quali dati. Non è un modello AI: coordina modelli linguistici, strumenti e normale codice applicativo. ([github.com](https://github.com/langchain-ai/langgraph?utm_source=openai))\n\n### Come funziona\n\nPuoi immaginarlo come un **diagramma di flusso eseguibile**, composto da:\n- **Nodi:** operazioni, come interrogare un modello, cercare documenti o chiamare un’API.\n- **Collegamenti (*edges*):** regole che stabiliscono quale operazione eseguire dopo, anche con condizioni e cicli.\n- **Stato condiviso:** dati che vengono aggiornati durante il processo, come messaggi, risultati e decisioni. ([docs.langchain.com](https://docs.langchain.com/oss/python/langgraph/graph-api))\n\nPer esempio, potresti costruire un assistente che segue questo percorso:\n\n```text\nDomanda → Cerca documenti → Elabora una risposta → Verifica\n                ↑                                   │\n                └──── Se mancano informazioni ──────┘\n                                                    │\n                                          Se va bene → Rispondi\n```\n\n### A cosa serve\n\nLangGraph permette di gestire **processi che non si esauriscono in una sola chiamata al modello**: offre salvataggio dello stato e ripresa dell’esecuzione, pause per l’approvazione di una persona e streaming dei risultati. Queste capacità richiedono la relativa configurazione, per esempio un sistema di persistenza per conservare lo stato. ([docs.langchain.com](https://docs.langchain.com/oss/python/langgraph/overview))\n\n### Che differenza c’è con LangChain?\n\n**LangChain** offre astrazioni e integrazioni di livello più alto per modelli, strumenti e agenti. **LangGraph** è il livello di orchestrazione, utile quando vuoi controllare esplicitamente stato e flusso di esecuzione. Puoi usare LangGraph anche senza adottare le astrazioni di LangChain. ([docs.langchain.com](https://docs.langchain.com/oss/python/langgraph/overview))\n\nIn breve: **il modello genera risposte o decide azioni; LangGraph organizza il processo in cui queste avvengono.** ([docs.langchain.com](https://docs.langchain.com/oss/python/langgraph/overview))",
-          "annotations": [
-            {
-              "end_index": 348,
-              "start_index": 273,
-              "title": "GitHub - langchain-ai/langgraph: Build resilient agents. · GitHub",
-              "type": "url_citation",
-              "url": "https://github.com/langchain-ai/langgraph?utm_source=openai"
-            },
-            {
-              "end_index": 840,
-              "start_index": 759,
-              "title": "Graph API overview - Docs by LangChain",
-              "type": "url_citation",
-              "url": "https://docs.langchain.com/oss/python/langgraph/graph-api"
-            },
-            {
-              "end_index": 1654,
-              "start_index": 1574,
-              "title": "LangGraph overview - Docs by LangChain",
-              "type": "url_citation",
-              "url": "https://docs.langchain.com/oss/python/langgraph/overview"
-            },
-            {
-              "end_index": 2065,
-              "start_index": 1985,
-              "title": "LangGraph overview - Docs by LangChain",
-              "type": "url_citation",
-              "url": "https://docs.langchain.com/oss/python/langgraph/overview"
-            },
-            {
-              "end_index": 2262,
-              "start_index": 2182,
-              "title": "LangGraph overview - Docs by LangChain",
-              "type": "url_citation",
-              "url": "https://docs.langchain.com/oss/python/langgraph/overview"
-            }
-          ],
-          "id": "msg_02583fe534749ecc006afdc19c449887d2b895a9a80e3754be"
+          "text": "Oi! Como posso ajudar você hoje?",
+          "annotations": [],
+          "id": "msg_0a52e87644f2cd36006afde941e58087d2902d3b0293e81700"
         }
       ],
       "additional_kwargs": {},
       "response_metadata": {
-        "id": "resp_02583fe534749ecc006afdc194c58487d297842e7c3990474f",
-        "created_at": 1795015060.0,
+        "id": "resp_0a52e87644f2cd36006afde9402d4887d28d5f79a6ab487119",
+        "created_at": 1795025216.0,
         "metadata": {},
         "model": "gpt-6.1-sol",
         "object": "response",
@@ -88,18 +31,18 @@
       },
       "type": "ai",
       "name": null,
-      "id": "resp_02583fe534749ecc006afdc194c58487d297842e7c3990474f",
+      "id": "resp_0a52e87644f2cd36006afde9402d4887d28d5f79a6ab487119",
       "tool_calls": [],
       "invalid_tool_calls": [],
       "usage_metadata": {
-        "input_tokens": 14801,
-        "output_tokens": 616,
-        "total_tokens": 15417,
+        "input_tokens": 6481,
+        "output_tokens": 12,
+        "total_tokens": 6493,
         "input_token_details": {
-          "cache_read": 6483
+          "cache_read": 6473
         },
         "output_token_details": {
-          "reasoning": 87
+          "reasoning": 0
         }
       }
     }

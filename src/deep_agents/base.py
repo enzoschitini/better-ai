@@ -55,17 +55,57 @@ def manage_result_json(result: dict, output_dir: str = PATH, filename: str = "ag
     return json_result
 
 
-result = agent.invoke({"messages": [{"role": "user", "content": "Che cos'è langgraph?"}]})
-json_result = manage_result_json(result)
+def extract_response_text(result: dict) -> str:
+    """Return the text of the last message in the agent result."""
+    final_message = result["messages"][-1]
+    # `.text` is a property in current langchain-core (a str subclass that is also
+    # callable for backwards compat) — never call it, just use it as a string.
+    response = getattr(final_message, "text", None) or final_message.content
+    return str(response)
 
-final_message = result["messages"][-1]
-response = getattr(final_message, "text", None) or final_message.content
-if callable(response):  # `.text` is a method on older langchain-core versions
-    response = response()
 
-# Print the agent's response
-print(json_result)
-print("\nAgent's Response:\n")
-print(response)
+def chat_loop() -> None:
+    """Interactive terminal chat. Keeps the conversation history between turns.
+
+    Commands: /exit (or /quit) to leave, /clear to reset the conversation.
+    The full JSON of the latest turn is saved to agent_result.json.
+    """
+    print("Deep Agent chat — digite /exit para sair, /clear para limpar o histórico.\n")
+    messages: list = []
+
+    while True:
+        try:
+            user_input = input("Você: ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print("\nAté logo!")
+            break
+
+        if not user_input:
+            continue
+        if user_input.lower() in {"/exit", "/quit", "exit", "quit"}:
+            print("Até logo!")
+            break
+        if user_input.lower() == "/clear":
+            messages = []
+            print("Histórico limpo.\n")
+            continue
+
+        messages.append({"role": "user", "content": user_input})
+        try:
+            result = agent.invoke({"messages": messages})
+        except Exception as e:
+            messages.pop()  # drop the failed turn so the history stays consistent
+            print(f"\n[erro] {e}\n")
+            continue
+
+        # The returned messages already contain the whole history + the new reply
+        messages = result["messages"]
+        manage_result_json(result)
+
+        print(f"\nAgente: {extract_response_text(result)}\n")
+
+
+if __name__ == "__main__":
+    chat_loop()
 
 # python -m src.deep_agents.base
