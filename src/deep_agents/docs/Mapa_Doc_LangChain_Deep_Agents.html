@@ -1,0 +1,1057 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Mapa de Estudo Deep Agents</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#f4f7fb;
+  --surface:#ffffff;
+  --surface-2:#eaeff7;
+  --ink:#161f34;
+  --ink-2:#3b4863;
+  --muted:#69778f;
+  --line:#dce3ee;
+  --line-strong:#c2ccdd;
+  --accent:#006ddd;
+  --accent-soft:#e3f0fd;
+  --clay:#a8562e;
+  --clay-soft:#f6e9e0;
+  --focus:#006ddd;
+  --shadow:0 1px 2px rgba(22,31,52,.06), 0 8px 24px -16px rgba(22,31,52,.32);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0c1220;
+    --surface:#131b2c;
+    --surface-2:#1a2436;
+    --ink:#e6ecf6;
+    --ink-2:#b5c2d6;
+    --muted:#7e8ca5;
+    --line:#253044;
+    --line-strong:#36445d;
+    --accent:#7fc8ff;
+    --accent-soft:#122740;
+    --clay:#dd9a6c;
+    --clay-soft:#2e231b;
+    --focus:#7fc8ff;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 26px -18px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0c1220;
+  --surface:#131b2c;
+  --surface-2:#1a2436;
+  --ink:#e6ecf6;
+  --ink-2:#b5c2d6;
+  --muted:#7e8ca5;
+  --line:#253044;
+  --line-strong:#36445d;
+  --accent:#7fc8ff;
+  --accent-soft:#122740;
+  --clay:#dd9a6c;
+  --clay-soft:#2e231b;
+  --focus:#6fc3a2;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 26px -18px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:15px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:3px}
+
+.wrap{max-width:1120px;margin:0 auto;padding-inline:20px}
+
+/* ---------- header ---------- */
+.topbar{
+  position:sticky;top:env(safe-area-inset-top,0px);z-index:40;
+  background:color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter:saturate(1.3) blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.topbar-inner{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding-block:10px}
+.brand{font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:16px;letter-spacing:-.01em;white-space:nowrap}
+.brand span{color:var(--muted);font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:400;margin-left:8px}
+.search{
+  flex:1 1 220px;min-width:0;
+  font:inherit;font-size:14px;color:var(--ink);
+  background:var(--surface);border:1px solid var(--line-strong);border-radius:7px;
+  padding:7px 11px;
+}
+.search::placeholder{color:var(--muted)}
+.meter{display:flex;align-items:center;gap:8px;font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);white-space:nowrap}
+.meter-track{width:88px;height:5px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.meter-fill{height:100%;width:0;background:var(--accent);transition:width .35s ease}
+.btn-ghost{
+  font:inherit;font-size:12px;color:var(--ink-2);background:var(--surface);
+  border:1px solid var(--line-strong);border-radius:7px;padding:6px 10px;cursor:pointer;
+}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ---------- hero ---------- */
+.hero{padding-block:44px 30px;border-bottom:1px solid var(--line)}
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--clay);margin:0 0 14px
+}
+h1{
+  font-family:"Fraunces",Georgia,serif;font-weight:600;font-optical-sizing:auto;
+  font-size:clamp(30px,5.2vw,50px);line-height:1.04;letter-spacing:-.022em;
+  margin:0 0 16px;text-wrap:balance;max-width:16ch;
+}
+.lede{font-size:16.5px;color:var(--ink-2);max-width:62ch;margin:0 0 22px}
+.facts{display:flex;flex-wrap:wrap;gap:10px}
+.fact{
+  background:var(--surface);border:1px solid var(--line);border-radius:8px;
+  padding:9px 13px;display:flex;gap:9px;align-items:baseline;box-shadow:var(--shadow)
+}
+.fact b{font-family:"IBM Plex Mono",monospace;font-size:17px;font-weight:500;color:var(--accent);font-variant-numeric:tabular-nums}
+.fact span{font-size:12px;color:var(--muted)}
+
+/* ---------- sections ---------- */
+section{padding-block:38px}
+h2{
+  font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:25px;letter-spacing:-.015em;
+  margin:0 0 6px;text-wrap:balance
+}
+.sub{color:var(--muted);font-size:14px;margin:0 0 22px;max-width:64ch}
+
+/* ---------- trilha ---------- */
+.phases{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px;align-items:start}
+.phase{
+  background:var(--surface);border:1px solid var(--line);border-radius:10px;
+  padding:16px;display:flex;flex-direction:column;gap:9px;box-shadow:var(--shadow)
+}
+.phase-n{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--clay);
+  letter-spacing:.1em;text-transform:uppercase
+}
+.phase h3{font-family:"Fraunces",Georgia,serif;font-size:17px;font-weight:600;margin:0;letter-spacing:-.01em}
+.phase p{margin:0;font-size:13px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px}
+.chip{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;
+  background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2);
+  border-radius:5px;padding:2px 6px;cursor:pointer
+}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ---------- filtros ---------- */
+.filters{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px}
+.filter{
+  font:inherit;font-size:12.5px;cursor:pointer;
+  background:var(--surface);color:var(--ink-2);
+  border:1px solid var(--line-strong);border-radius:99px;padding:5px 12px
+}
+.filter[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+
+/* ---------- tabelas ---------- */
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:13.5px}
+thead th{
+  text-align:left;font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:500;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+  padding:10px 14px;border-bottom:1px solid var(--line-strong);background:var(--surface-2);
+  position:sticky;top:0;z-index:1
+}
+tbody td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--surface-2)}
+.num{font-family:"IBM Plex Mono",monospace;color:var(--muted);font-variant-numeric:tabular-nums;width:38px}
+.t-title{font-weight:600;color:var(--ink);white-space:nowrap}
+.t-title small{display:block;font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:400;color:var(--muted);white-space:nowrap}
+.t-desc{color:var(--ink-2);min-width:240px}
+.tag{
+  display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:10.5px;
+  padding:2px 7px;border-radius:5px;background:var(--accent-soft);color:var(--accent);
+  border:1px solid color-mix(in srgb, var(--accent) 22%, transparent);white-space:nowrap
+}
+.count{font-family:"IBM Plex Mono",monospace;color:var(--muted);font-variant-numeric:tabular-nums;text-align:right;width:56px}
+.golink{font-family:"IBM Plex Mono",monospace;font-size:11.5px;white-space:nowrap}
+
+/* ---------- blocos de tópico ---------- */
+.topic{
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  margin-bottom:16px;overflow:hidden;box-shadow:var(--shadow);scroll-margin-top:96px
+}
+.topic-head{
+  display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;
+  padding:16px 18px;border-bottom:1px solid var(--line);background:var(--surface-2)
+}
+.topic-idx{
+  font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--clay);
+  font-variant-numeric:tabular-nums;padding-top:3px
+}
+.topic-main{flex:1 1 260px;min-width:0}
+.topic-main h3{
+  font-family:"Fraunces",Georgia,serif;font-size:19px;font-weight:600;
+  margin:0 0 3px;letter-spacing:-.012em
+}
+.topic-main p{margin:0;font-size:13.5px;color:var(--ink-2);max-width:70ch}
+.topic-meta{display:flex;flex-direction:column;gap:7px;align-items:flex-end}
+.topic-prog{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.doclink{
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;white-space:nowrap;
+  border:1px solid var(--line-strong);border-radius:6px;padding:4px 9px;background:var(--surface)
+}
+.doclink:hover{border-color:var(--accent);text-decoration:none}
+.topic table{min-width:560px}
+.topic .tablewrap{border:none;border-radius:0;box-shadow:none;background:transparent}
+.sub-name{font-weight:500;color:var(--ink)}
+.d2 .sub-name{font-weight:600}
+.d3 .sub-name{padding-left:18px;font-weight:400}
+.d4 .sub-name{padding-left:36px;font-weight:400;color:var(--ink-2)}
+.d3 .sub-name::before,.d4 .sub-name::before{
+  content:"";display:inline-block;width:8px;height:1px;background:var(--line-strong);
+  vertical-align:middle;margin-right:7px
+}
+.chk{width:34px}
+.chk input{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;margin:2px 0 0}
+tr.done .sub-name{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line-strong)}
+tr.done .t-desc{color:var(--muted)}
+
+/* ---------- relacionados ---------- */
+.rel{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.rel a{
+  display:block;background:var(--surface);border:1px solid var(--line);border-radius:10px;
+  padding:15px 16px;box-shadow:var(--shadow)
+}
+.rel a:hover{border-color:var(--accent);text-decoration:none}
+.rel strong{display:block;font-family:"Fraunces",Georgia,serif;font-size:16px;color:var(--ink);margin-bottom:4px}
+.rel span{font-size:13px;color:var(--muted)}
+
+.empty{padding:26px;text-align:center;color:var(--muted);font-size:14px}
+footer{border-top:1px solid var(--line);padding-block:26px 40px;color:var(--muted);font-size:12.5px}
+footer p{margin:0 0 6px;max-width:70ch}
+
+@media (max-width:520px){
+  .hero{padding-block:30px 22px}
+  .topic-meta{align-items:flex-start;flex-direction:row}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="topbar">
+  <div class="wrap topbar-inner">
+    <div class="brand">Deep Agents <span>mapa de estudo</span></div>
+    <input class="search" id="q" type="search" placeholder="Buscar tópico ou subtópico… (ex.: subagent, backend, memória)" autocomplete="off">
+    <div class="meter" title="Subtópicos marcados como estudados">
+      <div class="meter-track"><div class="meter-fill" id="meterFill"></div></div>
+      <span id="meterTxt">0 / 0</span>
+    </div>
+    <button class="btn-ghost" id="reset" type="button">Zerar</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="hero">
+    <p class="eyebrow">LangChain · docs.langchain.com · Python</p>
+    <h1>Tudo o que estudar em Deep Agents</h1>
+    <p class="lede">As 39 páginas da documentação de Deep Agents (Python), organizadas em oito trilhas. Cada tópico tem a sua própria tabela com os argumentos internos da página e link direto para a seção exata da documentação.</p>
+    <div class="facts">
+      <div class="fact"><b id="fTopics">39</b><span>tópicos</span></div>
+      <div class="fact"><b id="fSubs">0</b><span>subtópicos</span></div>
+      <div class="fact"><b>8</b><span>trilhas</span></div>
+      <div class="fact"><b>9</b><span>ferramentas do harness</span></div>
+    </div>
+  </div>
+
+  <section id="trilha">
+    <h2>Ordem sugerida</h2>
+    <p class="sub">Cada fase pressupõe a anterior. Clique num tópico para pular direto para a tabela dele.</p>
+    <div class="phases" id="phases"></div>
+  </section>
+
+  <section id="geral">
+    <h2>Tabela geral</h2>
+    <p class="sub">Os 39 tópicos com descrição, trilha, número de argumentos internos e link para a documentação.</p>
+    <div class="filters" id="filters"></div>
+    <div class="tablewrap">
+      <table id="masterTable">
+        <thead>
+          <tr>
+            <th class="num">#</th>
+            <th>Tópico</th>
+            <th>Trilha</th>
+            <th>Descrição</th>
+            <th class="count">Args</th>
+            <th>Doc</th>
+          </tr>
+        </thead>
+        <tbody id="masterBody"></tbody>
+      </table>
+    </div>
+    <div class="empty" id="masterEmpty" hidden>Nenhum tópico corresponde à busca.</div>
+  </section>
+
+  <section id="detalhe">
+    <h2>Tabela por tópico</h2>
+    <p class="sub">Um bloco por página da documentação. Marque a caixa conforme for estudando — o progresso fica salvo neste navegador.</p>
+    <div id="topics"></div>
+    <div class="empty" id="topicsEmpty" hidden>Nenhum subtópico corresponde à busca.</div>
+  </section>
+
+  <section id="relacionados">
+    <h2>Fora do escopo desta lista</h2>
+    <p class="sub">Seções vizinhas da documentação que valem a visita depois de fechar as oito trilhas.</p>
+    <div class="rel">
+      <a href="https://docs.langchain.com/oss/deepagents/code/overview" target="_blank" rel="noopener"><strong>Deep Agents Code</strong><span>O agente de codificação no terminal: modos de aprovação, config.toml, hooks, CLI, credenciais de provedor.</span></a>
+      <a href="https://docs.langchain.com/langsmith/python/managed-deep-agents-overview" target="_blank" rel="noopener"><strong>Managed Deep Agents</strong><span>Runtime hospedado na LangSmith para criar, rodar e operar deep agents sem montar infraestrutura.</span></a>
+      <a href="https://docs.langchain.com/oss/python/langgraph/overview" target="_blank" rel="noopener"><strong>LangGraph</strong><span>A camada de grafo por baixo: checkpointing, interrupts, store, durabilidade — base de metade das páginas acima.</span></a>
+      <a href="https://docs.langchain.com/oss/python/reference/overview" target="_blank" rel="noopener"><strong>Reference (API)</strong><span>Assinaturas de create_deep_agent, middlewares, backends e tipos, para consultar enquanto codifica.</span></a>
+    </div>
+  </section>
+
+  <footer>
+    <p>Fonte: documentação oficial de LangChain Deep Agents (Python), em docs.langchain.com/oss/python/deepagents. Os títulos dos subtópicos foram mantidos em inglês para casar com as âncoras da documentação; as descrições são um resumo em português.</p>
+    <p>Mapeado em 26 de setembro de 2026. A documentação muda — confira o changelog quando algo não bater.</p>
+  </footer>
+</div>
+
+<script>
+const CATS = {
+  fund:  {label:"Fundamentos"},
+  ctx:   {label:"Contexto e conhecimento"},
+  exec:  {label:"Ambiente de execução"},
+  deleg: {label:"Delegação"},
+  ctrl:  {label:"Streaming e controle"},
+  prod:  {label:"Produção e protocolos"},
+  front: {label:"Frontend"},
+  ex:    {label:"Exemplos práticos"}
+};
+
+const PHASES = [
+  {n:"Fase 1", t:"Entender o harness", d:"O que Deep Agents adiciona ao loop de tool calling e como montar o primeiro agente.", s:["overview","quickstart","models","comparison"]},
+  {n:"Fase 2", t:"Configurar", d:"Os parâmetros de create_deep_agent e a pilha de middleware que você vai ajustar o tempo todo.", s:["customization","profiles","tools","mcp"]},
+  {n:"Fase 3", t:"Dominar o contexto", d:"O diferencial do harness: o que entra no prompt, o que vai para o disco e o que sobrevive entre conversas.", s:["context-engineering","memory","skills","multimodal"]},
+  {n:"Fase 4", t:"Delegar", d:"Subagentes síncronos, em background e despachados por código.", s:["subagents","async-subagents","dynamic-subagents","interpreters"]},
+  {n:"Fase 5", t:"Dar chão ao agente", d:"Onde os arquivos vivem, o que o agente pode tocar e onde o código roda.", s:["backends","permissions","sandboxes"]},
+  {n:"Fase 6", t:"Observar e controlar", d:"Ver o que está acontecendo, aprovar o que é sensível e sobreviver a falhas.", s:["streaming","event-streaming","human-in-the-loop","fault-tolerance","rubric"]},
+  {n:"Fase 7", t:"Buscar conhecimento", d:"Recuperação e RAG com as primitivas do harness.", s:["retrieval","rag","openwiki"]},
+  {n:"Fase 8", t:"Levar a sério", d:"Produção, protocolos de interoperabilidade, interface e exemplos completos.", s:["going-to-production","a2a","acp","frontend/overview","frontend/subagent-streaming","frontend/todo-list","frontend/sandbox","deep-research","data-analysis","content-builder","changelog-py","changelog-js"]}
+];
+
+const T = [
+{slug:"overview", cat:"fund", title:"Deep Agents overview", desc:"O mapa conceitual do harness: capacidades centrais, ambiente de execução, gestão de contexto, delegação e direção humana.", secs:[
+ [2,"Core capabilities","As quatro capacidades embutidas que separam um deep agent de um loop de tool calling comum."],
+ [2,"Execution environment","As quatro camadas onde o agente age: ferramentas, filesystem virtual, permissões e execução de código."],
+ [3,"Tools and MCP","Funções próprias, ferramentas LangChain e servidores MCP entram pelo parâmetro tools=."],
+ [3,"Virtual filesystem access","Filesystem virtual com backends plugáveis (estado, disco, store, sandbox)."],
+ [3,"Filesystem permissions","Regras declarativas de leitura e escrita por caminho, válidas também para subagentes."],
+ [3,"Code execution","Duas vias: sandbox para shell real e interpretador leve para JavaScript."],
+ [3,"Streaming","Fluxo de eventos tipados expondo mensagens, tool calls, valores e tarefas delegadas."],
+ [2,"Context management","O que o agente sabe, quanto cabe na janela e o que persiste entre sessões."],
+ [3,"Skills","Workflows e conhecimento de domínio empacotados no padrão Agent Skills, carregados sob demanda."],
+ [3,"Memory","Contexto persistente entre conversas via arquivos AGENTS.md."],
+ [3,"Summarization and context offloading","Compressão automática do histórico e descarga de resultados grandes para arquivos."],
+ [3,"Prompt caching","Cache automático das partes estáticas do system prompt em modelos Anthropic e Bedrock."],
+ [2,"Delegation","Como o agente quebra um problema grande em unidades de trabalho paralelizáveis."],
+ [3,"Task planning","A ferramenta write_todos, opcional, para planejamento estruturado de tarefas."],
+ [3,"Subagents","Agentes filhos efêmeros que resolvem subtarefas com contexto limpo."],
+ [2,"Steering","Controle humano sobre o comportamento do agente em tempo de execução."],
+ [3,"Human-in-the-loop","Interrupts do LangGraph para pausar e aprovar tool calls sensíveis."]
+]},
+{slug:"quickstart", cat:"fund", title:"Quickstart", desc:"Do zero a um agente de pesquisa que busca na web, descarrega resultados em arquivos e delega a subagentes.", secs:[
+ [2,"Prerequisites","Chave de um provedor e um modelo que suporte tool calling."],
+ [2,"Step 1: Install dependencies","pip install deepagents (e tavily-python se não usar a busca nativa do provedor)."],
+ [2,"Step 2: Set up your API keys","Variáveis de ambiente por provedor; alternativa do LangSmith Gateway."],
+ [2,"Step 3: Create a search tool","Busca server-side nativa de Google/OpenAI/Anthropic passada como dict, ou Tavily."],
+ [2,"Step 4: Create a deep agent","create_deep_agent com model, tools e system_prompt."],
+ [2,"Step 5: Set up LangSmith tracing","Variáveis LANGSMITH_* para enxergar tool calls e delegações."],
+ [2,"Step 6: Run the agent","invoke com messages e leitura da última mensagem."],
+ [2,"How does it work?","O ciclo: pesquisar, descarregar contexto em arquivos, spawnar subagentes, sintetizar."],
+ [2,"Streaming","Streaming embutido via LangGraph para acompanhar a execução em tempo real."],
+ [2,"Next steps","Customização, memória, deploy e avaliação."]
+]},
+{slug:"customization", cat:"fund", title:"Customize Deep Agents", desc:"A página de referência dos parâmetros de create_deep_agent e da pilha de middleware. É a mais densa da documentação.", secs:[
+ [2,"Model","String provider:model ou instância de modelo já inicializada."],
+ [2,"Tools","Ferramentas de domínio que o agente pode chamar."],
+ [3,"MCP tools","Ferramentas vindas de servidores MCP (bancos, APIs, filesystems externos)."],
+ [2,"System prompt","Instruções próprias somadas às instruções embutidas do harness."],
+ [2,"Middleware","A arquitetura que torna o harness extensível."],
+ [3,"Deep Agents stack","A ordem exata dos middlewares na configuração padrão."],
+ [4,"Bare stack","O mínimo incluído quando só o modelo é informado."],
+ [4,"Full stack","A ordem completa, incluindo opcionais e itens vindos de profiles."],
+ [3,"Synchronous subagent stack","Ordem dos middlewares dentro de subagentes síncronos declarativos."],
+ [3,"Prebuilt middleware","Middlewares prontos da LangChain (retries, fallbacks e afins)."],
+ [3,"Provider-specific middleware","Integrações otimizadas para provedores específicos."],
+ [3,"Custom middleware","Escrever middleware próprio para interceptar e estender o comportamento."],
+ [3,"Override a default middleware instance","Substituir um middleware embutido casando pelo atributo .name."],
+ [4,"Examples","Casos: sumarização, cache, ferramentas de filesystem e catálogo de skills."],
+ [3,"Interpreters","Adicionar avaliação de JavaScript via QuickJS para compor ferramentas em código."],
+ [2,"Subagents","Delegar tarefas especializadas a subagentes isolados."],
+ [2,"Backends","As opções de filesystem, do escopo de estado até armazenamento persistente."],
+ [3,"Sandboxes","Ambientes isolados onde o agente escreve arquivos e roda comandos."],
+ [2,"Human-in-the-loop","Configurar interrupt_on na criação do agente."],
+ [2,"Skills","Apontar diretórios de skills no momento da criação."],
+ [2,"Memory","Ligar memória persistente via arquivos e backend."],
+ [2,"Profiles","Defaults por provedor e por modelo aplicados automaticamente."],
+ [2,"Structured output","Forçar a resposta final a casar com um schema."],
+ [2,"Advanced","Ajustes finos além do caminho padrão."]
+]},
+{slug:"models", cat:"fund", title:"Models", desc:"Quais modelos funcionam, quais são recomendados por avaliação e como trocar de modelo em tempo de execução.", secs:[
+ [2,"Supported models","Qualquer chat model LangChain com tool calling, no formato provider:model."],
+ [3,"Suggested models","Recomendações testadas de Google, OpenAI, Anthropic e modelos de peso aberto."],
+ [3,"Model evaluations","Resultados por categoria de tarefa em doze modelos."],
+ [2,"Configure model parameters","Passar string ou instância pré-configurada para ajustar temperatura, tokens e afins."],
+ [3,"Provider profiles","Pacotes reutilizáveis de parâmetros de inicialização por provedor ou por modelo."],
+ [3,"OpenAI and the Responses API","A Responses API vem ligada por padrão em modelos OpenAI; como desligar ou ajustar retenção."],
+ [2,"Select a model at runtime","Middleware que troca o modelo durante a execução sem reconstruir o agente."]
+]},
+{slug:"profiles", cat:"fund", title:"Profiles", desc:"Defaults por provedor e por modelo — prompts, ferramentas e middleware — aplicados quando o modelo é escolhido.", secs:[
+ [2,"Harness profiles","Ajustes de harness por modelo/provedor: system prompt, ferramentas e middleware."],
+ [2,"Registration keys","Chaves em nível de provedor (openai) ou de modelo (openai:gpt-6-astra)."],
+ [2,"Merge semantics","Como campos sobrepostos se combinam ao reregistrar ou herdar do provedor."],
+ [2,"Provider profiles","Parâmetros de construção do modelo aplicados ao passar provider:model."],
+ [2,"Load profiles from config files","HarnessProfileConfig com definições em YAML ou JSON."],
+ [2,"Ship a profile as a plugin","Auto-registro via entry points do importlib.metadata no pyproject.toml."]
+]},
+{slug:"comparison", cat:"fund", title:"Comparison with Claude Agent SDK", desc:"Quando escolher Deep Agents e quando escolher o Claude Agent SDK: execução, multi-tenancy, servidor e ecossistema.", secs:[
+ [2,"At a glance","Tabela comparando ambiente de execução, backend, provedor de modelo e deploy."],
+ [2,"Main differences","As distinções arquiteturais e operacionais entre os dois frameworks."],
+ [3,"Agent and execution environment","Deep Agents roda dentro ou fora do sandbox; o Agent SDK só dentro."],
+ [3,"Multi-tenancy","Sandbox por usuário e RBAC embutidos versus implementação própria."],
+ [3,"A production agent server","Servidor com streaming e autenticação pronto versus construir o seu."],
+ [3,"Managed cloud or self-hosted","Deep Agents roda nos dois modos sem mudar código."],
+ [3,"LLM","Escolha independente de modelo e infraestrutura versus acoplamento ao Anthropic."],
+ [3,"Ecosystems","Integração com o ecossistema LangChain versus produtos Anthropic."],
+ [2,"Summary","O critério de decisão em uma frase."]
+]},
+{slug:"changelog-py", cat:"fund", title:"Changelog (Python)", desc:"Histórico de versões do pacote deepagents em Python. Consulte quando um parâmetro sumir ou mudar de nome.", secs:[
+ [2,"Releases","Entradas por versão com mudanças, depreciações e quebras de compatibilidade."]
+]},
+{slug:"changelog-js", cat:"fund", title:"Changelog (JavaScript)", desc:"Histórico de versões da implementação em JS/TS, útil se o time tiver frontend ou serviços em Node.", secs:[
+ [2,"Releases","Entradas por versão da biblioteca JavaScript."]
+]},
+
+{slug:"context-engineering", cat:"ctx", title:"Context engineering in Deep Agents", desc:"O capítulo central do harness: os cinco tipos de contexto, como o system prompt é montado e como o contexto é comprimido.", secs:[
+ [2,"Types of context","As cinco categorias de contexto que um deep agent acessa e gerencia."],
+ [2,"Input context","Informação disponível na largada, que vira parte do system prompt."],
+ [3,"System prompt","Instruções próprias definindo papel, comportamento e conhecimento."],
+ [3,"Memory","Arquivos AGENTS.md sempre carregados, com convenções e regras do projeto."],
+ [3,"Skills","Capacidades carregadas progressivamente quando o agente julga relevante."],
+ [3,"Tool prompts","Metadados, descrições e instruções de uso que moldam como o modelo chama ferramentas."],
+ [3,"Complete system prompt","Os oito componentes sequenciais que formam a system message final."],
+ [2,"Runtime context","Configuração por execução, acessível às ferramentas mas não injetada no prompt."],
+ [2,"Custom state schema","Estado próprio que atravessa o ciclo de vida e sobrevive ao checkpointing."],
+ [2,"Context compression","Técnicas automáticas de redução sem perder o que importa para a tarefa."],
+ [3,"Offloading","Entradas e resultados grandes vão para o filesystem ao passar do limiar de tokens."],
+ [3,"Summarization","Compressão do histórico em sumários estruturados ao se aproximar do limite da janela."],
+ [4,"On-demand compaction tool","Ferramenta opcional para o próprio agente disparar a sumarização entre tarefas."],
+ [2,"Context isolation with subagents","Isolar trabalho pesado em subagentes e trazer de volta só o resultado."],
+ [2,"Long-term memory","Persistência entre threads usando roteamento híbrido de backends."],
+ [2,"Best practices","Seis recomendações práticas de engenharia de contexto."]
+]},
+{slug:"memory", cat:"ctx", title:"Memory", desc:"Memória persistente em arquivos: escopos, memória episódica, consolidação em background e proteção contra prompt injection.", secs:[
+ [2,"How memory works","Três passos: apontar arquivos, ler na largada ou sob demanda, atualizar quando fizer sentido."],
+ [2,"Scoped memory","Memória compartilhada por todos ou isolada por usuário."],
+ [2,"Agent-scoped memory","Um agente com identidade e conhecimento acumulados em todas as conversas."],
+ [2,"User-scoped memory","Arquivos isolados por usuário sobre instruções de agente comuns."],
+ [2,"Advanced usage","Eixos de configuração: duração, tipo de informação, escopo e estratégia de atualização."],
+ [2,"Episodic memory","Experiências passadas preservadas com contexto conversacional completo e buscáveis."],
+ [2,"Organization-level memory","Políticas e conhecimento válidos para toda a organização, em geral só de leitura."],
+ [2,"Background consolidation","Um agente separado revisa conversas recentes e funde fatos na memória."],
+ [3,"Consolidation agent","O deep agent que lê o histórico e faz o merge no store."],
+ [3,"Cron","Job periódico que dispara a consolidação no ritmo do uso real."],
+ [2,"Read-only vs writable memory","Permitir ou bloquear escrita para evitar prompt injection."],
+ [2,"Concurrent writes","Escritas simultâneas de várias threads; conflito no mesmo arquivo resolve por last-write-wins."],
+ [2,"Multiple agents in the same deployment","assistant_id no namespace para isolar a memória de cada agente."]
+]},
+{slug:"skills", cat:"ctx", title:"Skills", desc:"Empacotar conhecimento de domínio em diretórios com SKILL.md que o agente descobre e lê só quando relevante.", secs:[
+ [2,"Usage","Cinco passos: criar o diretório, escrever SKILL.md com frontmatter, configurar o agente, invocar."],
+ [2,"How skills work","Três camadas de carregamento: metadados na largada, instruções ao invocar, arquivos sob demanda."],
+ [2,"When to use skills","Instruções repetitivas, workflows multi-etapa, conhecimento de domínio e código executável."],
+ [2,"Write effective skills","Frontmatter e corpo enxutos, descrições específicas, número de skills sob controle."],
+ [2,"Add supporting resources","Subdiretórios que o agente só acessa quando as instruções apontam para eles."],
+ [3,"scripts/","Código executável: clientes de API, transformações de dados, rodados em sandbox."],
+ [3,"references/","Documentação detalhada demais para o SKILL.md, carregada sob demanda."],
+ [3,"assets/","Templates, imagens e arquivos de dados usados, não lidos como instrução."],
+ [3,"Reference files from SKILL.md","Caminhos relativos de um nível e descrição de quando acessar cada arquivo."],
+ [2,"Backends and remote skill loading","StateBackend, StoreBackend e FilesystemBackend para guardar e servir skills."],
+ [2,"Skill availability","Controlar quais skills cada agente enxerga."],
+ [3,"Select skills by context","Variar os caminhos por papel, tenant ou tipo de requisição antes de criar o agente."],
+ [3,"Isolate skill libraries","O mesmo caminho resolvido de forma diferente por usuário ou contexto de deploy."],
+ [3,"Compose multiple sources","Combinar skills da organização, do time e da requisição."],
+ [2,"Reload skills","Resetar os metadados armazenados para recarregar tudo na próxima execução."],
+ [2,"Skills for subagents","Subagentes general-purpose herdam; subagentes próprios precisam do parâmetro skills."],
+ [2,"Skill permissions","Leitura, escrita ou aprovação antes de modificar arquivos de skill."],
+ [3,"Read-only skills","Rotear o caminho para um backend com escrita negada."],
+ [3,"Writable skills","Persistir alguns caminhos e proteger outros com regras de deny."],
+ [3,"Write approval","interrupt_on ou mode=interrupt para pausar antes de escrever em skills."],
+ [2,"Execute code with skills","Empacotar scripts testados em vez de regerar a lógica a cada execução."],
+ [2,"Sandbox scripts","Scripts de skills rodam dentro de containers isolados."],
+ [2,"Troubleshooting","Skill não ativa, sumida na largada, mudanças não refletidas, scripts que falham."],
+ [3,"Skill not activated","Descrição específica, menos sobreposição, conferir o array de caminhos."],
+ [3,"Skills missing at startup","Formato e nível do caminho, frontmatter válido, limite de tamanho, precedência das fontes."],
+ [3,"Skill changes not picked up","Skills carregam uma vez por thread; é preciso resetar os metadados."],
+ [3,"Supporting files not found","Referenciar do SKILL.md, conferir caminhos e sincronizar com o sandbox."],
+ [3,"Scripts fail to run","Ler funciona em qualquer backend; executar exige backend de sandbox."],
+ [3,"Subagent cannot access a skill","Subagentes próprios não herdam; adicione os caminhos na definição de cada um."],
+ [2,"Reference","Skills versus memória e ferramentas, campos do frontmatter e limites."],
+ [3,"Skills, memory, and tools","Skill é capacidade sob demanda, memória é contexto persistente, tool é ação programática."],
+ [3,"Frontmatter fields","Obrigatórios name e description; opcionais license, compatibility, metadata, allowed-tools."]
+]},
+{slug:"retrieval", cat:"ctx", title:"Retrieval", desc:"Os fundamentos de recuperação: base de conhecimento, pipeline de indexação e as três arquiteturas de RAG.", secs:[
+ [2,"Building a knowledge base","O repositório de documentos ou dados estruturados usado na recuperação."],
+ [3,"From retrieval to RAG","Combinar busca de documentos com geração para respostas fundamentadas."],
+ [3,"Retrieval pipeline","Loaders, chunking, embeddings, vector store, retriever e geração."],
+ [3,"Building blocks","Os componentes modulares: loaders, splitters, embeddings, vector stores, retrievers."],
+ [2,"RAG architectures","As abordagens de implementação, do pipeline fixo ao agente flexível."],
+ [3,"2-step RAG","Recuperar e depois gerar, sempre nessa ordem; previsível, bom para FAQ."],
+ [3,"Agentic RAG","O agente decide quando e como recuperar, usando busca como ferramenta."],
+ [3,"Hybrid RAG","Mistura etapas fixas e agênticas com validação intermediária."]
+]},
+{slug:"rag", cat:"ctx", title:"RAG with Deep Agents", desc:"Tutorial completo: indexar a documentação, buscar por similaridade, analisar chunks em subagentes e responder com citações.", secs:[
+ [2,"RAG patterns","Quatro padrões: skills guiando a recuperação, rubrics checando fundamentação, todos dirigindo a investigação, e recuperar-descarregar-delegar."],
+ [2,"Why retrieval matters","O modelo não tem a documentação atual nem cabe tudo na janela de contexto."],
+ [2,"What you will build","Indexar, buscar por similaridade, analisar via subagentes, sintetizar com citações."],
+ [2,"Prerequisites","Chaves do chat model e do provedor de embeddings."],
+ [2,"Setup","Instalação, chaves e tracing do LangSmith."],
+ [2,"Index LangChain documentation","Carregar, dividir, embutir e armazenar — os quatro passos da indexação."],
+ [3,"Load documents","Buscar as páginas markdown da documentação em objetos Document."],
+ [3,"Split documents","RecursiveCharacterTextSplitter quebrando a documentação em chunks."],
+ [3,"Select an embeddings model","Opções de provedor de embeddings para vetorizar os chunks."],
+ [3,"Store chunks and embeddings in VectorStore","Configurar e popular o vector store escolhido."],
+ [2,"Build the agent","Ferramenta de recuperação, prompts do orquestrador e do subagente, criação do agente."],
+ [3,"Add the search tool","search_documentation faz a busca e grava os chunks no filesystem do agente."],
+ [3,"Add prompts","Três templates: orquestrador, analista de chunks e coordenação dos subagentes."],
+ [3,"Create the agent","Modelo, ferramentas de recuperação, system prompt e subagentes analistas."],
+ [2,"Run the agent","O fluxo: buscar, delegar a análise, sintetizar com links."],
+ [2,"Security considerations","Prompt injection indireta via documentação recuperada; validar saídas e citações."],
+ [2,"Full code","Script Python completo e funcional."]
+]},
+{slug:"openwiki", cat:"ctx", title:"OpenWiki", desc:"CLI open source que cria e mantém wikis em Markdown de um codebase para melhorar o desempenho de agentes.", secs:[
+ [2,"Get started","Instalação e Quickstart."],
+ [2,"Modes","Modo Code para documentar repositórios e modo Personal para base de conhecimento pessoal."],
+ [2,"Capabilities","Wikis de repositório, integrações com agentes, bases pessoais e atualização automática."]
+]},
+
+{slug:"tools", cat:"exec", title:"Tools", desc:"Como o agente ganha capacidades: funções próprias, ferramentas MCP, as nove ferramentas embutidas do harness e saídas multimodais.", secs:[
+ [2,"Custom tools","Qualquer callable vira ferramenta; o schema sai da assinatura e da docstring."],
+ [2,"MCP tools","Conexão a bancos, APIs e filesystems externos via MCPAdapter."],
+ [2,"Built-in harness tools","ls, read_file, write_file, edit_file, delete, glob, grep, execute e task."],
+ [2,"Multimodal tool outputs","Ferramentas podem devolver imagens, áudio, vídeo e arquivos, não só texto."]
+]},
+{slug:"backends", cat:"exec", title:"Backends", desc:"Onde os arquivos do agente realmente vivem: sete backends prontos, roteamento por caminho e o protocolo para escrever o seu.", secs:[
+ [2,"Quickstart","Tabela comparando os sete backends prontos com exemplos de uso."],
+ [3,"StateBackend","Arquivos no estado do LangGraph: persistem na thread, não entre threads."],
+ [3,"FilesystemBackend (local disk)","Arquivos reais sob um diretório raiz configurável."],
+ [3,"LocalShellBackend (local shell)","FilesystemBackend mais execução irrestrita de shell no host."],
+ [3,"StoreBackend (LangGraph store)","Persistência durável entre threads em um BaseStore."],
+ [4,"Namespace factories","Funções de fábrica que recebem o runtime e controlam o isolamento dos dados."],
+ [3,"ContextHubBackend","Filesystem do agente em um repositório do LangSmith Context Hub, com skills linkadas."],
+ [3,"CompositeBackend (router)","Roteia prefixos de caminho para backends diferentes."],
+ [2,"Specify a backend","Passar a instância para create_deep_agent e o comportamento padrão."],
+ [2,"Route to different backends","Estratégias mistas de armazenamento com CompositeBackend."],
+ [2,"Custom backends","Implementar o seu herdando de BackendProtocol."],
+ [3,"Implement the backend protocol","Métodos obrigatórios e tipos de retorno."],
+ [2,"Permissions","FilesystemPermission controlando o que o agente lê e escreve."],
+ [2,"Add policy hooks","Validação própria além das regras de caminho, por subclasse ou wrapper."],
+ [2,"Migrate from backend factories","Depreciação das funções de fábrica em favor de instâncias prontas."],
+ [3,"What changed","O padrão antigo de fábrica versus a instância direta, backend por backend."],
+ [3,"Deprecated APIs","Argumentos de construtor e campos de retorno removidos ou obsoletos."],
+ [3,"Migration example","Antes e depois, lado a lado."],
+ [3,"Migrating from BackendContext","De BackendContext para o Runtime do LangGraph nas namespace factories."],
+ [2,"Protocol reference","A interface completa que um backend precisa implementar."]
+]},
+{slug:"permissions", cat:"exec", title:"Permissions", desc:"Regras declarativas de allow, deny e interrupt sobre caminhos do filesystem, com avaliação first-match-wins.", secs:[
+ [2,"Basic usage","Passar regras FilesystemPermission para create_deep_agent."],
+ [2,"Rule structure","Os três campos — operations, paths e mode — e a regra do primeiro match."],
+ [2,"Pause for human approval","O modo interrupt, que pausa para revisão humana em vez de decidir sozinho."],
+ [2,"Examples","Cenários prontos de isolamento, proteção e leitura restrita."],
+ [3,"Isolate to a workspace directory","Restringir todo o acesso a /workspace/."],
+ [3,"Protect specific files","Negar arquivos sensíveis liberando o diretório em volta."],
+ [3,"Read-only memory","Impedir que o agente altere a base de conhecimento compartilhada."],
+ [3,"Deny all access","Bloquear tudo como baseline restritivo."],
+ [3,"Rule ordering","Regras específicas antes das amplas, por causa do first-match-wins."],
+ [2,"Subagent permissions","Subagentes herdam do pai ou recebem regras próprias pelo campo permissions."],
+ [2,"Composite backends","Restrições de caminho quando há CompositeBackend com rotas e defaults de sandbox."]
+]},
+{slug:"sandboxes", cat:"exec", title:"Sandboxes", desc:"Ambientes isolados para rodar código arbitrário: provedores, ciclo de vida, padrões de integração e limites de segurança.", secs:[
+ [2,"Why use sandboxes?","Rodar código, acessar arquivos e usar a rede sem expor credenciais nem o host."],
+ [2,"Basic usage","Instalação e integração com LangSmith, Daytona, E2B, Modal, Runloop e Vercel."],
+ [2,"Available providers","Setup, autenticação e ciclo de vida de cada provedor suportado."],
+ [2,"Lifecycle and scoping","Sandbox por thread ou compartilhado por assistant."],
+ [3,"Thread-scoped (default)","Uma instância por conversa, persistindo entre turnos, com TTL."],
+ [3,"Assistant-scoped","Várias threads no mesmo sandbox; arquivos e pacotes persistem, exigindo cuidado com o crescimento."],
+ [2,"Integration patterns","Rodar o agente dentro do sandbox ou usar o sandbox como ferramenta remota."],
+ [3,"Agent in sandbox pattern","Framework embutido na imagem; acopla ambiente e lógica."],
+ [3,"Sandbox as tool pattern","Agente externo chamando o sandbox por API; atualiza o código sem rebuild."],
+ [2,"How sandboxes work","Os mecanismos de isolamento e a arquitetura das operações de arquivo."],
+ [3,"Isolation boundaries","Protege o host, mas não impede context injection."],
+ [3,"The execute method","O único método que o provedor implementa e que sustenta todas as ferramentas de arquivo."],
+ [3,"Two planes of file access","Ferramentas do agente dentro do sandbox versus APIs de transferência da aplicação."],
+ [2,"Working with files","Transferência de arquivos no nível da aplicação."],
+ [3,"Seeding the sandbox","upload_files leva arquivos do host para dentro antes da execução."],
+ [3,"Retrieving artifacts","download_files traz os artefatos gerados de volta."],
+ [2,"Security considerations","O sandbox isola execução, não impede ataques de injeção de contexto."],
+ [3,"Handling secrets safely","Manter credenciais fora do sandbox ou usar proxy de rede."],
+ [3,"General best practices","Tratar a saída como não confiável, bloquear rede desnecessária, redigir padrões sensíveis."]
+]},
+{slug:"interpreters", cat:"exec", title:"Interpreters", desc:"Execução leve de JavaScript em QuickJS: o agente escreve código que chama ferramentas em loop e despacha subagentes.", secs:[
+ [2,"Why use interpreters?","Mover a orquestração para código em vez de alternar raciocínio e lotes fixos de tool calls."],
+ [2,"Choose a pattern","Critérios para decidir entre interpretador, sandbox e tool calling normal."],
+ [2,"Quickstart","Instalar e adicionar o CodeInterpreterMiddleware."],
+ [2,"How interpreters work","O middleware expõe uma ferramenta eval que roda JS em contexto QuickJS."],
+ [2,"Programmatic tool calling (PTC)","Chamar ferramentas do agente a partir do código, com loops, retries e branching."],
+ [2,"Enable PTC","Ativar informando a allowlist de nomes de ferramentas."],
+ [2,"Dynamic subagents","Despachar subagentes do código pela função global task()."],
+ [2,"Persistence","Se o estado do interpretador atravessa evals, turnos ou reseta a cada chamada."],
+ [2,"Security","Modelo de isolamento e o que a allowlist de PTC expõe."],
+ [2,"Configuration","Tabela de parâmetros do CodeInterpreterMiddleware."]
+]},
+{slug:"mcp", cat:"exec", title:"Model Context Protocol (MCP)", desc:"Conectar o agente a servidores MCP — protocolo aberto para expor ferramentas e contexto a modelos.", secs:[
+ [2,"Install","O extra mcp da LangChain, que traz a dependência FastMCP."],
+ [2,"Quickstart","Abrir um MCPAdapter, listar ferramentas e montar o agente dentro do context manager."],
+ [3,"Example: Query LangChain docs","O servidor MCP público da documentação LangChain, com busca e filesystem."],
+ [2,"Transports","O adapter infere o transporte: URL HTTP, caminho de script, objeto de transporte ou servidor in-process."]
+]},
+{slug:"multimodal", cat:"exec", title:"Multimodal inputs and outputs", desc:"Imagens, áudio, vídeo e documentos entrando pelo usuário, pelo read_file e por ferramentas próprias.", secs:[
+ [2,"Multimodal user input","Anexar imagens e mídia às mensagens usando content blocks padrão."],
+ [2,"Built-in read_file tool","read_file devolve content blocks, deixando o agente inspecionar imagens e documentos."],
+ [3,"Supported multimodal file extensions","As extensões de imagem, vídeo, áudio e documento reconhecidas."],
+ [2,"Custom tool outputs","Ferramentas próprias devolvendo conteúdo multimodal."],
+ [2,"Context compression and multimodal content","Blocos não textuais são preservados em vez de comprimidos no offloading e na sumarização."]
+]},
+
+{slug:"subagents", cat:"deleg", title:"Subagents", desc:"A página maior da documentação: configuração, subagentes forkados, dinâmicos, output estruturado, tracing e boas práticas.", secs:[
+ [2,"Why use subagents?","Isolar o trabalho intermediário e devolver só o resultado final."],
+ [2,"Configuration","As opções de configuração, do default ao personalizado."],
+ [3,"Default subagent","O general-purpose que vem incluído, salvo se desativado ou substituído."],
+ [3,"Running without subagents","Desligar o subagente padrão e a ferramenta task."],
+ [2,"Custom subagents","Definir subagentes especializados por domínio ou tarefa."],
+ [3,"SubAgent (Dictionary-based)","Formato de dicionário com name, description, system_prompt, tools e model."],
+ [3,"CompiledSubAgent","Usar um grafo LangGraph já pronto como subagente."],
+ [2,"Using SubAgent","Exemplo de subagente de pesquisa com ferramentas e modelo próprios."],
+ [2,"Using CompiledSubAgent","Envolver um agente LangGraph próprio como subagente compilado."],
+ [2,"Forked subagents","Subagentes que herdam o histórico do pai em vez de começar do zero."],
+ [3,"Configure a forked subagent","O ajuste mode=fork para continuar o trabalho do pai."],
+ [3,"How it works","Herdam as mensagens do pai com um preâmbulo de continuação."],
+ [3,"When to use forking","Comparação entre isolado e forkado: contexto, prompts e casos de uso."],
+ [2,"Dynamic subagents","Despachar subagentes do código, em loops e lotes paralelos."],
+ [3,"Enable dynamic subagents","Exige QuickJS e o CodeInterpreterMiddleware."],
+ [3,"Trigger dynamic orchestration","Enunciar o pedido como workflow dispara o fan-out pelo código."],
+ [3,"Use with a coding agent","dcode, o agente de codificação de terminal com subagentes dinâmicos ligados."],
+ [2,"Streaming","Atualizações do coordenador e dos subagentes delegados."],
+ [3,"Stream subagent progress","stream_events com iteradores separados por subagente."],
+ [3,"LangSmith tracing","Nomes de subagente aparecem nos metadados para filtro e monitoramento."],
+ [2,"Filter by subagent in LangSmith","Isolar execuções por subagente usando filtros de metadados."],
+ [3,"Filter in the LangSmith UI","Passo a passo do filtro por nome na interface."],
+ [3,"Filter programmatically with the SDK","Consulta via SDK filtrando pelos metadados."],
+ [2,"Structured output","Subagentes devolvendo JSON conforme um schema em vez de texto livre."],
+ [2,"The general-purpose subagent","O subagente embutido para isolamento de contexto sem comportamento especializado."],
+ [3,"Override the general-purpose subagent","Substituir o default por uma configuração própria."],
+ [3,"When to use it","Isolar tarefas multi-etapa complexas devolvendo resultados concisos."],
+ [3,"Skills inheritance","General-purpose herda as skills; subagentes próprios precisam de atribuição explícita."],
+ [2,"Best practices","Descrições, system prompts, conjunto de ferramentas e escolha de modelo."],
+ [3,"Write clear descriptions","A descrição é o que faz o pai escolher esse subagente."],
+ [3,"Keep system prompts detailed","O subagente não vê o contexto do pai; o prompt precisa bastar."],
+ [3,"Minimize tool sets","Menos ferramentas, menos erro de seleção."],
+ [3,"Choose models by task","Modelo mais barato para triagem, mais forte para síntese."],
+ [3,"Return concise results","O ganho de contexto só existe se o retorno for enxuto."],
+ [2,"Common patterns","Vários subagentes especializados coordenados num mesmo fluxo."],
+ [2,"Context management","O runtime context propaga automaticamente do pai para subagentes e suas ferramentas."]
+]},
+{slug:"async-subagents", cat:"deleg", title:"Async subagents", desc:"Subagentes em background que rodam em paralelo enquanto o supervisor continua conversando com o usuário.", secs:[
+ [2,"When to use async subagents","Comparação entre execução síncrona e assíncrona: concorrência, atualizações e estado."],
+ [2,"Configure async subagents","Especificações AsyncSubAgent apontando para servidores Agent Protocol."],
+ [2,"Use the async subagent tools","As cinco ferramentas que o supervisor usa para gerenciar tarefas em background."],
+ [3,"Understand the lifecycle","A sequência lançar, checar, atualizar, cancelar e listar."],
+ [2,"Understand state management","Metadados da tarefa guardados fora do histórico para sobreviver à compactação."],
+ [2,"Choose a transport","ASGI co-deployado ou HTTP remoto."],
+ [2,"Choose a deployment topology","Topologias single, split e hybrid."],
+ [2,"Best practices","Tamanho do pool de workers, descrições claras e tracing por thread ID."],
+ [2,"Troubleshooting","Polling imediato, status desatualizado e falhas de task ID."],
+ [2,"Reference implementation","Exemplos funcionais em Python e TypeScript no repositório async-deep-agents."]
+]},
+{slug:"dynamic-subagents", cat:"deleg", title:"Dynamic subagents", desc:"Seis padrões de orquestração que o agente monta escrevendo código no interpretador: fan-out, verificação adversarial, torneio e mais.", secs:[
+ [2,"Quickstart","Instalar o middleware de interpretador e declarar os subagentes."],
+ [2,"How it works","O interpretador expõe task(), permitindo despachar subagentes de dentro do código."],
+ [2,"Patterns","As estratégias que surgem de combinar despacho e síntese em código."],
+ [3,"Classify and act","Classificar primeiro, depois rotear cada item ao subagente certo."],
+ [3,"Fan-out and synthesize","Distribuir o mesmo trabalho por muitos itens em paralelo e combinar."],
+ [3,"Adversarial verification","Verificar achados com múltiplos revisores independentes e manter só a maioria."],
+ [3,"Generate and filter","Vários subagentes resolvem o mesmo problema; o código pontua e filtra."],
+ [3,"Tournament","Variações competem em eliminatórias julgadas por um subagente juiz."],
+ [3,"Loop until done","Loop de descoberta com deduplicação até não surgir nada novo."],
+ [2,"Disable dynamic subagents","subagents=False no middleware restringe o despacho ao caminho normal de ferramenta."]
+]},
+
+{slug:"streaming", cat:"ctrl", title:"Streaming", desc:"Streaming de subgrafos: namespaces, progresso de subagente, tokens, tool calls e o formato v2 unificado.", secs:[
+ [2,"Enable subgraph streaming","stream_subgraphs=True em agent.stream() para receber os eventos."],
+ [2,"Namespaces","Cada evento traz um namespace identificando o agente de origem na hierarquia."],
+ [2,"Subagent progress","stream_mode=updates para acompanhar os passos de cada subagente."],
+ [2,"LLM tokens","stream_mode=messages para tokens individuais com identificação da origem."],
+ [2,"Tool calls","Exibir invocações e resultados de ferramentas dos subagentes."],
+ [2,"Custom updates","Emitir sinais próprios de progresso com get_stream_writer()."],
+ [2,"Stream multiple modes","Combinar modos simultaneamente para visibilidade completa."],
+ [2,"Common patterns","Padrões como rastrear o ciclo de vida dos subagentes."],
+ [2,"Track subagent lifecycle","Estados pending, running e complete."],
+ [2,"v2 streaming format","O formato unificado recomendado, sem desempacotar tuplas aninhadas."]
+]},
+{slug:"event-streaming", cat:"ctrl", title:"Event streaming", desc:"A projeção stream.subagents: um handle por delegação, com mensagens, tool calls e trabalho aninhado.", secs:[
+ [2,"Stream subagents","Um handle de stream por chamada da ferramenta task, com descoberta leve."],
+ [2,"Subagent stream fields","As projeções expostas: mensagens, tool calls, subagentes aninhados e saída final."],
+ [2,"Track subagent lifecycle","Ver quais subagentes começaram e terminaram sem assinar todos os streams."],
+ [2,"Stream messages","stream.messages para o coordenador e subagent.messages para os delegados."],
+ [2,"Stream tool calls","stream.tool_calls e subagent.tool_calls."],
+ [2,"Stream nested work","Descer recursivamente em subagentes aninhados."],
+ [2,"Consume concurrently","astream_events com asyncio.gather ou stream.interleave() no modo síncrono."],
+ [2,"Subagents versus subgraphs","stream.subagents mostra delegações de produto; stream.subgraphs mostra a estrutura do grafo."]
+]},
+{slug:"human-in-the-loop", cat:"ctrl", title:"Human-in-the-loop", desc:"Aprovação humana de tool calls sensíveis: tipos de decisão, interrupts condicionais, edição de argumentos e subagentes.", secs:[
+ [2,"Basic configuration","O parâmetro interrupt_on por ferramenta, mais o checkpointer obrigatório."],
+ [2,"Decision types","approve, edit, reject e respond."],
+ [2,"Conditional interrupts","Predicado when para pausar apenas certas chamadas conforme os argumentos."],
+ [2,"Handle interrupts","Detectar o interrupt no resultado e retomar com a decisão."],
+ [2,"Multiple tool calls","Aprovações em lote quando o agente pede várias ferramentas de uma vez."],
+ [2,"Rejection messages","Feedback específico ao negar, para guiar o próximo passo do agente."],
+ [2,"Edit tool arguments","Alterar parâmetros durante a aprovação, antes de executar."],
+ [2,"Subagent interrupts","Configuração de interrupts dentro de subagentes."],
+ [3,"Interrupts on tool calls","Sobrescrever a configuração do agente pai no subagente."],
+ [3,"Interrupts within tool calls","Chamar interrupt() dentro da própria função da ferramenta."],
+ [2,"Filesystem permission interrupts","Pausar operações de arquivo com regras em mode=interrupt."],
+ [2,"Best practices","Sempre usar checkpointer, manter thread IDs, ordenar decisões e calibrar por risco."]
+]},
+{slug:"fault-tolerance", cat:"ctrl", title:"Fault tolerance", desc:"Manter o agente de pé: rate limiting, limites de chamadas, retries com backoff, fallback de modelo e tratamento de erro de ferramenta.", secs:[
+ [2,"Error handling strategies","Cada tipo de erro pede uma resposta: retry, feedback ao modelo, pausa, fallback ou teto de chamadas."],
+ [3,"Rate limiting","Limitar a frequência ao provedor e o total de chamadas por execução."],
+ [4,"Provider rate limiting","Inicializar o modelo com um rate limiter por janela de tempo."],
+ [4,"Call limits","Middleware com teto de chamadas de modelo e de ferramenta contra loops descontrolados."],
+ [2,"Retries","Retry automático com backoff exponencial, em middlewares separados para modelo e ferramenta."],
+ [2,"Fallbacks","ModelFallbackMiddleware troca de modelo quando o provedor primário cai."],
+ [2,"Error handling","ToolErrorMiddleware converte exceções em mensagens que o modelo pode corrigir."]
+]},
+{slug:"rubric", cat:"ctrl", title:"Grading rubrics", desc:"LLM como juiz: o agente se avalia contra critérios definidos e itera até satisfazer ou bater o limite.", secs:[
+ [2,"Configure the middleware","Adicionar RubricMiddleware com modelo avaliador e limite de iterações."],
+ [2,"Pass rubric on invocation","Fornecer a rubric em invoke() ou stream_events()."],
+ [2,"Rubric verdicts","satisfied, needs_revision, max_iterations_reached, failed e grader_error."],
+ [2,"Observe iteration progress","Callback on_evaluation com veredito e feedback por critério."],
+ [2,"Grader pass events","Os eventos emitidos durante a avaliação, incluindo exceções."],
+ [2,"Persist rubrics across invocations","Checkpointers fazem a rubric atravessar várias chamadas na mesma thread."],
+ [2,"Example: generate vetted Python code","Exemplo em três passos com verificação por testes."]
+]},
+
+{slug:"going-to-production", cat:"prod", title:"Going to production", desc:"A página de síntese: threads, usuários, assistants, multi-tenancy, durabilidade, memória, sandboxes e guardrails.", secs:[
+ [2,"Overview","Threads para conversas, users para identidade e assistants para instâncias configuradas."],
+ [2,"LangSmith Deployments","Managed Deep Agents (CLI-first) versus deployment próprio com auth, webhooks, cron e observabilidade."],
+ [2,"Production considerations","thread_id, context, multi-tenancy, async e durabilidade."],
+ [3,"Invoking the agent","thread_id estável para persistência e context acessível às ferramentas."],
+ [3,"Multi-tenancy","Três camadas: identidade, controle de acesso e credenciais para APIs externas."],
+ [4,"User identity and access control","Handlers de autenticação e autorização customizados na LangSmith."],
+ [4,"Team access control (RBAC)","Papéis Admin, Editor e Viewer sobre deploy, configuração e monitoramento."],
+ [4,"End-user credentials","OAuth via Agent Auth, injeção de credenciais e secrets de workspace."],
+ [3,"Async","Ferramentas e middlewares assíncronos para I/O concorrente."],
+ [3,"Durability","Checkpointing a cada passo: retomar após falha, interrupts indefinidos e time travel."],
+ [2,"Memory","Persistência escopada por thread, usuário, assistant ou organização."],
+ [3,"Scoping","O escopo define quem lê e escreve; user scope é o default recomendado."],
+ [3,"Configuration","StateBackend para escopo de thread, StoreBackend para persistência entre threads."],
+ [2,"Execution environment","Backends de filesystem para I/O e sandboxes para execução de código."],
+ [3,"Filesystem","Escolher entre rascunho por thread, store entre threads, composto ou Hub durável."],
+ [3,"Sandboxes","Containers isolados protegendo o host com execução e acesso a arquivos."],
+ [4,"Lifecycle","Sandbox por thread para isolamento ou por assistant para ambiente compartilhado."],
+ [4,"File transfers","Upload e download atravessando a fronteira do sandbox."],
+ [4,"Managing secrets","Proxy de autenticação e secrets de workspace em vez de variáveis de ambiente."],
+ [2,"Guardrails","Permissões, tolerância a falhas e middleware de privacidade."],
+ [3,"Permissions","Regras allow/deny de leitura e escrita protegendo dados sensíveis."],
+ [3,"Fault tolerance","Rate limiting, retries, fallbacks e tratamento de erro."],
+ [3,"Data privacy","Middleware detectando PII e aplicando redação, máscara, hash ou bloqueio."],
+ [2,"Frontend","O hook useStream ligando a UI ao backend com mensagens e progresso em tempo real."]
+]},
+{slug:"a2a", cat:"prod", title:"A2A endpoint in Agent Server", desc:"O protocolo Agent-to-Agent do Google no Agent Server: agent card, métodos, tracing distribuído e conformidade.", secs:[
+ [2,"Protocol version","A2A v1.0 em binding JSON-RPC, aceitando nomes de método da v0.3 por compatibilidade."],
+ [3,"Supported methods","Envio de mensagem, streaming, gestão de tarefas e recuperação do agent card."],
+ [3,"Task history in responses","historyScope controla se vem o contexto completo ou só as mensagens da tarefa."],
+ [2,"Agent card discovery","Cada assistant expõe o card em /.well-known/agent-card.json."],
+ [2,"Optional capabilities","Modos de entrada e saída, file parts e suporte a A2UI v0.9 por metadados."],
+ [2,"Requirements","Versões mínimas de langgraph-api."],
+ [2,"Creating an A2A-compatible agent","Exige a chave messages no estado e gestão de contextId e taskId."],
+ [2,"Agent-to-agent communication","Agentes trocando mensagens JSON-RPC entre endpoints, mantendo o contexto."],
+ [2,"Distributed tracing","O servidor converte contextId em thread_id para tracing unificado na LangSmith."],
+ [3,"How contextId maps to thread_id","O mapeamento direto, sem configuração adicional."],
+ [3,"Tracing across multiple agents","Reusar o mesmo contextId agrupa todos os traces numa thread."],
+ [3,"Receive thread_id in non-LangGraph agents","Extrair contextId e anexá-lo via OpenTelemetry."],
+ [2,"Test your integration","Buscar o card, enviar mensagens e validar contra a suíte oficial."],
+ [3,"Against the official conformance suite","O A2A Technology Compatibility Kit avalia contra os requisitos RFC 2119."],
+ [3,"What Agent Server currently fails","Lacunas conhecidas: formato de resposta e recursos de subscription."],
+ [2,"Disable A2A","disable_a2a em langgraph.json para não expor o endpoint."]
+]},
+{slug:"acp", cat:"prod", title:"Agent Client Protocol (ACP)", desc:"Expor o deep agent a editores e IDEs pelo protocolo ACP, via stdio.", secs:[
+ [2,"Quickstart","Instalação e exemplo em Python expondo um deep agent por ACP em modo stdio."],
+ [2,"Clients","Zed, IDEs JetBrains, VSCode e Neovim."],
+ [3,"Zed","Registrar e configurar o servidor ACP no Zed em quatro passos."],
+ [3,"Toad","Usar o Toad para gerenciar servidores ACP como processos locais de desenvolvimento."]
+]},
+
+{slug:"frontend/overview", cat:"front", title:"Frontend: Overview", desc:"A arquitetura coordenador-worker vista pelo frontend e as projeções que o SDK expõe para a UI.", secs:[
+ [2,"Architecture","O agente principal delega a subagentes especializados rodando isolados."],
+ [2,"What the SDK exposes","Projeções estruturadas: mensagens, subagentes, values, estado de tool call e interrupts."],
+ [2,"Patterns","Os três padrões de UI: subagent streaming, todo list e sandbox."]
+]},
+{slug:"frontend/subagent-streaming", cat:"front", title:"Frontend: Subagent streaming", desc:"Renderizar cards por subagente com conteúdo em streaming, barra de progresso e seletores por escopo.", secs:[
+ [2,"Why selector-based subagent streams","O stream raiz mantém o foco no coordenador; subagentes vêm por seletores."],
+ [2,"Setting up useStream","Configurar o stream e usar stream.messages e stream.subagents."],
+ [2,"The SubagentDiscoverySnapshot","Registros leves identificando subagentes e seu ciclo de vida, sem as mensagens."],
+ [2,"Building the SubagentCard","Cards por especialista com hooks useMessages() e useToolCalls() escopados."],
+ [2,"Progress tracking","Barra mostrando quantos subagentes terminaram."],
+ [2,"Rendering messages with subagent cards","Ancorar o card à mensagem cuja tool call gerou o subagente."],
+ [2,"Best practices","Montar seletores com critério, nomear especialistas, cards colapsáveis, erro por subagente."]
+]},
+{slug:"frontend/todo-list", cat:"front", title:"Frontend: Todo list", desc:"Mostrar o plano do agente em tempo real lendo o canal de estado todos exposto pelo TodoListMiddleware.", secs:[
+ [2,"How it works","O TodoListMiddleware expõe o canal todos, atualizado conforme o agente executa."],
+ [2,"Setting up useStream","Ligar o middleware e ler os todos de stream.values."],
+ [2,"Building the TodoList component","Renderizar cada item com ícone de status, cor e barra de progresso."],
+ [2,"Progress bar","Indicador visual da porcentagem concluída com transição animada."],
+ [2,"Individual todo items","Ícone de status, cor e riscado para itens concluídos."],
+ [2,"Calculating progress","Derivar contagem e porcentagem direto do array."],
+ [2,"Combining with chat messages","Integrar a lista como painel fixo ao lado do chat."],
+ [2,"Handling empty and loading states","O que mostrar antes de o agente montar o plano."],
+ [2,"Best practices","Destaque, transições animadas, um item ativo por vez e sincronização automática."]
+]},
+{slug:"frontend/sandbox", cat:"front", title:"Frontend: Sandbox", desc:"Uma UI tipo IDE em três painéis sobre um agente com sandbox: árvore de arquivos, visualizador com diff e chat.", secs:[
+ [2,"Architecture","Três componentes: deep agent com sandbox, servidor de API próprio e frontend de três painéis."],
+ [2,"Sandbox lifecycle","Escopo por thread ou por assistant e como frontend e API resolvem o mesmo ambiente."],
+ [2,"Connect the agent and API server","Configurar o backend de sandbox e compartilhar a resolução."],
+ [3,"Resolve the sandbox from thread metadata","Buscar ou criar o sandbox pelo thread ID vindo do config."],
+ [3,"Seed project files","Subir arquivos iniciais antes da execução."],
+ [2,"Adding the file browsing API","Servidor FastAPI expondo os endpoints de filesystem do sandbox."],
+ [3,"Create the API server","Endpoints de árvore e leitura de arquivo."],
+ [3,"Configure langgraph.json","Registrar o grafo e o servidor de API pelo campo http.app."],
+ [2,"Building the frontend","Árvore, visualizador e chat com useStream mais as APIs próprias."],
+ [3,"Thread creation","Persistir o thread ID em sessionStorage para reconectar após reload."],
+ [3,"File state management","Snapshots original e atual do filesystem por thread."],
+ [3,"Real-time file sync","Observar o stream por ferramentas que alteram arquivos e recarregar os afetados."],
+ [3,"Detecting changed files","Comparar snapshots e abrir o diff por padrão."],
+ [3,"Displaying diffs","Bibliotecas de diff por framework e exemplo em React."],
+ [3,"Changed files summary","Resumo dos arquivos alterados com contagem de adições e remoções."],
+ [2,"Use cases","Onde uma IDE com sandbox faz sentido: codificação e aprendizado."],
+ [2,"Best practices","Recomendações de frontend, backend e configuração de sandbox para produção."]
+]},
+
+{slug:"deep-research", cat:"ex", title:"Build a deep research agent", desc:"Tutorial: agente de pesquisa web multi-etapa que decompõe a pergunta e delega a subagentes pesquisadores.", secs:[
+ [2,"Overview","Decompor perguntas de pesquisa e delegar a subagentes especializados."],
+ [2,"Key concepts","Subagentes, ferramentas próprias e planejamento multi-etapa opcional."],
+ [2,"Prerequisites","Chaves de Claude ou Gemini, Tavily e LangSmith opcional."],
+ [2,"Setup","Diretório do projeto, dependências e variáveis de ambiente."],
+ [2,"Build the agent","Construção passo a passo com ferramentas e prompts."],
+ [3,"Add tools","Ferramenta Tavily devolvendo a página completa em markdown."],
+ [3,"Add prompts","Instruções para orquestrador, pesquisador e coordenação dos subagentes."],
+ [3,"Enable task planning","Incluir o TodoListMiddleware para planejamento de tarefas."],
+ [3,"Create the agent","Modelo, subagentes, ferramentas e middleware."],
+ [2,"Run the agent","Execução síncrona ou com streaming de tokens."],
+ [2,"Full code","O exemplo completo no repositório do GitHub."]
+]},
+{slug:"data-analysis", cat:"ex", title:"Build a data analysis agent", desc:"Tutorial: agente que analisa arquivos de dados, gera visualizações em sandbox e publica o resultado no Slack.", secs:[
+ [2,"Overview","Raciocínio multi-etapa, execução de código e manipulação de artefatos."],
+ [2,"Key concepts","Backends, ferramentas próprias e o middleware opcional de planejamento."],
+ [2,"Setup","Dependências principais e opcionais, mais tracing."],
+ [2,"Set up the backend","Configurar execução em sandbox em vários provedores."],
+ [3,"LangSmith","Criar uma instância de sandbox da LangSmith."],
+ [3,"Local shell","Acesso irrestrito ao host — com aviso de risco."],
+ [3,"AgentCore","Integração com o code interpreter do AWS AgentCore."],
+ [3,"Daytona","Setup e verificação do sandbox Daytona."],
+ [3,"E2B","Inicialização do sandbox E2B."],
+ [3,"Modal","Criação de sandbox com o framework Modal."],
+ [3,"Runloop","Integração do SDK Runloop."],
+ [2,"Upload sample data","Criar e enviar um CSV de vendas para o backend."],
+ [2,"Implement custom tools","Ferramenta de Slack que baixa artefatos do backend e posta."],
+ [2,"Enable task planning","TodoListMiddleware para acompanhar as etapas."],
+ [2,"Run the agent","Instanciar e invocar o agente."],
+ [2,"Results","O relatório e o dashboard gerados pelo agente."]
+]},
+{slug:"content-builder", cat:"ex", title:"Build a content builder agent", desc:"Tutorial: agente de conteúdo com memória de marca, skills, subagentes de pesquisa e geração de imagens.", secs:[
+ [2,"Overview","Carrega regras de workflow, delega pesquisa, redige e gera imagens no diretório do projeto."],
+ [2,"Key concepts","Memória, skills, subagentes, backend de filesystem e ferramentas próprias."],
+ [2,"Prerequisites","Chaves de Anthropic, Google e Tavily, LangSmith opcional e Python 3.11+."],
+ [2,"Setup","Projeto, dependências e chaves."],
+ [2,"Add configuration files","AGENTS.md, subagents.yaml e pastas de skill definindo o comportamento."],
+ [2,"Build the script","Ferramentas, criação do agente e entry point em content_writer.py."],
+ [2,"Run the agent","Invocar com ou sem argumentos de linha de comando."],
+ [2,"Output","A estrutura de diretórios gerada com posts e arquivos de pesquisa."],
+ [2,"Full code","O exemplo completo no GitHub."]
+]}
+];
+
+/* ---------- helpers ---------- */
+const BASE = "https://docs.langchain.com/oss/python/deepagents/";
+const slugify = s => s.toLowerCase().replace(/[`*]/g,"").replace(/[^a-z0-9\s-]/g,"").trim().replace(/\s+/g,"-");
+const docUrl = t => BASE + t.slug;
+const key = (slug,i) => slug + "#" + i;
+
+let done = new Set();
+try {
+  const raw = localStorage.getItem("da-map-progress");
+  if (raw) done = new Set(JSON.parse(raw));
+} catch (e) { /* armazenamento indisponível */ }
+
+function save(){
+  try { localStorage.setItem("da-map-progress", JSON.stringify([...done])); } catch(e){}
+}
+
+const totalSubs = T.reduce((a,t)=>a+t.secs.length,0);
+document.getElementById("fSubs").textContent = totalSubs;
+document.getElementById("fTopics").textContent = T.length;
+
+/* ---------- trilha ---------- */
+const bySlug = Object.fromEntries(T.map(t=>[t.slug,t]));
+document.getElementById("phases").innerHTML = PHASES.map(p=>`
+  <div class="phase">
+    <div class="phase-n">${p.n}</div>
+    <h3>${p.t}</h3>
+    <p>${p.d}</p>
+    <div class="chips">${p.s.filter(s=>bySlug[s]).map(s=>`<button class="chip" type="button" data-go="${s}">${bySlug[s].title.replace(/^Frontend: /,"")}</button>`).join("")}</div>
+  </div>`).join("");
+
+/* ---------- filtros ---------- */
+let activeCat = "all";
+const catList = ["all", ...Object.keys(CATS)];
+document.getElementById("filters").innerHTML = catList.map(c=>{
+  const label = c==="all" ? "Todas" : CATS[c].label;
+  const n = c==="all" ? T.length : T.filter(t=>t.cat===c).length;
+  return `<button class="filter" type="button" data-cat="${c}" aria-pressed="${c==="all"}">${label} <span style="opacity:.6">${n}</span></button>`;
+}).join("");
+
+/* ---------- tabela geral ---------- */
+const masterBody = document.getElementById("masterBody");
+masterBody.innerHTML = T.map((t,i)=>`
+  <tr data-slug="${t.slug}" data-cat="${t.cat}">
+    <td class="num">${String(i+1).padStart(2,"0")}</td>
+    <td class="t-title"><a href="#t-${t.slug.replace(/\//g,"-")}">${t.title}</a><small>${t.slug}</small></td>
+    <td><span class="tag">${CATS[t.cat].label}</span></td>
+    <td class="t-desc">${t.desc}</td>
+    <td class="count">${t.secs.length}</td>
+    <td><a class="golink" href="${docUrl(t)}" target="_blank" rel="noopener">abrir ↗</a></td>
+  </tr>`).join("");
+
+/* ---------- blocos por tópico ---------- */
+document.getElementById("topics").innerHTML = T.map((t,i)=>`
+  <article class="topic" id="t-${t.slug.replace(/\//g,"-")}" data-slug="${t.slug}" data-cat="${t.cat}">
+    <div class="topic-head">
+      <div class="topic-idx">${String(i+1).padStart(2,"0")}</div>
+      <div class="topic-main">
+        <h3>${t.title}</h3>
+        <p>${t.desc}</p>
+      </div>
+      <div class="topic-meta">
+        <a class="doclink" href="${docUrl(t)}" target="_blank" rel="noopener">documentação ↗</a>
+        <span class="topic-prog" data-prog="${t.slug}">0/${t.secs.length}</span>
+      </div>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th class="chk"></th><th>Argumento interno</th><th>O que cobre</th><th>Seção</th></tr>
+        </thead>
+        <tbody>
+          ${t.secs.map((s,j)=>{
+            const k = key(t.slug,j);
+            const checked = done.has(k) ? "checked" : "";
+            return `<tr class="d${s[0]} ${done.has(k)?"done":""}" data-key="${k}">
+              <td class="chk"><input type="checkbox" id="c-${t.slug.replace(/\//g,"-")}-${j}" data-k="${k}" ${checked} aria-label="marcar ${s[1]} como estudado"></td>
+              <td class="sub-name">${s[1]}</td>
+              <td class="t-desc">${s[2]}</td>
+              <td><a class="golink" href="${docUrl(t)}#${slugify(s[1])}" target="_blank" rel="noopener">↗</a></td>
+            </tr>`;
+          }).join("")}
+        </tbody>
+      </table>
+    </div>
+  </article>`).join("");
+
+/* ---------- progresso ---------- */
+function refreshProgress(){
+  T.forEach(t=>{
+    const n = t.secs.filter((_,j)=>done.has(key(t.slug,j))).length;
+    const el = document.querySelector(`[data-prog="${t.slug}"]`);
+    if(el) el.textContent = `${n}/${t.secs.length}`;
+  });
+  const n = done.size;
+  document.getElementById("meterTxt").textContent = `${n} / ${totalSubs}`;
+  document.getElementById("meterFill").style.width = (totalSubs ? (n/totalSubs*100) : 0) + "%";
+}
+refreshProgress();
+
+document.getElementById("topics").addEventListener("change", e=>{
+  const box = e.target.closest("input[type=checkbox]");
+  if(!box) return;
+  const k = box.dataset.k;
+  if(box.checked) done.add(k); else done.delete(k);
+  box.closest("tr").classList.toggle("done", box.checked);
+  save(); refreshProgress();
+});
+
+document.getElementById("reset").addEventListener("click", ()=>{
+  done.clear(); save();
+  document.querySelectorAll("#topics input[type=checkbox]").forEach(b=>{b.checked=false;b.closest("tr").classList.remove("done");});
+  refreshProgress();
+});
+
+/* ---------- busca + filtro ---------- */
+const q = document.getElementById("q");
+function applyFilter(){
+  const term = q.value.trim().toLowerCase();
+  let mRows = 0, mTopics = 0;
+
+  document.querySelectorAll("#masterBody tr").forEach(tr=>{
+    const t = bySlug[tr.dataset.slug];
+    const catOk = activeCat==="all" || t.cat===activeCat;
+    const hit = !term || (t.title+" "+t.slug+" "+t.desc+" "+t.secs.map(s=>s[1]+" "+s[2]).join(" ")).toLowerCase().includes(term);
+    const show = catOk && hit;
+    tr.hidden = !show;
+    if(show) mRows++;
+  });
+
+  document.querySelectorAll(".topic").forEach(art=>{
+    const t = bySlug[art.dataset.slug];
+    const catOk = activeCat==="all" || t.cat===activeCat;
+    let any = false;
+    const headHit = !term || (t.title+" "+t.slug+" "+t.desc).toLowerCase().includes(term);
+    art.querySelectorAll("tbody tr").forEach((tr,j)=>{
+      const s = t.secs[j];
+      const hit = !term || headHit || (s[1]+" "+s[2]).toLowerCase().includes(term);
+      tr.hidden = !hit;
+      if(hit) any = true;
+    });
+    const show = catOk && (any || headHit);
+    art.hidden = !show;
+    if(show) mTopics++;
+  });
+
+  document.getElementById("masterEmpty").hidden = mRows>0;
+  document.getElementById("topicsEmpty").hidden = mTopics>0;
+}
+q.addEventListener("input", applyFilter);
+
+document.getElementById("filters").addEventListener("click", e=>{
+  const b = e.target.closest("[data-cat]");
+  if(!b) return;
+  activeCat = b.dataset.cat;
+  document.querySelectorAll("#filters .filter").forEach(f=>f.setAttribute("aria-pressed", f.dataset.cat===activeCat));
+  applyFilter();
+});
+
+document.getElementById("phases").addEventListener("click", e=>{
+  const b = e.target.closest("[data-go]");
+  if(!b) return;
+  activeCat = "all";
+  document.querySelectorAll("#filters .filter").forEach(f=>f.setAttribute("aria-pressed", f.dataset.cat==="all"));
+  q.value = ""; applyFilter();
+  const el = document.getElementById("t-"+b.dataset.go.replace(/\//g,"-"));
+  if(el) el.scrollIntoView({behavior:"smooth", block:"start"});
+});
+
+applyFilter();
+</script>
+
+</body></html>
