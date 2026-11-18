@@ -8,6 +8,8 @@ Rode:  python 03_memory.py
 from deepagents.backends.utils import create_file_data
 from langgraph.checkpoint.memory import MemorySaver
 
+from deepagents import create_deep_agent
+
 from _comum import criar_gateway, mostrar
 
 AGENTS_MD = """\
@@ -20,7 +22,7 @@ AGENTS_MD = """\
 
 def main() -> None:
     gw = criar_gateway()
-    agent = gw.agent(
+    agent = create_deep_agent(model=gw.build(),
         memory=["/AGENTS.md"],
         checkpointer=MemorySaver(),   # como na doc
     )

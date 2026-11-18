@@ -22,6 +22,8 @@ import os
 from deepagents import GeneralPurposeSubagentProfile, HarnessProfile, register_harness_profile
 from langchain.agents.middleware import AgentMiddleware
 
+from deepagents import create_deep_agent
+
 from _comum import MODELO_PADRAO, criar_gateway, mostrar
 
 
@@ -64,7 +66,7 @@ def main() -> None:
 
     gw = criar_gateway()
     # Sem system_prompt: o que o modelo recebe vem do perfil (+ prompts dos middlewares).
-    agent = gw.agent()
+    agent = create_deep_agent(model=gw.build())
     result, rep = gw.run_agent(
         agent,
         {"messages": [{"role": "user", "content": "Explique o que é uma API REST."}]},

@@ -73,12 +73,7 @@ class LLMGateway:
             report.wall_time_s = time.perf_counter() - t0
             self.history.append(report)
 
-    # -- Deep Agents --
-    def agent(self, **create_kwargs):
-        """Cria o deep agent usando o modelo já configurado."""
-        from deepagents import create_deep_agent
-        return create_deep_agent(model=self.build(), **create_kwargs)
-
+    # -- execução de um agente (criado fora do model/) com métricas --
     def run_agent(self, agent: Any, payload: dict, *, label: str | None = None,
                   config: dict | None = None, **kwargs) -> tuple[Any, RunReport]:
         report, cfg = self._new_run(label)

@@ -7,6 +7,8 @@ Observe: nas "chamadas ao modelo", o principal pede a ferramenta `task`.
 """
 from langchain_core.tools import tool
 
+from deepagents import create_deep_agent
+
 from _comum import criar_gateway, mostrar
 
 
@@ -27,7 +29,7 @@ conversor = {
 
 def main() -> None:
     gw = criar_gateway()
-    agent = gw.agent(
+    agent = create_deep_agent(model=gw.build(),
         system_prompt="Você é um coordenador. Delegue conversões de temperatura ao subagente 'conversor'.",
         subagents=[conversor],
     )

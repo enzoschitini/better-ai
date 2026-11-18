@@ -3,7 +3,7 @@
 Dá instruções ao agente principal. Aceita str ou SystemMessage.
 Rode:  python 01_system_prompt.py
 """
-from deepagents import create_deep_agent  # noqa: F401  (usado via gw.agent)
+from deepagents import create_deep_agent
 
 from _comum import criar_gateway, mostrar
 
@@ -16,7 +16,7 @@ Sempre termine a resposta com uma linha: "Dica: <uma dica prática>".
 
 def main() -> None:
     gw = criar_gateway()
-    agent = gw.agent(system_prompt=INSTRUCOES)
+    agent = create_deep_agent(model=gw.build(), system_prompt=INSTRUCOES)
     result, rep = gw.run_agent(
         agent,
         {"messages": [{"role": "user", "content": "O que é um decorator em Python?"}]},

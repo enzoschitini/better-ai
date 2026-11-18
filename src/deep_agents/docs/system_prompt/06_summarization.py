@@ -9,6 +9,8 @@ from deepagents.backends import StateBackend
 from deepagents.middleware import SummarizationMiddleware
 from langgraph.checkpoint.memory import MemorySaver
 
+from deepagents import create_deep_agent
+
 from _comum import criar_gateway, mostrar
 
 SUMMARY_PROMPT = """\
@@ -38,7 +40,7 @@ def main() -> None:
         trigger=("messages", 6),   # dispara com 6+ mensagens (padrão é bem maior)
         keep=("messages", 2),      # mantém as 2 mais recentes
     )
-    agent = gw.agent(middleware=[resumo], checkpointer=MemorySaver())  # substitui o padrão pelo mesmo .name
+    agent = create_deep_agent(model=gw.build(), middleware=[resumo], checkpointer=MemorySaver())  # substitui o padrão pelo mesmo .name
     config = {"configurable": {"thread_id": "sum-1"}}
 
     for i, p in enumerate(PERGUNTAS, 1):

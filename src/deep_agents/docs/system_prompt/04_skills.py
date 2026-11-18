@@ -8,6 +8,8 @@ Observe: em "ferramentas executadas" deve aparecer read_file no SKILL.md.
 from deepagents.backends.utils import create_file_data
 from langgraph.checkpoint.memory import MemorySaver
 
+from deepagents import create_deep_agent
+
 from _comum import criar_gateway, mostrar
 
 SKILL_MD = """\
@@ -29,7 +31,7 @@ Ao resumir um conceito, siga EXATAMENTE este formato:
 
 def main() -> None:
     gw = criar_gateway()
-    agent = gw.agent(skills=["/skills/"], checkpointer=MemorySaver())
+    agent = create_deep_agent(model=gw.build(), skills=["/skills/"], checkpointer=MemorySaver())
     result, rep = gw.run_agent(
         agent,
         {
