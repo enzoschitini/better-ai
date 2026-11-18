@@ -15,7 +15,7 @@ from typing import Any
 
 # Permite rodar os exemplos direto (botão Play / `python arquivo.py`):
 # adiciona a raiz do repositório ao sys.path para o import `src.*` funcionar.
-_RAIZ = Path(__file__).resolve().parents[3]
+_RAIZ = Path(__file__).resolve().parents[4]
 if str(_RAIZ) not in sys.path:
     sys.path.insert(0, str(_RAIZ))
 
