@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-from deepagents import create_deep_agent
+from src.deep_agents.model.llm_gateway import LLMGateway, ModelConfig
 
 # Load environment variables from a .env file
 load_dotenv()
@@ -17,8 +17,19 @@ You have access to an internet search tool as your primary means of gathering in
 Use this to run an internet search for a given query. You can specify the max number of results to return, the topic, and whether raw content should be included.
 """
 
-agent = create_deep_agent(
-    model="openai:gpt-6.1-sol",
+# Model configuration — the gateway applies per-provider rules (renamed/dropped params)
+# and collects per-call metrics (tokens, latency, tool runs) in gateway.history.
+gateway = LLMGateway(
+    ModelConfig(
+        provider="openai",
+        model_id="gpt-6.1-sol",
+        timeout=120,
+        max_retries=2,
+        # temperature=..., max_tokens=..., extra={...}  # optional controls
+    )
+)
+
+agent = gateway.agent(
     tools=[internet_search],
     system_prompt=research_instructions,
 )
