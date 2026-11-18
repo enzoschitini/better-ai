@@ -1,5 +1,28 @@
-from src.deep_agents.agent import agent
+from src.deep_agents.agent import agent, gateway
+from src.deep_agents.model.metrics import RunReport
 from src.deep_agents.utils.json_manager import extract_response_text, manage_result_json
+
+
+def format_metrics(report: RunReport) -> str:
+    """One compact line: always tokens in/out + time; extras only when relevant."""
+    parts = [
+        f"tokens in: {report.input_tokens}",
+        f"out: {report.output_tokens}",
+        f"tempo: {report.wall_time_s or 0:.1f}s",
+    ]
+    if report.n_calls > 1:
+        parts.append(f"chamadas LLM: {report.n_calls}")
+    if report.reasoning_tokens:
+        parts.append(f"reasoning: {report.reasoning_tokens}")
+    if report.cache_read_tokens:
+        parts.append(f"cache: {report.cache_read_tokens}")
+    if report.tool_runs:
+        parts.append(f"ferramentas: {len(report.tool_runs)}")
+    if report.cost_usd is not None:
+        parts.append(f"custo: ${report.cost_usd:.4f}")
+    if report.n_errors:
+        parts.append(f"erros: {report.n_errors}")
+    return "[" + " | ".join(parts) + "]"
 
 
 def chat_loop() -> None:
@@ -30,7 +53,7 @@ def chat_loop() -> None:
 
         messages.append({"role": "user", "content": user_input})
         try:
-            result = agent.invoke({"messages": messages})
+            result, report = gateway.run_agent(agent, {"messages": messages})
         except Exception as e:
             messages.pop()  # drop the failed turn so the history stays consistent
             print(f"\n[erro] {e}\n")
@@ -40,7 +63,8 @@ def chat_loop() -> None:
         messages = result["messages"]
         manage_result_json(result)
 
-        print(f"\nAgente: {extract_response_text(result)}\n")
+        print(f"\nAgente: {extract_response_text(result)}")
+        print(f"{format_metrics(report)}\n")
 
 
 # python -m src.deep_agents.looping
