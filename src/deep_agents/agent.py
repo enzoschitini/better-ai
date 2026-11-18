@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
-from src.deep_agents.model.llm_gateway import LLMGateway, ModelConfig
+from src.deep_agents.model.llm_gateway import LLMGateway
+from src.deep_agents.model.model_config import ModelConfig
 
 # Load environment variables from a .env file
 load_dotenv()
