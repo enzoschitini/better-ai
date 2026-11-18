@@ -6,13 +6,13 @@ import requests
 from dotenv import load_dotenv
 import logging
 
-from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_classic.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI
-from langchain.schema.runnable import RunnablePassthrough
-from langchain.agents.output_parsers import OpenAIFunctionsAgentOutputParser
-from langchain.agents.format_scratchpad import format_to_openai_function_messages
-from langchain.agents import AgentExecutor
-from langchain.callbacks.base import BaseCallbackHandler
+from langchain_classic.schema.runnable import RunnablePassthrough
+from langchain_classic.agents.output_parsers import OpenAIFunctionsAgentOutputParser
+from langchain_classic.agents.format_scratchpad import format_to_openai_function_messages
+from langchain_classic.agents import AgentExecutor
+from langchain_classic.callbacks.base import BaseCallbackHandler
 
 from src.chat.buffer_memory import create_memory
 from src.chat.prompts.prompt_template import chat_system_prompt

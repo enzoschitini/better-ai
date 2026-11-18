@@ -3,9 +3,9 @@ import logging
 from typing import List
 from dotenv import load_dotenv
 
-from langchain.schema import Document
+from langchain_classic.schema import Document
 from langchain_openai import OpenAIEmbeddings
-from langchain.prompts import PromptTemplate
+from langchain_classic.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
 
 import pinecone

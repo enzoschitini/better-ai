@@ -9,8 +9,8 @@ Componentes:
 import os
 from dotenv import load_dotenv
 
-from langchain.agents import AgentExecutor, create_tool_calling_agent  # ← genérico
-from langchain.memory import ConversationBufferMemory
+from langchain_classic.agents import AgentExecutor, create_tool_calling_agent  # ← genérico
+from langchain_classic.memory import ConversationBufferMemory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.language_models import BaseChatModel               # ← tipo base
 

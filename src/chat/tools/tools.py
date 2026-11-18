@@ -1,7 +1,7 @@
 import logging
 
 from langchain_core.utils.function_calling import convert_to_openai_function
-from langchain.agents import tool
+from langchain_core.tools import tool
 
 from src.chat.tools.retrieval import AnswerGenerationTool
 from src.chat.utils.logging_utils import setup_logging

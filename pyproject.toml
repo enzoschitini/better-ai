@@ -14,17 +14,17 @@ dependencies = [
     "requests~=2.32.5",
     # --- 2. ORCHESTRATION (LANGCHAIN STACK) ---
     # O "cérebro" da aplicação. Agrupado para facilitar atualizações de versão em bloco
-    "langchain~=0.3.27",
-    "langchain-community~=0.3.31",
-    "langchain-experimental~=0.3.4",
-    "langchain-openai~=0.3.35",
-    "langchain-google-genai~=2.1.12",
-    "langchain-groq~=0.3.8",
-    "langchain-pinecone~=0.2.13",
+    "langchain>=1.0",
+    "langchain-community>=0.4",
+    "langchain-experimental>=0.4",
+    "langchain-openai>=1.0",
+    "langchain-google-genai>=4.3",
+    "langchain-groq>=1.0",
+    "langchain-pinecone>=0.2.13",
     "agno~=2.5.8",
     # --- 3. AI MODELS & SDKs ---
     # SDKs nativos para quando você precisar de recursos não suportados pelo LangChain
-    "google-genai~=1.52.0",
+    "google-genai>=1.52.0",
     # --- 4. DATA PERSISTENCE & MEMORY ---
     # Bancos de dados relacionais, NoSQL e Vetoriais
     "pinecone~=7.3.0",
@@ -58,7 +58,9 @@ dependencies = [
     "streamlit>=1.56.0",
     "anthropic>=0.105.2",
     "langchain-text-splitters>=0.3.11",
+    "langchain-classic>=1.0",
     "faiss-cpu>=1.14.3",
     # --- 9. SUPABASE INTEGRATION (supabase/) ---
     "filetype>=1.2.0",
+    "deepagents>=0.7",
 ]

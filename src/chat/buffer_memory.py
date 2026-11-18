@@ -6,8 +6,8 @@ Refatorado segundo SOLID — Single Responsibility e Dependency Inversion.
 
 import os
 from pymongo import MongoClient
-from langchain.memory import ConversationBufferMemory
-from langchain.schema import messages_from_dict, messages_to_dict
+from langchain_classic.memory import ConversationBufferMemory
+from langchain_classic.schema import messages_from_dict, messages_to_dict
 from dotenv import load_dotenv
 
 import logging
@@ -125,7 +125,7 @@ if __name__ == "__main__":
 
         mem = create_memory(sess_id)
 
-        from langchain.schema import HumanMessage
+        from langchain_classic.schema import HumanMessage
         mem.chat_memory.add_message(HumanMessage(content="Olá!"))
 
         save_chat_history(sess_id, mem)
