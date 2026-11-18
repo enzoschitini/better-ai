@@ -1,6 +1,14 @@
-from dotenv import load_dotenv
-from src.deep_agents.model.llm_gateway import LLMGateway
-from src.deep_agents.model.model_config import ModelConfig
+import sys
+from pathlib import Path
+
+# Permite rodar direto (botão Play / `python arquivo.py`): coloca a raiz do repo no sys.path.
+_RAIZ = Path(__file__).resolve().parents[2]
+if str(_RAIZ) not in sys.path:
+    sys.path.insert(0, str(_RAIZ))
+
+from dotenv import load_dotenv  # noqa: E402
+from src.deep_agents.model.llm_gateway import LLMGateway  # noqa: E402
+from src.deep_agents.model.model_config import ModelConfig  # noqa: E402
 
 # Load environment variables from a .env file
 load_dotenv()

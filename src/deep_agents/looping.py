@@ -1,6 +1,14 @@
-from src.deep_agents.agent import agent, gateway
-from src.deep_agents.model.metrics import RunReport
-from src.deep_agents.utils.json_manager import extract_response_text, manage_result_json
+import sys
+from pathlib import Path
+
+# Permite rodar direto (botão Play / `python arquivo.py`): coloca a raiz do repo no sys.path.
+_RAIZ = Path(__file__).resolve().parents[2]
+if str(_RAIZ) not in sys.path:
+    sys.path.insert(0, str(_RAIZ))
+
+from src.deep_agents.agent import agent, gateway  # noqa: E402
+from src.deep_agents.model.metrics import RunReport  # noqa: E402
+from src.deep_agents.utils.json_manager import extract_response_text, manage_result_json  # noqa: E402
 
 
 def format_metrics(report: RunReport) -> str:

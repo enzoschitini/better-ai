@@ -1,7 +1,7 @@
 """Utilidades compartilhadas pelos exemplos (nada específico de Deep Agents aqui).
 
 Variáveis de ambiente:
-  MODELO         provedor:modelo   (padrão: anthropic:claude-sonnet-4-6)
+  MODELO         provedor:modelo   (padrão: openai:gpt-4.1-mini)
   MOSTRAR_PROMPT 1/0               mostra o system prompt que o modelo recebeu (padrão: 1)
   PROMPT_MAX     nº de caracteres do prompt exibido (padrão: 3000)
 """
@@ -9,13 +9,30 @@ from __future__ import annotations
 
 import json
 import os
+import sys
+from pathlib import Path
 from typing import Any
 
-from langchain_core.callbacks import BaseCallbackHandler
+# Permite rodar os exemplos direto (botão Play / `python arquivo.py`):
+# adiciona a raiz do repositório ao sys.path para o import `src.*` funcionar.
+_RAIZ = Path(__file__).resolve().parents[3]
+if str(_RAIZ) not in sys.path:
+    sys.path.insert(0, str(_RAIZ))
 
-from llm_gateway import LLMGateway, ModelConfig, RunReport
+from dotenv import load_dotenv  # noqa: E402
 
-MODELO_PADRAO = "anthropic:claude-sonnet-4-6"
+# Carrega a ANTHROPIC_API_KEY etc. do .env da raiz do repositório.
+load_dotenv(_RAIZ / ".env", override=True)
+# Um ANTHROPIC_AUTH_TOKEN vazio no ambiente faz o SDK enviar "Authorization: Bearer "
+# (header inválido -> "Connection error"). Remove se estiver vazio.
+if not os.environ.get("ANTHROPIC_AUTH_TOKEN"):
+    os.environ.pop("ANTHROPIC_AUTH_TOKEN", None)
+
+from langchain_core.callbacks import BaseCallbackHandler  # noqa: E402
+
+from src.deep_agents.model.llm_gateway import LLMGateway, ModelConfig, RunReport  # noqa: E402
+
+MODELO_PADRAO = "openai:gpt-4.1-mini"
 
 
 class PromptSpy(BaseCallbackHandler):
