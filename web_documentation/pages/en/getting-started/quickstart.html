@@ -206,7 +206,7 @@
     <thead><tr><th>Service</th><th>Command</th><th>Port</th><th>When to use</th></tr></thead>
     <tbody>
       <tr><td>API (FastAPI)</td><td><code>python -m uvicorn web_services:app --reload</code></td><td><code>8000</code></td><td>Programmatic access to the AI modules over HTTP</td></tr>
-      <tr><td>Interface (Streamlit)</td><td><code>streamlit run web_app.py</code></td><td><code>8501</code></td><td>Visual use of the applications (Acquarello, Content Generator)</td></tr>
+      <tr><td>Interface (Streamlit)</td><td><code>python -m streamlit run web_app.py</code></td><td><code>8501</code></td><td>Visual use of the applications (Acquarello, Content Generator)</td></tr>
     </tbody>
   </table></div>
   <div class="callout" data-kind="info"><p><strong>Prerequisites:</strong> virtual environment activated (step 3), dependencies installed (step 4) and <code>.env</code> file configured (step 5).</p></div>
@@ -272,7 +272,8 @@ INFO:     Application startup complete.</code></pre><button class="copy floating
   <p>Each response follows a standardized format with <code>job_id</code>, <code>status</code>, <code>result</code> and execution time metrics. The full parameters and request/response examples are in <a href="../api/web-service-network-api/use.html">Web Service Network - API.ipynb</a>.</p>
 
   <h3 id="6-2-streamlit-interface"><a class="anchor" href="#6-2-streamlit-interface" aria-label="Link para esta seção">#</a>6.2. Streamlit Interface</h3>
-  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">streamlit</span> run web_app.py</code></pre><button class="copy floating" type="button"></button></div></div>
+  <div class="code plain"><div class="code-body"><pre data-lang="bash"><code><span class="t-f">python</span> -m streamlit run web_app.py</code></pre><button class="copy floating" type="button"></button></div></div>
+  <div class="callout" data-kind="info"><p><strong>Why <code>python -m streamlit</code>?</strong> If the project folder (or <code>.venv</code>) was moved or renamed, the venv's <code>streamlit.exe</code> fails with <code>uv trampoline failed to canonicalize script path</code>. Calling it through <code>python -m</code> avoids the problem. Alternatives: <code>uv run streamlit run web_app.py</code>, or recreate the venv with <code>Remove-Item -Recurse -Force .venv; uv sync</code>.</p></div>
   <p>The application will be available at <a href="http://localhost:8501">http://localhost:8501</a>, with the following pages:</p>
   <div class="table-wrap"><table>
     <thead><tr><th>Application</th><th>URL</th><th>Documentation</th></tr></thead>
